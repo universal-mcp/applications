@@ -1,7 +1,7 @@
 import base64
 from typing import Any, Literal
 
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 from openai import NOT_GIVEN, AsyncOpenAI, OpenAIError

@@ -2,7 +2,7 @@ from typing import Any  # For type hinting
 
 import httpx
 from loguru import logger
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError  # For auth errors
 from universal_mcp.integrations import Integration  # For integration type hint
 

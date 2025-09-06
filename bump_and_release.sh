@@ -1,14 +1,15 @@
 #!/bin/bash
 
 set -e
+set -x
 
-# Ensure test dependencies are installed
-echo "Installing test dependencies..."
-uv pip install pytest
+# Ensure dependencies are installed
+echo "Syncing dependencies..."
+uv sync
 
 # Run tests with pytest
 echo "Running tests with pytest..."
-pytest
+uv run pytest
 
 echo "Tests passed!"
 
@@ -49,16 +50,12 @@ else
 fi
 
 # Update version in pyproject.toml
-sed -i '' "s/^version = \".*\"/version = \"$NEW_VERSION\"/" pyproject.toml
+sed -i '' "s/^version = ".*"/version = \"$NEW_VERSION\"/" pyproject.toml
 
 echo "Version bumped from $CURRENT_VERSION to $NEW_VERSION"
 
-# Generate README for tools based on app.py
-echo "Generating tools README for src/universal_mcp_applications/app.py..."
-universal_mcp readme src/universal_mcp_applications/app.py
-
 # Stage the changed file
-git add pyproject.toml src/universal_mcp_applications/README.md
+git add pyproject.toml
 
 # Commit the change
 git commit -m "bump: version $CURRENT_VERSION → $NEW_VERSION"
@@ -95,5 +92,6 @@ if [ "$1" = "release" ]; then
 else
     echo "Skipping release steps"
 fi
+
 
  

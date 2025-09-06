@@ -2,7 +2,7 @@ import logging
 from typing import Any, Literal  # Added Literal for type hinting
 
 import httpx
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 logger = logging.getLogger(__name__)

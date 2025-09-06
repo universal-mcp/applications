@@ -11,7 +11,7 @@ except ImportError:
         "Failed to import E2B Sandbox. Please ensure 'e2b_code_interpreter' is installed."
     )
 
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
 

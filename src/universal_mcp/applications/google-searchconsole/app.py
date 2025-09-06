@@ -2,7 +2,7 @@ import logging
 import urllib.parse
 from typing import Any
 
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 logger = logging.getLogger(__name__)

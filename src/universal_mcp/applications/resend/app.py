@@ -1,6 +1,6 @@
 from typing import Any
 
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
 

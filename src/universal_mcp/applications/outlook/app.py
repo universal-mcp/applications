@@ -1,7 +1,7 @@
 from typing import Any
 from urllib.parse import parse_qs, urlparse
 
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 

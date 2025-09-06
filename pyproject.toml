@@ -28,14 +28,6 @@ dependencies = [
     "google-search-results>=2.4.2",
     "gql[all]>=3.5.2",
     "httpx-aiohttp>=0.1.8",
-    "langchain-openai>=0.3.28",
-    "langgraph>=0.5.3",
-    "langgraph>=0.5.4",
-    "langgraph>=0.6.0",
-    "langgraph>=0.6.1",
-    "langgraph>=0.6.3",
-    "langgraph>=0.6.4",
-    "langgraph>=0.6.5",
     "markitdown[all]>=0.1.1",
     "office365-rest-python-client>=2.6.2",
     "openai>=1.75.0",
@@ -48,7 +40,7 @@ dependencies = [
     "requests>=2.31.0",
     "resend>=2.10.0",
     "twilio>=9.8.0",
-    "universal_mcp>=0.1.23",
+    "universal-mcp",
 ]
 
 [project.license]
@@ -68,9 +60,6 @@ dev = [
 Homepage = "https://github.com/universal-mcp/applications"
 Repository = "https://github.com/universal-mcp/applications"
 
-[tool.hatch.version]
-path = "src/universal_mcp_applications/__init__.py"
-
 [tool.hatch.envs.default]
 dependencies = [
     "pytest",
@@ -79,18 +68,19 @@ dependencies = [
 
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
-test-cov = "pytest --cov-report term-missing --cov-config=pyproject.toml --cov=src/universal_mcp_applications --cov=tests {args:tests}"
+test-cov = "pytest --cov-report term-missing --cov-config=pyproject.toml --cov=src/universal_mcp --cov=tests {args:tests}"
 lint = "ruff check . && ruff format --check ."
 format = "ruff format ."
 
+
 [tool.hatch.build.targets.wheel]
 packages = [
-    "src/universal_mcp_applications",
+    "src/universal_mcp",
 ]
 
 [tool.coverage.run]
 source = [
-    "src/universal_mcp_applications",
+    "src",   
 ]
 branch = true
 
@@ -101,15 +91,18 @@ fail_under = 70
 [tool.ruff]
 line-length = 88
 select = [
-    "E",
-    "W",
-    "F",
-    "I",
-    "UP",
-    "PL",
-    "T20",
+    "E", "W", "F", "I", "UP", "PL", "T20",
 ]
 ignore = []
 
+
 [tool.ruff.format]
 quote-style = "double"
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "src",
+]
+
+[tool.uv.sources]
+universal-mcp = { path = "../universal-mcp" }

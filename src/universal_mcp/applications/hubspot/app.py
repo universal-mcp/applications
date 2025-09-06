@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from universal_mcp.applications import APIApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 from universal_mcp_hubspot.api_segments.crm_api import CrmApi
 from universal_mcp_hubspot.api_segments.marketing_api import MarketingApi
