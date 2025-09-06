@@ -1901,7 +1901,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_update_list_info_due_date_priority_assignee_color(
+    def lists_update_list(
         self,
         list_id,
         name,
@@ -4933,7 +4933,7 @@ class ClickupApp(APIApplication):
             self.lists_get_folderless,
             self.lists_create_folderless_list,
             self.lists_get_list_details,
-            self.lists_update_list_info_due_date_priority_assignee_color,
+            self.lists_update_list,
             self.lists_remove_list,
             self.lists_add_task_to_list,
             self.lists_remove_task_from_list,
