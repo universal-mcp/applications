@@ -1,6 +1,6 @@
 import re
 
-from universal_mcp.applications import BaseApplication
+from universal_mcp.applications.application import BaseApplication
 
 from markitdown import MarkItDown
 

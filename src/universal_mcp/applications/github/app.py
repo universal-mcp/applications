@@ -49574,7 +49574,7 @@ class GithubApp(APIApplication):
             self.update_issue,
             self.list_repo_activities,
             # Auto Generated from open api spec
-            self.meta_root,
+            self.meta_get,
             self.list_advisories,
             self.get_advisory_by_id,
             self.apps_get_authenticated,
@@ -49654,7 +49654,6 @@ class GithubApp(APIApplication):
             self.get_stubbed_account,
             self.apps_list_plans_stubbed,
             self.get_plan_accounts,
-            self.meta_get,
             self.get_network_repo_events,
             self.get_notifications,
             self.update_notification,

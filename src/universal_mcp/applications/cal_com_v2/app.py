@@ -3,15 +3,13 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from .schemas import *
 
-
-class CalApp(APIApplication):
+class CalComV2App(APIApplication):
     def __init__(self, integration: Integration = None, **kwargs) -> None:
         super().__init__(name="cal-com-v2", integration=integration, **kwargs)
         self.base_url = "https://api.cal.com"
 
-    def get_provider_details(self, clientId: str) -> Getproviderdetailsresponse:
+    def get_provider_details(self, clientId: str) -> dict[str, Any]:
         """
         Retrieves information for a provider using the client ID provided in the path.
 
@@ -38,7 +36,7 @@ class CalApp(APIApplication):
 
     def get_provider_access_token(
         self, clientId: str
-    ) -> Getprovideraccesstokenresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves an access token for the specified client ID using a GET request.
 
@@ -63,7 +61,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def gcal_controller_redirect(self) -> GcalcontrollerRedirectresponse:
+    def gcal_controller_redirect(self) -> dict[str, Any]:
         """
         Retrieves and returns an authorization URL for Google Calendar OAuth using the "GET" method at the "/v2/gcal/oauth/auth-url" path.
 
@@ -83,7 +81,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def gcal_controller_save(self, state: str, code: str) -> GcalcontrollerSaveresponse:
+    def gcal_controller_save(self, state: str, code: str) -> dict[str, Any]:
         """
         Handles Google Calendar OAuth 2.0 authorization callback by exchanging an authorization code for an access token and saving credentials.
 
@@ -109,7 +107,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def gcal_controller_check(self) -> Getprovideraccesstokenresponse:
+    def gcal_controller_check(self) -> dict[str, Any]:
         """
         Checks the Google Calendar availability or status using the v2 API and returns a success response if valid.
 
@@ -131,7 +129,7 @@ class CalApp(APIApplication):
 
     def list_client_users(
         self, clientId: str, limit: float | None = None
-    ) -> Listclientusersresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of users associated with a specific OAuth client ID, optionally limited by the specified query parameter.
 
@@ -165,7 +163,7 @@ class CalApp(APIApplication):
         timeZone: str | None = None,
         locale: str | None = None,
         avatarUrl: str | None = None,
-    ) -> Createoauthclientuserresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new user for an OAuth client specified by the `clientId` and returns a successful response with a 201 status code.
 
@@ -219,7 +217,7 @@ class CalApp(APIApplication):
 
     def get_oauth_client_user_by_id(
         self, clientId: str, userId: str
-    ) -> Getoauthclientuserbyidresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves user-specific information associated with an OAuth client using the provided client ID and user ID.
 
@@ -259,7 +257,7 @@ class CalApp(APIApplication):
         timeZone: str | None = None,
         locale: str | None = None,
         avatarUrl: str | None = None,
-    ) -> Getoauthclientuserbyidresponse:
+    ) -> dict[str, Any]:
         """
         Updates the association of a user with a specified OAuth client using the PATCH method on the "/v2/oauth-clients/{clientId}/users/{userId}" path.
 
@@ -311,7 +309,7 @@ class CalApp(APIApplication):
 
     def delete_user_by_client_id_id(
         self, clientId: str, userId: str
-    ) -> Getoauthclientuserbyidresponse:
+    ) -> dict[str, Any]:
         """
         Removes a user's association with an OAuth client identified by the client ID and user ID.
 
@@ -341,7 +339,7 @@ class CalApp(APIApplication):
 
     def force_refresh_user(
         self, clientId: str, userId: str
-    ) -> Forcerefreshuserresponse:
+    ) -> dict[str, Any]:
         """
         Forces a refresh for the OAuth client's user session, invalidating existing tokens and generating new ones.
 
@@ -377,7 +375,7 @@ class CalApp(APIApplication):
 
     def refresh_oauth_client_token(
         self, clientId: str, refreshToken: str
-    ) -> Forcerefreshuserresponse:
+    ) -> dict[str, Any]:
         """
         Refreshes an access token for a specified client using OAuth 2.0, allowing the client to obtain a new access token without user interaction.
 
@@ -421,7 +419,7 @@ class CalApp(APIApplication):
         triggers: str,
         payloadTemplate: str | None = None,
         secret: str | None = None,
-    ) -> Createoauthclientwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Creates a webhook for an OAuth client using the client ID specified in the path, enabling event-driven communication.
 
@@ -469,7 +467,7 @@ class CalApp(APIApplication):
 
     def list_webhooks_by_client_id(
         self, clientId: str, take: float | None = None, skip: float | None = None
-    ) -> Listwebhooksbyclientidresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of webhooks associated with a specific OAuth client using clientId, take, and skip parameters for pagination.
 
@@ -498,7 +496,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_client_webhook(self, clientId: str) -> Deleteclientwebhookresponse:
+    def delete_client_webhook(self, clientId: str) -> dict[str, Any]:
         """
         Deletes a webhook associated with an OAuth client identified by the provided client ID using the DELETE method.
 
@@ -532,7 +530,7 @@ class CalApp(APIApplication):
         subscriberUrl: str | None = None,
         triggers: str | None = None,
         secret: str | None = None,
-    ) -> Createoauthclientwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Updates an existing webhook for a specified OAuth client using the "PATCH" method, modifying its configuration as needed.
 
@@ -578,7 +576,7 @@ class CalApp(APIApplication):
 
     def get_oauth_client_webhook_by_id(
         self, clientId: str, webhookId: str
-    ) -> Createoauthclientwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves information about a specific webhook associated with an OAuth client using the "GET" method at the specified path.
 
@@ -608,7 +606,7 @@ class CalApp(APIApplication):
 
     def delete_oauth_client_webhook_by_id(
         self, clientId: str, webhookId: str
-    ) -> Createoauthclientwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a webhook associated with a specific OAuth client using the provided client and webhook IDs.
 
@@ -638,7 +636,7 @@ class CalApp(APIApplication):
 
     def list_org_attributes(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Listorgattributesresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of organization attributes filtered by pagination parameters.
 
@@ -673,7 +671,7 @@ class CalApp(APIApplication):
         type: str,
         options: list[dict[str, Any]],
         enabled: bool | None = None,
-    ) -> Createorgattributesresponse:
+    ) -> dict[str, Any]:
         """
         Adds new attributes to an organization using the API, specifying the organization ID in the path, and returns a successful creation status.
 
@@ -721,7 +719,7 @@ class CalApp(APIApplication):
 
     def fetch_organization_attribute_by_id(
         self, orgId: str, attributeId: str
-    ) -> Fetchorganizationattributebyidresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a specific attribute for an organization based on the provided orgId and attributeId.
 
@@ -757,7 +755,7 @@ class CalApp(APIApplication):
         slug: str | None = None,
         type: str | None = None,
         enabled: bool | None = None,
-    ) -> Createorgattributesresponse:
+    ) -> dict[str, Any]:
         """
         Modifies an attribute of an organization using the PATCH method, updating the specified attribute by ID within the given organization.
 
@@ -801,7 +799,7 @@ class CalApp(APIApplication):
 
     def delete_org_attribute(
         self, orgId: str, attributeId: str
-    ) -> Createorgattributesresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specified attribute from an organization using the provided orgId and attributeId path parameters.
 
@@ -831,7 +829,7 @@ class CalApp(APIApplication):
 
     def create_org_attribute_option(
         self, orgId: str, attributeId: str, value: str, slug: str
-    ) -> Createorgattributeoptionresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new option for the specified attribute in the given organization and returns the created resource.
 
@@ -878,7 +876,7 @@ class CalApp(APIApplication):
 
     def get_org_attribute_options(
         self, orgId: str, attributeId: str
-    ) -> Getorgattributeoptionsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves options for a specific attribute within an organization using the "GET" method at the "/v2/organizations/{orgId}/attributes/{attributeId}/options" endpoint.
 
@@ -910,7 +908,7 @@ class CalApp(APIApplication):
 
     def delete_attribute_option_by_id(
         self, orgId: str, attributeId: str, optionId: str
-    ) -> Createorgattributeoptionresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specific attribute option for an organization's custom attributes using the provided orgId, attributeId, and optionId.
 
@@ -948,7 +946,7 @@ class CalApp(APIApplication):
         optionId: str,
         value: str | None = None,
         slug: str | None = None,
-    ) -> Createorgattributeoptionresponse:
+    ) -> dict[str, Any]:
         """
         Updates a specific option for an organization's attribute using partial modifications.
 
@@ -996,7 +994,7 @@ class CalApp(APIApplication):
         attributeId: str,
         value: str | None = None,
         attributeOptionId: str | None = None,
-    ) -> Setuserattributeoptionresponse:
+    ) -> dict[str, Any]:
         """
         Assigns attribute options to a user within an organization using the POST method and returns a creation status.
 
@@ -1043,7 +1041,7 @@ class CalApp(APIApplication):
 
     def get_user_org_attribute_options(
         self, orgId: str, userId: str
-    ) -> Getuserorgattributeoptionsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves attribute options for a specified user within an organization using the "GET" method.
 
@@ -1073,7 +1071,7 @@ class CalApp(APIApplication):
 
     def delete_attribute_option(
         self, orgId: str, userId: str, attributeOptionId: str
-    ) -> Setuserattributeoptionresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specific attribute option for a user within an organization via the provided path parameters.
 
@@ -1142,7 +1140,7 @@ class CalApp(APIApplication):
         hideCalendarEventDetails: bool | None = None,
         successRedirectUrl: str | None = None,
         assignAllTeamMembers: bool | None = None,
-    ) -> Createeventtyperesponse:
+    ) -> dict[str, Any]:
         """
         Creates a new event type within a specified team and organization.
 
@@ -1254,7 +1252,7 @@ class CalApp(APIApplication):
 
     def list_event_types_by_team_and_org(
         self, orgId: str, teamId: str, eventSlug: str | None = None
-    ) -> Listeventtypesbyteamandorgresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves event types for a specific team within an organization using the "GET" method at the "/v2/organizations/{orgId}/teams/{teamId}/event-types" endpoint, optionally filtering by event slug.
 
@@ -1285,7 +1283,7 @@ class CalApp(APIApplication):
 
     def get_event_types_by_team_id(
         self, orgId: str, teamId: str, eventTypeId: str
-    ) -> Geteventtypesbyteamidresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves details about a specific event type within a team of an organization using the provided organization ID, team ID, and event type ID.
 
@@ -1332,7 +1330,7 @@ class CalApp(APIApplication):
         guestCompany: str | None = None,
         beginMessage: str | None = None,
         generalPrompt: str | None = None,
-    ) -> Createphonecalleventresponse:
+    ) -> dict[str, Any]:
         """
         Initiates a phone call for a specific event type under an organization's team context and returns a 201 Created response upon successful creation.
 
@@ -1398,7 +1396,7 @@ class CalApp(APIApplication):
 
     def list_event_types_by_org_id(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Listeventtypesbyteamandorgresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of event types for teams within a specified organization.
 
@@ -1429,7 +1427,7 @@ class CalApp(APIApplication):
 
     def list_organization_memberships(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of memberships for an organization identified by the specified `orgId`, allowing pagination through optional `take` and `skip` query parameters.
 
@@ -1465,7 +1463,7 @@ class CalApp(APIApplication):
         role: str,
         accepted: bool | None = None,
         disableImpersonation: bool | None = None,
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new membership for an organization identified by {orgId} using the API.
 
@@ -1511,7 +1509,7 @@ class CalApp(APIApplication):
 
     def get_org_membership_by_id(
         self, orgId: str, membershipId: str
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves membership details for a specific organization membership using the provided organization ID and membership ID.
 
@@ -1541,7 +1539,7 @@ class CalApp(APIApplication):
 
     def delete_org_membership_by_id(
         self, orgId: str, membershipId: str
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Removes a user's membership from the specified organization by deleting the membership record at the given path.
 
@@ -1576,7 +1574,7 @@ class CalApp(APIApplication):
         accepted: bool | None = None,
         role: str | None = None,
         disableImpersonation: bool | None = None,
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Updates an organization membership's details using the PATCH method and returns the updated membership data.
 
@@ -1618,7 +1616,7 @@ class CalApp(APIApplication):
 
     def get_organization_schedules(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Getorganizationschedulesresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of schedules for the specified organization, using pagination parameters to limit results.
 
@@ -1656,7 +1654,7 @@ class CalApp(APIApplication):
         isDefault: bool,
         availability: list[dict[str, Any]] | None = None,
         overrides: list[dict[str, Any]] | None = None,
-    ) -> Createuserscheduleresponse:
+    ) -> dict[str, Any]:
         """
         Creates a schedule for the specified user within an organization and returns a success status upon creation.
 
@@ -1708,7 +1706,7 @@ class CalApp(APIApplication):
 
     def get_user_schedule(
         self, orgId: str, userId: str
-    ) -> Getorganizationschedulesresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a user's schedule for a specific organization using the GET method.
 
@@ -1738,7 +1736,7 @@ class CalApp(APIApplication):
 
     def get_schedule_detail(
         self, orgId: str, userId: str, scheduleId: str
-    ) -> Getscheduledetailresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves the specified schedule for a user within an organization.
 
@@ -1777,7 +1775,7 @@ class CalApp(APIApplication):
         availability: list[dict[str, Any]] | None = None,
         isDefault: bool | None = None,
         overrides: list[dict[str, Any]] | None = None,
-    ) -> Updateuserschedulebyidresponse:
+    ) -> dict[str, Any]:
         """
         Updates a user's schedule for a specified organization by applying partial modifications to the schedule's details using the PATCH method.
 
@@ -1826,7 +1824,7 @@ class CalApp(APIApplication):
 
     def delete_user_schedule_by_id(
         self, orgId: str, userId: str, scheduleId: str
-    ) -> Getprovideraccesstokenresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specific schedule for a user within an organization and returns a success status.
 
@@ -1859,7 +1857,7 @@ class CalApp(APIApplication):
 
     def get_organization_teams(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Getorganizationteamsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of teams for a specified organization using the provided orgId, with optional pagination control via take and skip parameters.
 
@@ -1910,7 +1908,7 @@ class CalApp(APIApplication):
         timeZone: str | None = None,
         weekStart: str | None = None,
         autoAcceptCreator: bool | None = None,
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new team within the specified organization using the provided organization ID and returns a success status upon creation.
 
@@ -1986,7 +1984,7 @@ class CalApp(APIApplication):
 
     def get_organization_team_me(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Getorganizationteamsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves the teams for the current user within a specified organization using the "GET" method, optionally allowing pagination through query parameters.
 
@@ -2017,7 +2015,7 @@ class CalApp(APIApplication):
 
     def get_organization_team_by_id(
         self, orgId: str, teamId: str
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves information about a specific team within an organization using the organization and team IDs.
 
@@ -2047,7 +2045,7 @@ class CalApp(APIApplication):
 
     def delete_team_by_id(
         self, orgId: str, teamId: str
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specific team within an organization and returns a success status upon completion.
 
@@ -2099,7 +2097,7 @@ class CalApp(APIApplication):
         weekStart: str | None = None,
         bookingLimits: str | None = None,
         includeManagedEventsInLimits: bool | None = None,
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Updates the specified team properties within an organization using partial modifications.
 
@@ -2179,7 +2177,7 @@ class CalApp(APIApplication):
         teamId: str,
         take: float | None = None,
         skip: float | None = None,
-    ) -> Listteammembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a paginated list of memberships for a specified team within an organization, using path parameters for orgId and teamId, and query parameters for pagination (take and skip).
 
@@ -2219,7 +2217,7 @@ class CalApp(APIApplication):
         role: str,
         accepted: bool | None = None,
         disableImpersonation: bool | None = None,
-    ) -> Createteammembershipresponse:
+    ) -> dict[str, Any]:
         """
         Adds a member to the specified team within an organization and returns the membership details.
 
@@ -2268,7 +2266,7 @@ class CalApp(APIApplication):
 
     def get_membership_details(
         self, orgId: str, teamId: str, membershipId: str
-    ) -> Createteammembershipresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a specific membership record for a team within an organization, identified by membership ID, team ID, and organization ID.
 
@@ -2301,7 +2299,7 @@ class CalApp(APIApplication):
 
     def delete_org_team_membership_by_id(
         self, orgId: str, teamId: str, membershipId: str
-    ) -> Createteammembershipresponse:
+    ) -> dict[str, Any]:
         """
         Removes a user's team membership in an organization using the specified organization, team, and membership identifiers.
 
@@ -2340,7 +2338,7 @@ class CalApp(APIApplication):
         accepted: bool | None = None,
         role: str | None = None,
         disableImpersonation: bool | None = None,
-    ) -> Createteammembershipresponse:
+    ) -> dict[str, Any]:
         """
         Updates membership details for a specific organization team member using partial modifications and returns a success status.
 
@@ -2385,7 +2383,7 @@ class CalApp(APIApplication):
 
     def get_schedule_by_user(
         self, orgId: str, teamId: str, userId: str
-    ) -> Getorganizationschedulesresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves the schedule details for a specific user within a designated team and organization.
 
@@ -2422,7 +2420,7 @@ class CalApp(APIApplication):
         take: float | None = None,
         skip: float | None = None,
         emails: list[str] | None = None,
-    ) -> Listorgusersresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of users for a specified organization, allowing filtering by take, skip, and emails parameters, using the GET method on the "/v2/organizations/{orgId}/users" endpoint.
 
@@ -2470,7 +2468,7 @@ class CalApp(APIApplication):
         avatarUrl: str | None = None,
         organizationRole: str | None = None,
         autoAccept: bool | None = None,
-    ) -> Createorguserresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new user within an organization using the provided organization ID.
 
@@ -2534,7 +2532,7 @@ class CalApp(APIApplication):
         )
         return Createorguserresponse.model_validate(self._handle_response(response))
 
-    def delete_member_by_id(self, orgId: str, userId: str) -> Createorguserresponse:
+    def delete_member_by_id(self, orgId: str, userId: str) -> dict[str, Any]:
         """
         Deletes a user with the specified user ID from an organization identified by the provided organization ID using the DELETE method, returning a status message upon success.
 
@@ -2562,7 +2560,7 @@ class CalApp(APIApplication):
 
     def get_org_webhooks(
         self, orgId: str, take: float | None = None, skip: float | None = None
-    ) -> Getorgwebhooksresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of webhooks for the specified organization, supporting pagination through skip and take parameters.
 
@@ -2597,7 +2595,7 @@ class CalApp(APIApplication):
         triggers: str,
         payloadTemplate: str | None = None,
         secret: str | None = None,
-    ) -> Createwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Creates an organization webhook that triggers HTTP POST payloads for specified events and returns a success status on creation.
 
@@ -2643,7 +2641,7 @@ class CalApp(APIApplication):
 
     def get_organization_webhook_by_id(
         self, orgId: str, webhookId: str
-    ) -> Createwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves information about a specific webhook identified by `webhookId` for an organization specified by `orgId`.
 
@@ -2671,7 +2669,7 @@ class CalApp(APIApplication):
 
     def delete_organization_webhook_by_id(
         self, orgId: str, webhookId: str
-    ) -> Createwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specified webhook from an organization using the provided organization and webhook identifiers.
 
@@ -2706,7 +2704,7 @@ class CalApp(APIApplication):
         subscriberUrl: str | None = None,
         triggers: str | None = None,
         secret: str | None = None,
-    ) -> Createwebhookresponse:
+    ) -> dict[str, Any]:
         """
         Updates a specific webhook for an organization using partial modifications via the PATCH method.
 
@@ -2764,7 +2762,7 @@ class CalApp(APIApplication):
         sortCreated: str | None = None,
         take: float | None = None,
         skip: float | None = None,
-    ) -> Listbookingsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a filtered list of bookings based on parameters like status, attendee details, event types, time ranges, and pagination settings.
 
@@ -2817,7 +2815,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return Listbookingsresponse.model_validate(self._handle_response(response))
 
-    def get_booking_by_uid(self, bookingUid: str) -> Getbookingbyuidresponse:
+    def get_booking_by_uid(self, bookingUid: str) -> dict[str, Any]:
         """
         Retrieves the details of a specific booking using its unique identifier.
 
@@ -2842,7 +2840,7 @@ class CalApp(APIApplication):
 
     def reschedule_booking_by_uid(
         self, bookingUid: str
-    ) -> Reschedulebookingbyuidresponse:
+    ) -> dict[str, Any]:
         """
         Reschedules an existing booking identified by its unique `bookingUid`, using the `POST` method at the "/v2/bookings/{bookingUid}/reschedule" endpoint.
 
@@ -2873,7 +2871,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def cancel_booking_by_uid(self, bookingUid: str) -> Cancelbookingbyuidresponse:
+    def cancel_booking_by_uid(self, bookingUid: str) -> dict[str, Any]:
         """
         Cancels a booking by sending a POST request to the "/v2/bookings/{bookingUid}/cancel" endpoint, using the provided booking UID to identify the booking to be canceled.
 
@@ -2909,7 +2907,7 @@ class CalApp(APIApplication):
         bookingUid: str,
         host: bool | None = None,
         attendees: list[dict[str, Any]] | None = None,
-    ) -> Markbookingabsentbyuidresponse:
+    ) -> dict[str, Any]:
         """
         Marks a booking as absent using the provided booking UID and authentication token, indicating that the owner of the booking is absent.
 
@@ -2949,7 +2947,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def reassign_booking(self, bookingUid: str) -> Reassignbookingresponse:
+    def reassign_booking(self, bookingUid: str) -> dict[str, Any]:
         """
         Reassigns a booking to a different team member or booking page via a POST request to the specified booking UID, potentially allowing double bookings if availability conflicts exist.
 
@@ -2980,7 +2978,7 @@ class CalApp(APIApplication):
 
     def reassign_booking_to_user(
         self, bookingUid: str, userId: str, reason: str | None = None
-    ) -> Reassignbookingresponse:
+    ) -> dict[str, Any]:
         """
         Reassigns a booking to a specific user specified by the `userId` using a POST request, requiring authorization and providing a reason for the reassignment.
 
@@ -3019,7 +3017,7 @@ class CalApp(APIApplication):
         )
         return Reassignbookingresponse.model_validate(self._handle_response(response))
 
-    def confirm_booking(self, bookingUid: str) -> Getbookingbyuidresponse:
+    def confirm_booking(self, bookingUid: str) -> dict[str, Any]:
         """
         Confirms a specific booking by its unique identifier and returns a success status upon completion.
 
@@ -3050,7 +3048,7 @@ class CalApp(APIApplication):
 
     def decline_booking(
         self, bookingUid: str, reason: str | None = None
-    ) -> Getbookingbyuidresponse:
+    ) -> dict[str, Any]:
         """
         Declines a specific booking identified by the bookingUid using the Booking.com API and returns a success status upon completion.
 
@@ -3088,7 +3086,7 @@ class CalApp(APIApplication):
 
     def save_ics_feed_post(
         self, urls: list[str], readOnly: bool | None = None
-    ) -> Saveicsfeedpostresponse:
+    ) -> dict[str, Any]:
         """
         Saves an ICS calendar feed configuration and returns the created resource.
 
@@ -3123,7 +3121,7 @@ class CalApp(APIApplication):
         )
         return Saveicsfeedpostresponse.model_validate(self._handle_response(response))
 
-    def check_ics_feed(self) -> Checkicsfeedresponse:
+    def check_ics_feed(self) -> dict[str, Any]:
         """
         Checks the status and validity of an ICS calendar feed.
 
@@ -3148,7 +3146,7 @@ class CalApp(APIApplication):
         externalId: str,
         dateFrom: str | None = None,
         dateTo: str | None = None,
-    ) -> Getcalendarsbusytimesresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of busy times for specified calendars within a given date range using the "GET" method at "/v2/calendars/busy-times," allowing for time zone and credential specification.
 
@@ -3185,7 +3183,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def get_calendars(self) -> Getcalendarsresponse:
+    def get_calendars(self) -> dict[str, Any]:
         """
         Retrieves a list of calendars using the API at the "/v2/calendars" endpoint via the GET method.
 
@@ -3203,7 +3201,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return Getcalendarsresponse.model_validate(self._handle_response(response))
 
-    def calendars_controller_redirect(self, calendar: str) -> Checkicsfeedresponse:
+    def calendars_controller_redirect(self, calendar: str) -> dict[str, Any]:
         """
         Retrieves a connection status for the specified calendar at path "/v2/calendars/{calendar}/connect" using the GET method, requiring authorization and calendar identifier.
 
@@ -3282,7 +3280,7 @@ class CalApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def calendars_controller_check(self, calendar: str) -> Checkicsfeedresponse:
+    def calendars_controller_check(self, calendar: str) -> dict[str, Any]:
         """
         Checks the status or availability of a specified calendar using the "GET" method at the "/v2/calendars/{calendar}/check" endpoint.
 
@@ -3305,7 +3303,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return Checkicsfeedresponse.model_validate(self._handle_response(response))
 
-    def disconnect_calendar(self, calendar: str, id: int) -> Disconnectcalendarresponse:
+    def disconnect_calendar(self, calendar: str, id: int) -> dict[str, Any]:
         """
         Disconnects a specified calendar from a user's account using the Cal.com API, requiring a POST request to the "/v2/calendars/{calendar}/disconnect" endpoint with the calendar type and credential ID in the request body.
 
@@ -3345,7 +3343,7 @@ class CalApp(APIApplication):
 
     def conferencing_controller_connect(
         self, app: str
-    ) -> ConferencingcontrollerConnectresponse:
+    ) -> dict[str, Any]:
         """
         Establishes a connection for conferencing using the specified application via the POST method at the "/v2/conferencing/{app}/connect" endpoint.
 
@@ -3378,7 +3376,7 @@ class CalApp(APIApplication):
 
     def get_auth_url(
         self, app: str, returnTo: str, onErrorReturnTo: str
-    ) -> Getprovideraccesstokenresponse:
+    ) -> dict[str, Any]:
         """
         Generates an authorization URL for OAuth in a conferencing application using the "GET" method at the "/v2/conferencing/{app}/oauth/auth-url" path, accepting parameters such as the application name and return URLs.
 
@@ -3436,7 +3434,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_conferencing(self) -> Listconferencingresponse:
+    def list_conferencing(self) -> dict[str, Any]:
         """
         Retrieves conferencing data using the "GET" method at the "/v2/conferencing" endpoint, returning relevant information.
 
@@ -3456,7 +3454,7 @@ class CalApp(APIApplication):
 
     def conferencing_controller_default(
         self, app: str
-    ) -> Getprovideraccesstokenresponse:
+    ) -> dict[str, Any]:
         """
         Sets the default conferencing application for the specified app identifier.
 
@@ -3487,7 +3485,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def get_default_conferencing(self) -> Getdefaultconferencingresponse:
+    def get_default_conferencing(self) -> dict[str, Any]:
         """
         Retrieves the default conferencing configuration from the API.
 
@@ -3507,7 +3505,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def disconnect_conferencing_app(self, app: str) -> Getprovideraccesstokenresponse:
+    def disconnect_conferencing_app(self, app: str) -> dict[str, Any]:
         """
         Disconnects all participants from a specified conferencing application instance using the path parameter and returns a success response upon completion.
 
@@ -3534,7 +3532,7 @@ class CalApp(APIApplication):
 
     def update_destination_calendars(
         self, integration: str, externalId: str
-    ) -> Updatedestinationcalendarsresponse:
+    ) -> dict[str, Any]:
         """
         Updates a destination calendar at the specified path "/v2/destination-calendars" using the PUT method.
 
@@ -3578,7 +3576,7 @@ class CalApp(APIApplication):
         usernames: str | None = None,
         orgSlug: str | None = None,
         orgId: float | None = None,
-    ) -> Listeventtypesresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of event types using the GET method, allowing filtering by username, event slug, usernames list, organization slug, and organization ID through query parameters.
 
@@ -3613,7 +3611,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return Listeventtypesresponse.model_validate(self._handle_response(response))
 
-    def get_event_type_by_id(self, eventTypeId: str) -> Geteventtypebyidresponse:
+    def get_event_type_by_id(self, eventTypeId: str) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific event type by its ID using the Events API.
 
@@ -3636,7 +3634,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return Geteventtypebyidresponse.model_validate(self._handle_response(response))
 
-    def delete_event_type_by_id(self, eventTypeId: str) -> Deleteeventtypebyidresponse:
+    def delete_event_type_by_id(self, eventTypeId: str) -> dict[str, Any]:
         """
         Deletes the specified event type using the provided ID and returns a success status upon completion.
 
@@ -3669,7 +3667,7 @@ class CalApp(APIApplication):
         triggers: str,
         payloadTemplate: str | None = None,
         secret: str | None = None,
-    ) -> Createeventtypewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Creates a webhook subscription for a specific event type, returning a success status upon creation.
 
@@ -3720,7 +3718,7 @@ class CalApp(APIApplication):
         eventTypeId: str,
         take: float | None = None,
         skip: float | None = None,
-    ) -> Geteventwebhooksresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of webhooks configured for a specific event type, supporting pagination via take and skip parameters.
 
@@ -3747,7 +3745,7 @@ class CalApp(APIApplication):
         response = self._get(url, params=query_params)
         return Geteventwebhooksresponse.model_validate(self._handle_response(response))
 
-    def delete_event_webhook(self, eventTypeId: str) -> Deleteclientwebhookresponse:
+    def delete_event_webhook(self, eventTypeId: str) -> dict[str, Any]:
         """
         Deletes a webhook associated with a specific event type ID using the DELETE method.
 
@@ -3781,7 +3779,7 @@ class CalApp(APIApplication):
         subscriberUrl: str | None = None,
         triggers: str | None = None,
         secret: str | None = None,
-    ) -> Createeventtypewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Updates a webhook associated with a specific event type using the PATCH method, modifying its properties at the path "/v2/event-types/{eventTypeId}/webhooks/{webhookId}".
 
@@ -3827,7 +3825,7 @@ class CalApp(APIApplication):
 
     def get_webhook_by_id(
         self, eventTypeId: str, webhookId: str
-    ) -> Createeventtypewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves details about a specific webhook for a given event type using the provided event type ID and webhook ID.
 
@@ -3857,7 +3855,7 @@ class CalApp(APIApplication):
 
     def delete_event_type_webhook_by_id(
         self, eventTypeId: str, webhookId: str
-    ) -> Createeventtypewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a webhook associated with a specific event type using the provided `eventTypeId` and `webhookId` parameters.
 
@@ -3885,7 +3883,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def me_controller_get_me(self) -> MecontrollerGetmeresponse:
+    def me_controller_get_me(self) -> dict[str, Any]:
         """
         Retrieves the authenticated user's profile information and returns it in the API response.
 
@@ -3913,7 +3911,7 @@ class CalApp(APIApplication):
         timeZone: str | None = None,
         locale: str | None = None,
         avatarUrl: str | None = None,
-    ) -> MecontrollerGetmeresponse:
+    ) -> dict[str, Any]:
         """
         Updates the properties of the current user's profile at the "/v2/me" path using the PATCH method.
 
@@ -3962,7 +3960,7 @@ class CalApp(APIApplication):
         isDefault: bool,
         availability: list[dict[str, Any]] | None = None,
         overrides: list[dict[str, Any]] | None = None,
-    ) -> Createuserscheduleresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new schedule using the provided data and returns a successful creation response with a 201 status code.
 
@@ -4006,7 +4004,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def list_schedules(self) -> Getorganizationschedulesresponse:
+    def list_schedules(self) -> dict[str, Any]:
         """
         Retrieves a list of schedules using specified authorization headers and API version.
 
@@ -4026,7 +4024,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def get_default_schedule(self) -> Createuserscheduleresponse:
+    def get_default_schedule(self) -> dict[str, Any]:
         """
         Retrieves the default schedule of the authenticated user using the Cal.com API, returning relevant scheduling information.
 
@@ -4046,7 +4044,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def get_schedule_by_id(self, scheduleId: str) -> Getscheduledetailresponse:
+    def get_schedule_by_id(self, scheduleId: str) -> dict[str, Any]:
         """
         Retrieves a specific schedule by its ID using the "GET" method at the "/v2/schedules/{scheduleId}" endpoint.
 
@@ -4077,7 +4075,7 @@ class CalApp(APIApplication):
         availability: list[dict[str, Any]] | None = None,
         isDefault: bool | None = None,
         overrides: list[dict[str, Any]] | None = None,
-    ) -> Updateuserschedulebyidresponse:
+    ) -> dict[str, Any]:
         """
         Updates a schedule's configuration partially by specifying scheduleId and modified fields in the request body, returning a success status upon completion.
 
@@ -4118,7 +4116,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_schedule_by_id(self, scheduleId: str) -> Getprovideraccesstokenresponse:
+    def delete_schedule_by_id(self, scheduleId: str) -> dict[str, Any]:
         """
         Deletes a specific schedule identified by the `scheduleId` using the `DELETE` method.
 
@@ -4145,7 +4143,7 @@ class CalApp(APIApplication):
 
     def add_selected_calendar(
         self, integration: str, externalId: str, credentialId: float
-    ) -> Updatedestinationcalendarsresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new selected calendar entry for external integrations using provided identifiers.
 
@@ -4186,7 +4184,7 @@ class CalApp(APIApplication):
 
     def delete_selected_calendars(
         self, integration: str, externalId: str, credentialId: str
-    ) -> Updatedestinationcalendarsresponse:
+    ) -> dict[str, Any]:
         """
         Deletes one or more selected calendars based on integration, external ID, and credential ID using the DELETE method at the "/v2/selected-calendars" path.
 
@@ -4225,7 +4223,7 @@ class CalApp(APIApplication):
         slotUtcStartDate: str,
         slotUtcEndDate: str,
         bookingUid: str | None = None,
-    ) -> SlotscontrollerReserveslotresponse:
+    ) -> dict[str, Any]:
         """
         Reserves a slot using the "POST" method at "/v2/slots/reserve", creating a new reservation and returning a successful response when the operation is completed.
 
@@ -4266,7 +4264,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_selected_slot(self, uid: str) -> Deleteselectedslotresponse:
+    def delete_selected_slot(self, uid: str) -> dict[str, Any]:
         """
         Deletes the specified slot identified by the uid parameter and returns a successful response upon completion.
 
@@ -4301,7 +4299,7 @@ class CalApp(APIApplication):
         timeZone: str | None = None,
         orgSlug: str | None = None,
         slotFormat: str | None = None,
-    ) -> Listavailableslotsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of available slots within a specified time range, filtered by event type, user list, and other criteria, using the `GET` method at `/v2/slots/available`.
 
@@ -4348,7 +4346,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def stripe_controller_redirect(self) -> GcalcontrollerRedirectresponse:
+    def stripe_controller_redirect(self) -> dict[str, Any]:
         """
         Retrieves details of a connected Stripe account using the Stripe-Account header for authorization.
 
@@ -4370,7 +4368,7 @@ class CalApp(APIApplication):
 
     def stripe_controller_save(
         self, state: str, code: str
-    ) -> GcalcontrollerSaveresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a Stripe resource using a state and code query parameter and returns the result upon successful authentication.
 
@@ -4396,7 +4394,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def stripe_controller_check(self) -> StripecontrollerCheckresponse:
+    def stripe_controller_check(self) -> dict[str, Any]:
         """
         Checks system status or configuration in Stripe's v2 API and returns a success response.
 
@@ -4416,7 +4414,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def get_team_stripe_check(self, teamId: str) -> StripecontrollerCheckresponse:
+    def get_team_stripe_check(self, teamId: str) -> dict[str, Any]:
         """
         Retrieves Stripe payment or subscription data for a specific team using the provided `teamId` and returns relevant information via a GET request.
 
@@ -4462,7 +4460,7 @@ class CalApp(APIApplication):
         timeZone: str | None = None,
         weekStart: str | None = None,
         autoAcceptCreator: bool | None = None,
-    ) -> TeamscontrollerCreateteamresponse:
+    ) -> dict[str, Any]:
         """
         Creates a new team using the API and returns a successful response with a 201 status code, indicating the creation of a resource.
 
@@ -4533,7 +4531,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def teams_controller_get_teams(self) -> Getorganizationteamsresponse:
+    def teams_controller_get_teams(self) -> dict[str, Any]:
         """
         Retrieves a list of teams and returns their details in the response.
 
@@ -4555,7 +4553,7 @@ class CalApp(APIApplication):
 
     def teams_controller_get_team(
         self, teamId: str
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves information about a team specified by the team ID using the GET method.
 
@@ -4603,7 +4601,7 @@ class CalApp(APIApplication):
         weekStart: str | None = None,
         bookingLimits: str | None = None,
         includeManagedEventsInLimits: bool | None = None,
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Updates team configuration details for the specified team ID.
 
@@ -4676,7 +4674,7 @@ class CalApp(APIApplication):
 
     def teams_controller_delete_team(
         self, teamId: str
-    ) -> Createteaminorganizationresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specified team using the provided team ID.
 
@@ -4738,7 +4736,7 @@ class CalApp(APIApplication):
         hideCalendarEventDetails: bool | None = None,
         successRedirectUrl: str | None = None,
         assignAllTeamMembers: bool | None = None,
-    ) -> Createeventtyperesponse:
+    ) -> dict[str, Any]:
         """
         Creates a new event type for a specified team using the API and returns a successful creation status.
 
@@ -4847,7 +4845,7 @@ class CalApp(APIApplication):
 
     def get_team_event_types(
         self, teamId: str, eventSlug: str | None = None
-    ) -> Listeventtypesbyteamandorgresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of event types for a specified team using the provided team ID and optionally filters by event slug.
 
@@ -4875,7 +4873,7 @@ class CalApp(APIApplication):
 
     def get_event_type_by_team_id(
         self, teamId: str, eventTypeId: str
-    ) -> Geteventtypesbyteamidresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves details about a specific event type within a team using the "GET" method, requiring both team ID and event type ID as path parameters.
 
@@ -4905,7 +4903,7 @@ class CalApp(APIApplication):
 
     def delete_team_event_type_by_id(
         self, teamId: str, eventTypeId: str
-    ) -> Deleteteameventtypebyidresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a specific event type for a team using the provided path parameters.
 
@@ -4948,7 +4946,7 @@ class CalApp(APIApplication):
         guestCompany: str | None = None,
         beginMessage: str | None = None,
         generalPrompt: str | None = None,
-    ) -> Createphonecalleventresponse:
+    ) -> dict[str, Any]:
         """
         Creates a phone call for a specific event type within a team using the "POST" method, returning a successful creation status.
 
@@ -5016,7 +5014,7 @@ class CalApp(APIApplication):
         accepted: bool | None = None,
         role: str | None = None,
         disableImpersonation: bool | None = None,
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Adds multiple users to a team using their organization membership IDs through a POST request to the specified team endpoint.
 
@@ -5062,7 +5060,7 @@ class CalApp(APIApplication):
 
     def get_team_memberships(
         self, teamId: str, take: float | None = None, skip: float | None = None
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves paginated membership details for a specific team using `take` and `skip` parameters to manage results.
 
@@ -5093,7 +5091,7 @@ class CalApp(APIApplication):
 
     def get_membership_by_id(
         self, teamId: str, membershipId: str
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves the membership details for a specific user in a team using the provided membership ID.
 
@@ -5128,7 +5126,7 @@ class CalApp(APIApplication):
         accepted: bool | None = None,
         role: str | None = None,
         disableImpersonation: bool | None = None,
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Updates the membership role for a user in a specific team using the GitHub API and returns a success status.
 
@@ -5170,7 +5168,7 @@ class CalApp(APIApplication):
 
     def deletegithub_membership_by_id(
         self, teamId: str, membershipId: str
-    ) -> Listorganizationmembershipsresponse:
+    ) -> dict[str, Any]:
         """
         Removes a user's team membership in GitHub, requiring admin permissions or organization ownership.
 
@@ -5198,7 +5196,7 @@ class CalApp(APIApplication):
             self._handle_response(response)
         )
 
-    def get_timezones(self) -> Checkicsfeedresponse:
+    def get_timezones(self) -> dict[str, Any]:
         """
         Retrieves a list of time zones with associated metadata, including codes, descriptions, and identifiers.
 
@@ -5223,7 +5221,7 @@ class CalApp(APIApplication):
         triggers: str,
         payloadTemplate: str | None = None,
         secret: str | None = None,
-    ) -> Createandconfigurewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Creates and configures a webhook endpoint to receive HTTP POST notifications for specific events, returning a success response upon creation.
 
@@ -5268,7 +5266,7 @@ class CalApp(APIApplication):
 
     def webhooks_controller_get_webhooks(
         self, take: float | None = None, skip: float | None = None
-    ) -> WebhookscontrollerGetwebhooksresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves a list of webhooks, allowing pagination with optional parameters to specify the number of items to take and skip.
 
@@ -5302,7 +5300,7 @@ class CalApp(APIApplication):
         subscriberUrl: str | None = None,
         triggers: str | None = None,
         secret: str | None = None,
-    ) -> Createandconfigurewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Updates a webhook identified by its ID using the PATCH method to modify its configuration.
 
@@ -5345,7 +5343,7 @@ class CalApp(APIApplication):
 
     def webhooks_controller_get_webhook(
         self, webhookId: str
-    ) -> Createandconfigurewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Retrieves information about a specific webhook identified by its ID using the "GET" method.
 
@@ -5372,7 +5370,7 @@ class CalApp(APIApplication):
 
     def delete_user_webhook_by_id(
         self, webhookId: str
-    ) -> Createandconfigurewebhookresponse:
+    ) -> dict[str, Any]:
         """
         Deletes a webhook by its ID using the DELETE method at the "/v2/webhooks/{webhookId}" path, removing the specified webhook endpoint.
 

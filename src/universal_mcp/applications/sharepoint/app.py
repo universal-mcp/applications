@@ -6,7 +6,7 @@ from typing import Any
 
 from loguru import logger
 from office365.graph_client import GraphClient
-from universal_mcp.applications import BaseApplication
+from universal_mcp.applications.application import BaseApplication
 from universal_mcp.integrations import Integration
 
 

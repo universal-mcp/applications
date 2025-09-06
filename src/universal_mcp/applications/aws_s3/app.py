@@ -4,7 +4,7 @@ from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
-from universal_mcp.applications import BaseApplication
+from universal_mcp.applications.application import BaseApplication
 from universal_mcp.integrations import Integration
 
 

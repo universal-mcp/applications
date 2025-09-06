@@ -1,5 +1,5 @@
 from gql import gql
-from universal_mcp.applications import GraphQLApplication
+from universal_mcp.applications.application import GraphQLApplication
 from universal_mcp.integrations import Integration
 
 
