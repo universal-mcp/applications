@@ -1,89 +1,129 @@
-# Applications Universal MCP Server
+# Universal MCP Applications
 
-This repository contains an implementation of an Applications Universal MCP (Model Context Protocol) server. It provides a standardized interface for interacting with Applications's tools and services through a unified API.
+**A collection of 80+ installable application wrappers for the Universal MCP framework.**
 
-The server is built using the Universal MCP framework.
+This package provides a unified collection of all individual Universal MCP applications. It allows you to install every available tool at once and use them either as Python libraries in your own code.
 
-This implementation follows the MCP specification, ensuring compatibility with other MCP-compliant services and tools.
+## Installation
+
+It is recommended to use `uv` for faster installation.
+
+```bash
+# Recommended using uv
+uv pip install universal-mcp-applications
+
+# Or using standard pip
+pip install universal-mcp-applications
+```
 
 ## Usage
 
-You can start using Applications directly from [agentr.dev](https://agentr.dev). Visit [agentr.dev/apps](https://agentr.dev/apps) and enable Applications.
+The primary way to use the tools in this package is give below :-
 
-If you have not used universal mcp before follow the setup instructions at [agentr.dev/quickstart](https://agentr.dev/quickstart)
+### 1. As a Library
 
-## Available Tools
+Each application can be imported and used directly in your Python projects. This is useful for integrating with other scripts or building more complex workflows.
 
-The full list of available tools is at [Tools](./src/universal_mcp_applications/README.md)
+**Example:**
 
-## Local Development
+```python
+from universal_mcp_applications.falai import FalaiApp
+from universal_mcp.utils import process_output
 
-### 📋 Prerequisites
+# Instantiate the application
+# You may need to provide credentials via an integration
+app = FalaiApp() 
 
-Ensure you have the following before you begin:
+# Call a method
+result = app.some_method(param1="value1")
 
-- **Python 3.11+** (recommended)
-- **[uv](https://github.com/astral-sh/uv)** (install globally with `pip install uv`)
-
-### 🛠️ Setup Instructions
-
-Follow the steps below to set up your development environment:
-
-1. **Sync Project Dependencies**
-
-   ```bash
-   uv sync
-   ```
-
-   This installs all dependencies from `pyproject.toml` into a local virtual environment (`.venv`).
-
-2. **Activate the Virtual Environment**
-
-   For Linux/macOS:
-
-   ```bash
-   source .venv/bin/activate
-   ```
-
-   For Windows (PowerShell):
-
-   ```powershell
-   .venv\Scripts\Activate
-   ```
-
-3. **Start the MCP Inspector**
-
-   ```bash
-   mcp dev src/universal_mcp_applications/server.py
-   ```
-
-   This will start the MCP inspector. Make note of the address and port shown in the console output.
-
-4. **Install the Application**
-   ```bash
-   mcp install src/universal_mcp_applications/server.py
-   ```
-
-## 📁 Project Structure
-
-```text
-.
-├── src/
-│   └── universal_mcp_applications/
-│       ├── __init__.py       # Package initializer
-│       ├── server.py         # Server entry point
-│       ├── app.py            # Application tools
-│       └── README.md         # List of application tools
-├── tests/                    # Test suite
-├── .env                      # Environment variables for local development
-├── pyproject.toml            # Project configuration
-└── README.md                 # This file
+# Process and print the output
+process_output(result)
 ```
 
-## 📄 License
+## Included Applications
 
-This project is licensed under the [MIT License](LICENSE).
+This package includes the following 82 applications:
 
----
-
-_Generated with **MCP CLI** — Happy coding! 🚀_
+- `ahrefs`
+- `airtable`
+- `apollo`
+- `asana`
+- `aws-s3`
+- `bill`
+- `box`
+- `braze`
+- `cal-com-v2`
+- `calendly`
+- `canva`
+- `clickup`
+- `coda`
+- `confluence`
+- `contentful`
+- `crustdata`
+- `dialpad`
+- `digitalocean`
+- `domain-checker`
+- `e2b`
+- `elevenlabs`
+- `exa`
+- `falai`
+- `figma`
+- `firecrawl`
+- `fireflies`
+- `fpl`
+- `ghost-content`
+- `github`
+- `gong`
+- `google-ads`
+- `google-calendar`
+- `google-docs`
+- `google-drive`
+- `google-gemini`
+- `google-mail`
+- `google-searchconsole`
+- `google-sheet`
+- `hashnode`
+- `heygen`
+- `http-tools`
+- `hubspot`
+- `jira`
+- `klaviyo`
+- `linkedin`
+- `mailchimp`
+- `markitdown`
+- `miro`
+- `ms-teams`
+- `neon`
+- `notion`
+- `openai`
+- `outlook`
+- `perplexity`
+- `pipedrive`
+- `posthog`
+- `reddit`
+- `replicate`
+- `resend`
+- `retell`
+- `rocketlane`
+- `semanticscholar`
+- `semrush`
+- `sendgrid`
+- `sentry`
+- `serpapi`
+- `sharepoint`
+- `shopify`
+- `shortcut`
+- `slack`
+- `spotify`
+- `supabase`
+- `tavily`
+- `trello`
+- `twillo`
+- `twitter`
+- `unipile`
+- `whatsapp`
+- `whatsapp-business`
+- `wrike`
+- `youtube`
+- `zenquotes`
