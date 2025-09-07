@@ -2,11 +2,11 @@ from typing import Any  # For type hinting
 
 import httpx
 from loguru import logger
+
+from serpapi import SerpApiClient as SerpApiSearch  # Added SerpApiError
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError  # For auth errors
 from universal_mcp.integrations import Integration  # For integration type hint
-
-from serpapi import SerpApiClient as SerpApiSearch  # Added SerpApiError
 
 
 class SerpapiApp(APIApplication):

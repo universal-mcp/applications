@@ -6,7 +6,7 @@ from universal_mcp.integrations import Integration
 
 class WhatsappBusinessApp(APIApplication):
     def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="whatsapp-business", integration=integration, **kwargs)
+        super().__init__(name="whatsapp_business", integration=integration, **kwargs)
         self.base_url = "https://graph.facebook.com"
 
     def get_analytics(

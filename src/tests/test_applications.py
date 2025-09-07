@@ -1,18 +1,17 @@
 import pytest
 
 from universal_mcp.applications.utils import app_from_slug
-from universal_mcp.config import AppConfig
 from universal_mcp.utils.testing import check_application_instance
 
 ALL_APPS = [
     "ahrefs",
     "airtable",
-    "aws-s3",
+    "aws_s3",
     "apollo",
     "asana",
     "box",
     "braze",
-    # "cal-com-v2",
+    # "cal_com_v2",
     "confluence",
     "calendly",
     "canva",
@@ -27,12 +26,12 @@ ALL_APPS = [
     "firecrawl",
     "github",
     "gong",
-    "google-calendar",
-    "google-docs",
-    "google-drive",
-    "google-gemini",
-    "google-mail",
-    "google-sheet",
+    "google_calendar",
+    "google_docs",
+    "google_drive",
+    "google_gemini",
+    "google_mail",
+    "google_sheet",
     "hashnode",
     "heygen",
     "hubspot",
@@ -41,7 +40,7 @@ ALL_APPS = [
     "mailchimp",
     "markitdown",
     "miro",
-    "ms-teams",
+    "ms_teams",
     "neon",
     "notion",
     "perplexity",
@@ -62,7 +61,7 @@ ALL_APPS = [
     "tavily",
     "trello",
     "unipile",
-    "whatsapp-business",
+    "whatsapp_business",
     "wrike",
     "youtube",
     "zenquotes",

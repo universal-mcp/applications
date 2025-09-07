@@ -6,7 +6,7 @@ from universal_mcp.integrations import Integration
 
 class GoogleDocsApp(APIApplication):
     def __init__(self, integration: Integration) -> None:
-        super().__init__(name="google-docs", integration=integration)
+        super().__init__(name="google_docs", integration=integration)
         self.base_api_url = "https://docs.googleapis.com/v1/documents"
 
     def create_document(self, title: str) -> dict[str, Any]:

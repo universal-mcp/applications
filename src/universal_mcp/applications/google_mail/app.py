@@ -4,13 +4,14 @@ from email.message import EmailMessage
 from typing import Any
 
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 
 class GoogleMailApp(APIApplication):
     def __init__(self, integration: Integration) -> None:
-        super().__init__(name="google-mail", integration=integration)
+        super().__init__(name="google_mail", integration=integration)
         self.base_api_url = "https://gmail.googleapis.com/gmail/v1/users/me"
         self.base_url = "https://gmail.googleapis.com"
 

@@ -14,6 +14,7 @@ from pyairtable.api.types import (
     WritableFields,
 )
 from pyairtable.formulas import Formula, to_formula_str
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 

@@ -6,7 +6,7 @@ from universal_mcp.integrations import Integration
 
 class CalComV2App(APIApplication):
     def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="cal-com-v2", integration=integration, **kwargs)
+        super().__init__(name="cal_com_v2", integration=integration, **kwargs)
         self.base_url = "https://api.cal.com"
 
     def get_provider_details(self, clientId: str) -> dict[str, Any]:
@@ -34,9 +34,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_provider_access_token(
-        self, clientId: str
-    ) -> dict[str, Any]:
+    def get_provider_access_token(self, clientId: str) -> dict[str, Any]:
         """
         Retrieves an access token for the specified client ID using a GET request.
 
@@ -215,9 +213,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_oauth_client_user_by_id(
-        self, clientId: str, userId: str
-    ) -> dict[str, Any]:
+    def get_oauth_client_user_by_id(self, clientId: str, userId: str) -> dict[str, Any]:
         """
         Retrieves user-specific information associated with an OAuth client using the provided client ID and user ID.
 
@@ -307,9 +303,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_user_by_client_id_id(
-        self, clientId: str, userId: str
-    ) -> dict[str, Any]:
+    def delete_user_by_client_id_id(self, clientId: str, userId: str) -> dict[str, Any]:
         """
         Removes a user's association with an OAuth client identified by the client ID and user ID.
 
@@ -337,9 +331,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def force_refresh_user(
-        self, clientId: str, userId: str
-    ) -> dict[str, Any]:
+    def force_refresh_user(self, clientId: str, userId: str) -> dict[str, Any]:
         """
         Forces a refresh for the OAuth client's user session, invalidating existing tokens and generating new ones.
 
@@ -797,9 +789,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_org_attribute(
-        self, orgId: str, attributeId: str
-    ) -> dict[str, Any]:
+    def delete_org_attribute(self, orgId: str, attributeId: str) -> dict[str, Any]:
         """
         Deletes a specified attribute from an organization using the provided orgId and attributeId path parameters.
 
@@ -874,9 +864,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_org_attribute_options(
-        self, orgId: str, attributeId: str
-    ) -> dict[str, Any]:
+    def get_org_attribute_options(self, orgId: str, attributeId: str) -> dict[str, Any]:
         """
         Retrieves options for a specific attribute within an organization using the "GET" method at the "/v2/organizations/{orgId}/attributes/{attributeId}/options" endpoint.
 
@@ -1039,9 +1027,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_user_org_attribute_options(
-        self, orgId: str, userId: str
-    ) -> dict[str, Any]:
+    def get_user_org_attribute_options(self, orgId: str, userId: str) -> dict[str, Any]:
         """
         Retrieves attribute options for a specified user within an organization using the "GET" method.
 
@@ -1507,9 +1493,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_org_membership_by_id(
-        self, orgId: str, membershipId: str
-    ) -> dict[str, Any]:
+    def get_org_membership_by_id(self, orgId: str, membershipId: str) -> dict[str, Any]:
         """
         Retrieves membership details for a specific organization membership using the provided organization ID and membership ID.
 
@@ -1704,9 +1688,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_user_schedule(
-        self, orgId: str, userId: str
-    ) -> dict[str, Any]:
+    def get_user_schedule(self, orgId: str, userId: str) -> dict[str, Any]:
         """
         Retrieves a user's schedule for a specific organization using the GET method.
 
@@ -2013,9 +1995,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_organization_team_by_id(
-        self, orgId: str, teamId: str
-    ) -> dict[str, Any]:
+    def get_organization_team_by_id(self, orgId: str, teamId: str) -> dict[str, Any]:
         """
         Retrieves information about a specific team within an organization using the organization and team IDs.
 
@@ -2043,9 +2023,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_team_by_id(
-        self, orgId: str, teamId: str
-    ) -> dict[str, Any]:
+    def delete_team_by_id(self, orgId: str, teamId: str) -> dict[str, Any]:
         """
         Deletes a specific team within an organization and returns a success status upon completion.
 
@@ -2838,9 +2816,7 @@ class CalComV2App(APIApplication):
         response = self._get(url, params=query_params)
         return Getbookingbyuidresponse.model_validate(self._handle_response(response))
 
-    def reschedule_booking_by_uid(
-        self, bookingUid: str
-    ) -> dict[str, Any]:
+    def reschedule_booking_by_uid(self, bookingUid: str) -> dict[str, Any]:
         """
         Reschedules an existing booking identified by its unique `bookingUid`, using the `POST` method at the "/v2/bookings/{bookingUid}/reschedule" endpoint.
 
@@ -3341,9 +3317,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def conferencing_controller_connect(
-        self, app: str
-    ) -> dict[str, Any]:
+    def conferencing_controller_connect(self, app: str) -> dict[str, Any]:
         """
         Establishes a connection for conferencing using the specified application via the POST method at the "/v2/conferencing/{app}/connect" endpoint.
 
@@ -3452,9 +3426,7 @@ class CalComV2App(APIApplication):
         response = self._get(url, params=query_params)
         return Listconferencingresponse.model_validate(self._handle_response(response))
 
-    def conferencing_controller_default(
-        self, app: str
-    ) -> dict[str, Any]:
+    def conferencing_controller_default(self, app: str) -> dict[str, Any]:
         """
         Sets the default conferencing application for the specified app identifier.
 
@@ -3823,9 +3795,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_webhook_by_id(
-        self, eventTypeId: str, webhookId: str
-    ) -> dict[str, Any]:
+    def get_webhook_by_id(self, eventTypeId: str, webhookId: str) -> dict[str, Any]:
         """
         Retrieves details about a specific webhook for a given event type using the provided event type ID and webhook ID.
 
@@ -4366,9 +4336,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def stripe_controller_save(
-        self, state: str, code: str
-    ) -> dict[str, Any]:
+    def stripe_controller_save(self, state: str, code: str) -> dict[str, Any]:
         """
         Retrieves a Stripe resource using a state and code query parameter and returns the result upon successful authentication.
 
@@ -4551,9 +4519,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def teams_controller_get_team(
-        self, teamId: str
-    ) -> dict[str, Any]:
+    def teams_controller_get_team(self, teamId: str) -> dict[str, Any]:
         """
         Retrieves information about a team specified by the team ID using the GET method.
 
@@ -4672,9 +4638,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def teams_controller_delete_team(
-        self, teamId: str
-    ) -> dict[str, Any]:
+    def teams_controller_delete_team(self, teamId: str) -> dict[str, Any]:
         """
         Deletes a specified team using the provided team ID.
 
@@ -5089,9 +5053,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def get_membership_by_id(
-        self, teamId: str, membershipId: str
-    ) -> dict[str, Any]:
+    def get_membership_by_id(self, teamId: str, membershipId: str) -> dict[str, Any]:
         """
         Retrieves the membership details for a specific user in a team using the provided membership ID.
 
@@ -5341,9 +5303,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def webhooks_controller_get_webhook(
-        self, webhookId: str
-    ) -> dict[str, Any]:
+    def webhooks_controller_get_webhook(self, webhookId: str) -> dict[str, Any]:
         """
         Retrieves information about a specific webhook identified by its ID using the "GET" method.
 
@@ -5368,9 +5328,7 @@ class CalComV2App(APIApplication):
             self._handle_response(response)
         )
 
-    def delete_user_webhook_by_id(
-        self, webhookId: str
-    ) -> dict[str, Any]:
+    def delete_user_webhook_by_id(self, webhookId: str) -> dict[str, Any]:
         """
         Deletes a webhook by its ID using the DELETE method at the "/v2/webhooks/{webhookId}" path, removing the specified webhook endpoint.
 

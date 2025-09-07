@@ -291,9 +291,7 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def user_delete_message(
-        self, message_id: str, user_id: str | None = None
-    ) -> Any:
+    def user_delete_message(self, message_id: str, user_id: str | None = None) -> Any:
         """
         Deletes a specific message for a given user using the DELETE method and optional If-Match header for conditional requests.
 

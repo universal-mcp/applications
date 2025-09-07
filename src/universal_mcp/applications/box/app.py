@@ -3155,9 +3155,7 @@ class BoxApp(APIApplication):
         except ValueError:
             return None
 
-    def delete_folders_id(
-        self, folder_id: str, recursive: bool | None = None
-    ) -> Any:
+    def delete_folders_id(self, folder_id: str, recursive: bool | None = None) -> Any:
         """
         Delete folder
 
@@ -11630,9 +11628,7 @@ class BoxApp(APIApplication):
         except ValueError:
             return None
 
-    def create_shield_barriers(
-        self, enterprise: Any | None = None
-    ) -> dict[str, Any]:
+    def create_shield_barriers(self, enterprise: Any | None = None) -> dict[str, Any]:
         """
         Create shield information barrier
 

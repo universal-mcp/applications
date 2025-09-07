@@ -209,9 +209,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def get_actions_id_card(
-        self, id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    def get_actions_id_card(self, id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Get the Card for an Action
 
@@ -243,9 +241,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def get_actions_id_list(
-        self, id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    def get_actions_id_list(self, id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Get the List for an Action
 
@@ -2158,9 +2154,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def post_boards_id_boardplugins(
-        self, id: str, idPlugin: str | None = None
-    ) -> Any:
+    def post_boards_id_boardplugins(self, id: str, idPlugin: str | None = None) -> Any:
         """
         Enable a Power-Up on a Board
 
@@ -2849,9 +2843,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def get_cards_id_checkitemstates(
-        self, id: str, fields: str | None = None
-    ) -> Any:
+    def get_cards_id_checkitemstates(self, id: str, fields: str | None = None) -> Any:
         """
         Get checkItems on a Card
 
@@ -3842,9 +3834,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def post_cards_id_labels(
-        self, id: str, color: str, name: str | None = None
-    ) -> Any:
+    def post_cards_id_labels(self, id: str, color: str, name: str | None = None) -> Any:
         """
         Create a new Label on a Card
 
@@ -5525,9 +5515,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def post_enterprises_id_tokens(
-        self, id: str, expiration: str | None = None
-    ) -> Any:
+    def post_enterprises_id_tokens(self, id: str, expiration: str | None = None) -> Any:
         """
         Create an auth Token for an Enterprise.
 
@@ -6340,9 +6328,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def put_lists_id_field(
-        self, id: str, field: str, value: Any | None = None
-    ) -> Any:
+    def put_lists_id_field(self, id: str, field: str, value: Any | None = None) -> Any:
         """
         Update a field on a List
 
@@ -6680,9 +6666,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def get_members_id_actions(
-        self, id: str, filter: str | None = None
-    ) -> list[Any]:
+    def get_members_id_actions(self, id: str, filter: str | None = None) -> list[Any]:
         """
         Get a Member's Actions
 
@@ -8007,9 +7991,7 @@ class TrelloApp(APIApplication):
         except ValueError:
             return None
 
-    def get_members_id_tokens(
-        self, id: str, webhooks: bool | None = None
-    ) -> list[Any]:
+    def get_members_id_tokens(self, id: str, webhooks: bool | None = None) -> list[Any]:
         """
         Get Member's Tokens
 

@@ -1,22 +1,20 @@
-from typing import Any, Literal, Annotated  # Added Literal for type hinting
-from universal_mcp.applications.application import APIApplication
-from universal_mcp.integrations import Integration
-from loguru import logger
+import uuid
+import wave
+from typing import Annotated  # Added Literal for type hinting
+
 from google import genai
 from google.genai import types
-import wave
+from loguru import logger
 from PIL import Image
-import os
-import uuid
+
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.applications.file_system.app import FileSystemApp
-
-
-
+from universal_mcp.integrations import Integration
 
 
 class GoogleGeminiApp(APIApplication):
     def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="google-gemini", integration=integration, **kwargs)
+        super().__init__(name="google_gemini", integration=integration, **kwargs)
         self._genai_client = None
 
     @property
@@ -24,7 +22,11 @@ class GoogleGeminiApp(APIApplication):
         if self._genai_client is not None:
             return self._genai_client
         credentials = self.integration.get_credentials()
-        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        api_key = (
+            credentials.get("api_key")
+            or credentials.get("API_KEY")
+            or credentials.get("apiKey")
+        )
         if not api_key:
             raise ValueError("API key not found in integration credentials")
         self._genai_client = genai.Client(api_key=api_key)
@@ -50,6 +52,9 @@ class GoogleGeminiApp(APIApplication):
 
         Example:
             response = app.generate_text("Tell me a joke.")
+            
+        Tags:
+            important
         """
         response = self.genai_client.generate_content(prompt, model=model)
         return response.text
@@ -70,6 +75,9 @@ class GoogleGeminiApp(APIApplication):
 
         Returns:
             list: A list of dicts, each containing either 'text' or 'image_bytes'.
+            
+        Tags:
+            important
         """
         # The Gemini API is synchronous, so run in a thread
         contents = [prompt]
@@ -88,9 +96,11 @@ class GoogleGeminiApp(APIApplication):
             elif part.inline_data is not None:
                 # Return the raw image bytes
                 image_bytes = part.inline_data.data
-                upload_result = await FileSystemApp.write_file(image_bytes, f"/tmp/{uuid.uuid4()}.png")
+                upload_result = await FileSystemApp.write_file(
+                    image_bytes, f"/tmp/{uuid.uuid4()}.png"
+                )
                 logger.info(f"Upload result: {upload_result['status']}")
-                image_url = upload_result['data']['url']
+                image_url = upload_result["data"]["url"]
                 logger.info(f"Image URL: {image_url}")
                 text += f"![Image]({image_url})"
         logger.info(f"Text: {text}")
@@ -102,13 +112,16 @@ class GoogleGeminiApp(APIApplication):
         model: str = "gemini-2.5-flash-preview-tts",
     ) -> str:
         """Generates audio using the Google Gemini model and returns the uploaded audio URL.
-        
+
         Args:
             prompt (str): The prompt to generate audio from.
             model (str, optional): The Gemini model to use for audio generation. Defaults to "gemini-2.5-flash-preview-tts".
-            
+
         Returns:
             str: The URL of the uploaded audio file.
+            
+        Tags:
+            important
         """
 
         # Set up the wave file to save the output:
@@ -118,7 +131,7 @@ class GoogleGeminiApp(APIApplication):
                 wf.setsampwidth(sample_width)
                 wf.setframerate(rate)
                 wf.writeframes(pcm)
-        
+
         response = self.genai_client.models.generate_content(
             model=model,
             contents=prompt,
@@ -127,25 +140,26 @@ class GoogleGeminiApp(APIApplication):
                 speech_config=types.SpeechConfig(
                     voice_config=types.VoiceConfig(
                         prebuilt_voice_config=types.PrebuiltVoiceConfig(
-                            voice_name='Kore',
+                            voice_name="Kore",
                         )
                     )
                 ),
-            )
+            ),
         )
-        
+
         data = response.candidates[0].content.parts[0].inline_data.data
 
-        file_name='/tmp/audio.wav'
-        wave_file(file_name, data) # Saves the file to current directory
-        # Upload the audio file directly    
-        upload_result = await FileSystemApp.move_file(file_name, f"/tmp/{uuid.uuid4()}.wav")
+        file_name = "/tmp/audio.wav"
+        wave_file(file_name, data)  # Saves the file to current directory
+        # Upload the audio file directly
+        upload_result = await FileSystemApp.move_file(
+            file_name, f"/tmp/{uuid.uuid4()}.wav"
+        )
         logger.info(f"Audio upload result: {upload_result['status']}")
-        audio_url = upload_result['data']['url']
+        audio_url = upload_result["data"]["url"]
         logger.info(f"Audio URL: {audio_url}")
-        
+
         return audio_url
-        
 
     def list_tools(self):
         return [
@@ -157,9 +171,13 @@ class GoogleGeminiApp(APIApplication):
 
 async def test_google_gemini():
     app = GoogleGeminiApp()
-    result = await app.generate_image("A beautiful women potrait with red green hair color")
+    result = await app.generate_image(
+        "A beautiful women potrait with red green hair color"
+    )
     print(result)
+
 
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(test_google_gemini())

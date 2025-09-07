@@ -1,8 +1,7 @@
 import re
 
-from universal_mcp.applications.application import BaseApplication
-
 from markitdown import MarkItDown
+from universal_mcp.applications.application import BaseApplication
 
 
 class MarkitdownApp(BaseApplication):

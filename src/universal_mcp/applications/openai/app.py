@@ -1,9 +1,6 @@
 import base64
 from typing import Any, Literal
 
-from universal_mcp.applications.application import APIApplication
-from universal_mcp.integrations import Integration
-
 from openai import NOT_GIVEN, AsyncOpenAI, OpenAIError
 from openai._types import FileTypes as OpenAiFileTypes
 from openai.types import FilePurpose as OpenAiFilePurpose
@@ -18,6 +15,8 @@ from openai.types.audio_model import AudioModel as OpenAiAudioModel
 from openai.types.chat import ChatCompletionMessageParam
 from openai.types.file_object import FileObject
 from openai.types.image_model import ImageModel as OpenAiImageModel
+from universal_mcp.applications.application import APIApplication
+from universal_mcp.integrations import Integration
 
 
 class OpenaiApp(APIApplication):

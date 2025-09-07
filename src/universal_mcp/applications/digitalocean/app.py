@@ -248,9 +248,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def ssh_keys_update(
-        self, ssh_key_identifier: str, name: str | None = None
-    ) -> Any:
+    def ssh_keys_update(self, ssh_key_identifier: str, name: str | None = None) -> Any:
         """
         Update an SSH Key's Name
 
@@ -331,9 +329,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def actions_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    def actions_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Actions
 
@@ -5055,9 +5051,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def domains_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    def domains_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Domains
 
@@ -7266,9 +7260,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def firewalls_delete_tags(
-        self, firewall_id: str, tags: Any | None = None
-    ) -> Any:
+    def firewalls_delete_tags(self, firewall_id: str, tags: Any | None = None) -> Any:
         """
         Remove Tags from a Firewall
 
@@ -9618,9 +9610,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def kubernetes_remove_registry(
-        self, cluster_uuids: list[str] | None = None
-    ) -> Any:
+    def kubernetes_remove_registry(self, cluster_uuids: list[str] | None = None) -> Any:
         """
         Remove Container Registry from Kubernetes Clusters
 
@@ -14015,9 +14005,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def regions_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    def regions_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Data Center Regions
 
@@ -15314,9 +15302,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def sizes_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    def sizes_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Droplet Sizes
 
@@ -15764,9 +15750,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def tags_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    def tags_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Tags
 
@@ -16622,9 +16606,7 @@ class DigitaloceanApp(APIApplication):
         except ValueError:
             return None
 
-    def vpcs_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    def vpcs_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All VPCs
 

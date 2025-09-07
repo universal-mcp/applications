@@ -1,6 +1,7 @@
 from typing import Any
 
 import httpx
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -7710,9 +7711,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    def archive_issues(
-        self, issueIdsOrKeys: list[str] | None = None
-    ) -> dict[str, Any]:
+    def archive_issues(self, issueIdsOrKeys: list[str] | None = None) -> dict[str, Any]:
         """
         Archives Jira issues via the specified issue IDs/keys using the PUT method, handling bulk operations and returning status/error details.
 
@@ -8424,9 +8423,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    def delete_issue(
-        self, issueIdOrKey: str, deleteSubtasks: str | None = None
-    ) -> Any:
+    def delete_issue(self, issueIdOrKey: str, deleteSubtasks: str | None = None) -> Any:
         """
         Deletes a Jira issue identified by its ID or key, optionally deleting associated subtasks if the `deleteSubtasks` query parameter is set to `true`.
 
@@ -13865,9 +13862,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    def migrate_queries(
-        self, queryStrings: list[str] | None = None
-    ) -> dict[str, Any]:
+    def migrate_queries(self, queryStrings: list[str] | None = None) -> dict[str, Any]:
         """
         Converts JQL queries containing usernames or user keys to equivalent queries with account IDs, handling unknown users appropriately.
 
@@ -14850,9 +14845,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    def get_all_permission_schemes(
-        self, expand: str | None = None
-    ) -> dict[str, Any]:
+    def get_all_permission_schemes(self, expand: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of all permission schemes in Jira Cloud, optionally expanding the response to include additional details such as groups by using the "expand" query parameter.
 
@@ -15389,9 +15382,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    def get_plan(
-        self, planId: str, useGroupId: bool | None = None
-    ) -> dict[str, Any]:
+    def get_plan(self, planId: str, useGroupId: bool | None = None) -> dict[str, Any]:
         """
         Retrieves the details of a specific plan identified by its planId using a GET request.
 
@@ -21679,9 +21670,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    def get_statuses_by_id(
-        self, id: list[str], expand: str | None = None
-    ) -> list[Any]:
+    def get_statuses_by_id(self, id: list[str], expand: str | None = None) -> list[Any]:
         """
         Retrieves a list of statuses in Jira using the "/rest/api/3/statuses" endpoint, allowing you to fetch details of statuses based on query parameters like expansion and ID, though specific details about what statuses are returned are not provided.
 

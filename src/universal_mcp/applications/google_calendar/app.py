@@ -2,13 +2,14 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 
 class GoogleCalendarApp(APIApplication):
     def __init__(self, integration: Integration) -> None:
-        super().__init__(name="google-calendar", integration=integration)
+        super().__init__(name="google_calendar", integration=integration)
         self.base_api_url = "https://www.googleapis.com/calendar/v3/calendars/primary"
         self.base_url = "https://www.googleapis.com/calendar/v3"
 

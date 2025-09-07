@@ -1,14 +1,13 @@
-from io import BytesIO
-from typing import Any, Optional
 import uuid
+from io import BytesIO
 
 import requests
-from universal_mcp.applications.application import APIApplication
-from universal_mcp.integrations import Integration
-from elevenlabs import ElevenLabs
-from universal_mcp.exceptions import NotAuthorizedError
 
+from elevenlabs import ElevenLabs
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.applications.file_system.app import FileSystemApp
+from universal_mcp.exceptions import NotAuthorizedError
+from universal_mcp.integrations import Integration
 
 
 class ElevenlabsApp(APIApplication):
@@ -22,7 +21,7 @@ class ElevenlabsApp(APIApplication):
             # credentials = self.integration.get_credentials()
             # if not credentials:
             #     raise NotAuthorizedError("No credentials found")
-            api_key = "sk_50d565b590e5fecff99c12393b2ed7bc5d3dcb74a1fa6a68" # credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+            api_key = "sk_50d565b590e5fecff99c12393b2ed7bc5d3dcb74a1fa6a68"  # credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
                 raise NotAuthorizedError("No api key found")
             self._client = ElevenLabs(api_key=api_key)
@@ -49,6 +48,9 @@ class ElevenlabsApp(APIApplication):
 
         Returns:
             bytes: The audio data.
+            
+        Tags:
+            important
         """
         audio_generator = self.client.text_to_speech.convert(
             text=text,
@@ -56,16 +58,20 @@ class ElevenlabsApp(APIApplication):
             model_id=model_id,
             output_format="mp3_44100_128",
         )
-        
+
         # Collect all audio chunks from the generator
         audio_data = b""
         for chunk in audio_generator:
             audio_data += chunk
-            
-        upload_result = await FileSystemApp.write_file(audio_data, f"/tmp/{uuid.uuid4()}.mp3")
-        return upload_result['data']['url']
 
-    async def speech_to_text(self, audio_file_path: str, language_code: str = "eng", diarize: bool = True) -> str:
+        upload_result = await FileSystemApp.write_file(
+            audio_data, f"/tmp/{uuid.uuid4()}.mp3"
+        )
+        return upload_result["data"]["url"]
+
+    async def speech_to_text(
+        self, audio_file_path: str, language_code: str = "eng", diarize: bool = True
+    ) -> str:
         """
         Converts speech to text.
         NOTE: The REST API endpoint for this functionality is not yet publicly documented.
@@ -76,13 +82,16 @@ class ElevenlabsApp(APIApplication):
 
         Returns:
             str: The transcribed text.
+            
+        Tags:
+            important
         """
         transcription = self.client.speech_to_text.convert(
             file=audio_file_path,
-            model_id="scribe_v1", # Model to use, for now only "scribe_v1" is supported
-            tag_audio_events=True, # Tag audio events like laughter, applause, etc.
-            language_code=language_code, # Language of the audio file. If set to None, the model will detect the language automatically.
-            diarize=diarize, # Whether to annotate who is speaking
+            model_id="scribe_v1",  # Model to use, for now only "scribe_v1" is supported
+            tag_audio_events=True,  # Tag audio events like laughter, applause, etc.
+            language_code=language_code,  # Language of the audio file. If set to None, the model will detect the language automatically.
+            diarize=diarize,  # Whether to annotate who is speaking
         )
         return transcription
 
@@ -102,6 +111,9 @@ class ElevenlabsApp(APIApplication):
 
         Returns:
             bytes: The transformed audio data.
+            
+        Tags:
+            important
         """
         response = requests.get(audio_url)
         audio_data = BytesIO(response.content)
@@ -120,11 +132,14 @@ class ElevenlabsApp(APIApplication):
             self.speech_to_speech,
         ]
 
+
 async def test_elevenlabs():
     app = ElevenlabsApp()
     audio = await app.text_to_speech("Hello, world!")
     print(audio)
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(test_elevenlabs())

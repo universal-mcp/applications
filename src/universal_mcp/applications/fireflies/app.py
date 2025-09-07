@@ -2,6 +2,7 @@ from collections.abc import Callable  # For type hinting
 from typing import Any
 
 from gql import gql
+
 from universal_mcp.applications import (
     GraphQLApplication,
 )  # Assuming this is in a reachable path

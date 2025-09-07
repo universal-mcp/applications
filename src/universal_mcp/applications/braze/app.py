@@ -927,9 +927,7 @@ class BrazeApp(APIApplication):
         except ValueError:
             return None
 
-    def add_email_to_blocklist(
-        self, email: list[str] | None = None
-    ) -> dict[str, Any]:
+    def add_email_to_blocklist(self, email: list[str] | None = None) -> dict[str, Any]:
         """
         Blocklist Email Addresses
 
@@ -2367,9 +2365,7 @@ class BrazeApp(APIApplication):
         except ValueError:
             return None
 
-    def list_scheduled_broadcasts(
-        self, end_time: str | None = None
-    ) -> dict[str, Any]:
+    def list_scheduled_broadcasts(self, end_time: str | None = None) -> dict[str, Any]:
         """
         List Upcoming Scheduled Campaigns and Canvases
 

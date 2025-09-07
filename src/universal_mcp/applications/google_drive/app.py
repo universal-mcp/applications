@@ -2,6 +2,7 @@ from typing import Any
 
 import httpx
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -13,7 +14,7 @@ class GoogleDriveApp(APIApplication):
     """
 
     def __init__(self, integration: Integration | None = None) -> None:
-        super().__init__(name="google-drive", integration=integration)
+        super().__init__(name="google_drive", integration=integration)
         self.base_url = "https://www.googleapis.com/drive/v3"
 
     def move_files(

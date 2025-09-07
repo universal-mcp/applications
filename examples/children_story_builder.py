@@ -1,7 +1,9 @@
 import asyncio
-from universal_mcp.agents import ReactAgent
-from universal_mcp.agentr.registry import AgentrRegistry
+
 from langgraph.checkpoint.memory import MemorySaver
+
+from universal_mcp.agentr.registry import AgentrRegistry
+from universal_mcp.agents import ReactAgent
 
 SYSTEM_PROMPT = """
 You are an world renowned storyteller. You write stories for children. You will be given a task to write a story and its anciallary functions. You will need to follow the steps below to complete the task.
@@ -12,6 +14,7 @@ IMPORTANT:
 - For file paths, use the /tmp directory.
 
 """
+
 
 async def main():
     registry = AgentrRegistry()
@@ -27,7 +30,7 @@ async def main():
         registry=registry,
         tools=tools,
         model="azure/gpt-5-chat",
-        memory=checkpointer
+        memory=checkpointer,
     )
     tasks = [
         """Task 1: Story Creation
@@ -47,7 +50,6 @@ async def main():
         - Scene number and descriptive title
         - Brief narrative text
         - Clear progression toward the rescue and happy ending""",
-        
         """Task 2: Image Generation
         Generate high-quality images for each scene of the fairy tale story you just created.
         
@@ -70,7 +72,6 @@ async def main():
         To ensure consisteny pass the previous image path as reference to next image generation.
         Generate all the scenes one by one.
         Verify that all scenes have corresponding images before proceeding.""",
-        
         """Task 3: Story Narration Writing
         Transform the fairy tale story into an engaging audio narration script suitable for children.
         
@@ -91,7 +92,6 @@ async def main():
         - Emphasis markers for important moments
         - Natural breathing points
         - Engaging opening and satisfying conclusion""",
-        
         """Task 4: Audio Generation
         Generate high-quality audio narration of the complete fairy tale story.
         
@@ -111,7 +111,6 @@ async def main():
         - Clear articulation
         - Moderate speaking pace suitable for children
         - Expressive delivery that brings the story to life""",
-        
         """Task 5: Markdown Story Compilation
         Create a comprehensive markdown file that combines all story elements into a beautiful, complete presentation.
         
@@ -135,9 +134,9 @@ async def main():
         - Optional: Character descriptions or story themes
         
         Save the final markdown file with an appropriate filename like '/tmp/fairy_tale_story.md'
-        Verify all embedded media files are properly linked and accessible."""
+        Verify all embedded media files are properly linked and accessible.""",
     ]
-    
+
     for task in tasks:
         result = await agent.invoke(task)
         print(result["messages"][-1].content)

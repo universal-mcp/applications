@@ -1,6 +1,7 @@
 from typing import Any
 
 import httpx
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 

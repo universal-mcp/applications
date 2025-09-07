@@ -3,6 +3,7 @@ from collections.abc import Callable
 from typing import Any, Literal
 
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -666,7 +667,10 @@ class UnipileApp(APIApplication):
         keywords: str | None = None,
         sort_by: Literal["relevance", "date"] | None = None,
         date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
-        content_type: Literal["videos", "images", "live_videos", "collaborative_articles", "documents"] | None = None,
+        content_type: Literal[
+            "videos", "images", "live_videos", "collaborative_articles", "documents"
+        ]
+        | None = None,
         posted_by: dict[str, Any] | None = None,
         mentioning: dict[str, Any] | None = None,
         author: dict[str, Any] | None = None,

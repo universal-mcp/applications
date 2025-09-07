@@ -1,9 +1,6 @@
 from typing import Any
 
 import requests
-from universal_mcp.applications import BaseApplication
-from universal_mcp.exceptions import NotAuthorizedError
-from universal_mcp.integrations import AgentRIntegration
 from universal_mcp_whatsapp.whatsapp import (
     WHATSAPP_API_BASE_URL,
 )
@@ -43,6 +40,10 @@ from universal_mcp_whatsapp.whatsapp import (
 from universal_mcp_whatsapp.whatsapp import (
     send_message as whatsapp_send_message,
 )
+
+from universal_mcp.applications import BaseApplication
+from universal_mcp.exceptions import NotAuthorizedError
+from universal_mcp.integrations import AgentRIntegration
 
 
 class WhatsappApp(BaseApplication):

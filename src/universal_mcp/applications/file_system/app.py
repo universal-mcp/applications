@@ -1,6 +1,7 @@
 import os
 import shutil
 import uuid
+
 from universal_mcp.applications.application import BaseApplication
 
 
@@ -30,12 +31,12 @@ class FileSystemApp(BaseApplication):
             return f.read()
 
     @staticmethod
-    async def write_file(file_data: bytes, file_path: str = None ):
+    async def write_file(file_data: bytes, file_path: str = None):
         """Writes file data to a file path.
 
         Args:
             file_data (bytes): The data to write to the file.
-            file_path (str, optional): The path where to write the file. 
+            file_path (str, optional): The path where to write the file.
                 If None, generates a random path in /tmp. Defaults to None.
 
         Returns:
@@ -59,29 +60,26 @@ class FileSystemApp(BaseApplication):
                 "data": {
                     "url": file_path,
                     "filename": file_path,
-                    "size": len(file_data)
-                }
+                    "size": len(file_data),
+                },
             }
             return result
 
     @staticmethod
     async def delete_file(file_path: str):
-        """Deletes a file from the file system.
-        """
+        """Deletes a file from the file system."""
         os.remove(file_path)
         return {"status": "success"}
 
     @staticmethod
     async def move_file(source_file_path: str, dest_file_path: str):
-        """Moves a file from one path to another.
-        """
+        """Moves a file from one path to another."""
         os.rename(source_file_path, dest_file_path)
         return {"status": "success"}
-    
+
     @staticmethod
     async def copy_file(source_file_path: str, dest_file_path: str):
-        """Copies a file from one path to another.
-        """
+        """Copies a file from one path to another."""
         shutil.copy(source_file_path, dest_file_path)
         return {"status": "success"}
 

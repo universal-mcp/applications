@@ -4,6 +4,7 @@ from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
+
 from universal_mcp.applications.application import BaseApplication
 from universal_mcp.integrations import Integration
 
@@ -22,7 +23,7 @@ class AwsS3App(BaseApplication):
             aws_secret_access_key (str, optional): AWS secret access key.
             region_name (str, optional): AWS region name.
         """
-        super().__init__(name="aws-s3", integration=integration, **kwargs)
+        super().__init__(name="aws_s3", integration=integration, **kwargs)
         self._client = client
         self.integration = integration
 
@@ -135,9 +136,7 @@ class AwsS3App(BaseApplication):
         except ClientError:
             return False
 
-    def list_prefixes(
-        self, bucket_name: str, prefix: str | None = None
-    ) -> list[str]:
+    def list_prefixes(self, bucket_name: str, prefix: str | None = None) -> list[str]:
         """
         Lists common prefixes ("folders") in the specified S3 bucket and prefix.
 

@@ -2,6 +2,7 @@ from typing import Any
 
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
+
 from .helper import (
     analyze_sheet_for_tables,
     analyze_table_schema,
@@ -15,7 +16,7 @@ class GoogleSheetApp(APIApplication):
     """
 
     def __init__(self, integration: Integration | None = None) -> None:
-        super().__init__(name="google-sheet", integration=integration)
+        super().__init__(name="google_sheet", integration=integration)
         self.base_url = "https://sheets.googleapis.com/v4/spreadsheets"
 
     def create_spreadsheet(self, title: str) -> dict[str, Any]:

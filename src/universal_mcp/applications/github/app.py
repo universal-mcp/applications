@@ -1,6 +1,7 @@
 from typing import Any
 
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -4469,7 +4470,8 @@ class GithubApp(APIApplication):
         dependabot_security_updates_enabled_for_new_repositories: bool | None = None,
         dependency_graph_enabled_for_new_repositories: bool | None = None,
         secret_scanning_enabled_for_new_repositories: bool | None = None,
-        secret_scanning_push_protection_enabled_for_new_repositories: bool | None = None,
+        secret_scanning_push_protection_enabled_for_new_repositories: bool
+        | None = None,
         secret_scanning_push_protection_custom_link_enabled: bool | None = None,
         secret_scanning_push_protection_custom_link: str | None = None,
         deploy_keys_enabled_for_repositories: bool | None = None,

@@ -1239,9 +1239,7 @@ class PipedriveApp(APIApplication):
         except ValueError:
             return None
 
-    def currencies_get_all_supported(
-        self, term: str | None = None
-    ) -> dict[str, Any]:
+    def currencies_get_all_supported(self, term: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of currencies based on a search term using the "GET" method at the "/currencies" path.
 
@@ -2140,9 +2138,7 @@ class PipedriveApp(APIApplication):
         except ValueError:
             return None
 
-    def deals_add_follower(
-        self, id: str, user_id: int | None = None
-    ) -> dict[str, Any]:
+    def deals_add_follower(self, id: str, user_id: int | None = None) -> dict[str, Any]:
         """
         Adds followers to a specified deal and returns a success status.
 

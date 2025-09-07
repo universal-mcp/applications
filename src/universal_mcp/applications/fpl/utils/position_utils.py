@@ -1,6 +1,5 @@
 """Utilities for normalizing position terms in FPL context."""
 
-
 # Comprehensive position mapping dictionary
 POSITION_MAPPINGS = {
     # Standard FPL codes

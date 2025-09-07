@@ -1,5 +1,6 @@
 import httpx
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 
 
@@ -15,7 +16,7 @@ class HttpToolsApp(APIApplication):
         Args:
             **kwargs: Additional keyword arguments for the parent APIApplication.
         """
-        super().__init__(name="http-tools", **kwargs)
+        super().__init__(name="http_tools", **kwargs)
 
     def _handle_response(self, response: httpx.Response):
         """

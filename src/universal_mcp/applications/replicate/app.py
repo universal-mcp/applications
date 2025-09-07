@@ -3,14 +3,14 @@ from pathlib import Path
 from typing import Any
 
 from loguru import logger
-from universal_mcp.applications.application import APIApplication
-from universal_mcp.exceptions import NotAuthorizedError, ToolError
-from universal_mcp.integrations import Integration
 
 import replicate
 from replicate.exceptions import ModelError as ReplicateModelError
 from replicate.exceptions import ReplicateError as ReplicateAPIError
 from replicate.prediction import Prediction
+from universal_mcp.applications.application import APIApplication
+from universal_mcp.exceptions import NotAuthorizedError, ToolError
+from universal_mcp.integrations import Integration
 
 
 class ReplicateApp(APIApplication):

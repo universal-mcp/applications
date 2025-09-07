@@ -3,6 +3,7 @@ from typing import Any, Literal
 
 from fal_client import AsyncClient, AsyncRequestHandle, Status
 from loguru import logger
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration

@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any
 
 import requests
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 

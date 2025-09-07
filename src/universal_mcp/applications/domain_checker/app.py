@@ -4,6 +4,7 @@ from typing import Any
 
 import dns.resolver
 import requests
+
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -45,7 +46,7 @@ class DomainCheckerApp(APIApplication):
     """
 
     def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="domain-checker", integration=integration, **kwargs)
+        super().__init__(name="domain_checker", integration=integration, **kwargs)
 
     async def get_rdap_data(self, domain: str) -> dict[str, Any] | None:
         """Get RDAP data for a domain"""
