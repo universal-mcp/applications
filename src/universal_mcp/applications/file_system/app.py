@@ -26,6 +26,9 @@ class FileSystemApp(BaseApplication):
         Raises:
             FileNotFoundError: If the file doesn't exist.
             IOError: If there's an error reading the file.
+            
+        Tags: 
+            important
         """
         with open(file_path, "rb") as f:
             return f.read()
@@ -50,6 +53,9 @@ class FileSystemApp(BaseApplication):
         Raises:
             IOError: If there's an error writing the file.
             PermissionError: If there are insufficient permissions to write to the path.
+            
+        Tags:
+            important
         """
         if file_path is None:
             file_path = await FileSystemApp._generate_file_path()

@@ -17,13 +17,13 @@ from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
 
 
-class TwillioApp(APIApplication):
+class TwilioApp(APIApplication):
     """
     Application for interacting with the Twilio Messaging API using the official Python SDK.
     """
 
     def __init__(self, integration: Integration, **kwargs: Any) -> None:
-        super().__init__(name="twillio", integration=integration, **kwargs)
+        super().__init__(name="twilio", integration=integration, **kwargs)
         self.base_url = "https://api.twilio.com/2010-04-01"
         self._twilio_client: Any | None = None
         self._account_sid: str | None = None

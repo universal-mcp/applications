@@ -160,7 +160,7 @@ class SlackApp(APIApplication):
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            chat
+            chat, important
         """
         request_body_data = None
         request_body_data = {
@@ -435,7 +435,7 @@ class SlackApp(APIApplication):
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            search
+            search, important
         """
         url = f"{self.base_url}/search.messages"
         query_params = {
@@ -499,7 +499,7 @@ class SlackApp(APIApplication):
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            users
+            users, important
         """
         url = f"{self.base_url}/users.info"
         query_params = {

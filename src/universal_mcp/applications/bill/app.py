@@ -244,7 +244,7 @@ class BillApp(APIApplication):
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            bills
+            bills, , important
         """
         url = f"{self.base_url}/v3/bills"
         query_params = {
@@ -356,7 +356,7 @@ class BillApp(APIApplication):
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            bills
+            bills, important
         """
         if billId is None:
             raise ValueError("Missing required parameter 'billId'.")
@@ -2927,7 +2927,7 @@ class BillApp(APIApplication):
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
-            customers
+            customers, important
         """
         if customerId is None:
             raise ValueError("Missing required parameter 'customerId'.")
