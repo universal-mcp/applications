@@ -881,6 +881,23 @@ wheels = [
 ]
 
 [[package]]
+name = "elevenlabs"
+version = "2.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pydantic-core" },
+    { name = "requests" },
+    { name = "typing-extensions" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a7/ab/a7630c2a69c26bc14168e23a32c73b6cb51ecf344a52afd85cc936fd6338/elevenlabs-2.14.0.tar.gz", hash = "sha256:a50cea97eae0e183f226a3961e036c9620b57fb31667cf1877cd73493e1d7970", size = 309874, upload-time = "2025-09-04T17:21:02.517Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6a/b4/8813a5a5be7f3bc14231de5ff3d4dc56b05ea8611e14e3f1c5ce05443dbf/elevenlabs-2.14.0-py3-none-any.whl", hash = "sha256:ec1f30f43239b77a8760acb60be4b3968df459031e9d2566a4dd0e265a66f063", size = 891463, upload-time = "2025-09-04T17:21:01.187Z" },
+]
+
+[[package]]
 name = "et-xmlfile"
 version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -4252,7 +4269,7 @@ wheels = [
 [[package]]
 name = "universal-mcp"
 version = "0.1.24rc14"
-source = { registry = "https://pypi.org/simple" }
+source = { directory = "../universal-mcp" }
 dependencies = [
     { name = "agentevals" },
     { name = "black" },
@@ -4280,22 +4297,64 @@ dependencies = [
     { name = "rich" },
     { name = "streamlit" },
     { name = "typer" },
+    { name = "universal-mcp-applications" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ab/b2/c5c974f1dcc7b5fcb3e08ad97acd528015358c79585807ce4f38c683405e/universal_mcp-0.1.24rc14.tar.gz", hash = "sha256:f756ab09093bd42f9717ea117bccd959060dd350e028d40355ef3f112ccb3ba4", size = 146480, upload-time = "2025-09-05T11:13:10.658Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c9/2d/910b75c7f37b9a339b02aeee9c497c8ce9c71325fb47f6f4c3783474f730/universal_mcp-0.1.24rc14-py3-none-any.whl", hash = "sha256:2cc76ec332fb978887f37137b19f224ae85682d639e1e8e1b826e044ae5048bd", size = 174672, upload-time = "2025-09-05T11:13:09.089Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "agentevals", specifier = ">=0.0.9" },
+    { name = "black", specifier = ">=25.1.0" },
+    { name = "cookiecutter", specifier = ">=2.6.0" },
+    { name = "gql", specifier = ">=4.0.0" },
+    { name = "httpx-aiohttp", specifier = ">=0.1.8" },
+    { name = "jinja2", specifier = ">=3.1.3" },
+    { name = "jsonref", specifier = ">=1.1.0" },
+    { name = "keyring", specifier = ">=25.6.0" },
+    { name = "langchain-anthropic", specifier = ">=0.3.19" },
+    { name = "langchain-google-genai", specifier = ">=2.1.10" },
+    { name = "langchain-google-vertexai", specifier = ">=2.0.28" },
+    { name = "langchain-mcp-adapters", specifier = ">=0.1.9" },
+    { name = "langchain-openai", specifier = ">=0.3.27" },
+    { name = "langgraph", specifier = ">=0.5.2" },
+    { name = "langgraph-cli", extras = ["inmem"], specifier = ">=0.3.4" },
+    { name = "langsmith", specifier = ">=0.4.5" },
+    { name = "litellm", marker = "extra == 'dev'", specifier = ">=1.30.7" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "mcp", specifier = ">=1.10.0" },
+    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
+    { name = "mkdocs-glightbox", marker = "extra == 'docs'", specifier = ">=0.4.0" },
+    { name = "mkdocs-material", extras = ["imaging"], marker = "extra == 'docs'", specifier = ">=9.5.45" },
+    { name = "mkdocstrings-python", marker = "extra == 'docs'", specifier = ">=1.12.2" },
+    { name = "openevals", specifier = ">=0.1.0" },
+    { name = "posthog", specifier = ">=3.24.0" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.2.0" },
+    { name = "pydantic", specifier = ">=2.11.1" },
+    { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.398" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.5" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.26.0" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "rich", specifier = ">=14.0.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.4" },
+    { name = "streamlit", specifier = ">=1.46.1" },
+    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.1a17" },
+    { name = "typer", specifier = ">=0.15.2" },
+    { name = "universal-mcp-applications", specifier = ">=0.1.2" },
 ]
+provides-extras = ["dev", "docs"]
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
     { name = "dnspython" },
     { name = "e2b-code-interpreter" },
+    { name = "elevenlabs" },
     { name = "fal-client" },
     { name = "firecrawl-py" },
+    { name = "google-genai" },
     { name = "google-search-results" },
     { name = "gql", extra = ["all"] },
     { name = "httpx-aiohttp" },
@@ -4328,8 +4387,10 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.38.32" },
     { name = "dnspython", specifier = ">=2.4.0" },
     { name = "e2b-code-interpreter", specifier = ">=1.2.1" },
+    { name = "elevenlabs", specifier = ">=2.14.0" },
     { name = "fal-client", specifier = ">=0.5.9" },
     { name = "firecrawl-py", specifier = ">=3.0.3" },
+    { name = "google-genai", specifier = ">=1.33.0" },
     { name = "google-search-results", specifier = ">=2.4.2" },
     { name = "gql", extras = ["all"], specifier = ">=3.5.2" },
     { name = "httpx-aiohttp", specifier = ">=0.1.8" },
@@ -4349,7 +4410,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp" },
+    { name = "universal-mcp", directory = "../universal-mcp" },
 ]
 provides-extras = ["test", "dev"]
 
