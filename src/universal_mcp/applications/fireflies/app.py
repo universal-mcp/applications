@@ -1,11 +1,11 @@
-from collections.abc import Callable  # For type hinting
+from collections.abc import Callable
 from typing import Any
 
 from gql import gql
 
-from universal_mcp.applications import (
+from universal_mcp.applications.application import (
     GraphQLApplication,
-)  # Assuming this is in a reachable path
+)
 from universal_mcp.integrations import Integration
 
 

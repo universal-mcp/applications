@@ -1,49 +1,49 @@
 from typing import Any
 
 import requests
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     WHATSAPP_API_BASE_URL,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     download_media as whatsapp_download_media,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     get_chat as whatsapp_get_chat,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     get_contact_chats as whatsapp_get_contact_chats,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     get_direct_chat_by_contact as whatsapp_get_direct_chat_by_contact,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     get_last_interaction as whatsapp_get_last_interaction,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     get_message_context as whatsapp_get_message_context,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     list_chats as whatsapp_list_chats,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     list_messages as whatsapp_list_messages,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     search_contacts as whatsapp_search_contacts,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     send_audio_message as whatsapp_audio_voice_message,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     send_file as whatsapp_send_file,
 )
-from universal_mcp_whatsapp.whatsapp import (
+from .whatsapp import (
     send_message as whatsapp_send_message,
 )
 
-from universal_mcp.applications import BaseApplication
+from universal_mcp.applications.application import BaseApplication
 from universal_mcp.exceptions import NotAuthorizedError
-from universal_mcp.integrations import AgentRIntegration
+from universal_mcp.agentr.integration import AgentrIntegration
 
 
 class WhatsappApp(BaseApplication):
@@ -51,7 +51,7 @@ class WhatsappApp(BaseApplication):
     Base class for Universal MCP Applications.
     """
 
-    def __init__(self, integration: AgentRIntegration | None = None, **kwargs) -> None:
+    def __init__(self, integration: AgentrIntegration | None = None, **kwargs) -> None:
         super().__init__(name="whatsapp", integration=integration, **kwargs)
         self.base_url = WHATSAPP_API_BASE_URL
         self._api_key: str = integration.client.api_key if integration else None

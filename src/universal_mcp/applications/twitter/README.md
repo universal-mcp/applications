@@ -13,7 +13,7 @@ This is automatically generated from OpenAPI schema for the TwitterApp API.
 | `create_batch_compliance_job` | Creates a new compliance job using JSON data in the request body and authenticates the request using a Bearer token. |
 | `get_batch_compliance_job` | Retrieves information about a compliance job by its ID using the BearerToken for authentication. |
 | `dm_conversation_id_create` | Creates a new group Direct Message conversation and sends an initial message to the specified participants. |
-| `get_dm_conversations_with_participant_id_dm_events` | Retrieves a list of direct message events for a conversation with a specific participant, allowing for optional filtering by event types and pagination. |
+| `get_dm_convo_with_patcpnts_id_dm_evnts` | Retrieves a list of direct message events for a conversation with a specific participant, allowing for optional filtering by event types and pagination. |
 | `get_dm_conversations_id_dm_events` | Retrieves a list of direct message events for a specified conversation ID, allowing for optional filtering by event types and pagination. |
 | `get_dm_events` | Retrieves a list of direct message events with optional filtering by event types, pagination, and field expansions for media, users, tweets, and DM event details. |
 | `dm_event_delete` | Deletes a DM event by its ID using the DELETE method, requiring authentication via OAuth2UserToken with "dm.read" and "dm.write" scopes or UserToken. |

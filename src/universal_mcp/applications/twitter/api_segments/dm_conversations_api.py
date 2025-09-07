@@ -49,7 +49,7 @@ class DmConversationsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_dm_conversations_with_participant_id_dm_events(
+    def get_dm_convo_with_patcpnts_id_dm_evnts(
         self,
         participant_id,
         max_results=None,
@@ -248,7 +248,7 @@ class DmConversationsApi(APISegmentBase):
     def list_tools(self):
         return [
             self.dm_conversation_id_create,
-            self.get_dm_conversations_with_participant_id_dm_events,
+            self.get_dm_convo_with_patcpnts_id_dm_evnts,
             self.dm_conversation_with_user_event_id_create,
             self.dm_conversation_by_id_event_id_create,
             self.get_dm_conversations_id_dm_events,

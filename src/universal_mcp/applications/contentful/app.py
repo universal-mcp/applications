@@ -3,7 +3,7 @@ from typing import Any
 
 from loguru import logger
 
-from universal_mcp.applications import GraphQLApplication
+from universal_mcp.applications.application import GraphQLApplication
 from universal_mcp.exceptions import NotAuthorizedError
 from universal_mcp.integrations import Integration
 
@@ -15,10 +15,10 @@ class ContentfulApp(GraphQLApplication):
         **kwargs: Any,
     ) -> None:
         self.space_id: str | None = None
-        self.environment_id: str = "master"  # Default Contentful environment
+        self.environment_id: str = "master" 
         self._access_token: str | None = None
-        self._is_eu_customer: bool = False  # Default data center
-        self._credentials_loaded: bool = False  # Flag for lazy loading
+        self._is_eu_customer: bool = False 
+        self._credentials_loaded: bool = False 
         default_base_url = "https://graphql.contentful.com"
 
         super().__init__(
@@ -64,9 +64,7 @@ class ContentfulApp(GraphQLApplication):
             self._credentials_loaded = True  # Prevent retries
             return False
 
-        # --- Extract Credentials ---
         self.space_id = credentials.get("space_id")
-        # Prefer access_token, fallback to api_key for naming flexibility
         self._access_token = credentials.get("access_token") or credentials.get(
             "api_key"
         )
@@ -77,7 +75,6 @@ class ContentfulApp(GraphQLApplication):
             "is_eu_customer", False
         )  # Use default if not specified
 
-        # --- Validate Required Credentials ---
         missing_creds = []
         if not self.space_id:
             missing_creds.append("'space_id'")
@@ -92,20 +89,13 @@ class ContentfulApp(GraphQLApplication):
             self._credentials_loaded = True  # Prevent retries
             return False
 
-        # --- Construct Final Base URL ---
         contentful_api_domain = (
             "graphql.eu.contentful.com"
             if self._is_eu_customer
             else "graphql.contentful.com"
         )
-        # Update self.base_url which was initially set to the default by super().__init__
         self.base_url = f"https://{contentful_api_domain}/content/v1/spaces/{self.space_id}/environments/{self.environment_id}"
 
-        # --- Force GraphQL Client Re-initialization ---
-        # Reset the internal client instance of the base class.
-        # The next time self.client property is accessed (e.g., in self.query),
-        # it will be recreated using the new self.base_url and fresh headers
-        # obtained via self._get_headers() (which will now find self._access_token).
         self._client = None
 
         logger.info(
@@ -115,11 +105,6 @@ class ContentfulApp(GraphQLApplication):
         )
         self._credentials_loaded = True
         return True
-
-    # We rely on the base GraphQLApplication._get_headers() which looks for
-    # 'access_token' or 'api_key' and creates the Bearer token header.
-    # No override needed here as long as _load_credentials_and_construct_url
-    # correctly populates self._access_token before the client is used.
 
     @staticmethod
     def _to_camel_case(s: str) -> str:
@@ -341,6 +326,9 @@ class ContentfulApp(GraphQLApplication):
 
         Returns:
             The result of the query, or an error dictionary.
+            
+        Tags:
+            important
         """
         if not self._ensure_loaded():
             return {
