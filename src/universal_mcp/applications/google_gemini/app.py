@@ -139,12 +139,10 @@ class GoogleGeminiApp(APIApplication):
         file_name='/tmp/audio.wav'
         wave_file(file_name, data) # Saves the file to current directory
         # Upload the audio file directly    
-        upload_result = await FileSystemApp.write_file(data, f"/tmp/{uuid.uuid4()}.wav")
+        upload_result = await FileSystemApp.move_file(file_name, f"/tmp/{uuid.uuid4()}.wav")
         logger.info(f"Audio upload result: {upload_result['status']}")
         audio_url = upload_result['data']['url']
         logger.info(f"Audio URL: {audio_url}")
-        # Delete the audio file
-        os.remove(file_name)
         
         return audio_url
         
