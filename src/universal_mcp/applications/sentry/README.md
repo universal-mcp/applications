@@ -13,11 +13,11 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `retrieve_an_organization` | Retrieves detailed information about a specified organization by its ID or slug, optionally including extended details, requiring appropriate organizational permissions. |
 | `update_an_organization` | Updates an existing organization using the provided JSON data, replacing its current details, and requires authentication with permissions to write or administer the organization. |
 | `list_an_organization_s_metric_alert_rules` | Retrieves the list of alert rules associated with the specified organization and requires appropriate read and organization permissions. |
-| `create_a_metric_alert_rule_for_an_organization` | Creates a new alert rule for an organization using the provided JSON data and returns a success response upon creation. |
-| `retrieve_a_metric_alert_rule_for_an_organization` | Retrieves an alert rule by its ID within a specified organization using the organization's ID or slug. |
+| `create_organization_metric_alert_rule` | Creates a new alert rule for an organization using the provided JSON data and returns a success response upon creation. |
+| `get_organization_metric_alert_rule` | Retrieves an alert rule by its ID within a specified organization using the organization's ID or slug. |
 | `update_a_metric_alert_rule` | Updates an alert rule for a specified organization using the provided JSON payload, requiring authentication with the necessary permissions. |
 | `delete_a_metric_alert_rule` | Deletes the specified alert rule for the given organization using the alert rule identifier, returning a 202 Accepted status if the deletion is initiated. |
-| `retrieve_activations_for_a_metric_alert_rule` | Retrieves a list of activations for a specific alert rule within an organization. |
+| `get_metric_alert_rule_activations` | Retrieves a list of activations for a specific alert rule within an organization. |
 | `get_integration_provider_information` | Retrieves the list of configured integrations for a specified organization, optionally filtered by provider key, and returns integration details if found. |
 | `list_an_organization_s_custom_dashboards` | Retrieves a list of dashboards for a specified organization using pagination parameters. |
 | `create_a_new_dashboard_for_an_organization` | Creates a new dashboard for the specified organization using provided JSON data, requiring appropriate organization-level authentication. |
@@ -27,16 +27,16 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `list_an_organization_s_discover_saved_queries` | Retrieves a list of saved discoveries for an organization, allowing filtering by query, sorting, and pagination. |
 | `create_a_new_saved_query` | Saves a discovery configuration for a specified organization using the provided JSON data and returns a success status upon completion. |
 | `retrieve_an_organization_s_discover_saved_query` | Retrieves saved discovery data for a specified query within an organization using the provided organization ID or slug and query ID. |
-| `edit_an_organization_s_discover_saved_query` | Updates or replaces a saved Discover query for the specified organization using the provided query details. |
-| `delete_an_organization_s_discover_saved_query` | Deletes a saved query for a specified organization and query ID, returning a 204 (No Content) on success. |
+| `edit_organization_discover_saved_query` | Updates or replaces a saved Discover query for the specified organization using the provided query details. |
+| `delete_organization_discover_saved_query` | Deletes a saved query for a specified organization and query ID, returning a 204 (No Content) on success. |
 | `list_an_organization_s_environments` | Lists all environments for a specified organization, optionally filtered by visibility, when authenticated with sufficient permissions. |
 | `query_discover_events_in_table_format` | Retrieves a list of events for a specified organization, allowing filtering and sorting by various query parameters such as fields, environment, project, time range, and pagination. |
 | `create_an_external_user` | Links a user from an external provider to a Sentry user within the specified organization and returns the external user resource. |
 | `update_an_external_user` | Updates the details of a specified external user within an organization using the provided request body. |
 | `delete_an_external_user` | Removes an external user from an organization using the organization ID or slug and the external user ID. |
-| `list_an_organization_s_available_integrations` | Retrieves a list of integrations for a specified organization using the provided organization ID or slug, allowing optional filtering by provider key, features, and configuration inclusion. |
-| `retrieve_an_integration_for_an_organization` | Retrieves details for a specific integration within an organization using its ID or slug. |
-| `delete_an_integration_for_an_organization` | Deletes an integration from an organization using the provided organization ID or slug and integration ID, returning a 204 status code upon successful deletion. |
+| `list_organization_available_integrations` | Retrieves a list of integrations for a specified organization using the provided organization ID or slug, allowing optional filtering by provider key, features, and configuration inclusion. |
+| `get_organization_integration` | Retrieves details for a specific integration within an organization using its ID or slug. |
+| `delete_organization_integration` | Deletes an integration from an organization using the provided organization ID or slug and integration ID, returning a 204 status code upon successful deletion. |
 | `list_an_organization_s_members` | Retrieves a list of members belonging to a specified organization, with access controlled by member-specific permissions. |
 | `add_a_member_to_an_organization` | Invites a new member to the specified organization by creating their membership with the provided details. |
 | `retrieve_an_organization_member` | Retrieves information about a specific member in an organization using the provided organization ID or slug and member ID. |
@@ -52,13 +52,13 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `delete_a_monitor_or_monitor_environments` | Deletes a monitor from a specified organization in an API, identified by organization ID or slug and monitor ID or slug, with optional environment parameters. |
 | `retrieve_check_ins_for_a_monitor` | Retrieves check-ins for a specific monitor within an organization using the provided organization ID or slug and monitor ID or slug. |
 | `list_spike_protection_notifications` | Retrieves a list of notification actions available for the specified organization, optionally filtered by project or trigger type. |
-| `create_a_spike_protection_notification_action` | Performs an action on notifications for a specified organization using the provided JSON body and returns a success status. |
+| `create_spike_protection_notification` | Performs an action on notifications for a specified organization using the provided JSON body and returns a success status. |
 | `retrieve_a_spike_protection_notification_action` | Retrieves information about a specific notification action for an organization using the provided organization identifier or slug and action ID. |
 | `update_a_spike_protection_notification_action` | Updates a notification action for a specific organization using the provided JSON data and returns a success status upon completion. |
 | `delete_a_spike_protection_notification_action` | Deletes a notification action by its ID for a specific organization identified by its ID or slug, using the provided authentication token with appropriate permissions. |
 | `list_an_organization_s_projects` | Retrieves a paginated list of projects within the specified organization identified by its ID or slug. |
 | `list_an_organization_s_trusted_relays` | Retrieves relay usage information for a specified organization using its ID or slug, requiring appropriate authentication tokens for administrative or read access. |
-| `retrieve_statuses_of_release_thresholds_alpha` | Retrieves the current statuses of release thresholds for a specified organization within a given time range, optionally filtered by environment, project, or release. |
+| `get_release_threshold_statuses` | Retrieves the current statuses of release thresholds for a specified organization within a given time range, optionally filtered by environment, project, or release. |
 | `retrieve_an_organization_s_release` | Retrieves detailed information about a specific release version within an organization, optionally filtered and sorted by project, health metrics, adoption stages, summary statistics, and status. |
 | `update_an_organization_s_release` | Updates a specific release version within an organization using the provided JSON data and returns a status message. |
 | `delete_an_organization_s_release` | Deletes a release version associated with an organization in the API, identified by the organization ID or slug and the version number, and returns a successful deletion status with a 204 response code. |
@@ -77,8 +77,8 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `update_an_organization_member_s_attributes` | Updates specific attributes of a SCIM user within an organization using a PATCH request. |
 | `delete_an_organization_member_via_scim` | Deletes an organization member by ID using the SCIM API, requiring a valid admin token for authentication. |
 | `retrieve_release_health_session_statistics` | Retrieves sessions for a specified organization using the provided filters and parameters, such as fields, date range, environment, and statistics period. |
-| `retrieve_an_organization_s_events_count_by_project` | Retrieves a summary of statistics for an organization specified by its ID or slug, allowing for filtering by field, time period, and other criteria, and optionally returns the data in a downloadable format. |
-| `retrieve_event_counts_for_an_organization_v2` | Retrieves statistical data for an organization using the `GET` method, allowing filtering by group, field, and time period. |
+| `get_organization_events_count_by_project` | Retrieves a summary of statistics for an organization specified by its ID or slug, allowing for filtering by field, time period, and other criteria, and optionally returns the data in a downloadable format. |
+| `get_organization_event_counts_v2` | Retrieves statistical data for an organization using the `GET` method, allowing filtering by group, field, and time period. |
 | `list_an_organization_s_teams` | Retrieves a list of teams associated with the specified organization, optionally with detailed information and pagination support. |
 | `create_a_new_team` | Creates a team within a specified organization using the provided JSON data and returns a status message upon successful creation. |
 | `list_a_user_s_teams_for_an_organization` | Retrieves a list of user teams associated with the specified organization. |
@@ -89,7 +89,7 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `retrieve_a_project_environment` | Retrieves details for a specific environment within a project using the organization ID or slug, project ID or slug, and environment name. |
 | `update_a_project_environment` | Updates the environment settings for a specific project using the provided JSON data and returns a status message. |
 | `list_a_project_s_error_events` | Retrieves a list of events for a specific project in an organization using the provided identifiers and optional query parameters for pagination and data filtering. |
-| `debug_issues_related_to_source_maps_for_a_given_event` | Retrieves source map debug information for a specific event within a project, using the `GET` method and requiring an organization ID or slug, project ID or slug, event ID, frame index, and exception index. |
+| `debug_event_source_maps` | Retrieves source map debug information for a specific event within a project, using the `GET` method and requiring an organization ID or slug, project ID or slug, event ID, frame index, and exception index. |
 | `list_a_project_s_data_filters` | Retrieves a list of filters for a project in a specified organization using the provided organization ID or slug and project ID or slug. |
 | `update_an_inbound_data_filter` | Updates a filter in a project using the organization ID or slug, project ID or slug, and filter ID, with the new filter details provided in the JSON body, requiring appropriate authentication for project administration or writing permissions. |
 | `list_a_project_s_client_keys` | Retrieves a list of keys for a project, allowing optional filtering by status and pagination with a cursor. |
@@ -100,10 +100,10 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `list_a_project_s_organization_members` | Retrieves a list of members for a specific project within an organization using the provided organization ID or slug and project ID or slug. |
 | `retrieve_a_monitor_for_a_project` | Retrieves details for a specific monitor within a project and organization using their respective IDs or slugs. |
 | `update_a_monitor_for_a_project` | Updates a monitor in a project using the organization and project identifiers. |
-| `delete_a_monitor_or_monitor_environments_for_a_project` | Deletes a specific monitor from a project in an organization and returns an HTTP status indicating the outcome. |
+| `delete_project_monitor_or_environments` | Deletes a specific monitor from a project in an organization and returns an HTTP status indicating the outcome. |
 | `retrieve_check_ins_for_a_monitor_by_project` | Retrieves checkin data for a specific monitor in a project, identified by the organization ID or slug, project ID or slug, and monitor ID or slug. |
-| `retrieve_ownership_configuration_for_a_project` | Retrieves project ownership details for a specific project within an organization using the provided organization ID or slug and project ID or slug. |
-| `update_ownership_configuration_for_a_project` | Updates the ownership configuration for a specific project, allowing modification of ownership rules, fallthrough assignment, auto-assignment settings, and CODEOWNERS synchronization[1]. |
+| `get_project_ownership_config` | Retrieves project ownership details for a specific project within an organization using the provided organization ID or slug and project ID or slug. |
+| `update_project_ownership_config` | Updates the ownership configuration for a specific project, allowing modification of ownership rules, fallthrough assignment, auto-assignment settings, and CODEOWNERS synchronization[1]. |
 | `delete_a_replay_instance` | Deletes a specified replay associated with a project and organization using its unique identifier. |
 | `list_clicked_nodes` | Retrieves a list of user click events recorded during a specific replay session within a project and organization, with optional filtering and pagination. |
 | `list_recording_segments` | Retrieves a paginated list of recording segments for a specified replay within a project and organization. |
@@ -140,8 +140,8 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `list_a_repository_s_commits` | Retrieves a list of commits from a specified repository within an organization, requiring read access for authentication. |
 | `resolve_a_short_id` | Retrieves information for a specific short ID within an organization using the provided organization ID or slug. |
 | `list_your_projects` | Get a list of projects accessible to the user, optionally paginated using a cursor. |
-| `list_a_project_s_debug_information_files` | Retrieves a list of dSYM files for a specific project within an organization using the provided organization ID or slug and project ID or slug. |
-| `delete_a_specific_project_s_debug_information_file` | Deletes a dSYM file from a project using its ID, requiring a write authorization token for the project. |
+| `list_project_debug_files` | Retrieves a list of dSYM files for a specific project within an organization using the provided organization ID or slug and project ID or slug. |
+| `delete_project_debug_file` | Deletes a dSYM file from a project using its ID, requiring a write authorization token for the project. |
 | `list_a_project_s_users` | Retrieves a list of users associated with a specified project within an organization, optionally filtered by a query parameter. |
 | `list_a_tag_s_values` | Retrieves a list of values for a specific tag key within a project, using the organization ID or slug and project ID or slug. |
 | `retrieve_event_counts_for_a_project` | Retrieves statistics for a specific project within an organization, optionally filtered by stat type, time range, and resolution. |
@@ -153,7 +153,7 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `update_a_service_hook` | Updates a specific hook in a project using the provided JSON payload and returns a success response upon completion. |
 | `remove_a_service_hook` | Deletes a webhook hook identified by the specified hook ID within a project, requiring administrative privileges for the project. |
 | `retrieve_an_event_for_a_project` | Retrieves details for a specific event within a project using the organization ID or slug and project ID or slug. |
-| `get_api_0_projects_by_organization_id_or_slug_by_project_id_or_slug_issues` | Get a list of issues for a specified project within an organization, with optional filters for query, stats period, short ID lookup, hashes, and pagination. |
+| `list_project_issues` | Get a list of issues for a specified project within an organization, with optional filters for query, stats period, short ID lookup, hashes, and pagination. |
 | `bulk_mutate_a_list_of_issues` | Updates an issue in a specific project within an organization using the provided JSON body and returns a status code indicating the outcome of the update. |
 | `bulk_remove_a_list_of_issues` | Deletes issues from a project by organization or project identifier using the "DELETE" method, requiring authentication as an event administrator. |
 | `list_a_tag_s_values_related_to_an_issue` | Retrieves the available values for a specific tag key associated with an issue within the specified organization. |
@@ -176,7 +176,7 @@ This is automatically generated from OpenAPI schema for the SentryApp API.
 | `retrieve_files_changed_in_a_release_s_commits` | Retrieves a list of commit files for a specific release version within an organization, identified by its ID or slug. |
 | `list_a_release_s_deploys` | Retrieves deployment information for a specific release version within an organization. |
 | `create_a_new_deploy_for_an_organization` | Records a new deployment of a specific release version for an organization identified by its ID or slug and returns status codes indicating success, conflict, or error. |
-| `list_an_organization_s_integration_platform_installations` | Retrieves a list of Sentry app installations for a specified organization using the organization ID or slug. |
+| `list_organization_integration_installations` | Retrieves a list of Sentry app installations for a specified organization using the organization ID or slug. |
 | `create_or_update_an_external_issue` | Creates or updates an external issue linked to a Sentry issue using the integration platform integration specified by the `uuid` path parameter, requiring authentication with a token having the `event:write` scope. |
 | `delete_an_external_issue` | Deletes an external issue associated with a specific integration installation in Sentry, requiring authentication with the `event:admin` scope. |
 | `enable_spike_protection` | Creates a new spike protection for an organization using the provided JSON data and returns a status message, requiring authentication with permissions to read, write, or administer projects. |

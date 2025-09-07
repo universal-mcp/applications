@@ -263,7 +263,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_metric_alert_rule_for_an_organization(
+    def create_organization_metric_alert_rule(
         self,
         organization_id_or_slug,
         name,
@@ -391,7 +391,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_metric_alert_rule_for_an_organization(
+    def get_organization_metric_alert_rule(
         self, organization_id_or_slug, alert_rule_id
     ) -> dict[str, Any]:
         """
@@ -574,7 +574,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_activations_for_a_metric_alert_rule(
+    def get_metric_alert_rule_activations(
         self, organization_id_or_slug, alert_rule_id
     ) -> list[Any]:
         """
@@ -995,7 +995,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def edit_an_organization_s_discover_saved_query(
+    def edit_organization_discover_saved_query(
         self,
         organization_id_or_slug,
         query_id,
@@ -1092,7 +1092,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_s_discover_saved_query(
+    def delete_organization_discover_saved_query(
         self, organization_id_or_slug, query_id
     ) -> Any:
         """
@@ -1330,7 +1330,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_available_integrations(
+    def list_organization_available_integrations(
         self,
         organization_id_or_slug,
         providerKey=None,
@@ -1368,7 +1368,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_integration_for_an_organization(
+    def get_organization_integration(
         self, organization_id_or_slug, integration_id
     ) -> dict[str, Any]:
         """
@@ -1394,7 +1394,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_integration_for_an_organization(
+    def delete_organization_integration(
         self, organization_id_or_slug, integration_id
     ) -> Any:
         """
@@ -1961,7 +1961,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_spike_protection_notification_action(
+    def create_spike_protection_notification(
         self,
         organization_id_or_slug,
         trigger_type,
@@ -2188,7 +2188,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_statuses_of_release_thresholds_alpha(
+    def get_release_threshold_statuses(
         self,
         organization_id_or_slug,
         start,
@@ -3033,7 +3033,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization_s_events_count_by_project(
+    def get_organization_events_count_by_project(
         self,
         organization_id_or_slug,
         field,
@@ -3092,7 +3092,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_event_counts_for_an_organization_v2(
+    def get_organization_event_counts_v2(
         self,
         organization_id_or_slug,
         groupBy,
@@ -3480,7 +3480,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def debug_issues_related_to_source_maps_for_a_given_event(
+    def debug_event_source_maps(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -3924,7 +3924,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_monitor_or_monitor_environments_for_a_project(
+    def delete_project_monitor_or_environments(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -3989,7 +3989,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_ownership_configuration_for_a_project(
+    def get_project_ownership_config(
         self, organization_id_or_slug, project_id_or_slug
     ) -> dict[str, Any]:
         """
@@ -4015,7 +4015,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_ownership_configuration_for_a_project(
+    def update_project_ownership_config(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -5770,7 +5770,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_debug_information_files(
+    def list_project_debug_files(
         self, organization_id_or_slug, project_id_or_slug
     ) -> Any:
         """
@@ -5796,7 +5796,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_specific_project_s_debug_information_file(
+    def delete_project_debug_file(
         self, organization_id_or_slug, project_id_or_slug, id
     ) -> Any:
         """
@@ -6210,7 +6210,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_api_0_projects_by_organization_id_or_slug_by_project_id_or_slug_issues(
+    def list_project_issues(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -7037,7 +7037,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_integration_platform_installations(
+    def list_organization_integration_installations(
         self, organization_id_or_slug
     ) -> list[Any]:
         """
@@ -7297,11 +7297,11 @@ class SentryApp(APIApplication):
             self.retrieve_an_organization,
             self.update_an_organization,
             self.list_an_organization_s_metric_alert_rules,
-            self.create_a_metric_alert_rule_for_an_organization,
-            self.retrieve_a_metric_alert_rule_for_an_organization,
+            self.create_organization_metric_alert_rule,
+            self.get_organization_metric_alert_rule,
             self.update_a_metric_alert_rule,
             self.delete_a_metric_alert_rule,
-            self.retrieve_activations_for_a_metric_alert_rule,
+            self.get_metric_alert_rule_activations,
             self.get_integration_provider_information,
             self.list_an_organization_s_custom_dashboards,
             self.create_a_new_dashboard_for_an_organization,
@@ -7311,16 +7311,16 @@ class SentryApp(APIApplication):
             self.list_an_organization_s_discover_saved_queries,
             self.create_a_new_saved_query,
             self.retrieve_an_organization_s_discover_saved_query,
-            self.edit_an_organization_s_discover_saved_query,
-            self.delete_an_organization_s_discover_saved_query,
+            self.edit_organization_discover_saved_query,
+            self.delete_organization_discover_saved_query,
             self.list_an_organization_s_environments,
             self.query_discover_events_in_table_format,
             self.create_an_external_user,
             self.update_an_external_user,
             self.delete_an_external_user,
-            self.list_an_organization_s_available_integrations,
-            self.retrieve_an_integration_for_an_organization,
-            self.delete_an_integration_for_an_organization,
+            self.list_organization_available_integrations,
+            self.get_organization_integration,
+            self.delete_organization_integration,
             self.list_an_organization_s_members,
             self.add_a_member_to_an_organization,
             self.retrieve_an_organization_member,
@@ -7336,13 +7336,13 @@ class SentryApp(APIApplication):
             self.delete_a_monitor_or_monitor_environments,
             self.retrieve_check_ins_for_a_monitor,
             self.list_spike_protection_notifications,
-            self.create_a_spike_protection_notification_action,
+            self.create_spike_protection_notification,
             self.retrieve_a_spike_protection_notification_action,
             self.update_a_spike_protection_notification_action,
             self.delete_a_spike_protection_notification_action,
             self.list_an_organization_s_projects,
             self.list_an_organization_s_trusted_relays,
-            self.retrieve_statuses_of_release_thresholds_alpha,
+            self.get_release_threshold_statuses,
             self.retrieve_an_organization_s_release,
             self.update_an_organization_s_release,
             self.delete_an_organization_s_release,
@@ -7361,8 +7361,8 @@ class SentryApp(APIApplication):
             self.update_an_organization_member_s_attributes,
             self.delete_an_organization_member_via_scim,
             self.retrieve_release_health_session_statistics,
-            self.retrieve_an_organization_s_events_count_by_project,
-            self.retrieve_event_counts_for_an_organization_v2,
+            self.get_organization_events_count_by_project,
+            self.get_organization_event_counts_v2,
             self.list_an_organization_s_teams,
             self.create_a_new_team,
             self.list_a_user_s_teams_for_an_organization,
@@ -7373,7 +7373,7 @@ class SentryApp(APIApplication):
             self.retrieve_a_project_environment,
             self.update_a_project_environment,
             self.list_a_project_s_error_events,
-            self.debug_issues_related_to_source_maps_for_a_given_event,
+            self.debug_event_source_maps,
             self.list_a_project_s_data_filters,
             self.update_an_inbound_data_filter,
             self.list_a_project_s_client_keys,
@@ -7384,10 +7384,10 @@ class SentryApp(APIApplication):
             self.list_a_project_s_organization_members,
             self.retrieve_a_monitor_for_a_project,
             self.update_a_monitor_for_a_project,
-            self.delete_a_monitor_or_monitor_environments_for_a_project,
+            self.delete_project_monitor_or_environments,
             self.retrieve_check_ins_for_a_monitor_by_project,
-            self.retrieve_ownership_configuration_for_a_project,
-            self.update_ownership_configuration_for_a_project,
+            self.get_project_ownership_config,
+            self.update_project_ownership_config,
             self.delete_a_replay_instance,
             self.list_clicked_nodes,
             self.list_recording_segments,
@@ -7424,8 +7424,8 @@ class SentryApp(APIApplication):
             self.list_a_repository_s_commits,
             self.resolve_a_short_id,
             self.list_your_projects,
-            self.list_a_project_s_debug_information_files,
-            self.delete_a_specific_project_s_debug_information_file,
+            self.list_project_debug_files,
+            self.delete_project_debug_file,
             self.list_a_project_s_users,
             self.list_a_tag_s_values,
             self.retrieve_event_counts_for_a_project,
@@ -7437,7 +7437,7 @@ class SentryApp(APIApplication):
             self.update_a_service_hook,
             self.remove_a_service_hook,
             self.retrieve_an_event_for_a_project,
-            self.get_api_0_projects_by_organization_id_or_slug_by_project_id_or_slug_issues,
+            self.list_project_issues,
             self.bulk_mutate_a_list_of_issues,
             self.bulk_remove_a_list_of_issues,
             self.list_a_tag_s_values_related_to_an_issue,
@@ -7460,7 +7460,7 @@ class SentryApp(APIApplication):
             self.retrieve_files_changed_in_a_release_s_commits,
             self.list_a_release_s_deploys,
             self.create_a_new_deploy_for_an_organization,
-            self.list_an_organization_s_integration_platform_installations,
+            self.list_organization_integration_installations,
             self.create_or_update_an_external_issue,
             self.delete_an_external_issue,
             self.enable_spike_protection,
