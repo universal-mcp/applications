@@ -3,7 +3,7 @@ from universal_mcp.applications.application import APIApplication
 
 class ZenquotesApp(APIApplication):
     def __init__(self, **kwargs) -> None:
-        super().__init__(name="zenquotes", **kwargs)
+        super().__init__(name="zenquotes")
 
     def get_quote(self) -> str:
         """

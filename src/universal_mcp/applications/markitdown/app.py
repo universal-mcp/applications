@@ -7,7 +7,7 @@ from markitdown import MarkItDown
 
 class MarkitdownApp(BaseApplication):
     def __init__(self, **kwargs):
-        super().__init__(name="markitdown", **kwargs)
+        super().__init__(name="markitdown")
         self.markitdown = MarkItDown(enable_plugins=True)
 
     async def convert_to_markdown(self, uri: str) -> str:
