@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "universal-mcp-applications"
-version = "0.1.5"
+version = "0.1.6"
 description = "A Universal MCP Application: universal_mcp_applications"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -43,7 +43,6 @@ dependencies = [
     "resend>=2.10.0",
     "twilio>=9.8.0",
     "universal-mcp >= 0.1.24rc17",
-    "universal-mcp-unipile>=0.1.13",
 ]
 
 [project.license]
