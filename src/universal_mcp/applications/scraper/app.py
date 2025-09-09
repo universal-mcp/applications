@@ -5,9 +5,8 @@ load_dotenv()
 from typing import Any
 
 from universal_mcp.applications.application import APIApplication
-from universal_mcp.integrations import Integration
 from universal_mcp.agentr.integration import AgentrIntegration
-from universal_mcp_unipile.app import UnipileApp
+from universal_mcp.applications.unipile import UnipileApp
 from typing import Any, Optional
 
 class ScraperApp(APIApplication):
@@ -26,10 +25,15 @@ class ScraperApp(APIApplication):
                          for LinkedIn API access.
         """
         super().__init__(name="scraper", **kwargs)
-        self.api_key = os.getenv("SCRAPER_API")
-        self.account_id = os.getenv("ACCOUNT_ID")
-        self.integration = AgentrIntegration(name="unipile",api_key=self.api_key, base_url="https://api.agentr.dev")
-        self._unipile_app = UnipileApp(integration=self.integration)
+        if self.integration:
+            credentials = self.integration.get_credentials()
+            api_key = credentials.get("SCRAPER_API")
+            self.account_id = credentials.get("ACCOUNT_ID")
+            self.integration = AgentrIntegration(name="unipile", api_key=api_key, base_url="https://staging-agentr-306776579029.asia-southeast1.run.app/")
+            self._unipile_app = UnipileApp(integration=self.integration)
+        else:
+            self.account_id = None
+            self._unipile_app = None
         
     def linkedin_post_search(
         self,
