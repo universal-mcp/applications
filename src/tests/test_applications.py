@@ -65,6 +65,7 @@ ALL_APPS = [
     "resend",
     "retell",
     "rocketlane",
+    "scraper",
     "semanticscholar",
     "semrush",
     "sendgrid",
