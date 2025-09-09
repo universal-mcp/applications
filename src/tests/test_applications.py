@@ -12,7 +12,7 @@ ALL_APPS = [
     "bill",
     "box",
     "braze",
-    "cal_com_v2",
+    #"cal_com_v2",
     "calendly",
     "canva",
     "clickup",
