@@ -4433,7 +4433,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.24rc17" },
+    { name = "universal-mcp", specifier = ">=0.1.24rc19" },
 ]
 provides-extras = ["test", "dev"]
 
