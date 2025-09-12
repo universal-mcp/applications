@@ -3,7 +3,7 @@ import io
 import os
 import uuid
 import wave
-from typing import Annotated  # Added Literal for type hinting
+from typing import Annotated
 
 from google import genai
 from google.genai import types
@@ -59,7 +59,7 @@ class GoogleGeminiApp(APIApplication):
         Tags:
             important
         """
-        response = self.genai_client.generate_content(prompt, model=model)
+        response = self.genai_client.models.generate_content(contents=prompt, model=model)
         return response.text
 
     async def generate_image(
