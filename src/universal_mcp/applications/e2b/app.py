@@ -1,3 +1,4 @@
+import os
 from typing import Annotated, Any
 
 from loguru import logger
@@ -25,7 +26,7 @@ class E2bApp(APIApplication):
 
     def __init__(self, integration: Integration | None = None, **kwargs: Any) -> None:
         super().__init__(name="e2b", integration=integration, **kwargs)
-        self._e2b_api_key: str | None = None  # Cache for the API key
+        self._e2b_api_key: str | None = None
         if Sandbox is None:
             logger.warning(
                 "E2B Sandbox SDK is not available. E2B tools will not function."
@@ -136,48 +137,29 @@ class E2bApp(APIApplication):
             execute, sandbox, code-execution, security, important
         """
         if Sandbox is None:
-            logger.error(
-                "E2B Sandbox SDK is not available. Cannot execute_python_code."
-            )
-            raise ToolError(
-                "E2B Sandbox SDK (e2b_code_interpreter) is not installed or failed to import."
-            )
-
+            raise ToolError("E2B Sandbox SDK (e2b_code_interpreter) is not installed.")
         if not code or not isinstance(code, str):
             raise ValueError("Provided code must be a non-empty string.")
 
-        logger.info("Attempting to execute Python code in E2B Sandbox.")
         try:
-            current_api_key = self.e2b_api_key
-
-            with Sandbox(api_key=current_api_key) as sandbox:
-                logger.info(
-                    f"E2B Sandbox (ID: {sandbox.sandbox_id}) initialized. Running code."
-                )
-                execution = sandbox.run_code(
-                    code=code
-                )  # run_python is the method in e2b-code-interpreter
-                result = self._format_execution_output(
-                    execution.logs
-                )  # execution_result directly has logs
+            logger.info("Attempting to execute Python code in E2B Sandbox.")
+            os.environ["E2B_API_KEY"] = self.e2b_api_key
+            with Sandbox.create() as sandbox:
+                logger.info("E2B Sandbox initialized. Running code.")
+                execution = sandbox.run_code(code)
+                result = self._format_execution_output(execution)
                 logger.info("E2B code execution successful.")
                 return result
-        except NotAuthorizedError:  # Re-raise if caught from self.e2b_api_key
-            raise
         except Exception as e:
+            logger.exception("E2B code execution failed.")
+            lower = str(e).lower()
             if (
-                "authentication" in str(e).lower()
-                or "api key" in str(e).lower()
-                or "401" in str(e)
-                or "unauthorized" in str(e).lower()
+                "authentication" in lower
+                or "api key" in lower
+                or "401" in lower
+                or "403" in lower
             ):
-                logger.error(
-                    f"E2B authentication/authorization error: {e}", exc_info=True
-                )
-                raise NotAuthorizedError(
-                    f"E2B authentication failed or access denied: {e}"
-                )
-            logger.error(f"Error during E2B code execution: {e}", exc_info=True)
+                raise NotAuthorizedError(f"E2B authentication/permission failed: {e}")
             raise ToolError(f"E2B code execution failed: {e}")
 
     def list_tools(self) -> list[callable]:
