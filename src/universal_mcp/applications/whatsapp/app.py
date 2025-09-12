@@ -54,10 +54,24 @@ class WhatsappApp(BaseApplication):
     def __init__(self, integration: AgentrIntegration | None = None, **kwargs) -> None:
         super().__init__(name="whatsapp", integration=integration, **kwargs)
         self.base_url = WHATSAPP_API_BASE_URL
-        self._api_key: str = integration.client.api_key if integration else None
+        self.integration = integration
+        self._api_key: str | None = None
 
     def get_api_key(self) -> str:
-        return self._api_key
+        """Get the AgentR API key to use as for WhatsApp authentication."""
+        if not self.integration:
+            raise ValueError("No integration available to get API key from")
+        
+
+        try:
+            headers = self.integration.client.client.headers
+            api_key = headers.get('X-API-KEY')
+            if api_key:
+                return api_key
+            else:
+                raise ValueError("X-API-KEY not found in AgentR client headers")
+        except AttributeError as e:
+            raise ValueError(f"Could not access AgentR client headers: {e}") from e
 
     @property
     def api_key(self) -> str:

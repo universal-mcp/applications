@@ -4751,71 +4751,7 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    def list_all_members_of_achannel(
-        self, channel: str | None = None
-    ) -> dict[str, Any]:
-        """
-        List all members of a channel
-
-        Args:
-            channel (string): Specifies the channel for which to retrieve conversation members; must be a valid channel identifier. Example: '{{channelId}}'.
-
-        Returns:
-            dict[str, Any]: Success Response
-
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
-        Tags:
-            Google Drive API Use Cases, Share file access to a slack channel
-        """
-        url = f"{self.base_url}/api/conversations.members"
-        query_params = {k: v for k, v in [("channel", channel)] if v is not None}
-        response = self._get(url, params=query_params)
-        response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
-
-    def fetch_user_email(self, user: str | None = None) -> dict[str, Any]:
-        """
-        Fetch User Email
-
-        Args:
-            user (string): Specifies the user identifier to retrieve information for; the value should be a unique string. Example: '{{currentUserId}}'.
-
-        Returns:
-            dict[str, Any]: Fetch User Email
-
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
-        Tags:
-            Google Drive API Use Cases, Share file access to a slack channel
-        """
-        url = f"{self.base_url}/api/users.info"
-        query_params = {k: v for k, v in [("user", user)] if v is not None}
-        response = self._get(url, params=query_params)
-        response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
+    
 
     def grant_google_drive_access(
         self,
@@ -4930,8 +4866,6 @@ class GoogleDriveApp(APIApplication):
             self.get_aspecific_revision,
             self.permanently_delete_afile_version,
             self.update_arevision,
-            self.list_all_members_of_achannel,
-            self.fetch_user_email,
             self.grant_google_drive_access,
             self.move_files,
         ]
