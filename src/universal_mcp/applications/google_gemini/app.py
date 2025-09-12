@@ -1,3 +1,6 @@
+import base64
+import io
+import os
 import uuid
 import wave
 from typing import Annotated  # Added Literal for type hinting
@@ -96,15 +99,13 @@ class GoogleGeminiApp(APIApplication):
             elif part.inline_data is not None:
                 # Return the raw image bytes
                 image_bytes = part.inline_data.data
-                upload_result = await FileSystemApp.write_file(
-                    image_bytes, f"/tmp/{uuid.uuid4()}.png"
-                )
-                logger.info(f"Upload result: {upload_result['status']}")
-                image_url = upload_result["data"]["url"]
-                logger.info(f"Image URL: {image_url}")
-                text += f"![Image]({image_url})"
-        logger.info(f"Text: {text}")
-        return {"text": text}
+
+
+                img_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+                file_name = f"{uuid.uuid4()}.png"
+
+                return {"type": "image", "data": img_base64, "mime_type": "image/png", "file_name": file_name, "text": text}
 
     async def generate_audio(
         self,
@@ -149,17 +150,21 @@ class GoogleGeminiApp(APIApplication):
 
         data = response.candidates[0].content.parts[0].inline_data.data
 
-        file_name = "/tmp/audio.wav"
-        wave_file(file_name, data)  # Saves the file to current directory
-        # Upload the audio file directly
-        upload_result = await FileSystemApp.move_file(
-            file_name, f"/tmp/{uuid.uuid4()}.wav"
-        )
-        logger.info(f"Audio upload result: {upload_result['status']}")
-        audio_url = upload_result["data"]["url"]
-        logger.info(f"Audio URL: {audio_url}")
+        file_name = f"{uuid.uuid4()}.wav"
+        wave_file(file_name, data)
 
-        return audio_url
+        # read the file
+        with open(file_name, "rb") as f:
+            data = f.read()
+        
+        # delete the file
+        os.remove(file_name)
+
+        # Convert to base64
+        import base64
+        audio_base64 = base64.b64encode(data).decode('utf-8')
+
+        return {"type": "audio", "data": audio_base64, "mime_type": "audio/wav", "file_name": file_name}
 
     def list_tools(self):
         return [

@@ -4268,7 +4268,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp"
-version = "0.1.24rc17"
+version = "0.1.24rc18"
 source = { directory = "../universal-mcp" }
 dependencies = [
     { name = "agentevals" },
@@ -4297,7 +4297,6 @@ dependencies = [
     { name = "rich" },
     { name = "streamlit" },
     { name = "typer" },
-    { name = "universal-mcp-applications" },
 ]
 
 [package.metadata]
@@ -4339,13 +4338,12 @@ requires-dist = [
     { name = "streamlit", specifier = ">=1.46.1" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.1a17" },
     { name = "typer", specifier = ">=0.15.2" },
-    { name = "universal-mcp-applications", specifier = ">=0.1.2" },
 ]
 provides-extras = ["dev", "docs"]
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.2"
+version = "0.1.3"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },

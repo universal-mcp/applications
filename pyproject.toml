@@ -42,7 +42,7 @@ dependencies = [
     "requests>=2.31.0",
     "resend>=2.10.0",
     "twilio>=9.8.0",
-    "universal-mcp >= 0.1.24rc17",
+    "universal-mcp>=0.1.24rc17",
 ]
 
 [project.license]
@@ -105,3 +105,4 @@ quote-style = "double"
 pythonpath = [
     "src",
 ]
+
