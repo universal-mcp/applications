@@ -5,7 +5,7 @@ set -x
 
 # Ensure dependencies are installed
 echo "Syncing dependencies..."
-uv sync
+uv sync --all-extras
 
 # Run tests with pytest
 echo "Running tests with pytest..."
@@ -25,7 +25,7 @@ IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
 # Remove any rc suffix from PATCH if it exists
 PATCH_NUM=$(echo $PATCH | sed 's/-rc[0-9]*//')
 
-if [ "$BRANCH" = "master" ]; then
+if [ "$BRANCH" = "master" ] || [ "$BRANCH" = "main" ]; then
     # On main branch - bump patch version
     if [[ $PATCH == *"-rc"* ]]; then
         NEW_VERSION="$MAJOR.$MINOR.$PATCH_NUM"
@@ -55,7 +55,7 @@ sed -i '' "s/^version = ".*"/version = \"$NEW_VERSION\"/" pyproject.toml
 echo "Version bumped from $CURRENT_VERSION to $NEW_VERSION"
 
 # Stage the changed file
-git add pyproject.toml
+git add pyproject.toml uv.lock
 
 # Commit the change
 git commit -m "bump: version $CURRENT_VERSION → $NEW_VERSION"
@@ -87,7 +87,7 @@ if [ "$1" = "release" ]; then
     rm -rf .idea
     rm -rf .vscode
 
-    uv sync && uv build && uv publish
+    uv build && uv publish
     echo "Release complete!"
 else
     echo "Skipping release steps"
