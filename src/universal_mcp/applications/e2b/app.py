@@ -93,26 +93,38 @@ class E2bApp(APIApplication):
             logger.info("E2B API Key successfully retrieved and cached.")
         return self._e2b_api_key
 
-    def _format_execution_output(self, logs: Any) -> str:
+    def _format_execution_output(self, execution: Any) -> str:
         """Helper function to format the E2B execution logs nicely."""
         output_parts = []
 
-        # Safely access stdout and stderr
-        stdout_log = getattr(logs, "stdout", [])
-        stderr_log = getattr(logs, "stderr", [])
+        try:
+            logs = getattr(execution, "logs", None)
 
-        if stdout_log:
-            stdout_content = "".join(stdout_log).strip()
-            if stdout_content:
-                output_parts.append(f"{stdout_content}")
+            if logs is not None:
+                # Collect stdout
+                if getattr(logs, "stdout", None):
+                    stdout_content = "".join(logs.stdout).strip()
+                    if stdout_content:
+                        output_parts.append(stdout_content)
 
-        if stderr_log:
-            stderr_content = "".join(stderr_log).strip()
-            if stderr_content:
-                output_parts.append(f"--- ERROR ---\n{stderr_content}")
+                # Collect stderr
+                if getattr(logs, "stderr", None):
+                    stderr_content = "".join(logs.stderr).strip()
+                    if stderr_content:
+                        output_parts.append(f"--- ERROR ---\n{stderr_content}")
+
+            # Fallback: check execution.text (covers expressions returning values)
+            if not output_parts and hasattr(execution, "text"):
+                text_content = str(execution.text).strip()
+                if text_content:
+                    output_parts.append(text_content)
+
+        except Exception as e:
+            output_parts.append(f"Failed to format execution output: {e}")
 
         if not output_parts:
             return "Execution finished with no output (stdout/stderr)."
+
         return "\n\n".join(output_parts)
 
     def execute_python_code(
