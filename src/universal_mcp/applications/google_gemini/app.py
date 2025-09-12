@@ -74,7 +74,9 @@ class GoogleGeminiApp(APIApplication):
 
         Args:
             prompt (str): The prompt to generate image from.
+            image (str, optional): The reference image path url.
             model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image-preview".
+
 
         Returns:
             list: A list of dicts, each containing either 'text' or 'image_bytes'.
@@ -85,7 +87,13 @@ class GoogleGeminiApp(APIApplication):
         # The Gemini API is synchronous, so run in a thread
         contents = [prompt]
         if image:
-            image = Image.open(image)
+            if image.startswith(('http://', 'https://')):
+                import requests
+                response = requests.get(image)
+                response.raise_for_status()
+                image = Image.open(io.BytesIO(response.content))
+            else:
+                image = Image.open(image)
             contents.append(image)
         response = self.genai_client.models.generate_content(
             model=model,
