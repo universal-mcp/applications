@@ -153,6 +153,18 @@ class FirecrawlApp(APIApplication):
 
         return f"Error during {operation_desc}: {type(e).__name__} - {e}"
 
+    def _to_serializable(self, obj: Any) -> Any:
+        """
+        Recursively converts Pydantic models to dictionaries for JSON serialization.
+        """
+        if isinstance(obj, list):
+            return [self._to_serializable(item) for item in obj]
+        if hasattr(obj, "model_dump"):  # Pydantic v2
+            return obj.model_dump()
+        if hasattr(obj, "dict"):  # Pydantic v1
+            return obj.dict()
+        return obj
+
     def scrape_url(self, url: str) -> Any:
         """
         Scrapes a single URL using Firecrawl and returns the extracted data.
@@ -176,7 +188,7 @@ class FirecrawlApp(APIApplication):
             client = self._get_client()
             response_data = client.scrape(url=url)
             logger.info(f"Successfully scraped URL: {url}")
-            return response_data
+            return self._to_serializable(response_data)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -208,7 +220,7 @@ class FirecrawlApp(APIApplication):
             client = self._get_client()
             response = client.search(query=query)
             logger.info(f"Successfully performed Firecrawl search for query: {query}")
-            return response  # type: ignore
+            return self._to_serializable(response)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -247,13 +259,13 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully started Firecrawl crawl for URL {url}, Job ID: {job_id}"
             )
-            return response  # type: ignore
+            return self._to_serializable(response)
         except NotAuthorizedError:
             raise
         except ToolError:
             raise
         except Exception as e:
-            return self._handle_firecrawl_exception(e, f"starting crawl for URL {url}")  # type: ignore
+            return self._handle_firecrawl_exception(e, f"starting crawl for URL {url}")
 
     def check_crawl_status(self, job_id: str) -> dict[str, Any] | str:
         """
@@ -280,7 +292,7 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully checked Firecrawl crawl status for job ID: {job_id}"
             )
-            return status  # type: ignore
+            return self._to_serializable(status)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -288,7 +300,7 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(
                 e, f"checking crawl status for job ID {job_id}"
-            )  # type: ignore
+            )
 
     def cancel_crawl(self, job_id: str) -> dict[str, Any] | str:
         """
@@ -316,7 +328,7 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully issued cancel command for Firecrawl crawl job ID: {job_id}"
             )
-            return response  # type: ignore
+            return self._to_serializable(response)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -324,7 +336,7 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(
                 e, f"cancelling crawl job ID {job_id}"
-            )  # type: ignore
+            )
 
     def start_batch_scrape(
         self,
@@ -354,7 +366,7 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully started Firecrawl batch scrape for {len(urls)} URLs."
             )
-            return response  # type: ignore
+            return self._to_serializable(response)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -362,7 +374,7 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(
                 e, f"starting batch scrape for {len(urls)} URLs"
-            )  # type: ignore
+            )
 
     def check_batch_scrape_status(self, job_id: str) -> dict[str, Any] | str:
         """
@@ -391,7 +403,7 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully checked Firecrawl batch scrape status for job ID: {job_id}"
             )
-            return status  # type: ignore
+            return self._to_serializable(status)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -399,7 +411,7 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(
                 e, f"checking batch scrape status for job ID {job_id}"
-            )  # type: ignore
+            )
 
     def quick_web_extract(
         self,
@@ -444,7 +456,7 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully completed quick web extraction for {len(urls)} URLs."
             )
-            return response  # type: ignore
+            return self._to_serializable(response)
         except NotAuthorizedError:
             logger.error("Firecrawl API key missing or invalid.")
             raise
@@ -490,7 +502,7 @@ class FirecrawlApp(APIApplication):
             logger.info(
                 f"Successfully checked Firecrawl extraction status for job ID: {job_id}"
             )
-            return status  # type: ignore
+            return self._to_serializable(status)
         except NotAuthorizedError:
             raise
         except ToolError:
@@ -498,7 +510,7 @@ class FirecrawlApp(APIApplication):
         except Exception as e:
             return self._handle_firecrawl_exception(
                 e, f"checking extraction status for job ID {job_id}"
-            )  # type: ignore
+            )
 
     def list_tools(self):
         return [
