@@ -55,11 +55,13 @@ class GoogleGeminiApp(APIApplication):
 
         Example:
             response = app.generate_text("Tell me a joke.")
-            
+
         Tags:
             important
         """
-        response = self.genai_client.models.generate_content(contents=prompt, model=model)
+        response = self.genai_client.models.generate_content(
+            contents=prompt, model=model
+        )
         return response.text
 
     async def generate_image(
@@ -80,15 +82,16 @@ class GoogleGeminiApp(APIApplication):
 
         Returns:
             list: A list of dicts, each containing either 'text' or 'image_bytes'.
-            
+
         Tags:
             important
         """
         # The Gemini API is synchronous, so run in a thread
         contents = [prompt]
         if image:
-            if image.startswith(('http://', 'https://')):
+            if image.startswith(("http://", "https://")):
                 import requests
+
                 response = requests.get(image)
                 response.raise_for_status()
                 image = Image.open(io.BytesIO(response.content))
@@ -108,12 +111,17 @@ class GoogleGeminiApp(APIApplication):
                 # Return the raw image bytes
                 image_bytes = part.inline_data.data
 
-
                 img_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
                 file_name = f"{uuid.uuid4()}.png"
 
-                return {"type": "image", "data": img_base64, "mime_type": "image/png", "file_name": file_name, "text": text}
+                return {
+                    "type": "image",
+                    "data": img_base64,
+                    "mime_type": "image/png",
+                    "file_name": file_name,
+                    "text": text,
+                }
 
     async def generate_audio(
         self,
@@ -128,7 +136,7 @@ class GoogleGeminiApp(APIApplication):
 
         Returns:
             str: The URL of the uploaded audio file.
-            
+
         Tags:
             important
         """
@@ -164,15 +172,21 @@ class GoogleGeminiApp(APIApplication):
         # read the file
         with open(file_name, "rb") as f:
             data = f.read()
-        
+
         # delete the file
         os.remove(file_name)
 
         # Convert to base64
         import base64
-        audio_base64 = base64.b64encode(data).decode('utf-8')
 
-        return {"type": "audio", "data": audio_base64, "mime_type": "audio/wav", "file_name": file_name}
+        audio_base64 = base64.b64encode(data).decode("utf-8")
+
+        return {
+            "type": "audio",
+            "data": audio_base64,
+            "mime_type": "audio/wav",
+            "file_name": file_name,
+        }
 
     def list_tools(self):
         return [
