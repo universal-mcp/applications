@@ -60,3 +60,12 @@ class MarkitdownApp(BaseApplication):
         return [
             self.convert_to_markdown,
         ]
+
+async def main():
+    app = MarkitdownApp()
+    result = await app.convert_to_markdown("https://www.youtube.com/watch?v=Cr9B6yyLZSk")
+    print(result)
+    
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
