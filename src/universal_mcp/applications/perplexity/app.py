@@ -9,7 +9,7 @@ class PerplexityApp(APIApplication):
         super().__init__(name="perplexity", integration=integration)
         self.base_url = "https://api.perplexity.ai"
 
-    def search(
+    def answer_with_search(
         self,
         query: str,
         model: Literal[
@@ -24,22 +24,21 @@ class PerplexityApp(APIApplication):
         system_prompt: str = "You are a helpful AI assistant that answers questions using real-time information from the web.",
     ) -> dict[str, Any] | str:
         """
-        Performs a real-time web search using Perplexity AI to answer a query with up-to-date information and citations.
-        This tool is ideal for questions about current events, facts, or any topic that requires access to the latest information from the internet. It returns a natural language answer along with the sources used.
-
+        Queries the Perplexity Chat Completions API for a web-search-grounded answer. It sends the user's prompt and model parameters to the `/chat/completions` endpoint, then parses the response to return the synthesized content and a list of supporting source citations, ideal for real-time information retrieval.
+        
         Args:
             query: The search query or question to ask. For example: "What are the latest developments in AI regulation?"
             model: The Perplexity model to use.
             temperature: Controls randomness in the model's output. Higher values make the output more random, lower values make it more deterministic. Defaults to 1.
             system_prompt: The initial system message to guide the model's behavior.
-
+        
         Returns:
             A dictionary containing the generated 'content' (str) and a list of 'citations' (list) from the web search.
-
+        
         Raises:
             AuthenticationError: Raised when API authentication fails due to missing or invalid credentials.
             HTTPError: Raised when the API request fails or returns an error status.
-
+        
         Tags:
             search, web, research, citations, current events, important
         """
