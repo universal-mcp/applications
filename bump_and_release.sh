@@ -81,7 +81,6 @@ if [ "$1" = "release" ]; then
     rm -rf .pytest_cache
     rm -rf .ruff_cache
     rm -rf .mypy_cache
-    rm -rf .venv
     rm -rf .cache
     rm -rf .DS_Store
     rm -rf .idea
