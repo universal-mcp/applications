@@ -30,6 +30,9 @@ class ReplicateApp(APIApplication):
 
     @property
     def replicate_client(self) -> replicate.Client:
+        """
+        Lazily initializes and returns an authenticated `replicate.Client` instance. On first access, it fetches the API key from the configured integration and caches the client, ensuring a single instance is used for all subsequent API calls within the application. Raises `NotAuthorizedError` on credential failure.
+        """
         if self._replicate_client is None:
             credentials = self.integration.get_credentials()
             logger.info(
@@ -57,20 +60,19 @@ class ReplicateApp(APIApplication):
         use_file_output: bool | None = True,
     ) -> Any:
         """
-        Run a Replicate model and wait for its output. This is a blocking call from the user's perspective.
-        If the model output is an iterator, this tool will collect all items into a list.
-
+        Executes a Replicate model synchronously, blocking until it completes and returns the final output. This abstracts the polling logic required by asynchronous jobs. If a model streams results, this function conveniently collects all items into a list before returning, unlike the non-blocking `submit_prediction` method.
+        
         Args:
             model_ref: The model identifier string (e.g., "owner/name" or "owner/name:version_id").
             inputs: A dictionary of inputs for the model.
             use_file_output: If True (default), file URLs in output are wrapped in FileOutput objects.
-
+        
         Returns:
             The model's output. If the model streams output, a list of all streamed items is returned.
-
+        
         Raises:
             ToolError: If the Replicate API request fails or the model encounters an error.
-
+        
         Tags:
             run, execute, ai, synchronous, replicate, important
         """
@@ -128,20 +130,20 @@ class ReplicateApp(APIApplication):
         webhook_events_filter: list[str] | None = None,
     ) -> str:
         """
-        Submits a prediction request to Replicate for asynchronous processing.
-
+        Submits a model execution request to Replicate for non-blocking, asynchronous processing. It immediately returns a prediction ID for tracking, unlike the synchronous `run` method which waits for the final result. The returned ID can be used with `get_prediction` or `fetch_prediction_output` to monitor the job.
+        
         Args:
             model_ref: The model identifier string (e.g., "owner/name" or "owner/name:version_id").
             inputs: A dictionary of inputs for the model.
             webhook: URL to receive a POST request with prediction updates.
             webhook_events_filter: List of events to trigger webhooks (e.g., ["start", "output", "logs", "completed"]).
-
+        
         Returns:
             The ID (str) of the created prediction.
-
+        
         Raises:
             ToolError: If the Replicate API request fails.
-
+        
         Tags:
             submit, async_job, start, ai, queue, replicate
         """
@@ -184,17 +186,17 @@ class ReplicateApp(APIApplication):
 
     async def get_prediction(self, prediction_id: str) -> Prediction:
         """
-        Retrieves the current state and details of a Replicate prediction.
-
+        Retrieves the full details and current state of a Replicate prediction by its ID. This function performs a non-blocking status check, returning the prediction object immediately. Unlike `fetch_prediction_output`, it does not wait for the job to complete and is used for monitoring progress.
+        
         Args:
             prediction_id: The unique ID of the prediction.
-
+        
         Returns:
             A Replicate Prediction object containing status, logs, output (if ready), etc.
-
+        
         Raises:
             ToolError: If the Replicate API request fails.
-
+        
         Tags:
             status, check, async_job, monitoring, ai, replicate
         """
@@ -222,21 +224,19 @@ class ReplicateApp(APIApplication):
                 f"An unexpected error occurred while getting status for prediction {prediction_id}: {e}"
             ) from e
 
-    async def fetch_prediction_output(self, prediction_id: str) -> Any:
+    async def await_prediction_result(self, prediction_id: str) -> Any:
         """
-        Retrieves the output of a completed Replicate prediction.
-        If the prediction is not yet complete, this method will wait for it to finish.
-        If the model output is an iterator, this tool will collect all items into a list.
-
+        Retrieves the final output for a given prediction ID, waiting for the job to complete if it is still running. This function complements `submit_prediction` by blocking until the asynchronous task finishes, raising an error if the prediction fails or is canceled.
+        
         Args:
             prediction_id: The unique ID of the prediction.
-
+        
         Returns:
             The output of the prediction. If the model streams output, a list of all streamed items is returned.
-
+        
         Raises:
             ToolError: If the prediction fails, is canceled, or an API error occurs.
-
+        
         Tags:
             result, fetch_output, async_job, wait, ai, replicate
         """
@@ -305,17 +305,17 @@ class ReplicateApp(APIApplication):
 
     async def cancel_prediction(self, prediction_id: str) -> None:
         """
-        Cancels a running or queued Replicate prediction.
-
+        Sends a request to cancel a running or queued Replicate prediction. It first checks the prediction's status, only proceeding if it is not already in a terminal state (e.g., succeeded, failed), and gracefully handles jobs that cannot be canceled.
+        
         Args:
             prediction_id: The unique ID of the prediction to cancel.
-
+        
         Returns:
             None.
-
+        
         Raises:
             ToolError: If the cancellation request fails.
-
+        
         Tags:
             cancel, async_job, ai, replicate, management
         """
@@ -353,18 +353,17 @@ class ReplicateApp(APIApplication):
 
     async def upload_file(self, file_path: str) -> str:
         """
-        Uploads a local file to Replicate and returns its public URL.
-        Replicate uses these URLs for file inputs in models.
-
+        Uploads a local file from a given path to Replicate's storage, returning a public URL. This URL is essential for providing file-based inputs to Replicate models via functions like `run` or `submit_prediction`. Fails if the file is not found or the upload encounters an error.
+        
         Args:
             file_path: The absolute or relative path to the local file.
-
+        
         Returns:
             A string containing the public URL of the uploaded file (e.g., "https://replicate.delivery/pbxt/...").
-
+        
         Raises:
             ToolError: If the file is not found or if the upload operation fails.
-
+        
         Tags:
             upload, file, storage, replicate, important
         """
@@ -417,9 +416,8 @@ class ReplicateApp(APIApplication):
         extra_arguments: dict[str, Any] | None = None,
     ) -> Any:
         """
-        Generates images using a specified Replicate model (defaults to SDXL).
-        This is a convenience wrapper around the `run` tool.
-
+        Generates images synchronously using a specified model, defaulting to SDXL. As a convenience wrapper around the generic `run` function, it simplifies image creation by exposing common parameters like `prompt` and `width`, and waits for the model to complete before returning the resulting image URLs.
+        
         Args:
             prompt: The text prompt for image generation.
             model_ref: The Replicate model identifier string.
@@ -430,13 +428,13 @@ class ReplicateApp(APIApplication):
             num_outputs: Number of images to generate.
             seed: Optional random seed for reproducibility.
             extra_arguments: Dictionary of additional arguments specific to the model.
-
+        
         Returns:
             The output from the image generation model, typically a list of image URLs.
-
+        
         Raises:
             ToolError: If the image generation fails.
-
+        
         Tags:
             generate, image, ai, replicate, sdxl, important, default
         """
@@ -488,7 +486,7 @@ class ReplicateApp(APIApplication):
             self.run,
             self.submit_prediction,
             self.get_prediction,
-            self.fetch_prediction_output,
+            self.await_prediction_result,
             self.cancel_prediction,
             self.upload_file,
             self.generate_image,

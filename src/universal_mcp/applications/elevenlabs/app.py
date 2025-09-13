@@ -17,6 +17,9 @@ class ElevenlabsApp(APIApplication):
 
     @property
     def client(self) -> ElevenLabs:
+        """
+        A property that lazily initializes and returns an authenticated `ElevenLabs` SDK client. On first access, it retrieves the API key from integration credentials and caches the instance, raising a `NotAuthorizedError` if credentials are not found.
+        """
         if self._client is None:
             credentials = self.integration.get_credentials()
             if not credentials:
@@ -30,22 +33,22 @@ class ElevenlabsApp(APIApplication):
     # def get_voices(self):
     #     return self.client.voices.list_voices()
 
-    async def text_to_speech(
+    async def generate_speech_audio_url(
         self,
         text: str,
         voice_id: str = "21m00Tcm4TlvDq8ikWAM",
         model_id: str = "eleven_multilingual_v2",
     ) -> bytes:
         """
-        Converts text to speech using a specified voice.
-
+        Converts a text string into speech using the ElevenLabs API. The function then saves the generated audio to a temporary MP3 file and returns a public URL to access it, rather than the raw audio bytes.
+        
         Args:
             text (str): The text to convert to speech.
             voice_id (str): The ID of the voice to use.
             model_id (str, optional): The model to use. Defaults to "eleven_multilingual_v2".
             stability (float, optional): The stability of the voice.
             similarity_boost (float, optional): The similarity boost of the voice.
-
+        
         Returns:
             bytes: The audio data.
             
@@ -73,13 +76,11 @@ class ElevenlabsApp(APIApplication):
         self, audio_file_path: str, language_code: str = "eng", diarize: bool = True
     ) -> str:
         """
-        Converts speech to text.
-        NOTE: The REST API endpoint for this functionality is not yet publicly documented.
-        This is a placeholder and will not work until the endpoint is available.
-
+        Transcribes an audio file into text using the ElevenLabs API. It supports language specification and speaker diarization, providing the inverse operation to the audio-generating `text_to_speech` method. Note: The docstring indicates this is a placeholder for an undocumented endpoint.
+        
         Args:
             audio_file_path (str): The path to the audio file.
-
+        
         Returns:
             str: The transcribed text.
             
@@ -102,13 +103,13 @@ class ElevenlabsApp(APIApplication):
         model_id: str = "eleven_multilingual_sts_v2",
     ) -> bytes:
         """
-        Changes the voice in an audio file to a different voice.
-
+        Downloads an audio file from a URL and converts the speech into a specified target voice using the ElevenLabs API. This function transforms the speaker's voice in an existing recording and returns the new audio data as bytes, distinct from creating audio from text.
+        
         Args:
             voice_id (str): The ID of the voice to use for the conversion.
             audio_file_path (str): The path to the audio file to transform.
             model_id (str, optional): The model to use. Defaults to "eleven_multilingual_sts_v2".
-
+        
         Returns:
             bytes: The transformed audio data.
             
@@ -127,19 +128,22 @@ class ElevenlabsApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.text_to_speech,
+            self.generate_speech_audio_url,
             self.speech_to_text,
             self.speech_to_speech,
         ]
 
 
-async def test_elevenlabs():
+async def demo_text_to_speech():
+    """
+    A demonstration function that instantiates the `ElevenlabsApp` to test its `text_to_speech` method. It converts a sample string to audio and prints the resulting file URL to the console, serving as a basic usage example when the script is executed directly.
+    """
     app = ElevenlabsApp()
-    audio = await app.text_to_speech("Hello, world!")
+    audio = await app.generate_speech_audio_url("Hello, world!")
     print(audio)
 
 
 if __name__ == "__main__":
     import asyncio
 
-    asyncio.run(test_elevenlabs())
+    asyncio.run(demo_text_to_speech())

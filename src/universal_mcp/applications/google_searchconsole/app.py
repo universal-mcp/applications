@@ -16,15 +16,15 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def delete_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
-        Deletes a sitemap from this site. Typically returns HTTP 204 No Content on success.
-
+        Deletes a sitemap from a specified Google Search Console property. It targets the sitemap using the site's URL and the sitemap's `feedpath`, then issues an HTTP DELETE request. This action is distinct from `delete_site`, which removes the entire property, not just a sitemap.
+        
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
             feedpath (str): The URL of the sitemap to delete. Example: 'http://www.example.com/sitemap.xml'.
-
+        
         Returns:
             None: If the request is successful.
-
+        
         Tags:
             sitemap_management
         """
@@ -38,15 +38,15 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def get_sitemap(self, siteUrl: str, feedpath: str) -> dict[str, Any]:
         """
-        Retrieves information about a specific sitemap.
-
+        Retrieves detailed information for a single, specific sitemap using its full URL (`feedpath`). Unlike `list_sitemaps`, which fetches all sitemaps for a site, this function targets and returns one sitemap resource, providing its status, last processed date, and other API metadata.
+        
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
             feedpath (str): The URL of the sitemap to retrieve. Example: 'http://www.example.com/sitemap.xml'.
-
+        
         Returns:
             Dict[str, Any]: Sitemap resource.
-
+        
         Tags:
             sitemap_management
         """
@@ -62,17 +62,16 @@ class GoogleSearchconsoleApp(APIApplication):
         self, siteUrl: str, sitemapIndex: str | None = None
     ) -> dict[str, Any]:
         """
-        Lists the sitemaps-entries submitted for this site, or included in the sitemap index file
-        (if sitemapIndex is specified in the request).
-
+        Retrieves a list of sitemaps submitted for a specific site. Optionally, it can list the sitemaps contained within a specified sitemap index file instead of all sitemaps for the site. This contrasts with get_sitemap, which fetches a single sitemap's details.
+        
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
             sitemapIndex (Optional[str]): The URL of the sitemap index.
                                           Example: 'http://www.example.com/sitemap_index.xml'.
-
+        
         Returns:
             Dict[str, Any]: List of sitemap resources.
-
+        
         Tags:
             sitemap_management, important
         """
@@ -89,15 +88,15 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def submit_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
-        Submits a sitemap for a site. Typically returns HTTP 204 No Content on success.
-
+        Submits a sitemap to a specified Google Search Console site property. This function notifies Google of the sitemap's location for crawling via a PUT request. It is the primary action for adding or updating a sitemap, complementing `get_sitemap`, `list_sitemaps`, and `delete_sitemap`.
+        
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
             feedpath (str): The URL of the sitemap to submit. Example: 'http://www.example.com/sitemap.xml'.
-
+        
         Returns:
             None: If the request is successful.
-
+        
         Tags:
             sitemap_management
         """
@@ -113,16 +112,14 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def add_site(self, siteUrl: str) -> dict[str, Any]:
         """
-        Adds a site to the set of the user's sites in Search Console.
-        This will require verification of the site ownership.
-        If successful, this method returns a site resource in the response body.
-
+        Adds a site to the user's Google Search Console account, which requires subsequent ownership verification. Upon success, it returns a dictionary containing the site resource. This method creates a new site entry, unlike `list_sites` which only retrieves existing ones.
+        
         Args:
             siteUrl (str): The URL of the site to add. Example: 'http://www.example.com/'.
-
+        
         Returns:
             Dict[str, Any]: Site resource upon successful addition.
-
+        
         Tags:
             site_management, important
         """
@@ -137,15 +134,14 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def delete_site(self, siteUrl: str) -> None:
         """
-        Removes a site from the set of the user's Search Console sites.
-        Typically returns HTTP 204 No Content on success.
-
+        Removes a website property from the user's Google Search Console account using its URL. This function sends a DELETE request to the API, distinguishing it from `delete_sitemap` which only removes a sitemap file rather than the entire site property from the user's management list.
+        
         Args:
             siteUrl (str): The URL of the site to delete. Example: 'http://www.example.com/'.
-
+        
         Returns:
             None: If the request is successful.
-
+        
         Tags:
             site_management
         """
@@ -156,14 +152,14 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def get_site(self, siteUrl: str) -> dict[str, Any]:
         """
-        Retrieves information about a specific site.
-
+        Retrieves the resource for a specific site property from Google Search Console, using its URL as an identifier. Unlike `list_sites`, which retrieves all user properties, this function fetches detailed information for a single, known site.
+        
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
-
+        
         Returns:
             Dict[str, Any]: Site resource.
-
+        
         Tags:
             site_management
         """
@@ -175,11 +171,11 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def list_sites(self) -> dict[str, Any]:
         """
-        Lists the user's Search Console sites.
-
+        Retrieves a list of all websites and domain properties the authenticated user can access in Google Search Console. Unlike `get_site`, which fetches a single property, this function returns a comprehensive overview of all managed sites associated with the user's account.
+        
         Returns:
             Dict[str, Any]: List of site resources.
-
+        
         Tags:
             site_management
         """
@@ -190,21 +186,21 @@ class GoogleSearchconsoleApp(APIApplication):
 
     # --- URL Inspection ---
 
-    def index_inspect_url(
+    def inspect_url(
         self, inspectionUrl: str, siteUrl: str, languageCode: str | None = None
     ) -> dict[str, Any]:
         """
-        Inspects a URL in Google Index and provides information about its status.
-
+        Retrieves the Google Index status for a specified URL within a given Search Console property. This function queries the URL Inspection API to return detailed information about how Google sees the page, including its indexing eligibility and any detected issues.
+        
         Args:
             inspectionUrl (str): The URL to inspect. Example: 'https://www.example.com/mypage'.
             siteUrl (str): The site URL (property) to inspect the URL under.
                            Must be a property in Search Console. Example: 'sc-domain:example.com' or 'https://www.example.com/'.
             languageCode (Optional[str]): Optional. The BCP-47 language code for the inspection. Example: 'en-US'.
-
+        
         Returns:
             Dict[str, Any]: Inspection result containing details about the URL's indexing status.
-
+        
         Tags:
             url_inspection, indexing
         """
@@ -237,10 +233,8 @@ class GoogleSearchconsoleApp(APIApplication):
         search_type: str | None = None,  # 'type' is a reserved keyword in Python
     ) -> dict[str, Any]:
         """
-        Queries your search traffic data with filters and parameters that you define.
-        The method returns zero or more rows grouped by the row that you define.
-        You must define a date range of one or more days.
-
+        Queries and retrieves search traffic data for a specified site within a given date range. Supports advanced filtering, grouping by various dimensions (e.g., query, page, device), and aggregation to customize the analytics report from the Google Search Console API.
+        
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
             startDate (str): Start date of the requested period in YYYY-MM-DD format.
@@ -270,10 +264,10 @@ class GoogleSearchconsoleApp(APIApplication):
             search_type (Optional[str]): Filter by search type.
                 Example: "web", "image", "video", "news", "discover", "googleNews".
                 This corresponds to the 'type' parameter in the API.
-
+        
         Returns:
             Dict[str, Any]: Search analytics data.
-
+        
         Tags:
             search_analytics, reporting
         """
@@ -315,6 +309,6 @@ class GoogleSearchconsoleApp(APIApplication):
             self.list_sites,
             self.add_site,
             self.delete_site,
-            self.index_inspect_url,
+            self.inspect_url,
             self.query_search_analytics,
         ]

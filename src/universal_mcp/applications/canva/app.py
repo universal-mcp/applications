@@ -9,16 +9,16 @@ class CanvaApp(APIApplication):
         super().__init__(name="canva", integration=integration, **kwargs)
         self.base_url = "https://api.canva.com/rest"
 
-    def v1_apps_appid_jwks(self, appId) -> dict[str, Any]:
+    def get_app_jwks(self, appId) -> dict[str, Any]:
         """
-        Retrieves the JSON Web Key Set (JWKS) containing public keys for verifying JWTs associated with the specified application.
-
+        Retrieves the JSON Web Key Set (JWKS) for a given application ID. The JWKS contains public keys essential for verifying the authenticity of JSON Web Tokens (JWTs) issued by the application, ensuring secure communication.
+        
         Args:
             appId (string): appId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             app
         """
@@ -30,16 +30,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_assets_assetid1(self, assetId) -> dict[str, Any]:
+    def get_asset(self, assetId) -> dict[str, Any]:
         """
-        Retrieves the details of a specific asset using the provided assetId and returns the asset data.
-
+        Fetches the details of a specific asset using its unique identifier. This function performs a GET request to retrieve asset data, distinguishing it from other functions that update (`v1_assets_assetid2`, `v1_assets_assetid3`) or delete (`v1_assets_assetid`) assets at the same endpoint.
+        
         Args:
             assetId (string): assetId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             asset
         """
@@ -51,10 +51,10 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_assets_assetid3(self, assetId, name=None, tags=None) -> dict[str, Any]:
+    def post_update_asset(self, assetId, name=None, tags=None) -> dict[str, Any]:
         """
-        Updates an asset using the "POST" method at the "/v1/assets/{assetId}" endpoint and returns a status message.
-
+        Updates an asset's name and tags by its ID using an HTTP POST request. This method is distinct from the PATCH-based update function (`v1_assets_assetid2`), which performs a similar action on the same `/v1/assets/{assetId}` endpoint.
+        
         Args:
             assetId (string): assetId
             name (string): name Example: '<string>'.
@@ -69,10 +69,10 @@ class CanvaApp(APIApplication):
                   ]
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             asset
         """
@@ -89,16 +89,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_assets_assetid(self, assetId) -> Any:
+    def delete_asset(self, assetId) -> Any:
         """
-        Deletes an asset by its unique identifier and returns a success status upon completion.
-
+        Deletes a specific Canva asset identified by its unique ID. This function sends an HTTP DELETE request to the `/v1/assets/{assetId}` endpoint to permanently remove the resource, returning the API's confirmation response upon successful completion.
+        
         Args:
             assetId (string): assetId
-
+        
         Returns:
             Any: OK
-
+        
         Tags:
             asset
         """
@@ -110,10 +110,10 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_assets_assetid2(self, assetId, name=None, tags=None) -> dict[str, Any]:
+    def patch_asset(self, assetId, name=None, tags=None) -> dict[str, Any]:
         """
-        Updates specific properties of an asset identified by its ID and returns the operation status.
-
+        Partially updates an asset by its ID using an HTTP PATCH request to modify specific fields like name or tags. Unlike `v1_assets_assetid3` which uses POST, this method applies incremental changes, returning the updated asset data upon completion.
+        
         Args:
             assetId (string): assetId
             name (string): name Example: '<string>'.
@@ -128,10 +128,10 @@ class CanvaApp(APIApplication):
                   ]
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             asset
         """
@@ -148,16 +148,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_assets_upload(self, request_body=None) -> dict[str, Any]:
+    def upload_asset(self, request_body=None) -> dict[str, Any]:
         """
-        Uploads an asset with provided metadata to the server and returns a success or error status.
-
+        Uploads an asset by sending its data to the `/v1/assets/upload` endpoint. This function performs a direct, synchronous upload, returning a confirmation. It differs from `v1_asset_uploads`, which initiates an asynchronous upload job tracked by an ID.
+        
         Args:
             request_body (dict | None): Optional dictionary for arbitrary request body data.
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             asset
         """
@@ -167,16 +167,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_asset_uploads(self, request_body=None) -> dict[str, Any]:
+    def create_asset_upload_job(self, request_body=None) -> dict[str, Any]:
         """
-        Initiates an asset upload using the "POST" method at the "/v1/asset-uploads" path, accepting asset metadata in the header and handling responses for successful and failed uploads.
-
+        Initiates an asynchronous asset upload by creating an upload job. This method returns details, like a job ID, for subsequent steps. It differs from `v1_assets_upload`, which targets a direct, synchronous upload endpoint.
+        
         Args:
             request_body (dict | None): Optional dictionary for arbitrary request body data.
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             asset
         """
@@ -186,16 +186,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_asset_uploads_jobid(self, jobId) -> dict[str, Any]:
+    def get_asset_upload_job_status(self, jobId) -> dict[str, Any]:
         """
-        Retrieves the status and results of an asset upload job identified by the job ID.
-
+        Retrieves the status and results of an asynchronous asset upload job using its unique job ID. This allows for checking the outcome of an upload initiated by `v1_asset_uploads`, returning details on its completion and any resulting asset information.
+        
         Args:
             jobId (string): jobId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             asset
         """
@@ -207,12 +207,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_autofills(
+    def create_autofill_job(
         self, brand_template_id=None, data=None, preview=None, title=None
     ) -> dict[str, Any]:
         """
-        Triggers an autofill operation using the API at the "/v1/autofills" path, sending data via the POST method, and returns a response indicating success or failure.
-
+        Initiates an autofill job to create a new design by populating a brand template with provided data. It sends a POST request with the template ID, data, and title, returning the details of the newly created job.
+        
         Args:
             brand_template_id (string): brand_template_id Example: '<string>'.
             data (object): data
@@ -236,10 +236,10 @@ class CanvaApp(APIApplication):
                   "title": "<string>"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             autofill
         """
@@ -256,16 +256,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_autofills_jobid(self, jobId) -> dict[str, Any]:
+    def get_autofill_job_status(self, jobId) -> dict[str, Any]:
         """
-        Retrieves autofill data for a job identified by the specified jobId using the GET method at the "/v1/autofills/{jobId}" endpoint.
-
+        Retrieves the status and results of an asynchronous autofill job by its unique `jobId`. This function is used to check the outcome of a template population operation initiated by the `v1_autofills` method.
+        
         Args:
             jobId (string): jobId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             autofill
         """
@@ -277,12 +277,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_brand_templates(
+    def list_brand_templates(
         self, query=None, continuation=None, ownership=None, sort_by=None
     ) -> dict[str, Any]:
         """
-        Retrieves a list of brand templates based on query parameters such as ownership and sorting options using the "GET" method at the "/v1/brand-templates" path.
-
+        Searches for and retrieves a paginated list of brand templates. Results can be filtered by ownership and sorted by relevance, modification date, or title. A continuation token can be used to fetch subsequent pages of templates.
+        
         Args:
             query (string): Lets you search the brand templates available to the user using a search term or terms. Example: '<string>'.
             continuation (string): If the success response contains a continuation token, the user has access to more
@@ -301,10 +301,10 @@ class CanvaApp(APIApplication):
         - `MODIFIED_ASCENDING`: Sort results by the date last modified in ascending order.
         - `TITLE_DESCENDING`: Sort results by title in descending order.
         - `TITLE_ASCENDING`: Sort results by title in ascending order. Example: '<string>'.
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             brand_template, important
         """
@@ -323,16 +323,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_brand_templates_brandtemplateid(self, brandTemplateId) -> dict[str, Any]:
+    def get_brand_template_by_id(self, brandTemplateId) -> dict[str, Any]:
         """
-        Retrieves metadata for a specific brand template using its unique identifier.
-
+        Retrieves the complete metadata for a specific brand template using its unique identifier. This is distinct from `v1_brand_templates`, which lists multiple templates, and `v1_brand_templates_brandtemplateid_dataset`, which gets only a template's dataset.
+        
         Args:
             brandTemplateId (string): brandTemplateId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             brand_template
         """
@@ -344,18 +344,18 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_brand_templates_brandtemplateid_dataset(
+    def get_brand_template_dataset(
         self, brandTemplateId
     ) -> dict[str, Any]:
         """
-        Retrieves the dataset definition of a brand template, including data field names and types, allowing for the identification of autofillable fields.
-
+        Retrieves the dataset for a specific brand template by its ID. The dataset defines the names and types of autofillable fields, which is essential for programmatically populating the template with data.
+        
         Args:
             brandTemplateId (string): brandTemplateId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             brand_template
         """
@@ -367,12 +367,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_comments(
+    def create_comment(
         self, assignee_id=None, attached_to=None, message=None
     ) -> dict[str, Any]:
         """
-        Creates a new comment and returns a status message.
-
+        Creates a new top-level comment attached to a specific resource, such as a design. It allows for an optional assignee and a message body, sending a POST request to the `/v1/comments` endpoint and returning the details of the newly created comment.
+        
         Args:
             assignee_id (string): assignee_id Example: '<string>'.
             attached_to (object): attached_to
@@ -388,10 +388,10 @@ class CanvaApp(APIApplication):
                   "message": "<string>"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             comment
         """
@@ -407,12 +407,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_comments_commentid_replies(
+    def create_comment_reply(
         self, commentId, attached_to=None, message=None
     ) -> dict[str, Any]:
         """
-        Creates a new reply to a comment using the "POST" method.
-
+        Creates a reply to a specific comment, identified by `commentId`. It sends a POST request with the reply's message and attachment details to the `/v1/comments/{commentId}/replies` endpoint, adding a threaded response to an existing comment.
+        
         Args:
             commentId (string): commentId
             attached_to (object): attached_to
@@ -427,10 +427,10 @@ class CanvaApp(APIApplication):
                   "message": "<string>"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             comment
         """
@@ -447,19 +447,19 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_designs_designid_comments_commentid(
+    def get_design_comment(
         self, designId, commentId
     ) -> dict[str, Any]:
         """
-        Retrieves a specific comment from a design using the provided design ID and comment ID.
-
+        Fetches a specific comment from a design using both the design and comment IDs. Unlike other functions that create comments or replies, this method exclusively retrieves the data for a single, existing comment by making a GET request to the API.
+        
         Args:
             designId (string): designId
             commentId (string): commentId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             comment
         """
@@ -473,13 +473,13 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_connect_keys(self) -> dict[str, Any]:
+    def get_connection_keys(self) -> dict[str, Any]:
         """
-        Retrieves a list of connection keys associated with the current user or application.
-
+        Fetches a list of connection keys for the authenticated user or application from the `/v1/connect/keys` endpoint. These keys are used for establishing secure connections or integrations with the Canva API.
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             connect
         """
@@ -489,12 +489,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_designs(
+    def list_designs(
         self, query=None, continuation=None, ownership=None, sort_by=None
     ) -> dict[str, Any]:
         """
-        Retrieves a list of designs based on query parameters, including query, continuation, ownership, and sort order, using the GET method at the "/v1/designs" endpoint.
-
+        Retrieves a list of designs available to the user. Results can be filtered by a search query, ownership status, and sort order. It supports pagination for large datasets using a continuation token to fetch multiple designs.
+        
         Args:
             query (string): Lets you search the user's designs, and designs shared with the user, using a search term or terms. Example: '<string>'.
             continuation (string): If the success response contains a continuation token, the list contains more designs
@@ -511,10 +511,10 @@ class CanvaApp(APIApplication):
         - `modified_ascending`: Sort results by the date last modified in ascending order.
         - `title_descending`: Sort results by title in descending order.
         - `title_ascending`: Sort results by title in ascending order. Example: '<string>'.
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             design, important
         """
@@ -533,12 +533,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_designs1(
+    def create_design(
         self, asset_id=None, design_type=None, title=None
     ) -> dict[str, Any]:
         """
-        Creates a new design resource and returns the result of the operation.
-
+        Creates a new design from an asset. This function sends a POST request to the `/v1/designs` endpoint with the asset ID, design type, and title, returning the data for the newly created design resource.
+        
         Args:
             asset_id (string): asset_id Example: '<string>'.
             design_type (object): design_type
@@ -554,10 +554,10 @@ class CanvaApp(APIApplication):
                   "title": "<string>"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             design
         """
@@ -573,16 +573,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_designs_designid(self, designId) -> dict[str, Any]:
+    def get_design(self, designId) -> dict[str, Any]:
         """
-        Retrieves a specific design by its ID using the GET method at the "/v1/designs/{designId}" endpoint.
-
+        Fetches the details for a single, specific design using its unique identifier. This function retrieves one design, distinguishing it from `v1_designs` which lists multiple designs and `v1_designs1` which creates a new design.
+        
         Args:
             designId (string): designId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             design
         """
@@ -594,16 +594,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_imports(self, request_body=None) -> dict[str, Any]:
+    def create_design_import_job(self, request_body=None) -> dict[str, Any]:
         """
-        Initiates a data import process with the provided metadata in the request header and returns an appropriate response.
-
+        Initiates a job to import a file (e.g., PDF, PPTX) for creating a new Canva design. This function sends a POST request to the `/v1/imports` endpoint and returns details of the created import job, including a job ID for status tracking.
+        
         Args:
             request_body (dict | None): Optional dictionary for arbitrary request body data.
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             design_import
         """
@@ -613,16 +613,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_imports_jobid(self, jobId) -> dict[str, Any]:
+    def get_design_import_status(self, jobId) -> dict[str, Any]:
         """
-        Retrieves the status and details of a specific import job identified by its job ID.
-
+        Retrieves the status and results of a specific design import job using its unique `jobId`. This function checks the outcome of an import process initiated by the `v1_imports` method, returning details about the job's progress and final state.
+        
         Args:
             jobId (string): jobId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             design_import
         """
@@ -634,10 +634,10 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_exports(self, design_id=None, format=None) -> dict[str, Any]:
+    def create_design_export(self, design_id=None, format=None) -> dict[str, Any]:
         """
-        Initiates an export process through the API and returns status codes for success or failure.
-
+        Initiates an export job for a specified design based on its ID and format details (e.g., file type, quality). It returns the export job's details, including an ID used to track its status with `v1_exports_exportid`.
+        
         Args:
             design_id (string): design_id Example: '<string>'.
             format (object): format
@@ -656,10 +656,10 @@ class CanvaApp(APIApplication):
                   }
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             export
         """
@@ -674,16 +674,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_exports_exportid(self, exportId) -> dict[str, Any]:
+    def get_export_job_status(self, exportId) -> dict[str, Any]:
         """
-        Retrieves export details by ID using the "GET" method at the path "/v1/exports/{exportId}" and returns a response.
-
+        Retrieves the status and results of a specific design export job using its unique ID. This is used to check on an export initiated by the `v1_exports` function and to obtain download links for the completed file.
+        
         Args:
             exportId (string): exportId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             export
         """
@@ -695,16 +695,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_folders_folderid1(self, folderId) -> dict[str, Any]:
+    def get_folder_by_id(self, folderId) -> dict[str, Any]:
         """
-        Retrieves information about a folder with the specified ID using the "GET" method at the "/v1/folders/{folderId}" endpoint.
-
+        Retrieves detailed information for a specific folder using its unique ID. This GET operation fetches folder metadata, distinguishing it from functions that delete (`v1_folders_folderid`) or update (`v1_folders_folderid2`) the same folder resource.
+        
         Args:
             folderId (string): folderId
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             folder
         """
@@ -716,16 +716,16 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_folders_folderid(self, folderId) -> Any:
+    def delete_folder(self, folderId) -> Any:
         """
-        Deletes a folder with the specified ID, including all of its contents, using the DELETE method and returns a status code indicating success or failure.
-
+        Deletes a folder and all its contents using the folder's unique identifier. This function sends an HTTP DELETE request to the `/v1/folders/{folderId}` endpoint and returns a confirmation status upon successful deletion.
+        
         Args:
             folderId (string): folderId
-
+        
         Returns:
             Any: OK
-
+        
         Tags:
             folder
         """
@@ -737,10 +737,10 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_folders_folderid2(self, folderId, name=None) -> dict[str, Any]:
+    def update_folder(self, folderId, name=None) -> dict[str, Any]:
         """
-        Updates an existing folder using the specified `folderId` and returns a status message upon successful modification.
-
+        Updates a specific folder's properties, such as its name, using its unique ID. This function sends a PATCH request to the `/v1/folders/{folderId}` endpoint to apply partial modifications and returns the updated folder information upon success.
+        
         Args:
             folderId (string): folderId
             name (string): name
@@ -750,10 +750,10 @@ class CanvaApp(APIApplication):
                   "name": "<string>"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             folder
         """
@@ -769,12 +769,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_folders_folderid_items(
+    def list_folder_items(
         self, folderId, continuation=None, item_types=None
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of items within a specified folder, filtered by type, using continuation tokens for pagination.
-
+        Lists items within a specific folder. Supports optional filtering by item type (asset, design, folder, template) and pagination using a continuation token to navigate through large result sets.
+        
         Args:
             folderId (string): folderId
             continuation (string): If the success response contains a continuation token, the folder contains more items
@@ -784,10 +784,10 @@ class CanvaApp(APIApplication):
             item_types (string): Filter the folder items to only return specified types. The available types are:
         `asset`, `design`, `folder`, and `template`. To filter for more than one item type,
         provide a comma-delimited list. Example: '<string>'.
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             folder
         """
@@ -803,12 +803,12 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_folders_move(
+    def move_folder_item(
         self, from_folder_id=None, item_id=None, to_folder_id=None
     ) -> Any:
         """
-        Moves folders to a new location using the "POST" method at the "/v1/folders/move" endpoint and returns status messages based on the operation's success or failure.
-
+        Moves an item, such as a design or another folder, from a source folder to a destination folder. It requires the unique IDs for the item, the source folder, and the target folder to perform the relocation, returning a status confirmation upon completion.
+        
         Args:
             from_folder_id (string): from_folder_id Example: '<string>'.
             item_id (string): item_id Example: '<string>'.
@@ -821,10 +821,10 @@ class CanvaApp(APIApplication):
                   "to_folder_id": "<string>"
                 }
                 ```
-
+        
         Returns:
             Any: OK
-
+        
         Tags:
             folder
         """
@@ -840,10 +840,10 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_folders(self, name=None, parent_folder_id=None) -> dict[str, Any]:
+    def create_folder(self, name=None, parent_folder_id=None) -> dict[str, Any]:
         """
-        Creates a new folder in the system and returns a success or error status.
-
+        Creates a new folder, optionally assigning it a name and placing it within a specified parent folder. This function is distinct from others as it uses a POST request to the base `/v1/folders` endpoint, specifically for creation.
+        
         Args:
             name (string): name Example: '<string>'.
             parent_folder_id (string): parent_folder_id
@@ -854,10 +854,10 @@ class CanvaApp(APIApplication):
                   "parent_folder_id": "<string>"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             folder
         """
@@ -872,13 +872,13 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_users_me(self) -> dict[str, Any]:
+    def get_current_user(self) -> dict[str, Any]:
         """
-        Retrieves information about the currently authenticated user using the GET method at the "/v1/users/me" endpoint.
-
+        Retrieves core information for the currently authenticated user, such as ID and team details. This function is distinct from `v1_users_me_profile`, which fetches more specific profile data like the user's display name and profile picture.
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             user, important
         """
@@ -888,13 +888,13 @@ class CanvaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_users_me_profile(self) -> dict[str, Any]:
+    def get_current_user_profile(self) -> dict[str, Any]:
         """
-        Retrieves the authenticated user's profile information.
-
+        Fetches detailed profile information for the currently authenticated user. This method is distinct from `v1_users_me`, which retrieves general user account information rather than specific profile details like display name or avatar.
+        
         Returns:
             dict[str, Any]: OK
-
+        
         Tags:
             user
         """
@@ -906,36 +906,36 @@ class CanvaApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.v1_apps_appid_jwks,
-            self.v1_assets_assetid1,
-            self.v1_assets_assetid3,
-            self.v1_assets_assetid,
-            self.v1_assets_assetid2,
-            self.v1_assets_upload,
-            self.v1_asset_uploads,
-            self.v1_asset_uploads_jobid,
-            self.v1_autofills,
-            self.v1_autofills_jobid,
-            self.v1_brand_templates,
-            self.v1_brand_templates_brandtemplateid,
-            self.v1_brand_templates_brandtemplateid_dataset,
-            self.v1_comments,
-            self.v1_comments_commentid_replies,
-            self.v1_designs_designid_comments_commentid,
-            self.v1_connect_keys,
-            self.v1_designs,
-            self.v1_designs1,
-            self.v1_designs_designid,
-            self.v1_imports,
-            self.v1_imports_jobid,
-            self.v1_exports,
-            self.v1_exports_exportid,
-            self.v1_folders_folderid1,
-            self.v1_folders_folderid,
-            self.v1_folders_folderid2,
-            self.v1_folders_folderid_items,
-            self.v1_folders_move,
-            self.v1_folders,
-            self.v1_users_me,
-            self.v1_users_me_profile,
+            self.get_app_jwks,
+            self.get_asset,
+            self.post_update_asset,
+            self.delete_asset,
+            self.patch_asset,
+            self.upload_asset,
+            self.create_asset_upload_job,
+            self.get_asset_upload_job_status,
+            self.create_autofill_job,
+            self.get_autofill_job_status,
+            self.list_brand_templates,
+            self.get_brand_template_by_id,
+            self.get_brand_template_dataset,
+            self.create_comment,
+            self.create_comment_reply,
+            self.get_design_comment,
+            self.get_connection_keys,
+            self.list_designs,
+            self.create_design,
+            self.get_design,
+            self.create_design_import_job,
+            self.get_design_import_status,
+            self.create_design_export,
+            self.get_export_job_status,
+            self.get_folder_by_id,
+            self.delete_folder,
+            self.update_folder,
+            self.list_folder_items,
+            self.move_folder_item,
+            self.create_folder,
+            self.get_current_user,
+            self.get_current_user_profile,
         ]

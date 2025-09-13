@@ -9,7 +9,7 @@ class MsTeamsApp(APIApplication):
         super().__init__(name="ms_teams", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
-    def list_chats(
+    def get_user_chats(
         self,
         top: int | None = None,
         skip: int | None = None,
@@ -21,8 +21,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List chats
-
+        Retrieves a collection of chats the authenticated user is participating in. Supports optional OData query parameters for advanced filtering, sorting, pagination, and field selection, enabling customized data retrieval from the Microsoft Graph API.
+        
         Args:
             top (integer): Show only the first n items Example: '50'.
             skip (integer): Skip the first n items
@@ -32,13 +32,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chat, important
         """
@@ -62,14 +62,14 @@ class MsTeamsApp(APIApplication):
 
     def get_joined_teams(self) -> list[dict[str, Any]]:
         """
-        Fetches a list of the Microsoft Teams the user has joined.
-
+        Fetches all Microsoft Teams the authenticated user is a member of. This function queries the `/me/joinedTeams` API endpoint, returning a list of dictionaries where each dictionary contains the details of a specific team.
+        
         Returns:
             A list of dictionaries, where each dictionary represents a team.
-
+        
         Raises:
             httpx.HTTPStatusError: If the API request fails due to authentication or other issues.
-
+        
         Tags:
             read, list, teams, microsoft-teams, api, important
         """
@@ -92,8 +92,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List channels
-
+        Retrieves channels for a specified Microsoft Teams team using its unique ID. Optional parameters allow for advanced querying, including filtering, searching, sorting, and pagination of the results, to customize the returned collection of channels.
+        
         Args:
             team_id (string): team-id
             top (integer): Show only the first n items Example: '50'.
@@ -104,13 +104,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel, important
         """
@@ -136,18 +136,18 @@ class MsTeamsApp(APIApplication):
 
     def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
         """
-        Sends a message to a specific chat.
-
+        Posts a new message to a specific Microsoft Teams chat using its unique ID. It sends a POST request to the Graph API endpoint with the provided content (text/HTML). This function targets direct/group chats, differentiating it from `send_channel_message`, which posts to team channels.
+        
         Args:
             chat_id: The unique identifier of the chat.
             content: The message content to send (can be plain text or HTML).
-
+        
         Returns:
             A dictionary containing the API response for the sent message, including its ID.
-
+        
         Raises:
             httpx.HTTPStatusError: If the API request fails due to invalid ID, permissions, etc.
-
+        
         Tags:
             create, send, message, chat, microsoft-teams, api, important
         """
@@ -160,19 +160,19 @@ class MsTeamsApp(APIApplication):
         self, team_id: str, channel_id: str, content: str
     ) -> dict[str, Any]:
         """
-        Sends a message to a specific channel in a Microsoft Teams team.
-
+        Posts a new message to a specified channel within a Microsoft Teams team using the team and channel IDs. This function initiates a new conversation thread, unlike `reply_to_channel_message`. The content can be plain text or HTML. It differs from `send_chat_message` which targets private/group chats.
+        
         Args:
             team_id: The unique identifier of the team.
             channel_id: The unique identifier of the channel within the team.
             content: The message content to send (can be plain text or HTML).
-
+        
         Returns:
             A dictionary containing the API response for the sent message, including its ID.
-
+        
         Raises:
             httpx.HTTPStatusError: If the API request fails due to invalid IDs, permissions, etc.
-
+        
         Tags:
             create, send, message, channel, microsoft-teams, api, important
         """
@@ -185,20 +185,20 @@ class MsTeamsApp(APIApplication):
         self, team_id: str, channel_id: str, message_id: str, content: str
     ) -> dict[str, Any]:
         """
-        Sends a reply to a specific message in a channel.
-
+        Posts a reply to a specific message within a Microsoft Teams channel. It uses the team, channel, and original message IDs to target the correct conversation thread, distinguishing it from `send_channel_message` which starts a new thread.
+        
         Args:
             team_id: The unique identifier of the team.
             channel_id: The unique identifier of the channel.
             message_id: The unique identifier of the message to reply to.
             content: The reply message content (can be plain text or HTML).
-
+        
         Returns:
             A dictionary containing the API response for the sent reply, including its ID.
-
+        
         Raises:
             httpx.HTTPStatusError: If the API request fails due to invalid IDs, permissions, etc.
-
+        
         Tags:
             create, send, reply, message, channel, microsoft-teams, api, important
         """
@@ -207,7 +207,7 @@ class MsTeamsApp(APIApplication):
         response = self._post(url, data=payload)
         return self._handle_response(response)
 
-    def create_chat_operation(
+    def create_chat(
         self,
         id: str | None = None,
         chatType: str | None = None,
@@ -228,8 +228,8 @@ class MsTeamsApp(APIApplication):
         tabs: list[Any] | None = None,
     ) -> Any:
         """
-        Create chat
-
+        Creates a new Microsoft Teams chat conversation. It takes optional parameters like chat type, topic, and members to configure the chat. This function sends a POST request to the `/chats` API endpoint, initiating a new one-on-one or group chat based on the provided details.
+        
         Args:
             id (string): The unique identifier for an entity. Read-only.
             chatType (string): chatType
@@ -248,13 +248,13 @@ class MsTeamsApp(APIApplication):
             permissionGrants (array): A collection of permissions granted to apps for the chat.
             pinnedMessages (array): A collection of all the pinned messages in the chat. Nullable.
             tabs (array): A collection of all the tabs in the chat. Nullable.
-
+        
         Returns:
             Any: Created entity
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chat
         """
@@ -291,26 +291,26 @@ class MsTeamsApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def get_chat(
+    def get_chat_details(
         self,
         chat_id: str,
         select: list[str] | None = None,
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get chat
-
+        Retrieves the properties and relationships of a specific chat conversation by its unique ID. Optional parameters can select specific fields or expand related entities in the response, such as chat members or installed apps.
+        
         Args:
             chat_id (string): chat-id
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved entity
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chat
         """
@@ -345,8 +345,8 @@ class MsTeamsApp(APIApplication):
         tabs: list[Any] | None = None,
     ) -> Any:
         """
-        Update chat
-
+        Updates properties of a specific chat, such as its topic, using its unique ID. This function performs a partial update (PATCH) on an existing chat, distinguishing it from `get_chat` which only retrieves data, and `create_chat_operation` which creates an entirely new chat conversation.
+        
         Args:
             chat_id (string): chat-id
             id (string): The unique identifier for an entity. Read-only.
@@ -366,13 +366,13 @@ class MsTeamsApp(APIApplication):
             permissionGrants (array): A collection of permissions granted to apps for the chat.
             pinnedMessages (array): A collection of all the pinned messages in the chat. Nullable.
             tabs (array): A collection of all the tabs in the chat. Nullable.
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chat
         """
@@ -406,7 +406,7 @@ class MsTeamsApp(APIApplication):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def list_chat_apps(
+    def list_installed_chat_apps(
         self,
         chat_id: str,
         top: int | None = None,
@@ -419,8 +419,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List apps in chat
-
+        Retrieves the collection of applications installed within a specific Microsoft Teams chat, identified by its ID. It supports advanced querying through optional parameters for pagination, filtering, searching, and sorting to customize the results.
+        
         Args:
             chat_id (string): chat-id
             top (integer): Show only the first n items Example: '50'.
@@ -431,13 +431,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.teamsAppInstallation
         """
@@ -474,8 +474,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List conversationMembers
-
+        Retrieves a list of members for a specific chat, identified by `chat_id`. Supports advanced querying, including pagination, filtering, searching, and sorting. This function lists all members, unlike `get_chat_member_details` which fetches information for a single member.
+        
         Args:
             chat_id (string): chat-id
             top (integer): Show only the first n items Example: '50'.
@@ -486,13 +486,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.conversationMember
         """
@@ -525,21 +525,21 @@ class MsTeamsApp(APIApplication):
         visibleHistoryStartDateTime: str | None = None,
     ) -> Any:
         """
-        Add member to a chat
-
+        Adds a member to a specified Microsoft Teams chat using its `chat_id`. Details such as the member's roles and the extent of their visible chat history can be provided. This operation sends a POST request to the `/chats/{chat_id}/members` API endpoint.
+        
         Args:
             chat_id (string): chat-id
             id (string): The unique identifier for an entity. Read-only.
             displayName (string): The display name of the user.
             roles (array): The roles for that user. This property contains more qualifiers only when relevant - for example, if the member has owner privileges, the roles property contains owner as one of the values. Similarly, if the member is an in-tenant guest, the roles property contains guest as one of the values. A basic member shouldn't have any values specified in the roles property. An Out-of-tenant external member is assigned the owner role.
             visibleHistoryStartDateTime (string): The timestamp denoting how far back a conversation's history is shared with the conversation member. This property is settable only for members of a chat.
-
+        
         Returns:
             Any: Created navigation property.
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.conversationMember
         """
@@ -565,7 +565,7 @@ class MsTeamsApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def get_chat_member_details(
+    def get_chat_member(
         self,
         chat_id: str,
         conversationMember_id: str,
@@ -573,20 +573,20 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get conversationMember
-
+        Retrieves detailed information for a specific member within a chat using their unique ID. Unlike `list_chat_members` which fetches all members, this function targets a single individual. The response can be customized by selecting specific properties or expanding related entities.
+        
         Args:
             chat_id (string): chat-id
             conversationMember_id (string): conversationMember-id
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved navigation property
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.conversationMember
         """
@@ -603,18 +603,18 @@ class MsTeamsApp(APIApplication):
 
     def delete_chat_member(self, chat_id: str, conversationMember_id: str) -> Any:
         """
-        Remove member from chat
-
+        Removes a specific member from a chat using their unique ID and the chat's ID. This function sends a DELETE request to the Microsoft Graph API to permanently remove the user from the specified conversation, acting as the counterpart to `add_member_to_chat`.
+        
         Args:
             chat_id (string): chat-id
             conversationMember_id (string): conversationMember-id
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.conversationMember
         """
@@ -640,8 +640,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List messages in a chat
-
+        Retrieves a collection of messages from a specific chat, identified by its unique ID. Supports advanced querying with options for pagination (top, skip), filtering, sorting, and searching to refine the results, distinguishing it from functions that get single messages or replies.
+        
         Args:
             chat_id (string): chat-id
             top (integer): Show only the first n items Example: '50'.
@@ -652,13 +652,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chatMessage
         """
@@ -682,7 +682,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_chat_message_detail(
+    def get_chat_message(
         self,
         chat_id: str,
         chatMessage_id: str,
@@ -690,20 +690,20 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get chatMessage in a channel or chat
-
+        Retrieves the full details of a single message from a specific chat, identified by both the chat and message IDs. Supports optional query parameters to select specific properties or expand related entities, enabling customized API responses for a particular message.
+        
         Args:
             chat_id (string): chat-id
             chatMessage_id (string): chatMessage-id
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved navigation property
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chatMessage
         """
@@ -718,7 +718,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def read_chat_replies(
+    def list_chat_message_replies(
         self,
         chat_id: str,
         chatMessage_id: str,
@@ -732,8 +732,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Get replies from chats
-
+        Retrieves a collection of replies for a specific message within a given chat. It identifies the parent message using `chat_id` and `chatMessage_id` and supports optional OData query parameters for advanced filtering, sorting, and pagination of the results.
+        
         Args:
             chat_id (string): chat-id
             chatMessage_id (string): chatMessage-id
@@ -745,13 +745,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chatMessage
         """
@@ -777,7 +777,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_chat_reply(
+    def reply_to_chat_message(
         self,
         chat_id: str,
         chatMessage_id: str,
@@ -808,8 +808,8 @@ class MsTeamsApp(APIApplication):
         replies: list[Any] | None = None,
     ) -> Any:
         """
-        Create new navigation property to replies for chats
-
+        Posts a reply to a specific message within a chat. This comprehensive function allows for detailed configuration of the reply message's properties, such as its body and attachments. It is distinct from `reply_to_channel_message`, which sends simple replies to messages within team channels.
+        
         Args:
             chat_id (string): chat-id
             chatMessage_id (string): chatMessage-id
@@ -838,13 +838,13 @@ class MsTeamsApp(APIApplication):
             webUrl (string): Read-only. Link to the message in Microsoft Teams.
             hostedContents (array): Content in a message hosted by Microsoft Teams - for example, images or code snippets.
             replies (array): Replies for a specified message. Supports $expand for channel messages.
-
+        
         Returns:
             Any: Created navigation property.
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chatMessage
         """
@@ -893,7 +893,7 @@ class MsTeamsApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def get_chat_replies(
+    def get_chat_reply_details(
         self,
         chat_id: str,
         chatMessage_id: str,
@@ -902,21 +902,21 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get replies from chats
-
+        Retrieves a single, specific reply from a chat message thread using its unique ID, requiring the parent message and chat IDs. It targets one reply for detailed information, unlike `read_chat_replies` which lists all replies to a parent message.
+        
         Args:
             chat_id (string): chat-id
             chatMessage_id (string): chatMessage-id
             chatMessage_id1 (string): chatMessage-id1
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved navigation property
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             chats.chatMessage
         """
@@ -968,8 +968,8 @@ class MsTeamsApp(APIApplication):
         template: Any | None = None,
     ) -> Any:
         """
-        Create team from group
-
+        Enables a Microsoft Teams instance for a pre-existing Microsoft 365 group, identified by its ID. This 'team-ifies' the group, allowing optional team properties to be configured. It differs from `create_team`, which provisions a new team and group simultaneously.
+        
         Args:
             group_id (string): group-id
             id (string): The unique identifier for an entity. Read-only.
@@ -1002,13 +1002,13 @@ class MsTeamsApp(APIApplication):
             schedule (string): schedule
             tags (array): The tags associated with the team.
             template (string): template
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             groups.team
         """
@@ -1094,8 +1094,8 @@ class MsTeamsApp(APIApplication):
         template: Any | None = None,
     ) -> Any:
         """
-        Create team
-
+        Creates a new Microsoft Team and its associated Microsoft 365 group. This method builds a team from scratch, allowing specification of initial properties like display name, description, and members. It differs from `create_team_from_group`, which enables team functionality for an existing group.
+        
         Args:
             id (string): The unique identifier for an entity. Read-only.
             classification (string): An optional label. Typically describes the data or business sensitivity of the team. Must match one of a preconfigured set in the tenant's directory.
@@ -1127,13 +1127,13 @@ class MsTeamsApp(APIApplication):
             schedule (string): schedule
             tags (array): The tags associated with the team.
             template (string): template
-
+        
         Returns:
             Any: Created entity
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.team
         """
@@ -1183,7 +1183,7 @@ class MsTeamsApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def get_team_channel_info(
+    def get_channel_details(
         self,
         team_id: str,
         channel_id: str,
@@ -1191,20 +1191,20 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get channel
-
+        Retrieves detailed information for a specific channel within a Microsoft Teams team, identified by both team and channel IDs. Optional parameters allow for selecting specific properties or expanding related entities in the response to get more targeted data.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved navigation property
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1219,7 +1219,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_chat_message_by_team_channel(
+    def update_channel_message(
         self,
         team_id: str,
         channel_id: str,
@@ -1251,8 +1251,8 @@ class MsTeamsApp(APIApplication):
         replies: list[Any] | None = None,
     ) -> Any:
         """
-        Update chatMessage
-
+        Updates properties of a specific message within a Microsoft Teams channel, identified by its team, channel, and message IDs. It applies modifications like changing the message body or attachments by sending a PATCH request to the Microsoft Graph API.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
@@ -1282,13 +1282,13 @@ class MsTeamsApp(APIApplication):
             webUrl (string): Read-only. Link to the message in Microsoft Teams.
             hostedContents (array): Content in a message hosted by Microsoft Teams - for example, images or code snippets.
             replies (array): Replies for a specified message. Supports $expand for channel messages.
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1334,7 +1334,7 @@ class MsTeamsApp(APIApplication):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def update_message_reply(
+    def update_channel_message_reply(
         self,
         team_id: str,
         channel_id: str,
@@ -1367,8 +1367,8 @@ class MsTeamsApp(APIApplication):
         replies: list[Any] | None = None,
     ) -> Any:
         """
-        Update the navigation property replies in teams
-
+        Updates an existing reply to a specific message within a Microsoft Teams channel. It identifies the target reply using team, channel, parent message, and reply IDs, modifying its properties (e.g., body content, attachments) via a PATCH request.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
@@ -1399,13 +1399,13 @@ class MsTeamsApp(APIApplication):
             webUrl (string): Read-only. Link to the message in Microsoft Teams.
             hostedContents (array): Content in a message hosted by Microsoft Teams - for example, images or code snippets.
             replies (array): Replies for a specified message. Supports $expand for channel messages.
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1453,7 +1453,7 @@ class MsTeamsApp(APIApplication):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def get_channel_tabs(
+    def list_channel_tabs(
         self,
         team_id: str,
         channel_id: str,
@@ -1467,8 +1467,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List tabs in channel
-
+        Retrieves a list of all tabs within a specific channel of a Microsoft Teams team. Supports advanced OData query parameters for filtering, sorting, and pagination, allowing for customized retrieval of the tab collection.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
@@ -1480,13 +1480,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1512,7 +1512,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def add_channel_tab(
+    def create_channel_tab(
         self,
         team_id: str,
         channel_id: str,
@@ -1523,8 +1523,8 @@ class MsTeamsApp(APIApplication):
         teamsApp: Any | None = None,
     ) -> Any:
         """
-        Add tab to channel
-
+        Adds a new tab to a specified channel within a Microsoft Teams team. It requires team and channel IDs to target the location, and accepts optional configuration details like the tab's display name and associated application to create the new tab.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
@@ -1533,13 +1533,13 @@ class MsTeamsApp(APIApplication):
             displayName (string): Name of the tab.
             webUrl (string): Deep link URL of the tab instance. Read only.
             teamsApp (string): teamsApp
-
+        
         Returns:
             Any: Created navigation property.
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1568,7 +1568,7 @@ class MsTeamsApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def get_team_tab_info(
+    def get_channel_tab_details(
         self,
         team_id: str,
         channel_id: str,
@@ -1577,21 +1577,21 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get tab
-
+        Retrieves detailed information for a specific tab within a channel using its unique ID. Requires team and channel identifiers to locate the resource. This function fetches a single tab, unlike `get_channel_tabs` which lists all tabs for the channel.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
             teamsTab_id (string): teamsTab-id
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved navigation property
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1610,7 +1610,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_tab_info(
+    def update_channel_tab(
         self,
         team_id: str,
         channel_id: str,
@@ -1622,8 +1622,8 @@ class MsTeamsApp(APIApplication):
         teamsApp: Any | None = None,
     ) -> Any:
         """
-        Update tab
-
+        Updates an existing tab within a specific channel of a Microsoft Teams team. It identifies the tab using team, channel, and tab IDs to modify properties like its display name or configuration. This function performs a partial update on the tab's resource.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
@@ -1633,13 +1633,13 @@ class MsTeamsApp(APIApplication):
             displayName (string): Name of the tab.
             webUrl (string): Deep link URL of the tab instance. Read only.
             teamsApp (string): teamsApp
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1667,23 +1667,23 @@ class MsTeamsApp(APIApplication):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def delete_channel_tab_by_id(
+    def delete_channel_tab(
         self, team_id: str, channel_id: str, teamsTab_id: str
     ) -> Any:
         """
-        Delete tab from channel
-
+        Deletes a specific tab from a Microsoft Teams channel. The function requires the team ID, channel ID, and the tab's unique ID to target and permanently remove the specified tab from the channel's interface.
+        
         Args:
             team_id (string): team-id
             channel_id (string): channel-id
             teamsTab_id (string): teamsTab-id
-
+        
         Returns:
             Any: Success
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1707,19 +1707,19 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Get primaryChannel
-
+        Retrieves details for the primary channel (typically 'General') of a specified Microsoft Teams team. Optional parameters allow for selecting specific properties or expanding related entities in the API response. This differs from `get_team_channel_info`, which requires a specific channel ID.
+        
         Args:
             team_id (string): team-id
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             Any: Retrieved navigation property
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             teams.channel
         """
@@ -1732,7 +1732,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_user_installed_apps(
+    def list_user_installed_apps(
         self,
         user_id: str,
         top: int | None = None,
@@ -1745,8 +1745,8 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        List apps installed for user
-
+        Retrieves the collection of applications installed in a specific user's personal Microsoft Teams scope. This function accepts optional parameters for filtering, sorting, and pagination, enabling customized queries to refine the list of apps returned from the Microsoft Graph API.
+        
         Args:
             user_id (string): user-id
             top (integer): Show only the first n items Example: '50'.
@@ -1757,13 +1757,13 @@ class MsTeamsApp(APIApplication):
             orderby (array): Order items by property values
             select (array): Select properties to be returned
             expand (array): Expand related entities
-
+        
         Returns:
             dict[str, Any]: Retrieved collection
-
+        
         Raises:
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             users.userTeamwork
         """
@@ -1789,35 +1789,35 @@ class MsTeamsApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.list_chats,
+            self.get_user_chats,
             self.get_joined_teams,
             self.list_channels_for_team,
             self.send_chat_message,
             self.send_channel_message,
             self.reply_to_channel_message,
-            self.create_chat_operation,
-            self.get_chat,
+            self.create_chat,
+            self.get_chat_details,
             self.update_chat_details,
-            self.list_chat_apps,
+            self.list_installed_chat_apps,
             self.list_chat_members,
             self.add_member_to_chat,
-            self.get_chat_member_details,
+            self.get_chat_member,
             self.delete_chat_member,
             self.list_chat_messages,
-            self.get_chat_message_detail,
-            self.read_chat_replies,
-            self.create_chat_reply,
-            self.get_chat_replies,
+            self.get_chat_message,
+            self.list_chat_message_replies,
+            self.reply_to_chat_message,
+            self.get_chat_reply_details,
             self.create_team_from_group,
             self.create_team,
-            self.get_team_channel_info,
-            self.update_chat_message_by_team_channel,
-            self.update_message_reply,
-            self.get_channel_tabs,
-            self.add_channel_tab,
-            self.get_team_tab_info,
-            self.update_tab_info,
-            self.delete_channel_tab_by_id,
+            self.get_channel_details,
+            self.update_channel_message,
+            self.update_channel_message_reply,
+            self.list_channel_tabs,
+            self.create_channel_tab,
+            self.get_channel_tab_details,
+            self.update_channel_tab,
+            self.delete_channel_tab,
             self.get_primary_team_channel,
-            self.get_user_installed_apps,
+            self.list_user_installed_apps,
         ]

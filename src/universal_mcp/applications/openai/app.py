@@ -61,8 +61,8 @@ class OpenaiApp(APIApplication):
         # Add other common parameters as needed, or rely on
     ) -> dict[str, Any] | str:
         """
-        Creates a model response for the given chat conversation.
-
+        Generates a model response for a chat conversation. It supports both standard and streaming modes; if streaming, it internally aggregates response chunks into a single complete object, simplifying stream handling. Returns the completion data as a dictionary on success or an error string on failure.
+        
         Args:
             messages: A list of messages comprising the conversation so far.
             model: ID of the model to use. Defaults to "gpt-4o".
@@ -79,12 +79,12 @@ class OpenaiApp(APIApplication):
             presence_penalty: Number between -2.0 and 2.0. Positive values penalize new tokens based on whether they appear in the text so far.
             stop: Up to 4 sequences where the API will stop generating further tokens.
             user: A unique identifier representing your end-user.
-
+        
         Returns:
             A dictionary containing the chat completion response on success,
             or a string containing an error message on failure.
             If stream=True, usage data in the response will be None.
-
+        
         Tags:
             chat, llm, important
         """
@@ -163,17 +163,17 @@ class OpenaiApp(APIApplication):
         self, file: OpenAiFileTypes, purpose: OpenAiFilePurpose
     ) -> dict[str, Any] | str:
         """
-        Upload a file that can be used across various OpenAI API endpoints.
-
+        Uploads a file to the user's OpenAI account for use across various endpoints like 'assistants'. It accepts a file path or object and a purpose string, returning a dictionary with the created file object's details upon success.
+        
         Args:
             file: The File object (not file name) or path to be uploaded.
                   Can be bytes, a PathLike object, or a file-like object.
             purpose: The intended purpose of the uploaded file (e.g., 'fine-tune', 'assistants').
-
+        
         Returns:
             A dictionary containing the file object details on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             files, upload, storage
         """
@@ -194,18 +194,18 @@ class OpenaiApp(APIApplication):
         order: Literal["asc", "desc"] | None = None,
     ) -> dict[str, Any] | str:
         """
-        Lists the files that have been uploaded to your OpenAI account.
-
+        Retrieves a paginated list of files uploaded to the OpenAI account. Allows filtering by purpose and controlling the output with limit, `after` cursor, and sort order parameters to efficiently navigate through the file collection.
+        
         Args:
             purpose: Only return files with the given purpose.
             limit: A limit on the number of objects to be returned.
             after: A cursor for use in pagination.
             order: Sort order by the `created_at` timestamp.
-
+        
         Returns:
             A dictionary representing a page of file objects on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             files, list, storage
         """
@@ -228,17 +228,17 @@ class OpenaiApp(APIApplication):
         except Exception as e:
             return f"Error listing files: {type(e).__name__} - {e}"
 
-    async def retrieve_file(self, file_id: str) -> dict[str, Any] | str:
+    async def retrieve_file_metadata(self, file_id: str) -> dict[str, Any] | str:
         """
-        Retrieves information about a specific file.
-
+        Retrieves the metadata (e.g., purpose, creation date) for a specific file from the OpenAI account using its ID. Unlike `retrieve_file_content`, this function does not download the file's contents. It returns a dictionary with file details on success or an error string on failure.
+        
         Args:
             file_id: The ID of the file to retrieve.
-
+        
         Returns:
             A dictionary containing the file object details on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             files, retrieve, storage
         """
@@ -255,15 +255,15 @@ class OpenaiApp(APIApplication):
 
     async def delete_file(self, file_id: str) -> dict[str, Any] | str:
         """
-        Deletes a file.
-
+        Permanently deletes a file from the user's OpenAI account using its unique file ID. This action is irreversible. It returns a dictionary confirming the deletion on success or an error message string on failure. This is the 'delete' operation in the file management lifecycle.
+        
         Args:
             file_id: The ID of the file to delete.
-
+        
         Returns:
             A dictionary containing the deletion status on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             files, delete, storage
         """
@@ -278,16 +278,15 @@ class OpenaiApp(APIApplication):
 
     async def retrieve_file_content(self, file_id: str) -> dict[str, Any] | str:
         """
-        Retrieves the content of the specified file.
-        Returns text content directly, or base64 encoded content in a dictionary for binary files.
-
+        Retrieves a file's content from OpenAI using its ID. It returns plain text for common text formats (e.g., JSON, CSV). For binary or undecodable files, it returns a dictionary with base64-encoded data, differentiating it from `retrieve_file` which only fetches metadata.
+        
         Args:
             file_id: The ID of the file whose content to retrieve.
-
+        
         Returns:
             The file content as a string if text, a dictionary with base64 encoded
             content if binary, or an error message string on failure.
-
+        
         Tags:
             files, content, download
         """
@@ -332,7 +331,7 @@ class OpenaiApp(APIApplication):
             )
 
     # --- Images Methods ---
-    async def generate_image(
+    async def create_image(
         self,
         prompt: str,
         model: str
@@ -347,8 +346,8 @@ class OpenaiApp(APIApplication):
         user: str | None = None,
     ) -> dict[str, Any] | str:
         """
-        Creates an image given a prompt.
-
+        Generates new images from a textual prompt using OpenAI's DALL-E models. It allows customization of parameters like image size, quality, style, and response format (URL or base64 JSON). Unlike other image functions in this class, it creates images entirely from scratch based on text.
+        
         Args:
             prompt: A text description of the desired image(s).
             model: The model to use for image generation. Defaults to "dall-e-3".
@@ -365,11 +364,11 @@ class OpenaiApp(APIApplication):
                   For "dall-e-3": "1024x1024", "1792x1024", or "1024x1792".
             style: The style of the generated images ("vivid" or "natural"). Only for "dall-e-3".
             user: A unique identifier representing your end-user.
-
+        
         Returns:
             A dictionary containing the image generation response on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             images, generate, dalle, important
         """
@@ -416,8 +415,8 @@ class OpenaiApp(APIApplication):
         user: str | None = None,
     ) -> dict[str, Any] | str:
         """
-        Creates an edited or extended image given an original image and a prompt.
-
+        Modifies a source image using the DALL-E 2 model based on a text prompt. An optional mask can be supplied to specify the exact area for editing. This function is distinct from generating images from scratch (`generate_image`) or creating simple variations (`create_image_variation`).
+        
         Args:
             image: The image to edit. Must be a valid PNG file, less than 4MB, and square.
             prompt: A text description of the desired image(s).
@@ -428,11 +427,11 @@ class OpenaiApp(APIApplication):
             response_format: The format of the returned images ("url" or "b64_json"). Defaults to "url".
             size: The size of the generated images. Must be one of "256x256", "512x512", or "1024x1024".
             user: A unique identifier representing your end-user.
-
+        
         Returns:
             A dictionary containing the image edit response on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             images, edit, dalle
         """
@@ -469,8 +468,8 @@ class OpenaiApp(APIApplication):
         user: str | None = None,
     ) -> dict[str, Any] | str:
         """
-        Creates a variation of a given image.
-
+        Generates one or more variations of a provided image using the OpenAI API, specifically the DALL-E 2 model. It allows customization of the number, size, and response format of the resulting images. Returns a dictionary with image data on success or an error string on failure.
+        
         Args:
             image: The image to use as the basis for the variation(s). Must be a valid PNG file.
             model: The model to use. Defaults to "dall-e-2", which is currently the only
@@ -479,11 +478,11 @@ class OpenaiApp(APIApplication):
             response_format: The format of the returned images ("url" or "b64_json"). Defaults to "url".
             size: The size of the generated images. Must be one of "256x256", "512x512", or "1024x1024".
             user: A unique identifier representing your end-user.
-
+        
         Returns:
             A dictionary containing the image variation response on success,
             or a string containing an error message on failure.
-
+        
         Tags:
             images, variation, dalle
         """
@@ -508,7 +507,7 @@ class OpenaiApp(APIApplication):
         except Exception as e:
             return f"Error creating image variation with model {effective_model}: {type(e).__name__} - {e}"
 
-    async def create_transcription(
+    async def transcribe_audio(
         self,
         file: OpenAiFileTypes,
         model: str | OpenAiAudioModel = "gpt-4o-transcribe",
@@ -522,8 +521,8 @@ class OpenaiApp(APIApplication):
         stream: bool = False,
     ) -> dict[str, Any] | str:
         """
-        Transcribes audio into the input language.
-
+        Transcribes an audio file into text in its original language using models like Whisper or GPT-4o. It supports multiple response formats and internally aggregates streaming data into a final object. This differs from `create_translation`, which translates audio specifically into English text.
+        
         Args:
             file: The audio file object (not file name) to transcribe.
             model: ID of the model to use (e.g., "whisper-1", "gpt-4o-transcribe").
@@ -539,12 +538,12 @@ class OpenaiApp(APIApplication):
                      Only works with response_format="json" and gpt-4o models.
             stream: If True, streams the response. The method will aggregate the stream
                     into a final response object. Streaming is not supported for "whisper-1".
-
+        
         Returns:
             A dictionary containing the transcription or a string, depending on `response_format`.
             If `stream` is True, an aggregated response dictionary.
             Returns an error message string on failure.
-
+        
         Tags:
             audio, transcription, speech-to-text, important
         """
@@ -615,19 +614,19 @@ class OpenaiApp(APIApplication):
         temperature: float | None = None,
     ) -> dict[str, Any] | str:
         """
-        Translates audio into English text.
-
+        Translates audio from any supported language into English text using OpenAI's API. Unlike `create_transcription`, which converts audio to text in its original language, this function's output is always English. It supports various response formats like JSON, text, or SRT for the translated content.
+        
         Args:
             file: The audio file object (not file name) to translate.
             model: ID of the model to use (currently, only "whisper-1" is supported).
             prompt: Optional text to guide the model's style (should be in English).
             response_format: The format of the translated text.
             temperature: Sampling temperature between 0 and 1.
-
+        
         Returns:
             A dictionary containing the translation or a string, depending on `response_format`.
             Returns an error message string on failure.
-
+        
         Tags:
             audio, translation, speech-to-text
         """
@@ -681,8 +680,8 @@ class OpenaiApp(APIApplication):
         instructions: str | None = None,  # For gpt-4o-mini-tts or newer models
     ) -> dict[str, Any] | str:
         """
-        Generates audio from the input text.
-
+        Generates audio from input text using a specified TTS model and voice. This text-to-speech function allows customizing audio format and speed. On success, it returns a dictionary containing the base64-encoded audio content and its corresponding MIME type, or an error string on failure.
+        
         Args:
             input_text: The text to generate audio for (max 4096 characters).
             model: The TTS model to use (e.g., "tts-1", "tts-1-hd", "gpt-4o-mini-tts").
@@ -690,12 +689,12 @@ class OpenaiApp(APIApplication):
             response_format: The format of the audio ("mp3", "opus", "aac", "flac", "wav", "pcm"). Defaults to "mp3".
             speed: Speed of the generated audio (0.25 to 4.0). Defaults to 1.0.
             instructions: Control voice with additional instructions (not for tts-1/tts-1-hd).
-
-
+        
+        
         Returns:
             A dictionary containing the base64 encoded audio content and content type,
             or an error message string on failure.
-
+        
         Tags:
             audio, speech, text-to-speech, tts, important
         """
@@ -746,13 +745,13 @@ class OpenaiApp(APIApplication):
             self.create_chat_completion,
             self.upload_file,
             self.list_files,
-            self.retrieve_file,
+            self.retrieve_file_metadata,
             self.delete_file,
             self.retrieve_file_content,
-            self.generate_image,
+            self.create_image,
             self.create_image_edit,
             self.create_image_variation,
-            self.create_transcription,
+            self.transcribe_audio,
             self.create_translation,
             self.create_speech,
         ]

@@ -18,8 +18,7 @@ class SerpapiApp(APIApplication):
     @property
     def serpapi_api_key(self) -> str:
         """
-        Retrieves and caches the SerpApi API key from the integration.
-        Raises NotAuthorizedError if the key cannot be obtained.
+        A property that lazily retrieves the SerpApi API key from the integration and caches it for future use. It fetches credentials on first access, raising a `NotAuthorizedError` if the key is missing. Subsequent calls efficiently return the cached key.
         """
         if self._serpapi_api_key is None:
             if not self.integration:
@@ -76,21 +75,20 @@ class SerpapiApp(APIApplication):
             logger.info("SerpApi API Key successfully retrieved and cached.")
         return self._serpapi_api_key
 
-    async def search(self, params: dict[str, Any] | None = None) -> str:
+    async def web_search(self, params: dict[str, Any] | None = None) -> str:
         """
-        Performs a search using the SerpApi service and returns formatted search results.
-        Note: The underlying SerpApiSearch().get_dict() call is synchronous.
-
+        Performs a general web search via SerpApi, defaulting to the 'google_light' engine. It accepts custom parameters, retrieves organic results, and formats them into a string with titles, links, and snippets. It also handles API authentication and raises `NotAuthorizedError` for credential-related issues.
+        
         Args:
             params: Dictionary of engine-specific parameters (e.g., {'q': 'Coffee', 'engine': 'google_light', 'location': 'Austin, TX'}). Defaults to None.
-
+        
         Returns:
             A formatted string containing search results with titles, links, and snippets, or an error message if the search fails.
-
+        
         Raises:
             NotAuthorizedError: If the API key cannot be retrieved or is invalid/rejected by SerpApi.
             Exception: For other unexpected errors during the search process. (Specific HTTP errors or SerpApiErrors are caught and returned as strings or raise NotAuthorizedError).
-
+        
         Tags:
             search, async, web-scraping, api, serpapi, important
         """
@@ -195,20 +193,20 @@ class SerpapiApp(APIApplication):
         place_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a Google Maps search using the SerpApi service and returns formatted search results.
-
+        Executes a Google Maps search via SerpApi using a query, coordinates, or place ID. It enhances the results by adding a `google_maps_url` to each location, distinguishing it from `get_google_maps_reviews` which retrieves reviews for a known place.
+        
         Args:
             q (string, optional): The search query for Google Maps (e.g., "Coffee", "Restaurants", "Gas stations").
             ll (string, optional): Latitude and longitude with zoom level in format "@lat,lng,zoom" (e.g., "@40.7455096,-74.0083012,14z"). The zoom attribute ranges from 3z (map completely zoomed out) to 21z (map completely zoomed in). Results are not guaranteed to be within the requested geographic location.
             place_id (string, optional): The unique reference to a place in Google Maps. Place IDs are available for most locations, including businesses, landmarks, parks, and intersections. You can find the place_id using our Google Maps API. place_id can be used without any other optional parameter. place_id and data_cid can't be used together.
-
+        
         Returns:
             dict[str, Any]: Formatted Google Maps search results with place names, addresses, ratings, and other details.
-
+        
         Raises:
             ValueError: Raised when required parameters are missing.
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             google-maps, search, location, places, important
         """
@@ -250,19 +248,19 @@ class SerpapiApp(APIApplication):
         hl: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves Google Maps reviews for a specific place using the SerpApi service.
-
+        Fetches Google Maps reviews for a specific location via SerpApi using its unique `data_id`. This function uses the `google_maps_reviews` engine, unlike `google_maps_search` which finds locations. Results can be returned in a specified language, defaulting to English.
+        
         Args:
             data_id (string): The data ID of the place to get reviews for (e.g., "0x89c259af336b3341:0xa4969e07ce3108de").
             hl (string, optional): Language parameter for the search results. Defaults to "en".
-
+        
         Returns:
             dict[str, Any]: Google Maps reviews data with ratings, comments, and other review details.
-
+        
         Raises:
             ValueError: Raised when required parameters are missing.
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
+        
         Tags:
             google-maps, reviews, ratings, places, important
         """
@@ -287,7 +285,7 @@ class SerpapiApp(APIApplication):
 
     def list_tools(self) -> list[callable]:
         return [
-            self.search,
+            self.web_search,
             self.google_maps_search,
             self.get_google_maps_reviews,
         ]
