@@ -230,7 +230,7 @@ class GoogleMailApp(APIApplication):
             A dictionary containing the cleaned message details (serializable as JSON)
 
         Tags:
-            retrieve, email, format, api, gmail, message, important, body, content
+            retrieve, email, format, api, gmail, message, important, body, content, attachments
         """
         url = f"{self.base_api_url}/messages/{message_id}"
         response = self._get(url)
@@ -251,6 +251,9 @@ class GoogleMailApp(APIApplication):
             else:
                 body_content = "No content available"
 
+        # Extract attachments
+        attachments = self._extract_attachments(raw_data.get("payload", {}))
+
         return {
             "message_id": message_id,
             "from_addr": headers.get("From", "Unknown sender"),
@@ -259,7 +262,10 @@ class GoogleMailApp(APIApplication):
             "subject": headers.get("Subject", "No subject"),
             "body_content": body_content,
             "thread_id": raw_data.get("threadId"),
+            "attachments": attachments,
         }
+
+
 
     def _extract_email_body(self, payload):
         """
@@ -314,6 +320,46 @@ class GoogleMailApp(APIApplication):
         except Exception as e:
             logger.error(f"Error extracting email body: {str(e)}")
             return ""
+
+    def _extract_attachments(self, payload):
+        """
+        Extracts attachment information from the Gmail API payload.
+
+        Args:
+            payload: The payload section from Gmail API response
+
+        Returns:
+            list: List of attachment dictionaries with attachment_id, filename, mime_type, and size
+        """
+        attachments = []
+        
+        try:
+            if payload.get("filename") and payload.get("body", {}).get("attachmentId"):
+                attachments.append({
+                    "attachment_id": payload["body"]["attachmentId"],
+                    "filename": payload["filename"],
+                    "mime_type": payload.get("mimeType", ""),
+                    "size": payload.get("body", {}).get("size", 0)
+                })
+
+            parts = payload.get("parts", [])
+            for part in parts:
+                if part.get("filename") and part.get("body", {}).get("attachmentId"):
+                    attachments.append({
+                        "attachment_id": part["body"]["attachmentId"],
+                        "filename": part["filename"],
+                        "mime_type": part.get("mimeType", ""),
+                        "size": part.get("body", {}).get("size", 0)
+                    })
+                
+                elif part.get("parts"):
+                    nested_attachments = self._extract_attachments(part)
+                    attachments.extend(nested_attachments)
+
+        except Exception as e:
+            logger.error(f"Error extracting attachments: {str(e)}")
+
+        return attachments
 
     def _decode_base64(self, data):
         """
