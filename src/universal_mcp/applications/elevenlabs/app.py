@@ -18,10 +18,10 @@ class ElevenlabsApp(APIApplication):
     @property
     def client(self) -> ElevenLabs:
         if self._client is None:
-            # credentials = self.integration.get_credentials()
-            # if not credentials:
-            #     raise NotAuthorizedError("No credentials found")
-            api_key = "sk_50d565b590e5fecff99c12393b2ed7bc5d3dcb74a1fa6a68"  # credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+            credentials = self.integration.get_credentials()
+            if not credentials:
+                raise NotAuthorizedError("No credentials found")
+            api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
                 raise NotAuthorizedError("No api key found")
             self._client = ElevenLabs(api_key=api_key)
