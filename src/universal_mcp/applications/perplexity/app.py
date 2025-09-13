@@ -9,7 +9,7 @@ class PerplexityApp(APIApplication):
         super().__init__(name="perplexity", integration=integration)
         self.base_url = "https://api.perplexity.ai"
 
-    def chat(
+    def answer_with_search(
         self,
         query: str,
         model: Literal[
@@ -19,28 +19,28 @@ class PerplexityApp(APIApplication):
             "sonar-reasoning",
             "sonar-reasoning-pro",
             "sonar-deep-research",
-        ] = "sonar",
+        ] = "sonar-pro",
         temperature: float = 1,
-        system_prompt: str = "Be precise and concise.",
+        system_prompt: str = "You are a helpful AI assistant that answers questions using real-time information from the web.",
     ) -> dict[str, Any] | str:
         """
-        Initiates a chat completion request to generate AI responses using various models with customizable parameters.
-
+        Queries the Perplexity Chat Completions API for a web-search-grounded answer. It sends the user's prompt and model parameters to the `/chat/completions` endpoint, then parses the response to return the synthesized content and a list of supporting source citations, ideal for real-time information retrieval.
+        
         Args:
-            query: The input text/prompt to send to the chat model
-            model: The model to use for chat completion. Options include 'r1-1776', 'sonar', 'sonar-pro', 'sonar-reasoning', 'sonar-reasoning-pro', 'sonar-deep-research'. Defaults to 'sonar'
-            temperature: Controls randomness in the model's output. Higher values make output more random, lower values more deterministic. Defaults to 1
-            system_prompt: Initial system message to guide the model's behavior. Defaults to 'Be precise and concise.'
-
+            query: The search query or question to ask. For example: "What are the latest developments in AI regulation?"
+            model: The Perplexity model to use.
+            temperature: Controls randomness in the model's output. Higher values make the output more random, lower values make it more deterministic. Defaults to 1.
+            system_prompt: The initial system message to guide the model's behavior.
+        
         Returns:
-            A dictionary containing the generated content and citations, with keys 'content' (str) and 'citations' (list), or a string in some cases
-
+            A dictionary containing the generated 'content' (str) and a list of 'citations' (list) from the web search.
+        
         Raises:
-            AuthenticationError: Raised when API authentication fails due to missing or invalid credentials
-            HTTPError: Raised when the API request fails or returns an error status
-
+            AuthenticationError: Raised when API authentication fails due to missing or invalid credentials.
+            HTTPError: Raised when the API request fails or returns an error status.
+        
         Tags:
-            chat, generate, ai, completion, important
+            search, web, research, citations, current events, important
         """
         endpoint = f"{self.base_url}/chat/completions"
         messages = []
@@ -61,5 +61,5 @@ class PerplexityApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.chat,
+            self.search,
         ]

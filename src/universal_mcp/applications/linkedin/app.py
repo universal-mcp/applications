@@ -37,31 +37,26 @@ class LinkedinApp(APIApplication):
         is_reshare_disabled: bool = False,
     ) -> dict[str, str]:
         """
-        Create a post on LinkedIn.
-
+        Publishes a new text post to a specified LinkedIn author's feed (person or organization). It requires commentary and allows configuring visibility, distribution, and lifecycle state. Upon success, it returns the unique URN and a direct URL for the newly created post, distinguishing it from update/delete operations.
+        
         Args:
             commentary (str): The user generated commentary for the post. Supports mentions using format "@[Entity Name](urn:li:organization:123456)" and hashtags using "#keyword". Text linking to annotated entities must match the name exactly (case sensitive). For member mentions, partial name matching is supported.
-
             author (str): The URN of the author creating the post. Use "urn:li:person:{id}" for individual posts or "urn:li:organization:{id}" for company page posts. Example: "urn:li:person:wGgGaX_xbB" or "urn:li:organization:2414183"
-
             visibility (str): Controls who can view the post. Use "PUBLIC" for posts viewable by anyone on LinkedIn or "CONNECTIONS" for posts viewable by 1st-degree connections only. Defaults to "PUBLIC".
-
             distribution (dict[str, Any], optional): Distribution settings for the post. If not provided, defaults to {"feedDistribution": "MAIN_FEED", "targetEntities": [], "thirdPartyDistributionChannels": []}. feedDistribution controls where the post appears in feeds, targetEntities specifies entities to target, and thirdPartyDistributionChannels defines external distribution channels.
-
             lifecycle_state (str): The state of the post. Use "PUBLISHED" for live posts accessible to all entities, "DRAFT" for posts accessible only to author, "PUBLISH_REQUESTED" for posts submitted but processing, or "PUBLISH_FAILED" for posts that failed to publish. Defaults to "PUBLISHED".
-
             is_reshare_disabled (bool): Whether resharing is disabled by the author. Set to True to prevent other users from resharing this post, or False to allow resharing. Defaults to False.
-
+        
         Returns:
             dict[str, str]: Dictionary containing the post ID with key "post_id". Example: {"post_id": "urn:li:share:6844785523593134080"}
-
+        
         Raises:
             ValueError: If required parameters (commentary, author) are missing or if x-restli-id header is not found
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body
-
+        
         Notes:
             Requires LinkedIn API permissions: w_member_social (for individual posts) or w_organization_social (for company posts). All requests require headers: X-Restli-Protocol-Version: 2.0.0 and LinkedIn-Version: 202507. Rate limits: 150 requests per day per member, 100,000 requests per day per application. The Posts API replaces the deprecated ugcPosts API.
-
+        
         Tags:
             posts, important
         """
@@ -102,17 +97,17 @@ class LinkedinApp(APIApplication):
             "post_url": f"https://www.linkedin.com/feed/update/{post_id}",
         }
 
-    def get_your_info(self) -> dict[str, Any]:
+    def get_authenticated_user_profile(self) -> dict[str, Any]:
         """
-        Get your LinkedIn profile information.
-
+        Retrieves the authenticated user's profile information from the LinkedIn `/v2/userinfo` endpoint. It returns a dictionary containing the user's basic profile details, such as name and email, using the credentials from the active integration.
+        
         Returns:
             dict[str, Any]: Dictionary containing your LinkedIn profile information.
-
+        
         Raises:
             ValueError: If integration is not found
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body
-
+        
         Tags:
             profile, info
         """
@@ -128,19 +123,19 @@ class LinkedinApp(APIApplication):
 
     def delete_post(self, post_urn: str) -> dict[str, str]:
         """
-        Delete a post on LinkedIn.
-
+        Deletes a specific LinkedIn post identified by its unique Uniform Resource Name (URN). The function sends a DELETE request to the LinkedIn API and returns a confirmation dictionary with the deletion status upon a successful (HTTP 204) response.
+        
         Args:
             post_urn (str): The URN of the post to delete. Can be either a ugcPostUrn (urn:li:ugcPost:{id}) or shareUrn (urn:li:share:{id}).
-
+        
         Returns:
             dict[str, str]: Dictionary containing the deletion status. Example: {"status": "deleted", "post_urn": "urn:li:share:6844785523593134080"}
-
+        
         Raises:
             ValueError: If required parameter (post_urn) is missing or if integration is not found
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body
-
-
+        
+        
         Tags:
             posts, important
         """
@@ -168,8 +163,8 @@ class LinkedinApp(APIApplication):
         ad_context_status: str | None = None,
     ) -> dict[str, str]:
         """
-        Update a post on LinkedIn.
-
+        Modifies an existing LinkedIn post identified by its URN. This function performs a partial update, allowing changes to specific attributes such as commentary, call-to-action details, lifecycle state, or sponsored ad context. It returns a confirmation dictionary upon successful completion of the PATCH request.
+        
         Args:
             post_urn (str): The URN of the post to update. Can be either a ugcPostUrn (urn:li:ugcPost:{id}) or shareUrn (urn:li:share:{id}).
             commentary (str | None, optional): The user generated commentary of this post in little format.
@@ -178,17 +173,17 @@ class LinkedinApp(APIApplication):
             lifecycle_state (str | None, optional): The state of the content. Can be DRAFT, PUBLISHED, PUBLISH_REQUESTED, or PUBLISH_FAILED.
             ad_context_name (str | None, optional): Update the name of the sponsored content.
             ad_context_status (str | None, optional): Update the status of the sponsored content.
-
+        
         Returns:
             dict[str, str]: Dictionary containing the update status. Example: {"status": "updated", "post_urn": "urn:li:share:6844785523593134080"}
-
+        
         Raises:
             ValueError: If required parameter (post_urn) is missing or if integration is not found
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body
-
-
-
-
+        
+        
+        
+        
         Tags:
             posts, update, important
         """
@@ -237,7 +232,7 @@ class LinkedinApp(APIApplication):
         """
         return [
             self.create_post,
-            self.get_your_info,
+            self.get_authenticated_user_profile,
             self.delete_post,
             self.update_post,
         ]

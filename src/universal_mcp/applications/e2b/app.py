@@ -35,8 +35,7 @@ class E2bApp(APIApplication):
     @property
     def e2b_api_key(self) -> str:
         """
-        Retrieves and caches the E2B API key from the integration.
-        Raises NotAuthorizedError if the key cannot be obtained.
+        A property that lazily retrieves and caches the E2B API key from the configured integration. It fetches the key on the first call, handles authentication failures, and raises `NotAuthorizedError` with actionable guidance if the key cannot be obtained.
         """
         if self._e2b_api_key is None:
             if not self.integration:
@@ -131,20 +130,20 @@ class E2bApp(APIApplication):
         self, code: Annotated[str, "The Python code to execute."]
     ) -> str:
         """
-        Executes Python code in a sandbox environment and returns the formatted output.
-
+        Executes a Python code string in a secure E2B sandbox. It authenticates using the configured API key, runs the code, and returns a formatted string containing the execution's output (stdout/stderr). It raises specific exceptions for authorization failures or general execution issues.
+        
         Args:
             code: String containing the Python code to be executed in the sandbox.
-
+        
         Returns:
             A string containing the formatted execution output/logs from running the code.
-
+        
         Raises:
             ToolError: When there are issues with sandbox initialization or code execution,
                        or if the E2B SDK is not installed.
             NotAuthorizedError: When API key authentication fails during sandbox setup.
             ValueError: When provided code string is empty or invalid.
-
+        
         Tags:
             execute, sandbox, code-execution, security, important
         """

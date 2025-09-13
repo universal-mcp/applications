@@ -8,20 +8,20 @@ class TavilyApp(APIApplication):
         super().__init__(name=name, integration=integration)
         self.base_url = "https://api.tavily.com"
 
-    def search(self, query: str) -> str:
+    def search_and_summarize(self, query: str) -> str:
         """
-        Performs a web search using Tavily's search API and returns either a direct answer or a summary of top results.
-
+        Queries the Tavily API to perform a web search. It returns a direct AI-generated answer if available; otherwise, it provides a formatted summary of the top three search results, including their titles and snippets.
+        
         Args:
             query: The search query string to be processed by Tavily's search engine
-
+        
         Returns:
             A string containing either a direct answer from Tavily's AI or a formatted summary of the top 3 search results, with each result containing the title and snippet
-
+        
         Raises:
             ValueError: When authentication credentials are invalid or missing (via validate() method)
             HTTPError: When the API request fails or returns an error response
-
+        
         Tags:
             search, ai, web, query, important, api-client, text-processing
         """
@@ -48,4 +48,4 @@ class TavilyApp(APIApplication):
         return "\n".join(summaries)
 
     def list_tools(self):
-        return [self.search]
+        return [self.search_and_summarize]

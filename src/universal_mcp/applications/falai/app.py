@@ -28,6 +28,9 @@ class FalaiApp(APIApplication):
 
     @property
     def fal_client(self) -> AsyncClient:
+        """
+        A cached property that lazily initializes an `AsyncClient` instance for API communication. It retrieves the API key from the configured integration, centralizing authentication for all Fal AI operations. Raises `NotAuthorizedError` if the key is missing.
+        """
         if self._fal_client is None:
             credentials = self.integration.get_credentials()
             logger.info(f"Credentials: {credentials}")
@@ -55,21 +58,21 @@ class FalaiApp(APIApplication):
         hint: str | None = None,
     ) -> Any:
         """
-        Run a Fal AI application directly and wait for the result. Suitable for short-running applications with synchronous execution from the caller's perspective.
-
+        Executes a Fal AI application synchronously, waiting for completion and returning the result directly. This method is suited for short-running tasks, unlike `submit` which queues a job for asynchronous processing and returns a request ID instead of the final output.
+        
         Args:
             arguments: A dictionary of arguments for the application
             application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
             path: Optional subpath for the application endpoint
             timeout: Optional timeout in seconds for the request
             hint: Optional hint for runner selection
-
+        
         Returns:
             The result of the application execution as a Python object (converted from JSON response)
-
+        
         Raises:
             ToolError: Raised when the Fal API request fails, wrapping the original exception
-
+        
         Tags:
             run, execute, ai, synchronous, fal, important
         """
@@ -98,8 +101,8 @@ class FalaiApp(APIApplication):
         priority: Priority | None = None,
     ) -> str:
         """
-        Submits a request to the Fal AI queue for asynchronous processing and returns a request ID for tracking the job.
-
+        Submits a job to the Fal AI queue for asynchronous processing. It immediately returns a unique request ID for tracking the job's lifecycle with the `status`, `result`, and `cancel` methods. Unlike the synchronous `run` method, this function does not wait for the job's completion.
+        
         Args:
             arguments: A dictionary of arguments for the application
             application: The name or ID of the Fal application, defaulting to 'fal-ai/flux/dev'
@@ -107,13 +110,13 @@ class FalaiApp(APIApplication):
             hint: Optional hint for runner selection
             webhook_url: Optional URL to receive a webhook when the request completes
             priority: Optional queue priority ('normal' or 'low')
-
+        
         Returns:
             The request ID (str) of the submitted asynchronous job
-
+        
         Raises:
             ToolError: Raised when the Fal API request fails, wrapping the original exception
-
+        
         Tags:
             submit, async_job, start, ai, queue
         """
@@ -136,26 +139,26 @@ class FalaiApp(APIApplication):
                 f"Failed to submit Fal application {application}: {e}"
             ) from e
 
-    async def status(
+    async def check_status(
         self,
         request_id: str,
         application: str = "fal-ai/flux/dev",
         with_logs: bool = False,
     ) -> Status:
         """
-        Checks the status of a previously submitted Fal AI request and retrieves its current execution state
-
+        Checks the execution state (e.g., Queued, InProgress) of an asynchronous Fal AI job using its request ID. It provides a non-blocking way to monitor jobs initiated via `submit` without fetching the final `result`, and can optionally include logs.
+        
         Args:
             request_id: The unique identifier of the submitted request, obtained from a previous submit operation
             application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
             with_logs: Boolean flag to include execution logs in the status response (defaults to False)
-
+        
         Returns:
             A Status object containing the current state of the request (Queued, InProgress, or Completed)
-
+        
         Raises:
             ToolError: Raised when the Fal API request fails or when the provided request ID is invalid
-
+        
         Tags:
             status, check, async_job, monitoring, ai
         """
@@ -174,22 +177,22 @@ class FalaiApp(APIApplication):
                 f"Failed to get status for Fal request_id {request_id}: {e}"
             ) from e
 
-    async def result(
+    async def get_result(
         self, request_id: str, application: str = "fal-ai/flux/dev"
     ) -> Any:
         """
-        Retrieves the result of a completed Fal AI request, waiting for completion if the request is still running.
-
+        Fetches the final output for an asynchronous job, identified by its request_id. This function blocks execution, waiting for the job initiated by `submit` to complete before returning the result. It complements the non-blocking `status` check by providing a synchronous way to get a completed job's data.
+        
         Args:
             request_id: The unique identifier of the submitted request
             application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
-
+        
         Returns:
             The result of the application execution, converted from JSON response to Python data structures (dict/list)
-
+        
         Raises:
             ToolError: When the Fal API request fails or the request does not complete successfully
-
+        
         Tags:
             result, async-job, status, wait, ai
         """
@@ -212,18 +215,18 @@ class FalaiApp(APIApplication):
         self, request_id: str, application: str = "fal-ai/flux/dev"
     ) -> None:
         """
-        Asynchronously cancels a running or queued Fal AI request.
-
+        Asynchronously cancels a running or queued Fal AI job identified by its `request_id`. This function complements the `submit` method, providing a way to terminate asynchronous tasks before completion. API errors during the cancellation process are wrapped in a `ToolError`.
+        
         Args:
             request_id: The unique identifier of the submitted Fal AI request to cancel
             application: The name or ID of the Fal application (defaults to 'fal-ai/flux/dev')
-
+        
         Returns:
             None. The function doesn't return any value.
-
+        
         Raises:
             ToolError: Raised when the cancellation request fails due to API errors or if the request cannot be cancelled
-
+        
         Tags:
             cancel, async_job, ai, fal, management
         """
@@ -241,17 +244,17 @@ class FalaiApp(APIApplication):
 
     async def upload_file(self, path: str) -> str:
         """
-        Uploads a local file to the Fal CDN and returns its public URL
-
+        Asynchronously uploads a local file from a specified path to the Fal Content Delivery Network (CDN). Upon success, it returns a public URL for the file, making it accessible for use as input in other Fal AI application requests. A `ToolError` is raised on failure.
+        
         Args:
             path: The absolute or relative path to the local file
-
+        
         Returns:
             A string containing the public URL of the uploaded file on the CDN
-
+        
         Raises:
             ToolError: If the file is not found or if the upload operation fails
-
+        
         Tags:
             upload, file, cdn, storage, async, important
         """
@@ -265,7 +268,7 @@ class FalaiApp(APIApplication):
             logger.error(f"Error uploading file {path} to Fal CDN: {e}", exc_info=True)
             raise ToolError(f"Failed to upload file {path}: {e}") from e
 
-    async def generate_image(
+    async def run_image_generation(
         self,
         prompt: str,
         seed: int | None = 6252023,
@@ -277,8 +280,8 @@ class FalaiApp(APIApplication):
         hint: str | None = None,
     ) -> Any:
         """
-        Asynchronously generates images using the 'fal-ai/flux/dev' application with customizable parameters and default settings
-
+        A specialized wrapper for the `run` method that synchronously generates images using the 'fal-ai/flux/dev' model. It simplifies image creation with common parameters like `prompt` and `seed`, waits for the task to complete, and returns the result containing image URLs and metadata.
+        
         Args:
             prompt: The text prompt used to guide the image generation
             seed: Random seed for reproducible image generation (default: 6252023)
@@ -288,13 +291,13 @@ class FalaiApp(APIApplication):
             path: Subpath for the application endpoint (rarely used)
             timeout: Maximum time in seconds to wait for the request to complete
             hint: Hint string for runner selection
-
+        
         Returns:
             A dictionary containing the generated image URLs and related metadata
-
+        
         Raises:
             ToolError: When the image generation request fails or encounters an error
-
+        
         Tags:
             generate, image, ai, async, important, flux, customizable, default
         """
@@ -324,9 +327,9 @@ class FalaiApp(APIApplication):
         return [
             self.run,
             self.submit,
-            self.status,
-            self.result,
+            self.check_status,
+            self.get_result,
             self.cancel,
             self.upload_file,
-            self.generate_image,
+            self.run_image_generation,
         ]

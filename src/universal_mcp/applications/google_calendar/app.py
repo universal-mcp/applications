@@ -47,26 +47,26 @@ class GoogleCalendarApp(APIApplication):
             # It's just a date (all-day event)
             return f"{dt_string} (All day)"
 
-    def get_today_events(
+    def get_upcoming_events(
         self,
         days: int = 1,
         max_results: int | None = None,
         time_zone: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves events from Google Calendar for today or a specified number of future days.
-
+        Retrieves calendar events for a specified number of days starting from today. It defaults to fetching only the current day's events, simplifying date-range queries for upcoming events in contrast to the more comprehensive `list_events` function which requires explicit start and end times.
+        
         Args:
             days: Number of days to retrieve events for (default: 1, which is just today)
             max_results: Maximum number of events to return (optional)
             time_zone: Time zone used in the response (optional, default is calendar's time zone)
-
+        
         Returns:
             Dictionary containing the complete API response with all events and metadata
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
-
+        
         Tags:
             fetch, list, calendar, events, date-time, important, api
         """
@@ -91,27 +91,27 @@ class GoogleCalendarApp(APIApplication):
 
         return self._handle_response(response)
 
-    def get_event(
+    def get_event_by_id(
         self,
         event_id: str,
         max_attendees: int | None = None,
         time_zone: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves detailed information about a specific Google Calendar event by its ID
-
+        Retrieves a specific Google Calendar event using its unique ID. Optional parameters can limit the number of attendees returned and specify a time zone for formatting dates. It is distinct from `list_events`, which fetches multiple events based on broader criteria like date ranges or search queries.
+        
         Args:
             event_id: The unique identifier of the calendar event to retrieve
             max_attendees: Optional. The maximum number of attendees to include in the response. If None, includes all attendees
             time_zone: Optional. The time zone to use for formatting dates in the response. If None, uses the calendar's default time zone
-
+        
         Returns:
             Dictionary containing the complete API response with all event details
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
             JSONDecodeError: Raised when the API response cannot be parsed as JSON
-
+        
         Tags:
             retrieve, calendar, event, api, important
         """
@@ -137,8 +137,8 @@ class GoogleCalendarApp(APIApplication):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of events from Google Calendar with customizable filtering, sorting, and pagination options
-
+        Fetches a customizable list of events using filters for date range, text search, sorting, and pagination. This advanced function provides more granular control than `get_today_events`, which is limited to fetching events for a specific number of upcoming days.
+        
         Args:
             max_results: Maximum number of events to return (default: 10, max: 2500)
             time_min: Start time in ISO format (e.g., '2023-12-01T00:00:00Z'). Defaults to current time if not specified
@@ -148,14 +148,14 @@ class GoogleCalendarApp(APIApplication):
             single_events: Whether to expand recurring events into individual instances (default: True)
             time_zone: Time zone for response formatting (defaults to calendar's time zone)
             page_token: Token for retrieving a specific page of results in paginated responses
-
+        
         Returns:
             Dictionary containing the complete API response with all events and metadata
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
             JSONDecodeError: Raised when the API response cannot be parsed as JSON
-
+        
         Tags:
             list, retrieve, calendar, events, pagination, api, important
         """
@@ -184,7 +184,7 @@ class GoogleCalendarApp(APIApplication):
 
         return self._handle_response(response)
 
-    def add_an_event(
+    def create_event(
         self,
         start: dict[str, Any],
         end: dict[str, Any],
@@ -196,9 +196,8 @@ class GoogleCalendarApp(APIApplication):
         calendar_id: str = "primary",
     ) -> dict[str, Any]:
         """
-        Creates a new calendar event with details like start time, end time, summary, description, location, attendees, and recurrence rules.
-        Always check the timezone using get_user_timezone before creating an event.
-
+        Creates a detailed calendar event with structured data, including start/end times, summary, attendees, and recurrence rules. Unlike `quick_add_event`, which uses natural language, this method offers precise control for creating complex or recurring appointments.
+        
         Args:
             start: Start time of the event (required). Must include timezone offset or timeZone field.
                    Examples:
@@ -223,13 +222,13 @@ class GoogleCalendarApp(APIApplication):
                            "RRULE:FREQ=DAILY;UNTIL=20150628;INTERVAL=3"
                        ],
             calendar_id: Calendar identifier (default: "primary")
-
+        
         Returns:
             Dictionary containing the complete API response with the created event details
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
-
+        
         Tags:
             create, calendar, event, insert, recurring, important
         """
@@ -253,20 +252,20 @@ class GoogleCalendarApp(APIApplication):
 
         return self._handle_response(response)
 
-    def quick_add_event(self, text: str, send_updates: str = "none") -> dict[str, Any]:
+    def create_event_from_text(self, text: str, send_updates: str = "none") -> dict[str, Any]:
         """
-        Creates a calendar event. Use it only when user specfies that they want to add a quick event
-
+        Creates a calendar event by parsing a natural language string for details like title and time. This provides a user-friendly shortcut for event creation, contrasting with the structured `add_an_event` method which requires explicit fields for start, end, and summary.
+        
         Args:
             text: Natural language text describing the event (e.g., 'Meeting with John at Coffee Shop tomorrow 3pm-4pm')
             send_updates: Specifies who should receive event notifications: 'all', 'externalOnly', or 'none' (default)
-
+        
         Returns:
             Dictionary containing the complete API response with the created event details
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
-
+        
         Tags:
             create, calendar, event, quick-add, natural-language, important
         """
@@ -277,7 +276,7 @@ class GoogleCalendarApp(APIApplication):
 
         return self._handle_response(response)
 
-    def get_event_instances(
+    def list_recurring_event_instances(
         self,
         event_id: str,
         max_results: int = 25,
@@ -288,8 +287,8 @@ class GoogleCalendarApp(APIApplication):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves all instances of a recurring calendar event within a specified time range.
-
+        Retrieves all individual occurrences (instances) of a specific recurring event, identified by its ID. This function allows filtering by a time range and supports pagination, distinguishing it from `list_events` which fetches multiple, distinct events rather than instances of a single one.
+        
         Args:
             event_id: ID of the recurring event
             max_results: Maximum number of event instances to return (default: 25, max: 2500)
@@ -298,14 +297,14 @@ class GoogleCalendarApp(APIApplication):
             time_zone: Time zone used in the response (defaults to calendar's time zone)
             show_deleted: Whether to include deleted instances (default: False)
             page_token: Token for retrieving a specific page of results
-
+        
         Returns:
             Dictionary containing the complete API response with all event instances and metadata
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
             JSONDecodeError: Raised when the API response cannot be parsed as JSON
-
+        
         Tags:
             list, retrieve, calendar, events, recurring, pagination, api, important
         """
@@ -342,8 +341,8 @@ class GoogleCalendarApp(APIApplication):
         userIp=None,
     ) -> Any:
         """
-        Deletes an event from the specified calendar.
-
+        Deletes a specific event from a Google Calendar using its event and calendar IDs. This action is permanent and can optionally send cancellation notifications or updates to attendees based on the provided parameters.
+        
         Args:
             calendarId (string): calendarId
             eventId (string): eventId
@@ -356,10 +355,10 @@ class GoogleCalendarApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: 'true'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: 'amet in'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: 'amet in'.
-
+        
         Returns:
             Any: No Content
-
+        
         Tags:
             calendars, {calendarId}, events, {eventId}
         """
@@ -386,7 +385,7 @@ class GoogleCalendarApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_event(
+    def replace_event(
         self,
         event_id: str,
         start: dict[str, Any],
@@ -401,9 +400,8 @@ class GoogleCalendarApp(APIApplication):
         max_attendees: int | None = None,
     ) -> dict[str, Any]:
         """
-        Updates an existing calendar event. This method updates the entire event resource.
-        To do a partial update, first get the event, then update it using etags to ensure atomicity.
-
+        Replaces an existing calendar event, identified by its ID, with new data. This function performs a full update, overwriting all event properties like start/end times, summary, and attendees. It does not support partial modifications; all required fields for the new event version are necessary.
+        
         Args:
             event_id: The unique identifier of the calendar event to update (required)
             start: Start time of the event (required). Must include timezone offset or timeZone field.
@@ -425,13 +423,13 @@ class GoogleCalendarApp(APIApplication):
             calendar_id: Calendar identifier (default: "primary")
             send_updates: Specifies who should receive event notifications: 'all', 'externalOnly', or 'none' (default)
             max_attendees: Maximum number of attendees to include in the response (optional)
-
+        
         Returns:
             Dictionary containing the complete API response with the updated event details
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
-
+        
         Tags:
             update, calendar, event, modify, important
         """
@@ -458,16 +456,16 @@ class GoogleCalendarApp(APIApplication):
 
         return self._handle_response(response)
 
-    def get_user_timezone(self) -> dict[str, Any]:
+    def get_primary_calendar_details(self) -> dict[str, Any]:
         """
-        Gets the user's calendar timezone setting to help with timezone-aware event creation.
-
+        Retrieves metadata for the user's primary calendar, including its default timezone. This information is essential for creating new events with accurate, timezone-aware start and end times, as recommended before using functions like `add_an_event` to prevent scheduling errors across different regions.
+        
         Returns:
             Dictionary containing the user's timezone information
-
+        
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
-
+        
         Tags:
             get, calendar, timezone, settings, important
         """
@@ -476,7 +474,7 @@ class GoogleCalendarApp(APIApplication):
         response = self._get(url)
         return self._handle_response(response)
 
-    def query_free_busy(
+    def get_free_busy_info(
         self,
         alt=None,
         fields=None,
@@ -493,9 +491,9 @@ class GoogleCalendarApp(APIApplication):
         timeZone=None,
     ) -> dict[str, Any]:
         """
-        Checks if you have free slots or not by querying the free/busy status of your calendars.
-
-
+        Queries the Google Calendar API to determine the free/busy status for one or more calendars within a specified time range. It returns a list of busy time intervals, useful for scheduling new events without conflicts.
+        
+        
         Args:
             alt (string): Data format for the response. Example: 'json'.
             fields (string): Selector specifying which fields to include in a partial response. Example: 'amet in'.
@@ -528,7 +526,7 @@ class GoogleCalendarApp(APIApplication):
                   "timeZone": "UTC"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: Successful response
         """
@@ -561,15 +559,15 @@ class GoogleCalendarApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.get_event,
-            self.get_today_events,
+            self.get_event_by_id,
+            self.get_upcoming_events,
             self.list_events,
-            self.quick_add_event,
-            self.add_an_event,
-            self.update_event,
-            self.get_event_instances,
-            self.get_user_timezone,
+            self.create_event_from_text,
+            self.create_event,
+            self.replace_event,
+            self.list_recurring_event_instances,
+            self.get_primary_calendar_details,
             # Auto Generated from Openapi spec
             self.delete_event,
-            self.query_free_busy,
+            self.get_free_busy_info,
         ]

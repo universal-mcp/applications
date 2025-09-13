@@ -9,24 +9,24 @@ class WhatsappBusinessApp(APIApplication):
         super().__init__(name="whatsapp_business", integration=integration, **kwargs)
         self.base_url = "https://graph.facebook.com"
 
-    def get_analytics(
+    def get_whatsapp_business_account(
         self, api_version: str, waba_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
-        Retrieves details of a specified WhatsApp Business Account (WABA) with customizable fields using the GET method.
-
+        Fetches customizable data, primarily analytics, for a specific WhatsApp Business Account (WABA) using its ID. The `fields` parameter allows detailed queries, including date ranges and granularity for metrics like message volume, to refine the returned data.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
             fields (string): Specifies which fields to include/exclude in the response for the WhatsApp Business Account resource. Example: 'analytics.start(1680503760).end(1680564980).granularity(DAY).phone_numbers([]).country_codes(["US", "BR"])'.
-
+        
         Returns:
             dict[str, Any]: Example reponse / Example response / Example response / Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             WhatsApp Business Accounts (WABA)
         """
@@ -49,23 +49,23 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_credit_lines(
+    def get_business_account_credit_lines(
         self, api_version: str, business_account_id: str
     ) -> dict[str, Any]:
         """
-        Retrieves the extended credit lines available for a specified business account using its ID.
-
+        Retrieves the extended credit lines for a specified business account ID. This function fetches billing information by querying the `/extendedcredits` endpoint, returning financial details such as available credit for platform services.
+        
         Args:
             api_version (string): api-version
             business_account_id (string): business-account-id
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Billing
         """
@@ -92,20 +92,20 @@ class WhatsappBusinessApp(APIApplication):
         self, api_version: str, business_account_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
-        Retrieves information about a business account using the specified API version and business account ID, optionally filtering the response fields via a query parameter.
-
+        Fetches details for a specific Meta Business Account using its ID. This function retrieves the core account object, unlike others that get associated resources like owned/shared WhatsApp Business Accounts (WABAs) or credit lines for the same ID. The response payload can be customized using the 'fields' parameter.
+        
         Args:
             api_version (string): api-version
             business_account_id (string): business-account-id
             fields (string): Specifies the fields to include in the response, reducing payload size by returning only the requested data. Example: 'id,name,timezone_id'.
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Business accounts, important
         """
@@ -132,19 +132,19 @@ class WhatsappBusinessApp(APIApplication):
         self, api_version: str, business_phone_number_id: str
     ) -> dict[str, Any]:
         """
-        Retrieves the commerce settings configured for a specific WhatsApp Business phone number.
-
+        Retrieves the commerce settings, such as cart availability and catalog visibility, for a specific WhatsApp Business phone number. This function reads the current configuration, contrasting with `set_or_update_commerce_settings` which modifies them.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Commerce, important
         """
@@ -167,7 +167,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def set_or_update_commerce_settings(
+    def update_commerce_settings(
         self,
         api_version: str,
         business_phone_number_id: str,
@@ -175,21 +175,21 @@ class WhatsappBusinessApp(APIApplication):
         is_catalog_visible: str | None = None,
     ) -> dict[str, Any]:
         """
-        Updates WhatsApp Business commerce settings (cart availability and catalog visibility) for a specific business phone number.
-
+        Updates the commerce settings for a specific business phone number by enabling or disabling cart functionality and catalog visibility. This function differentiates from `get_commerce_settings` by using a POST request to modify data, rather than retrieving it.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
             is_cart_enabled (string): Indicates whether the shopping cart is enabled or disabled for the specified WhatsApp commerce settings. Example: 'true'.
             is_catalog_visible (string): Determines whether the business's product catalog is visible to customers in WhatsApp conversations. Example: 'true'.
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Commerce
         """
@@ -225,7 +225,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def upload_file(
+    def create_upload_session(
         self,
         api_version: str,
         app_id: str,
@@ -233,21 +233,21 @@ class WhatsappBusinessApp(APIApplication):
         file_type: str | None = None,
     ) -> dict[str, Any]:
         """
-        Uploads a file using the specified API version and application ID, with optional query parameters for file length and type, and returns a successful status message upon completion.
-
+        Initiates a resumable upload session by providing file metadata (size, type). This function creates an upload session ID and is the first of a two-step process for uploading media, preceding the actual data transfer performed by `resume_session`.
+        
         Args:
             api_version (string): api-version
             app_id (string): app-id
             file_length (string): File size, in bytes Example: '<FILE_SIZE>'.
             file_type (string): File MIME type (e.g. image/jpg) Example: '<MIME_TYPE>'.
-
+        
         Returns:
             dict[str, Any]: Step 1 example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Media
         """
@@ -280,20 +280,20 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def resume_session(self, api_version: str) -> dict[str, Any]:
+    def upload_file_to_session(self, api_version: str) -> dict[str, Any]:
         """
-        Initiates a session using the provided SESSION_ID and file offset specified in the header, supporting further session-related operations via the POST method at the "/{api-version}/<SESSION_ID>" endpoint.
-
+        Continues a media file upload by sending file data to an existing session. This function is the second step in the upload process, following `upload_file`, which creates the session and provides the required session ID.
+        
         Args:
             api_version (string): api-version
-
+        
         Returns:
             dict[str, Any]: Step 2 example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Media
         """
@@ -327,20 +327,20 @@ class WhatsappBusinessApp(APIApplication):
         fields: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves details for a specific business phone number ID using query parameters to specify returned fields.
-
+        Retrieves details for a specific WhatsApp Business phone number by its unique ID. The optional `fields` parameter allows for customizing the response to include only desired data, differentiating it from `get_all_business_phone_numbers`, which retrieves a list of all numbers for a WABA.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
             fields (string): Specifies which fields to include in the response for the business phone number. Example: 'id,display_phone_number,name_status'.
-
+        
         Returns:
             dict[str, Any]: Example response / Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Phone numbers, important
         """
@@ -363,7 +363,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_all_business_phone_numbers(
+    def list_waba_phone_numbers(
         self,
         api_version: str,
         waba_id: str,
@@ -371,21 +371,21 @@ class WhatsappBusinessApp(APIApplication):
         filtering: str | None = None,
     ) -> list[Any]:
         """
-        Retrieves a list of phone numbers associated with a specific WhatsApp Business Account (WABA), allowing for filtering and customization of the response fields.
-
+        Fetches a list of phone numbers for a specified WhatsApp Business Account (WABA). This function allows for result filtering and customizable field selection, distinguishing it from `get_business_phone_number` which retrieves a single number by its unique ID.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
             fields (string): Optional parameter to specify which fields should be included in the response for phone numbers associated with a WABA, allowing customization of the returned data. Example: 'id,is_official_business_account,display_phone_number,verified_name'.
             filtering (string): Specifies query parameters to filter phone numbers based on specific criteria for the GET operation. Example: "[{'field':'account_mode','operator':'EQUAL','value':'SANDBOX'}]".
-
+        
         Returns:
             list[Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Phone numbers, important
         """
@@ -412,23 +412,23 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_qr_code(
+    def get_qr_code_by_id(
         self, api_version: str, business_phone_number_id: str
     ) -> dict[str, Any]:
         """
-        Retrieves a message linked to a specific QR code for a business phone number using the GET method via the API.
-
+        Retrieves the details of a single QR code, such as its pre-filled message, by its unique ID for a specific business phone number. It fetches a specific code, distinguishing it from `get_all_qr_codes_default_fields` which retrieves a list of codes.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
-
+        
         Returns:
             dict[str, Any]: Example Response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             QR codes
         """
@@ -451,23 +451,23 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def delete_qr_code(
+    def delete_qr_code_by_id(
         self, api_version: str, business_phone_number_id: str
     ) -> dict[str, Any]:
         """
-        Deletes a specific WhatsApp Business QR code using the provided QR code ID and returns a success message if the operation is completed successfully.
-
+        Deletes a specific WhatsApp message QR code by its ID for a given business phone number. The function sends a DELETE request to the Graph API's `message_qrdls` endpoint to remove the specified QR code.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
-
+        
         Returns:
             dict[str, Any]: Example Response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             QR codes
         """
@@ -490,7 +490,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_all_qr_codes_default_fields(
+    def list_qr_codes(
         self,
         api_version: str,
         business_phone_number_id: str,
@@ -498,21 +498,21 @@ class WhatsappBusinessApp(APIApplication):
         code: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of message QR code deep links associated with a business phone number, filtered by specified fields and QR code identifiers.
-
+        Retrieves a list of QR codes for a business phone number. This function allows optional filtering by a specific QR code identifier and customization of the fields returned in the response, such as the image format.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
             fields (string): .format can be SVG or PNG Example: 'code,prefilled_message,qr_image_url.format(SVG)'.
             code (string): The unique identifier code used to filter messages associated with the specified business phone number. Example: '<QR_CODE_ID>'.
-
+        
         Returns:
             dict[str, Any]: Example Response / Example Response / Example Response / Example Response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             QR codes
         """
@@ -545,21 +545,21 @@ class WhatsappBusinessApp(APIApplication):
         prefilled_message: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a WhatsApp Business QR code with a predefined message and returns the generated code details.
-
+        Generates a WhatsApp Business QR code for a specific phone number. This function allows setting a prefilled message for user convenience and can optionally include a custom identifier. It returns the details of the newly created QR code upon successful generation.
+        
         Args:
             api_version (string): api-version
             business_phone_number_id (string): business-phone-number-id
             code (string): code Example: 'WOMVT6TJ2BP7A1'.
             prefilled_message (string): prefilled_message Example: 'Tell me about your new workshops'.
-
+        
         Returns:
             dict[str, Any]: Example Response / Example Response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             QR codes
         """
@@ -595,20 +595,20 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_template_by_id_default_fields(self, api_version: str) -> dict[str, Any]:
+    def get_template_by_id(self, api_version: str) -> dict[str, Any]:
         """
-        Retrieves a template using the specified template ID from the API version path.
-
+        Retrieves a specific WhatsApp message template by its unique identifier. Unlike `get_template_by_name`, which searches within a business account, this function directly fetches a single template resource. Note: The function signature is missing the required `template_id` parameter to build a valid URL.
+        
         Args:
             api_version (string): api-version
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Templates
         """
@@ -629,7 +629,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def edit_template(
+    def update_template_by_id(
         self,
         api_version: str,
         category: str | None = None,
@@ -638,22 +638,22 @@ class WhatsappBusinessApp(APIApplication):
         name: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates or processes a resource using the specified template ID based on the API version and returns a successful status upon completion.
-
+        Updates an existing WhatsApp message template, identified by its ID within the request URL. This function modifies the template's category, components, language, and name by submitting new data via a POST request, returning the API response upon successful completion.
+        
         Args:
             api_version (string): api-version
             category (string): category Example: 'MARKETING'.
             components (array): components Example: "[{'format': 'TEXT', 'text': 'Fall Sale', 'type': 'HEADER'}, {'example': {'body_text': [['Mark', 'FALL25']]}, 'text': 'Hi {{1}}, our Fall Sale is on! Use promo code {{2}} Get an extra 25% off every order above $350!', 'type': 'BODY'}, {'text': 'Not interested in any of our sales? Tap Stop Promotions', 'type': 'FOOTER'}, {'buttons': [{'text': 'Stop promotions', 'type': 'QUICK_REPLY'}], 'type': 'BUTTONS'}]".
             language (string): language Example: 'en_US'.
             name (string): name Example: '2023_april_promo'.
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Templates
         """
@@ -689,24 +689,24 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_template_by_name_default_fields(
+    def get_message_templates(
         self, api_version: str, waba_id: str, name: str | None = None
     ) -> dict[str, Any]:
         """
-        Retrieves a list of WhatsApp message templates associated with a specific WhatsApp Business Account using the "GET" method, allowing filtering by template name.
-
+        Retrieves message templates for a specific WhatsApp Business Account (WABA). It can list all templates or, if a name is provided, filter for an exact match. This differs from `get_template_by_id_default_fields`, which fetches a single template by its unique ID.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
             name (string): Filters message templates by exact name match. Example: '<TEMPLATE_NAME>'.
-
+        
         Returns:
             dict[str, Any]: Example response / Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Templates
         """
@@ -739,8 +739,8 @@ class WhatsappBusinessApp(APIApplication):
         name: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a new WhatsApp message template for a business account, allowing businesses to send standardized messages to customers.
-
+        Creates a new message template for a specified WhatsApp Business Account (WABA). This function sends a POST request with the template's name, language, category, and structural components, enabling the creation of standardized, reusable messages.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
@@ -748,14 +748,14 @@ class WhatsappBusinessApp(APIApplication):
             components (array): components Example: "[{'example': {'header_handle': ['4::YXBwbGljYXRpb24vcGRm:ARZVv4zuogJMxmAdS3_6T4o_K4ll2806avA7rWpikisTzYPsXXUeKk0REjS-hIM1rYrizHD7rQXj951TKgUFblgd_BDWVROCwRkg9Vhjj-cHNQ:e:1681237341:634974688087057:100089620928913:ARa1ZDhwbLZM3EENeeg']}, 'format': 'DOCUMENT', 'type': 'HEADER'}, {'example': {'body_text': [['Mark', '860198-230332']]}, 'text': 'Thank you for your order, {{1}}! Your order number is {{2}}. Tap the PDF linked above to view your receipt. If you have any questions, please use the buttons below to contact support. Thanks again!', 'type': 'BODY'}, {'buttons': [{'phone_number': '16467043595', 'text': 'Call', 'type': 'PHONE_NUMBER'}, {'text': 'Contact Support', 'type': 'URL', 'url': 'https://www.examplesite.com/support'}], 'type': 'BUTTONS'}]".
             language (string): language Example: 'en_US'.
             name (string): name Example: 'order_confirmation'.
-
+        
         Returns:
             dict[str, Any]: Example response / Example response / Example response / Example response / Example response / Example response / Example response / Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Templates, important
         """
@@ -793,7 +793,7 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def delete_template_by_name(
+    def delete_message_template(
         self,
         api_version: str,
         waba_id: str,
@@ -801,21 +801,21 @@ class WhatsappBusinessApp(APIApplication):
         hsm_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Deletes WhatsApp message templates by name (all languages) or specific ID using query parameters and returns a success status.
-
+        Deletes a message template from a WhatsApp Business Account. Templates can be targeted for deletion by providing either a template name, which deletes all language versions, or a specific template ID (`hsm_id`).
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
             name (string): The name of the message template to delete. Example: '<TEMPLATE_NAME>'.
             hsm_id (string): Template ID Example: '<HSM_ID>'.
-
+        
         Returns:
             dict[str, Any]: Example response / Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Templates
         """
@@ -842,19 +842,19 @@ class WhatsappBusinessApp(APIApplication):
 
     def get_subscribed_apps(self, api_version: str, waba_id: str) -> dict[str, Any]:
         """
-        Retrieves a list of apps subscribed to webhooks for a WhatsApp Business Account using the GET method.
-
+        Retrieves a list of all applications subscribed to receive webhook notifications for a given WhatsApp Business Account (WABA). This function provides a read-only view of current webhook subscriptions, complementing the functions for subscribing and unsubscribing apps.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Webhooks
         """
@@ -877,23 +877,23 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def subscribe_app_to_waba_swebhooks(
+    def subscribe_app_to_webhooks(
         self, api_version: str, waba_id: str
     ) -> dict[str, Any]:
         """
-        Subscribes an app to webhooks for a WhatsApp Business Account (WABA) using the POST method at the `/subscribed_apps` endpoint, allowing the app to receive updates and notifications from the WABA.
-
+        Subscribes an application to a specific WhatsApp Business Account's (WABA) webhooks using its ID. This enables the app to receive real-time event notifications, differentiating it from functions that list or remove subscriptions.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Webhooks
         """
@@ -922,23 +922,23 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def unsubscribe_apps_by_waba_id(
+    def unsubscribe_app_from_waba(
         self, api_version: str, waba_id: str
     ) -> dict[str, Any]:
         """
-        Unsubscribes an app from webhook notifications for a WhatsApp Business Account.
-
+        Removes the webhook subscription for the calling app from a specified WhatsApp Business Account (WABA), stopping it from receiving notifications. This function complements `get_subscribed_apps` and `subscribe_app_to_waba_swebhooks` by handling the deletion of a subscription.
+        
         Args:
             api_version (string): api-version
             waba_id (string): waba-id
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Webhooks
         """
@@ -961,21 +961,21 @@ class WhatsappBusinessApp(APIApplication):
         except ValueError:
             return None
 
-    def get_all_shared_wabas(self, api_version: str, business_account_id: str) -> Any:
+    def get_all_client_wabas(self, api_version: str, business_account_id: str) -> Any:
         """
-        Retrieves information about WhatsApp Business accounts associated with a business client, using the specified business account ID and API version.
-
+        Retrieves all client WhatsApp Business Accounts (WABAs) associated with a specific business account ID. It's used by Solution Partners to list WABAs they manage for other businesses, distinguishing them from accounts they directly own (`get_all_owned_wabas`).
+        
         Args:
             api_version (string): api-version
             business_account_id (string): business-account-id
-
+        
         Returns:
             Any: API response data.
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             WhatsApp Business Accounts (WABA)
         """
@@ -1002,19 +1002,19 @@ class WhatsappBusinessApp(APIApplication):
         self, api_version: str, business_account_id: str
     ) -> dict[str, Any]:
         """
-        Retrieves a list of WhatsApp Business Accounts owned by or shared with the specified business account using a GET request to the given endpoint.
-
+        Retrieves a list of all WhatsApp Business Accounts (WABAs) directly owned by a specified business account. This is distinct from `get_all_shared_wabas`, which fetches WABAs shared with clients, providing specific access to owned assets instead of associated ones.
+        
         Args:
             api_version (string): api-version
             business_account_id (string): business-account-id
-
+        
         Returns:
             dict[str, Any]: Example response
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             WhatsApp Business Accounts (WABA)
         """
@@ -1039,27 +1039,27 @@ class WhatsappBusinessApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.get_analytics,
-            self.get_credit_lines,
+            self.get_whatsapp_business_account,
+            self.get_business_account_credit_lines,
             self.get_business_account,
             self.get_commerce_settings,
-            self.set_or_update_commerce_settings,
-            self.upload_file,
-            self.resume_session,
+            self.update_commerce_settings,
+            self.create_upload_session,
+            self.upload_file_to_session,
             self.get_business_phone_number,
-            self.get_all_business_phone_numbers,
-            self.get_qr_code,
-            self.delete_qr_code,
-            self.get_all_qr_codes_default_fields,
+            self.list_waba_phone_numbers,
+            self.get_qr_code_by_id,
+            self.delete_qr_code_by_id,
+            self.list_qr_codes,
             self.create_qr_code,
-            self.get_template_by_id_default_fields,
-            self.edit_template,
-            self.get_template_by_name_default_fields,
+            self.get_template_by_id,
+            self.update_template_by_id,
+            self.get_message_templates,
             self.create_message_template,
-            self.delete_template_by_name,
+            self.delete_message_template,
             self.get_subscribed_apps,
-            self.subscribe_app_to_waba_swebhooks,
-            self.unsubscribe_apps_by_waba_id,
-            self.get_all_shared_wabas,
+            self.subscribe_app_to_webhooks,
+            self.unsubscribe_app_from_waba,
+            self.get_all_client_wabas,
             self.get_all_owned_wabas,
         ]

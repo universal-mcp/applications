@@ -38,13 +38,13 @@ class HttpToolsApp(APIApplication):
         self, url: str, headers: dict | None = None, query_params: dict | None = None
     ):
         """
-        Perform a GET request to the specified URL with optional parameters.
-
+        Executes an HTTP GET request to a given URL with optional headers and query parameters. It handles HTTP errors by raising an exception and processes the response, returning parsed JSON or a dictionary with the raw text and status details if JSON is unavailable.
+        
         Args:
             url (str): The URL to send the GET request to. Example: "https://api.example.com/data"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             query_params (dict, optional): Optional dictionary of query parameters to include in the request. Example: {"page": 1}
-
+        
         Returns:
             dict: The JSON response from the GET request, or text if not JSON.
         Tags:
@@ -61,13 +61,13 @@ class HttpToolsApp(APIApplication):
         self, url: str, headers: dict | None = None, body: dict | None = None
     ):
         """
-        Perform a POST request to the specified URL with optional parameters.
-
+        Sends an HTTP POST request to a URL with an optional JSON body and headers. It returns the parsed JSON response or raw text if parsing fails and raises an exception for HTTP errors. It is used for creating new resources, unlike http_get which retrieves data.
+        
         Args:
             url (str): The URL to send the POST request to. Example: "https://api.example.com/data"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Content-Type": "application/json"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"name": "John"}
-
+        
         Returns:
             dict: The JSON response from the POST request, or text if not JSON.
         Tags:
@@ -80,13 +80,13 @@ class HttpToolsApp(APIApplication):
 
     def http_put(self, url: str, headers: dict | None = None, body: dict | None = None):
         """
-        Perform a PUT request to the specified URL with optional parameters.
-
+        Performs an HTTP PUT request to update or replace a resource at a specified URL. It accepts an optional JSON body and headers, raises an exception for error responses, and returns the parsed JSON response or a dictionary with the raw text and status details.
+        
         Args:
             url (str): The URL to send the PUT request to. Example: "https://api.example.com/data/1"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"name": "Jane"}
-
+        
         Returns:
             dict: The JSON response from the PUT request, or text if not JSON.
         Tags:
@@ -101,20 +101,20 @@ class HttpToolsApp(APIApplication):
         self, url: str, headers: dict | None = None, body: dict | None = None
     ):
         """
-        Perform a DELETE request to the specified URL with optional parameters.
-
+        Sends an HTTP DELETE request to a URL with optional headers and a JSON body. Raises an exception for HTTP error statuses and returns the parsed JSON response. If the response isn't JSON, it returns the text content, status code, and headers.
+        
         Args:
             url (str): The URL to send the DELETE request to. Example: "https://api.example.com/data/1"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"reason": "obsolete"}
-
+        
         Returns:
             dict: The JSON response from the DELETE request, or text if not JSON.
         Tags:
             delete, important
         """
         logger.debug(f"DELETE request to {url} with headers {headers} and body {body}")
-        response = httpx.delete(url, json=body, headers=headers)
+        response = httpx.delete(url, headers=headers)
         response.raise_for_status()
         return self._handle_response(response)
 
@@ -122,13 +122,13 @@ class HttpToolsApp(APIApplication):
         self, url: str, headers: dict | None = None, body: dict | None = None
     ):
         """
-        Perform a PATCH request to the specified URL with optional parameters.
-
+        Sends an HTTP PATCH request to apply partial modifications to a resource at a given URL. It accepts optional headers and a JSON body. It returns the parsed JSON response, or the raw text with status details if the response is not valid JSON.
+        
         Args:
             url (str): The URL to send the PATCH request to. Example: "https://api.example.com/data/1"
             headers (dict, optional): Optional HTTP headers to include in the request. Example: {"Authorization": "Bearer token"}
             body (dict, optional): Optional JSON body to include in the request. Example: {"status": "active"}
-
+        
         Returns:
             dict: The JSON response from the PATCH request, or text if not JSON.
         Tags:
