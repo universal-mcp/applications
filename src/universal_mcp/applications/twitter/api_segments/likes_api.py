@@ -11,21 +11,20 @@ class LikesApi(APISegmentBase):
         self, backfill_minutes=None, start_time=None, end_time=None
     ) -> Any:
         """
-
-        Streams compliance-related likes data using the GET method, allowing optional filtering by backfill minutes and time range.
-
+        Streams compliance-related data for 'like' events, such as un-likes, with optional time and backfill filters. This endpoint is for compliance monitoring, differing from the firehose and sample streams which provide real-time like creation events.
+        
         Args:
             backfill_minutes (integer): Specifies the number of minutes of missed data to recover in case of a disconnection, allowing retrieval of up to five minutes of past data.
             start_time (string): The optional start_time query parameter specifies the earliest timestamp from which to retrieve compliance stream data. Example: '2021-02-01T18:40:40.000Z'.
             end_time (string): Optional end time to filter the compliance stream, specified as a string. Example: '2021-02-01T18:40:40.000Z'.
-
+        
         Returns:
             Any: The request has succeeded.
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Compliance
         """
@@ -43,7 +42,7 @@ class LikesApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def likes_firehose_stream(
+    def get_likes_firehose_stream(
         self,
         partition,
         backfill_minutes=None,
@@ -55,9 +54,8 @@ class LikesApi(APISegmentBase):
         tweet_fields=None,
     ) -> dict[str, Any]:
         """
-
-        Streams a real-time firehose of likes data filtered by partition and optional time range parameters, including expanded tweet and user fields, using Bearer Token authentication.
-
+        Streams a comprehensive, real-time 'firehose' of all like events from a specified data partition. This function allows time-based filtering and customization of returned fields, providing a complete data flow distinct from the compliance or sampled stream methods.
+        
         Args:
             partition (integer): The partition query parameter specifies the integer identifier of the data subset or bucket to stream from the firehose endpoint, enabling segmented retrieval of likes data.
             backfill_minutes (integer): The number of minutes (up to five) to backfill and recover missed data from the stream after a disconnection.
@@ -67,14 +65,14 @@ class LikesApi(APISegmentBase):
             expansions (array): A comma separated list of fields to expand. Example: "['liked_tweet_author_id', 'liked_tweet_id']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-
+        
         Returns:
             dict[str, Any]: The request has succeeded.
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Likes
         """
@@ -97,7 +95,7 @@ class LikesApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def likes_sample_stream(
+    def likes_sample10_stream(
         self,
         partition,
         backfill_minutes=None,
@@ -109,9 +107,8 @@ class LikesApi(APISegmentBase):
         tweet_fields=None,
     ) -> dict[str, Any]:
         """
-
-        Streams a sample of 10 likes using the GET method, optionally filtering by backfill minutes, partition, start and end times, and including specific tweet and user fields.
-
+        Streams a 10% sample of real-time like events, a low-volume alternative to the full firehose stream. It allows filtering by partition and time range, and supports data enrichment by specifying tweet, user, and expansion fields to customize the response.
+        
         Args:
             partition (integer): The partition query parameter specifies the integer identifier of the data partition to retrieve in the sample10 likes stream.
             backfill_minutes (integer): Optional integer parameter to specify the number of minutes of missed data to recover, used for reconnecting after a disconnection in the stream.
@@ -121,14 +118,14 @@ class LikesApi(APISegmentBase):
             expansions (array): A comma separated list of fields to expand. Example: "['liked_tweet_author_id', 'liked_tweet_id']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-
+        
         Returns:
             dict[str, Any]: The request has succeeded.
-
+        
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-
+        
         Tags:
             Likes
         """
@@ -154,6 +151,6 @@ class LikesApi(APISegmentBase):
     def list_tools(self):
         return [
             self.get_likes_compliance_stream,
-            self.likes_firehose_stream,
-            self.likes_sample_stream,
+            self.get_likes_firehose_stream,
+            self.likes_sample10_stream,
         ]
