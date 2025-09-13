@@ -268,9 +268,6 @@ def generate_description(
 
     return DescriptionOutput(description="Failed to generate description after all retries.")
 
-
-import textwrap
-
 def insert_docstring_into_function(function_code: str, docstring: str) -> str:
     """
     Insert a docstring into a function's code, replacing an existing one if present.
@@ -364,6 +361,47 @@ def rename_function_in_code(function_code: str, old_name: str, new_name: str) ->
     return new_function_code
 
 
+def update_list_tools_method(content: str, old_name: str, new_name: str) -> str:
+    """
+    Updates the list_tools method by renaming a function reference.
+
+    This function uses regex to find the `list_tools` method and replace
+    `self.old_name` with `self.new_name` within its return list, preserving
+    surrounding code and formatting.
+
+    Args:
+        content: The full source code of the file as a string.
+        old_name: The original name of the function to replace.
+        new_name: The new name for the function.
+
+    Returns:
+        The updated file content with the function renamed in list_tools.
+    """
+    # Regex to find `self.old_name` followed by a comma, newline, or closing bracket
+    # This ensures we only replace the specific tool reference in the list.
+    pattern = r"(self\.)" + re.escape(old_name) + r"(?=\s*[,\]])"
+    replacement = r"\1" + new_name
+
+    # First, find the list_tools method definition to narrow the search area
+    list_tools_match = re.search(r"def\s+list_tools\s*\([^)]*\):\s*return\s*\[[^\]]*\]", content, re.DOTALL)
+    
+    if not list_tools_match:
+        print("  - Warning: `list_tools` method not found or has an unexpected format. Cannot update tool list.")
+        return content
+
+    list_tools_code = list_tools_match.group(0)
+    
+    # Perform the replacement only within the found method block
+    updated_list_tools_code, num_replacements = re.subn(pattern, replacement, list_tools_code)
+
+    if num_replacements > 0:
+        print(f"  - Renamed '{old_name}' to '{new_name}' in `list_tools` method.")
+        return content.replace(list_tools_code, updated_list_tools_code)
+    else:
+        print(f"  - Warning: Function '{old_name}' not found in `list_tools` method.")
+        return content
+
+
 def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
     """
     Process a Python file to update docstrings and optionally rename functions.
@@ -417,17 +455,24 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
         
         # 3. Handle function renaming if suggested
         code_to_update = function_code
+        is_renamed = False
         if suggested_name and suggested_name != function_name:
             print(f"  - Renaming function '{function_name}' to '{suggested_name}'")
             code_to_update = rename_function_in_code(code_to_update, function_name, suggested_name)
+            is_renamed = True
 
         # 4. Insert the new docstring back into the (potentially renamed) function code
-        updated_function = insert_docstring_into_function(code_to_update, reconstructed_docstring)
+        updated_function_block = insert_docstring_into_function(code_to_update, reconstructed_docstring)
 
-        if updated_function != function_code:
-            updated_content = updated_content.replace(function_code, updated_function)
+        # 5. If any changes were made, update the main content
+        if updated_function_block != function_code:
+            updated_content = updated_content.replace(function_code, updated_function_block)
             count += 1
-            print(f"  - Updated function '{suggested_name or function_name}'.")
+            print(f"  - Updated function block for '{suggested_name or function_name}'.")
+            
+            # 6. If the function was renamed, also update the list_tools method
+            if is_renamed:
+                updated_content = update_list_tools_method(updated_content, function_name, suggested_name)
 
     if updated_content != original_content:
         with open(file_path, "w", encoding="utf-8") as f:

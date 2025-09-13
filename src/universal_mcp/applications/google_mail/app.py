@@ -24,23 +24,23 @@ class GoogleMailApp(APIApplication):
         thread_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Sends an email using the Gmail API and returns a confirmation or error message.
-
+        Composes and immediately sends an email message via the Gmail API. It can function as a reply within an existing conversation if a `thread_id` is provided. This action is distinct from `send_draft`, which sends a previously saved draft message.
+        
         Args:
             to: The email address of the recipient
             subject: The subject line of the email
             body: The content of the email message
             body_type: The MIME subtype for the body ("plain" or "html"). Defaults to "plain".
             thread_id: Optional thread ID to make this a reply to an existing conversation
-
+        
         Returns:
             A string containing either a success confirmation message or an error description
-
+        
         Raises:
             NotAuthorizedError: When Gmail API authentication is not valid or has expired
             KeyError: When required configuration keys are missing
             Exception: For any other unexpected errors during the email sending process
-
+        
         Tags:
             send, email, api, communication, important, thread, reply, openWorldHint
         """
@@ -79,23 +79,23 @@ class GoogleMailApp(APIApplication):
         thread_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a draft email message in Gmail using the Gmail API and returns a confirmation status.
-
+        Saves a new draft email in Gmail with a specified recipient, subject, and body. An optional thread ID can be provided to create the draft as a reply within an existing conversation, distinguishing it from `send_email` which sends immediately.
+        
         Args:
             to: The email address of the recipient
             subject: The subject line of the draft email
             body: The main content/message of the draft email
             body_type: The MIME subtype for the body ("plain" or "html"). Defaults to "plain".
             thread_id: Optional thread ID to make this draft a reply to an existing conversation
-
+        
         Returns:
             A string containing either a success message with the draft ID or an error message describing the failure
-
+        
         Raises:
             NotAuthorizedError: When the user's Gmail API authorization is invalid or expired
             KeyError: When required configuration keys are missing
             Exception: For general API errors, network issues, or other unexpected problems
-
+        
         Tags:
             create, email, draft, gmail, api, important, thread, reply, html
         """
@@ -118,19 +118,19 @@ class GoogleMailApp(APIApplication):
 
     def send_draft(self, draft_id: str) -> dict[str, Any]:
         """
-        Sends an existing draft email using the Gmail API and returns a confirmation message.
-
+        Sends a pre-existing Gmail draft identified by its unique ID. It posts to the `/drafts/send` endpoint, converting a saved draft into a sent message. This function acts on drafts created via `create_draft` and differs from `send_email`, which sends a new email in one step.
+        
         Args:
             draft_id: The unique identifier of the Gmail draft to be sent
-
+        
         Returns:
             A string containing either a success message with the sent message ID or an error message detailing the failure reason
-
+        
         Raises:
             NotAuthorizedError: When the user's Gmail API authorization is invalid or expired
             KeyError: When required configuration keys are missing from the API response
             Exception: For other unexpected errors during the API request or response handling
-
+        
         Tags:
             send, email, api, communication, important, draft
         """
@@ -147,20 +147,20 @@ class GoogleMailApp(APIApplication):
 
     def get_draft(self, draft_id: str, format: str = "full") -> dict[str, Any]:
         """
-        Retrieves and formats a specific draft email from Gmail by its ID
-
+        Retrieves a specific Gmail draft by its unique ID. This function allows specifying the output format (e.g., full, raw) to control the response detail. Unlike `list_drafts`, it fetches a single, known draft rather than a collection of multiple drafts.
+        
         Args:
             draft_id: String identifier of the draft email to retrieve
             format: Output format of the draft (options: minimal, full, raw, metadata). Defaults to 'full'
-
+        
         Returns:
             A formatted string containing the draft email details (ID, recipient, subject) or an error message if retrieval fails
-
+        
         Raises:
             NotAuthorizedError: When the user's Gmail authorization is invalid or expired
             KeyError: When required configuration keys or response data fields are missing
             Exception: For any other unexpected errors during draft retrieval
-
+        
         Tags:
             retrieve, email, gmail, draft, api, format, important
         """
@@ -183,21 +183,21 @@ class GoogleMailApp(APIApplication):
         include_spam_trash: bool = False,
     ) -> dict[str, Any]:
         """
-        Retrieves and formats a list of email drafts from the user's Gmail mailbox with optional filtering and pagination.
-
+        Retrieves a list of email drafts from a Gmail account, supporting filtering via search query and limiting results. Can optionally include drafts from spam and trash, returning the raw API response with draft objects and metadata, distinguishing it from `get_draft` which fetches a single, specific draft.
+        
         Args:
             max_results: Maximum number of drafts to return (max 500, default 20)
             q: Search query string to filter drafts using Gmail search syntax (default None)
             include_spam_trash: Boolean flag to include drafts from spam and trash folders (default False)
-
+        
         Returns:
             A formatted string containing the list of draft IDs and count information, or an error message if the request fails
-
+        
         Raises:
             NotAuthorizedError: When the Gmail API authentication is missing or invalid
             KeyError: When required configuration keys are missing
             Exception: For general errors during API communication or data processing
-
+        
         Tags:
             list, email, drafts, gmail, api, search, query, pagination, important
         """
@@ -219,18 +219,18 @@ class GoogleMailApp(APIApplication):
 
         return self._handle_response(response)
 
-    def get_message(self, message_id: str) -> dict[str, Any]:
+    def get_message_details(self, message_id: str) -> dict[str, Any]:
         """
-        Retrieves and formats a specific email message from Gmail API by its ID, including sender, recipient, date, subject, and full message body content.
-
+        Retrieves a specific email from Gmail by its ID. It parses the API response to extract and format key details—including sender, recipient, subject, and full body content—into a structured dictionary. This provides detailed data for other functions like `list_messages`.
+        
         Args:
             message_id: The unique identifier of the Gmail message to retrieve
-
+        
         Returns:
             A dictionary containing the cleaned message details (serializable as JSON)
-
+        
         Tags:
-            retrieve, email, format, api, gmail, message, important, body, content
+            retrieve, email, format, api, gmail, message, important, body, content, attachments
         """
         url = f"{self.base_api_url}/messages/{message_id}"
         response = self._get(url)
@@ -251,6 +251,9 @@ class GoogleMailApp(APIApplication):
             else:
                 body_content = "No content available"
 
+        # Extract attachments
+        attachments = self._extract_attachments(raw_data.get("payload", {}))
+
         return {
             "message_id": message_id,
             "from_addr": headers.get("From", "Unknown sender"),
@@ -259,6 +262,7 @@ class GoogleMailApp(APIApplication):
             "subject": headers.get("Subject", "No subject"),
             "body_content": body_content,
             "thread_id": raw_data.get("threadId"),
+            "attachments": attachments,
         }
 
     def _extract_email_body(self, payload):
@@ -315,6 +319,46 @@ class GoogleMailApp(APIApplication):
             logger.error(f"Error extracting email body: {str(e)}")
             return ""
 
+    def _extract_attachments(self, payload):
+        """
+        Extracts attachment information from the Gmail API payload.
+
+        Args:
+            payload: The payload section from Gmail API response
+
+        Returns:
+            list: List of attachment dictionaries with attachment_id, filename, mime_type, and size
+        """
+        attachments = []
+        
+        try:
+            if payload.get("filename") and payload.get("body", {}).get("attachmentId"):
+                attachments.append({
+                    "attachment_id": payload["body"]["attachmentId"],
+                    "filename": payload["filename"],
+                    "mime_type": payload.get("mimeType", ""),
+                    "size": payload.get("body", {}).get("size", 0)
+                })
+
+            parts = payload.get("parts", [])
+            for part in parts:
+                if part.get("filename") and part.get("body", {}).get("attachmentId"):
+                    attachments.append({
+                        "attachment_id": part["body"]["attachmentId"],
+                        "filename": part["filename"],
+                        "mime_type": part.get("mimeType", ""),
+                        "size": part.get("body", {}).get("size", 0)
+                    })
+                
+                elif part.get("parts"):
+                    nested_attachments = self._extract_attachments(part)
+                    attachments.extend(nested_attachments)
+
+        except Exception as e:
+            logger.error(f"Error extracting attachments: {str(e)}")
+
+        return attachments
+
     def _decode_base64(self, data):
         """
         Decodes base64 URL-safe encoded data from Gmail API.
@@ -341,8 +385,8 @@ class GoogleMailApp(APIApplication):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves and formats a list of messages from the user's Gmail mailbox with optional filtering and pagination support.
-
+        Fetches a paginated list of detailed email messages from Gmail using optional search queries. It concurrently retrieves the full content (sender, subject, body) for each message, returning the results and a token to access the next page. This differs from `get_message` which fetches only one.
+        
         Args:
             max_results: Maximum number of messages to return (max 500, default 20)
             q: Search query string to filter messages using Gmail search syntax.
@@ -363,15 +407,15 @@ class GoogleMailApp(APIApplication):
                     - 'has:attachment' for emails with attachments
                     - 'is:unread' for unread emails
             include_spam_trash: Boolean flag to include messages from spam and trash folders (default False)
-
+        
         Returns:
             A dictionary containing the list of messages and next page token for pagination
-
+        
         Raises:
             NotAuthorizedError: When the Gmail API authentication is invalid or missing
             KeyError: When required configuration keys are missing
             Exception: For general API errors, network issues, or other unexpected problems
-
+        
         Tags:
             list, messages, gmail, search, query, pagination, important
         """
@@ -423,21 +467,21 @@ class GoogleMailApp(APIApplication):
             "next_page_token": data.get("nextPageToken"),
         }
 
-    def get_thread(self, thread_id: str) -> dict[str, Any]:
+    def get_email_thread(self, thread_id: str) -> dict[str, Any]:
         """
-        Retrieves a specific thread and all its messages from Gmail API.
-
+        Retrieves a complete email conversation from the Gmail API by its thread ID. It returns a dictionary containing all messages and metadata for the entire thread, providing the full context of the conversation.
+        
         Args:
             thread_id: The unique identifier of the Gmail thread to retrieve
-
+        
         Returns:
             A dictionary containing the thread details and all messages in the thread
-
+        
         Raises:
             NotAuthorizedError: When Gmail API authentication is invalid or missing
             KeyError: When required configuration keys are missing
             Exception: For general errors during API communication or data processing
-
+        
         Tags:
             retrieve, email, thread, gmail, api, conversation, important, readOnlyHint, openWorldHint
         """
@@ -448,18 +492,18 @@ class GoogleMailApp(APIApplication):
 
     def list_labels(self) -> dict[str, Any]:
         """
-        Retrieves and formats a list of all labels (both system and user-created) from the user's Gmail account, organizing them by type and sorting them alphabetically.
-
+        Fetches a complete list of all available labels from the user's Gmail account via the API. This includes both system-defined (e.g., INBOX) and user-created labels, returning details such as their names, IDs, and types after standard response handling.
+        
         Args:
             None: This method takes no arguments
-
+        
         Returns:
             A formatted string containing a list of Gmail labels categorized by type (system and user), with their IDs, or an error message if the operation fails.
-
+        
         Raises:
             NotAuthorizedError: Raised when the user's Gmail authorization is invalid or missing
             Exception: Raised when any other unexpected error occurs during the API request or data processing
-
+        
         Tags:
             list, gmail, labels, fetch, organize, important, management
         """
@@ -474,18 +518,18 @@ class GoogleMailApp(APIApplication):
 
     def create_label(self, name: str) -> dict[str, Any]:
         """
-        Creates a new Gmail label with specified visibility settings and returns creation status details.
-
+        Creates a new Gmail label with a specified name. The function hardcodes the label's visibility settings to ensure it appears in both the label and message lists. It returns the API response, which includes the new label's details upon success or an error message on failure.
+        
         Args:
             name: The display name of the label to create
-
+        
         Returns:
             A formatted string containing the creation status, including the new label's name and ID if successful, or an error message if the creation fails
-
+        
         Raises:
             NotAuthorizedError: Raised when the request lacks proper Gmail API authorization
             Exception: Raised for any other unexpected errors during label creation
-
+        
         Tags:
             create, label, gmail, management, important
         """
@@ -507,18 +551,18 @@ class GoogleMailApp(APIApplication):
 
     def get_profile(self) -> dict[str, Any]:
         """
-        Retrieves and formats the user's Gmail profile information including email address, message count, thread count, and history ID.
-
+        Retrieves the authenticated user's Gmail profile from the API. The profile includes the user's email address, total message and thread counts, and the mailbox's history ID, offering a high-level summary of the account's state.
+        
         Args:
             None: This method takes no arguments besides self
-
+        
         Returns:
             A formatted string containing the user's Gmail profile information or an error message if the request fails
-
+        
         Raises:
             NotAuthorizedError: Raised when the user's credentials are invalid or authorization is required
             Exception: Raised for any other unexpected errors during the API request or data processing
-
+        
         Tags:
             fetch, profile, gmail, user-info, api-request, important
         """
@@ -530,7 +574,7 @@ class GoogleMailApp(APIApplication):
         response = self._get(url)
         return self._handle_response(response)
 
-    def update_drafts(
+    def update_draft(
         self,
         userId,
         id,
@@ -548,8 +592,8 @@ class GoogleMailApp(APIApplication):
         message=None,
     ) -> dict[str, Any]:
         """
-        Updates an existing Gmail draft with new message content and metadata.
-
+        Updates a specific Gmail draft by its ID, replacing its existing content and metadata. The new message body and headers are provided in a message object, allowing for complete modification of the draft before it is sent.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -612,10 +656,10 @@ class GoogleMailApp(APIApplication):
                   }
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             Drafts
         """
@@ -650,7 +694,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def trash_messsages(
+    def trash_message(
         self,
         userId,
         id,
@@ -667,8 +711,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Moves a message to the trash folder (acts like delete functionality).
-
+        Moves a specific Gmail message to the trash folder using its unique ID. This action serves as a soft delete and is the direct counterpart to `untrash_messages`, which restores a trashed message. It requires both a user ID and message ID to execute.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -683,10 +727,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             Messages, important
         """
@@ -716,7 +760,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def untrash_messages(
+    def untrash_message(
         self,
         userId,
         id,
@@ -733,8 +777,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Moves a message out of the trash, effectively undoing a trash action and restoring the message to the user's mailbox.
-
+        Restores a specific Gmail message from the trash to the user's mailbox, identified by its unique ID. It serves as the direct counterpart to `trash_messsages`, undoing the deletion action and making the message visible again in the user's account via an API call.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -749,10 +793,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             Messages
         """
@@ -782,7 +826,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachments(
+    def get_attachment(
         self,
         userId,
         messageId,
@@ -800,8 +844,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Retrieves the actual file content of a specific attachment from a Gmail message
-
+        Retrieves a specific email attachment's content by its unique ID from a specified message. It requires the user, message, and attachment IDs to make a targeted API request, returning the attachment's size and base64-encoded data.
+        
         Args:
             userId (string): userId
             messageId (string): messageId
@@ -817,10 +861,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             Messages
         """
@@ -852,7 +896,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_labels(
+    def update_label(
         self,
         userId,
         id,
@@ -878,8 +922,8 @@ class GoogleMailApp(APIApplication):
         type=None,
     ) -> dict[str, Any]:
         """
-        Update an existing Gmail label's properties such as name, color, or visibility.
-
+        Updates an existing Gmail label's properties, such as its name, color, or visibility, using its unique ID. It sends a PUT request to the Gmail API and returns the full, updated label resource as a dictionary upon successful modification.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -921,10 +965,10 @@ class GoogleMailApp(APIApplication):
                   "type": "system"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             Labels
         """
@@ -967,7 +1011,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_labels(
+    def delete_label(
         self,
         userId,
         id,
@@ -984,8 +1028,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> Any:
         """
-        Delete a Gmail label by its ID.
-
+        Permanently removes a specific Gmail label from a user's account, identified by its unique ID. This function performs an irreversible deletion via an API call, requiring both the `userId` and the label `id`. It is the destructive counterpart to `create_label` and `update_labels`.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -1000,10 +1044,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             Any: No Content
-
+        
         Tags:
             Labels
         """
@@ -1033,7 +1077,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_filters(
+    def get_filter(
         self,
         userId,
         id,
@@ -1050,8 +1094,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Fetch Gmail filter configuration and rules by filter ID
-
+        Fetches the configuration for a single Gmail filter using its unique ID. It returns the specific criteria (e.g., from, subject) and the automated actions (e.g., add label, archive) defined for that filter.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -1066,10 +1110,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             settings, Filters
         """
@@ -1099,7 +1143,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_filters(
+    def delete_filter(
         self,
         userId,
         id,
@@ -1116,8 +1160,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> Any:
         """
-        Remove Gmail filter and its associated automation rules
-
+        Deletes a specific Gmail filter using its unique ID for a specified user account. This action permanently removes the filter and its associated automation rules, such as applying labels or forwarding messages, from the user's Gmail settings.
+        
         Args:
             userId (string): userId
             id (string): id
@@ -1132,10 +1176,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             Any: No Content
-
+        
         Tags:
             settings, Filters
         """
@@ -1165,7 +1209,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_filters(
+    def get_all_filters(
         self,
         userId,
         access_token=None,
@@ -1181,8 +1225,8 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Retrieve all Gmail filters and their automation settings
-
+        Retrieves all configured email filters for a specified Gmail user ID. It fetches a list of a user's filters, including their matching criteria and automated actions, providing a comprehensive overview of their email organization rules via the Gmail API.
+        
         Args:
             userId (string): userId
             access_token (string): OAuth access token. Example: '{{access_token}}'.
@@ -1196,10 +1240,10 @@ class GoogleMailApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '{{upload_protocol}}'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '{{uploadType}}'.
             xgafv (string): V1 error format. Example: '{{$.xgafv}}'.
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             settings, Filters
         """
@@ -1227,7 +1271,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_filters(
+    def create_filter(
         self,
         userId,
         access_token=None,
@@ -1246,8 +1290,8 @@ class GoogleMailApp(APIApplication):
         id=None,
     ) -> dict[str, Any]:
         """
-        Set up new Gmail filter with criteria and automated actions
-
+        Sets up a new automated email filter in Gmail. It requires defining matching criteria (like sender or subject) and an action (like adding a label) to apply to emails that meet those criteria for a specified user account.
+        
         Args:
             userId (string): userId
             access_token (string): OAuth access token. Example: '{{access_token}}'.
@@ -1292,10 +1336,10 @@ class GoogleMailApp(APIApplication):
                   "id": "in aute anim"
                 }
                 ```
-
+        
         Returns:
             dict[str, Any]: Successful response
-
+        
         Tags:
             settings, Filters
         """
@@ -1336,20 +1380,20 @@ class GoogleMailApp(APIApplication):
             self.send_draft,
             self.get_draft,
             self.list_drafts,
-            self.get_message,
+            self.get_message_details,
             self.list_messages,
             self.list_labels,
             self.create_label,
             self.get_profile,
             # Auto Generated from openapi spec
-            self.update_drafts,
-            self.trash_messsages,
-            self.untrash_messages,
-            self.get_attachments,
-            self.update_labels,
-            self.delete_labels,
-            self.get_filters,
-            self.delete_filters,
-            self.list_filters,
-            self.create_filters,
+            self.update_draft,
+            self.trash_message,
+            self.untrash_message,
+            self.get_attachment,
+            self.update_label,
+            self.delete_label,
+            self.get_filter,
+            self.delete_filter,
+            self.get_all_filters,
+            self.create_filter,
         ]
