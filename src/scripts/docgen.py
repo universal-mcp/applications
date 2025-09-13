@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import time
 import traceback
 from typing import Optional
 
@@ -225,28 +226,47 @@ def generate_description(
     system_prompt = SYSTEM_PROMPT_TEMPLATE.format(file_content=file_content)
     user_prompt = USER_PROMPT_TEMPLATE.format(function_code=function_code)
 
-    try:
-        response = litellm.completion(
-            model=model,
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-        )
-        response_text = response.choices[0].message.content
-        try:
-            parsed_data = extract_json_from_text(response_text)
-            return DescriptionOutput(
-                description=parsed_data.get("description", "No description available."),
-                suggested_name=parsed_data.get("suggested_name"),
-            )
-        except ValueError as e:
-            print(f"JSON extraction failed: {e}")
-            return DescriptionOutput(description="Failed to extract description.")
+    # --- NEW: Retry logic with exponential backoff ---
+    max_retries = 3
+    base_delay = 2  # in seconds
 
-    except Exception as e:
-        print(f"Error generating description: {e}", file=sys.stderr)
-        return DescriptionOutput(description=f"Error generating description: {e}")
+    for attempt in range(max_retries):
+        try:
+            response = litellm.completion(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            response_text = response.choices[0].message.content
+            try:
+                parsed_data = extract_json_from_text(response_text)
+                return DescriptionOutput(
+                    description=parsed_data.get("description", "No description available."),
+                    suggested_name=parsed_data.get("suggested_name"),
+                )
+            except ValueError as e:
+                print(f"  - JSON extraction failed: {e}")
+                return DescriptionOutput(description="Failed to extract description.")
+
+        except litellm.InternalServerError as e:
+            if attempt < max_retries - 1:
+                delay = base_delay * (2**attempt)
+                print(
+                    f"  - Server error occurred: {e}. Retrying in {delay} seconds... (Attempt {attempt + 1}/{max_retries})",
+                    file=sys.stderr,
+                )
+                time.sleep(delay)
+            else:
+                print(f"  - Max retries reached. Error generating description: {e}", file=sys.stderr)
+                return DescriptionOutput(description=f"Error generating description after {max_retries} retries: {e}")
+
+        except Exception as e:
+            print(f"  - An unexpected error occurred: {e}", file=sys.stderr)
+            return DescriptionOutput(description=f"An unexpected error occurred: {e}")
+
+    return DescriptionOutput(description="Failed to generate description after all retries.")
 
 
 import textwrap
@@ -386,7 +406,7 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
         new_description = output.description.strip()
         suggested_name = output.suggested_name
 
-        if not new_description:
+        if not new_description or "Error generating description" in new_description:
             print(f"  - Failed to generate description for '{function_name}', skipping.")
             continue
 
