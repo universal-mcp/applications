@@ -61,5 +61,5 @@ class PerplexityApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.search,
+            self.answer_with_search,
         ]

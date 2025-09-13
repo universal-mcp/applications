@@ -2438,84 +2438,6 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    def get_file_details(
-        self,
-        fileId: str,
-        acknowledgeAbuse: str | None = None,
-        includeLabels: str | None = None,
-        includePermissionsForView: str | None = None,
-        supportsAllDrives: str | None = None,
-        supportsTeamDrives: str | None = None,
-        alt: str | None = None,
-        fields: str | None = None,
-        key: str | None = None,
-        oauth_token: str | None = None,
-        prettyPrint: str | None = None,
-        quotaUser: str | None = None,
-        userIp: str | None = None,
-    ) -> dict[str, Any]:
-        """
-        Retrieves metadata for a specific file by its ID. Unlike the simpler `get_file` function, this method exposes numerous optional API parameters for advanced queries, allowing customized responses that can include specific fields, labels, or permissions information from Google Drive.
-        
-        Args:
-            fileId (string): fileId
-            acknowledgeAbuse (string): Whether the user is acknowledging the risk of downloading known malware or other abusive files. This is only applicable when alt=media. Example: '<boolean>'.
-            includeLabels (string): A comma-separated list of IDs of labels to include in the labelInfo part of the response. Example: '<string>'.
-            includePermissionsForView (string): Specifies which additional view's permissions to include in the response. Only 'published' is supported. Example: '<string>'.
-            supportsAllDrives (string): Whether the requesting application supports both My Drives and shared drives. Example: '<boolean>'.
-            supportsTeamDrives (string): Deprecated use supportsAllDrives instead. Example: '<boolean>'.
-            alt (string): Data format for the response. Example: 'json'.
-            fields (string): Selector specifying which fields to include in a partial response. Example: "id","name","parents"
-            key (string): API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token. Example: '{{key}}'.
-            oauth_token (string): OAuth 2.0 token for the current user. Example: '{{oauthToken}}'.
-            prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
-            quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
-            userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
-        Returns:
-            dict[str, Any]: Successful response
-        
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
-        Tags:
-            Files
-        """
-        if fileId is None:
-            raise ValueError("Missing required parameter 'fileId'.")
-        url = f"{self.base_url}/files/{fileId}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("acknowledgeAbuse", acknowledgeAbuse),
-                ("includeLabels", includeLabels),
-                ("includePermissionsForView", includePermissionsForView),
-                ("supportsAllDrives", supportsAllDrives),
-                ("supportsTeamDrives", supportsTeamDrives),
-                ("alt", alt),
-                ("fields", fields),
-                ("key", key),
-                ("oauth_token", oauth_token),
-                ("prettyPrint", prettyPrint),
-                ("quotaUser", quotaUser),
-                ("userIp", userIp),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
-        response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
-            return None
-        try:
-            return response.json()
-        except ValueError:
-            return None
-
     def permanently_delete_file(
         self,
         fileId: str,
@@ -4844,7 +4766,6 @@ class GoogleDriveApp(APIApplication):
             self.create_file_metadata,
             self.generate_file_ids,
             self.empty_trash,
-            self.get_file_details,
             self.permanently_delete_file,
             self.update_file_metadata,
             self.copy_file,

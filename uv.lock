@@ -4383,7 +4383,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.12"
+version = "0.1.13"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
