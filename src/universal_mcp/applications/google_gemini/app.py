@@ -65,7 +65,7 @@ class GoogleGeminiApp(APIApplication):
     async def generate_image(
         self,
         prompt: Annotated[str, "The prompt to generate image from"],
-        image: Annotated[str, "The reference image path"] | None = None,
+        images: Annotated[list[str], "The reference images path"] | None = None,
         model: str = "gemini-2.5-flash-image-preview",
     ) -> list:
         """
@@ -75,7 +75,7 @@ class GoogleGeminiApp(APIApplication):
 
         Args:
             prompt (str): The descriptive text prompt to guide the image generation. For example: "A futuristic city at sunset with flying cars."
-            image (str, optional): An optional URL or local file path to a reference image. This image will be used as a basis for the generation.
+            images (list[str], optional): An optional list of URL to a reference image. These images will be used as a basis for the generation.
             model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image-preview".
 
         Returns:
@@ -96,16 +96,17 @@ class GoogleGeminiApp(APIApplication):
         """
         # The Gemini API is synchronous, so run in a thread
         contents = [prompt]
-        if image:
-            if image.startswith(("http://", "https://")):
-                import requests
+        if images:
+            for image in images:
+                if image.startswith(("http://", "https://")):
+                    import requests
 
-                response = requests.get(image)
-                response.raise_for_status()
-                image = Image.open(io.BytesIO(response.content))
-            else:
-                image = Image.open(image)
-            contents.append(image)
+                    response = requests.get(image)
+                    response.raise_for_status()
+                    image = Image.open(io.BytesIO(response.content))
+                else:
+                    image = Image.open(image)
+                contents.append(image)
         response = self.genai_client.models.generate_content(
             model=model,
             contents=contents,
