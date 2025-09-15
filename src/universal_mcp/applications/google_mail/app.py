@@ -387,7 +387,7 @@ class GoogleMailApp(APIApplication):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches a paginated list of detailed email messages from Gmail using optional search queries. It concurrently retrieves the full content (sender, subject, body) for each message, returning the results and a token to access the next page. This differs from `get_message` which fetches only one.
+        Fetches a paginated list of detailed email messages from Gmail using optional search queries. It concurrently retrieves the full content (sender, subject, body) for each message, returning the results and a token to access the next page. This differs from `get_message_details` which fetches only one.
         
         Args:
             max_results: Maximum number of messages to return (max 500, default 20)
@@ -448,9 +448,9 @@ class GoogleMailApp(APIApplication):
         detailed_messages = []
         if message_ids:
             with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                # Submit all get_message calls
+                # Submit all get_message_details calls
                 future_to_message_id = {
-                    executor.submit(self.get_message, message_id): message_id
+                    executor.submit(self.get_message_details, message_id): message_id
                     for message_id in message_ids
                 }
 
