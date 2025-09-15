@@ -37,11 +37,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
@@ -88,11 +88,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
         request_body_data = None
         request_body_data = {
@@ -141,11 +141,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
         if mailFolder_id is None:
             raise ValueError("Missing required parameter 'mailFolder-id'.")
@@ -208,11 +208,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
 
         url = f"{self.base_url}/users/{user_id}/messages"
@@ -270,11 +270,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
@@ -310,11 +310,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
@@ -362,11 +362,11 @@ class OutlookApp(APIApplication):
         """
         # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_user_id()
+            user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError(
-                    "Could not retrieve user ID from get_user_id response."
+                    "Could not retrieve user ID from get_current_user_profile response."
                 )
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
