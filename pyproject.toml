@@ -42,7 +42,7 @@ dependencies = [
     "requests>=2.31.0",
     "resend>=2.10.0",
     "twilio>=9.8.0",
-    "universal-mcp>=0.1.24rc19",
+    "universal-mcp>=0.1.24rc21",
     "youtube-transcript-api==1.2.2",
 ]
 

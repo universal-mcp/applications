@@ -4346,7 +4346,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp"
-version = "0.1.24rc19"
+version = "0.1.24rc21"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agentevals" },
@@ -4376,14 +4376,14 @@ dependencies = [
     { name = "streamlit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ce/9c/68c8c0056912fb7db6bc2dda06d01075e7a1d1a7ba1e575a7b47c2a1a76b/universal_mcp-0.1.24rc19.tar.gz", hash = "sha256:04e90a08e114291f10d7eab6265754c8c7189fe4082517a994a3d8df24471ec8", size = 114484, upload-time = "2025-09-12T05:51:52.738Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e0/1b/e0d6c163f5eae7d2c24d0849d8968926cb8e47390d7aa180c46b66b2f0b2/universal_mcp-0.1.24rc21.tar.gz", hash = "sha256:309fce94d0407f2e36cb0ea4dbbcf8aa1d49b1df4f6d8e3d3f9ab2d28368466b", size = 116644, upload-time = "2025-09-13T00:30:25.102Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/fe/57/2dddac24cb36dd52ba699368723c6421ed3271f2d539e2ff8ffe6eb5da60/universal_mcp-0.1.24rc19-py3-none-any.whl", hash = "sha256:619879fac868bce42df0e4d4070df419a62ec41d8da060d34032eada7be2b3ca", size = 130764, upload-time = "2025-09-12T05:51:39.271Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/91/45a3462041ee1e24a3dd9a9341e58c7bfe5187e4e92238b636ee0c6b1297/universal_mcp-0.1.24rc21-py3-none-any.whl", hash = "sha256:c7a355dcbb805be04c685b55fb6a606252a187bace6fddbd3093bed861104b75", size = 132775, upload-time = "2025-09-13T00:30:23.338Z" },
 ]
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.13"
+version = "0.1.14"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
@@ -4449,7 +4449,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.24rc19" },
+    { name = "universal-mcp", specifier = ">=0.1.24rc21" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },
 ]
 provides-extras = ["test", "dev"]
