@@ -1474,7 +1474,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("min_confidence must be between 0.0 and 1.0")
 
         # Get spreadsheet structure
-        spreadsheet = self.get_spreadsheet(spreadsheet_id)
+        spreadsheet = self.get_spreadsheet_metadata(spreadsheet_id)
 
         tables = []
 
@@ -1542,7 +1542,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("sample_size must be between 1 and 1000")
 
         # Get spreadsheet structure
-        spreadsheet = self.get_spreadsheet(spreadsheet_id)
+        spreadsheet = self.get_spreadsheet_metadata(spreadsheet_id)
 
         # Find the target table
         target_table = None
@@ -1685,7 +1685,7 @@ class GoogleSheetApp(APIApplication):
         
         Args:
             spreadsheetId: Identifier of the Google Sheets spreadsheet. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
-            worksheetId: ID (sheetId) of the worksheet. Use `get_spreadsheet` to find this ID. Example: 123456789
+            worksheetId: ID (sheetId) of the worksheet. Use `get_spreadsheet_metadata` to find this ID. Example: 123456789
             startRowIndex: 0-based index of the first row in the range. Example: 0
             startColumnIndex: 0-based index of the first column in the range. Example: 0
             endRowIndex: 0-based index of the row *after* the last row in the range (exclusive). Example: 1
