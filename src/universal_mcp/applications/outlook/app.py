@@ -18,7 +18,7 @@ class OutlookApp(APIApplication):
         message: dict[str, Any] | None = None,
     ) -> Any:
         """
-        Replies to a specific email message identified by its ID. The reply can contain a simple comment or a full message object with attachments. If no user ID is provided, it defaults to the current user, distinguishing it from `user_send_mail` which sends a new email.
+        Replies to an email using its message ID, with either a simple comment or a full message object including attachments. Unlike `send_mail`, which creates a new email, this function targets an existing message. It defaults to the current user if no user ID is specified.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -70,7 +70,7 @@ class OutlookApp(APIApplication):
         saveToSentItems: bool | None = None,
     ) -> Any:
         """
-        Sends a new email on behalf of a user, using a provided dictionary for content like recipients and subject. Unlike `users_message_reply`, which replies to an existing message, this function is used to compose and send an entirely new email from scratch.
+        Sends a new email on behalf of a specified or current user, using a dictionary for content like recipients and subject. Unlike `reply_to_message`, which replies to an existing message, this function composes and sends an entirely new email from scratch.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -121,7 +121,7 @@ class OutlookApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves a specific mail folder by its ID for a given user. Allows customization of the response by optionally including hidden folders, selecting specific properties to return, or expanding related entities. It specifically targets folder metadata, not the messages within.
+        Retrieves a specific mail folder's metadata by its ID for a given user. The response can be customized to include hidden folders or select specific properties. Unlike `list_user_messages`, this function fetches folder details, not the emails contained within it.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -176,7 +176,7 @@ class OutlookApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `user_get_message`, which fetches a single email by its ID.
+        Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `get_user_message`, which fetches a single email by its ID.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -250,7 +250,7 @@ class OutlookApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves a specific message by its ID for a user, with options to select fields or expand related data. This function fetches a single item, in contrast to `user_list_message` which retrieves a collection of messages.
+        Retrieves a specific email message by its ID for a given user, with options to select specific fields or expand related data. Unlike `list_user_messages`, which fetches a collection of emails with advanced filtering, this function is designed to retrieve a single, known message.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -293,7 +293,7 @@ class OutlookApp(APIApplication):
 
     def user_delete_message(self, message_id: str, user_id: str | None = None) -> Any:
         """
-        Deletes a specific Outlook message for a user, identified by its unique `message_id`. If `user_id` is not provided, it automatically targets the currently authenticated user's mailbox. It makes a DELETE request to the corresponding Microsoft Graph API endpoint to permanently remove the message.
+        Permanently deletes a specific email, identified by `message_id`, from a user's mailbox. If `user_id` is not provided, it defaults to the current authenticated user. Unlike retrieval functions such as `get_user_message`, this performs a destructive action to remove the specified email from Outlook.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -337,7 +337,7 @@ class OutlookApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set.
+        Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set, focusing only on attachments rather than the full message content.
         
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -392,7 +392,7 @@ class OutlookApp(APIApplication):
         self,
     ) -> dict[str, Any]:
         """
-        Fetches the `userPrincipalName` for the currently authenticated user from the `/me` endpoint. It is a helper function used internally by other methods to automatically obtain the user's ID for API calls when one is not explicitly provided.
+        Fetches the `userPrincipalName` for the currently authenticated user from the `/me` endpoint. This internal helper is used by other methods to automatically obtain the user's ID for API calls when a `user_id` is not explicitly provided.
         
         
         Returns:
@@ -413,7 +413,7 @@ class OutlookApp(APIApplication):
 
     def get_next_page(self, url: str) -> dict[str, Any]:
         """
-        Executes a GET request using a full URL, typically a pagination link (`@odata.nextLink`) from a previous API response. It validates the URL, extracts the relative path and query parameters, and fetches the corresponding data, simplifying navigation through paginated API results.
+        Executes a GET request for a full URL, typically the `@odata.nextLink` from a previous paginated API response. It simplifies retrieving subsequent pages of data from list functions by handling URL validation and parsing before fetching the results for the next page.
         """
         if not url:
             raise ValueError("Missing required parameter 'url'.")

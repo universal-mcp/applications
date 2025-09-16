@@ -30,7 +30,7 @@ class DescriptionOutput(BaseModel):
     """Structure for the generated description output."""
 
     description: str = Field(description="A clear, detailed description of what the function does")
-    suggested_name: Optional[str] = Field(None, description="A better name for the function, if applicable")
+    # suggested_name: Optional[str] = Field(None, description="A better name for the function, if applicable")
 
 
 class FunctionExtractor(ast.NodeVisitor):
@@ -244,7 +244,7 @@ def generate_description(
                 parsed_data = extract_json_from_text(response_text)
                 return DescriptionOutput(
                     description=parsed_data.get("description", "No description available."),
-                    suggested_name=parsed_data.get("suggested_name"),
+                    # suggested_name=parsed_data.get("suggested_name"),
                 )
             except ValueError as e:
                 print(f"  - JSON extraction failed: {e}")
@@ -442,7 +442,7 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
         # 1. Generate new description and check for suggested name
         output = generate_description(function_code, original_content, model)
         new_description = output.description.strip()
-        suggested_name = output.suggested_name
+        # suggested_name = output.suggested_name
 
         if not new_description or "Error generating description" in new_description:
             print(f"  - Failed to generate description for '{function_name}', skipping.")
@@ -456,10 +456,10 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
         # 3. Handle function renaming if suggested
         code_to_update = function_code
         is_renamed = False
-        if suggested_name and suggested_name != function_name:
-            print(f"  - Renaming function '{function_name}' to '{suggested_name}'")
-            code_to_update = rename_function_in_code(code_to_update, function_name, suggested_name)
-            is_renamed = True
+        # if suggested_name and suggested_name != function_name:
+        #     print(f"  - Renaming function '{function_name}' to '{suggested_name}'")
+        #     code_to_update = rename_function_in_code(code_to_update, function_name, suggested_name)
+        #     is_renamed = True
 
         # 4. Insert the new docstring back into the (potentially renamed) function code
         updated_function_block = insert_docstring_into_function(code_to_update, reconstructed_docstring)
@@ -468,11 +468,11 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
         if updated_function_block != function_code:
             updated_content = updated_content.replace(function_code, updated_function_block)
             count += 1
-            print(f"  - Updated function block for '{suggested_name or function_name}'.")
+            print(f"  - Updated function block for '{function_name}'.")
             
             # 6. If the function was renamed, also update the list_tools method
-            if is_renamed:
-                updated_content = update_list_tools_method(updated_content, function_name, suggested_name)
+            # if is_renamed:
+            #     updated_content = update_list_tools_method(updated_content, function_name, suggested_name)
 
     if updated_content != original_content:
         with open(file_path, "w", encoding="utf-8") as f:

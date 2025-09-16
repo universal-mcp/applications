@@ -36,7 +36,7 @@ class SharepointApp(BaseApplication):
     @property
     def client(self):
         """
-        A lazy-loaded property that gets or creates an authenticated GraphClient instance. On its first call, it uses integration credentials to initialize the client, fetches the user's profile and root site ID, and caches the instance for subsequent use. This ensures efficient connection management.
+        A lazy-loaded property that gets or creates an authenticated GraphClient instance. On first access, it uses integration credentials to initialize the client, fetches initial user and site data, and caches the instance for subsequent use, ensuring efficient connection management for all SharePoint operations.
         
         Returns:
             GraphClient: The authenticated GraphClient instance.
@@ -74,7 +74,7 @@ class SharepointApp(BaseApplication):
 
     def list_folders(self, folder_path: str | None = None) -> list[dict[str, Any]]:
         """
-        Retrieves the names of all immediate subfolders within a specified directory. If a path is not provided, it defaults to listing folders in the root of the user's drive. This function is distinct from `list_documents`, which lists files.
+        Retrieves a list of immediate subfolder names within a specified SharePoint directory. If no path is provided, it defaults to the root drive. This function is distinct from `list_files`, as it exclusively lists directories, not files.
         
         Args:
             folder_path (Optional[str], optional): The path to the parent folder. If None, lists folders in the root.
@@ -97,7 +97,7 @@ class SharepointApp(BaseApplication):
         self, folder_name: str, folder_path: str | None = None
     ) -> dict[str, Any]:
         """
-        Creates a new folder with a given name inside a specified parent directory on SharePoint. If no path is provided, the folder is created in the root. It then returns an updated list of all folder names within that parent directory.
+        Creates a new folder with a given name inside a specified parent directory (or the root). It then returns an updated list of all folder names within that same directory, effectively confirming that the creation operation was successful.
         
         Args:
             folder_name (str): The name of the folder to create.
@@ -118,7 +118,7 @@ class SharepointApp(BaseApplication):
 
     def list_files(self, folder_path: str) -> list[dict[str, Any]]:
         """
-        Retrieves files from a specified folder path. For each file, it returns a dictionary containing key metadata like its name, URL, size, creation date, and last modified date. This function specifically lists files, distinct from `list_folders` which only lists directories.
+        Retrieves metadata for all files in a specified folder. For each file, it returns key details like name, URL, size, and timestamps. This function exclusively lists file properties, distinguishing it from `list_folders` (which lists directories) and `get_document_content` (which retrieves file content).
         
         Args:
             folder_path (str): The path to the folder whose documents are to be listed.
@@ -147,7 +147,7 @@ class SharepointApp(BaseApplication):
         self, file_path: str, file_name: str, content: str
     ) -> dict[str, Any]:
         """
-        Uploads string content to a new file within a specified SharePoint folder path. After creation, it returns an updated list of all documents and their metadata residing in that folder, effectively confirming the file was added successfully.
+        Uploads string content to create a new file in a specified SharePoint folder. To confirm the operation, it returns an updated list of all files and their metadata from that directory, including the newly created file.
         
         Args:
             file_path (str): The path to the folder where the document will be created.
@@ -167,7 +167,7 @@ class SharepointApp(BaseApplication):
 
     def get_document_content(self, file_path: str) -> dict[str, Any]:
         """
-        Retrieves a document's content from SharePoint. It returns a dictionary with the content, name, and size. Content is decoded as a string for text files or Base64-encoded for binary files. This is distinct from `list_documents` which only returns metadata without content.
+        Retrieves a file's content from a specified SharePoint path. It returns a dictionary containing the file's name and size, decoding text files as a string and Base64-encoding binary files. Unlike `list_files`, which only fetches metadata, this function provides the actual file content.
         
         Args:
             file_path (str): The path to the document.
@@ -200,7 +200,7 @@ class SharepointApp(BaseApplication):
 
     def delete_document(self, file_path: str):
         """
-        Permanently deletes a specified file from SharePoint/OneDrive. The function takes the file path as an argument and returns True upon successful deletion. An exception is raised if the file is not found or the deletion fails.
+        Permanently deletes a specified file from a SharePoint drive using its full path. This is the sole destructive file operation, contrasting with functions that read or create files. It returns `True` on successful deletion and raises an exception on failure, such as if the file is not found.
         
         Args:
             file_path (str): The path to the file to delete.

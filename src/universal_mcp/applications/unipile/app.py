@@ -31,7 +31,7 @@ class UnipileApp(APIApplication):
     @property
     def base_url(self) -> str:
         """
-        A property that lazily constructs and caches the Unipile API base URL using 'subdomain' and 'port' from integration credentials. The URL is built on first access and used by all API methods, raising a ValueError if the required credentials are missing.
+        A property that lazily constructs and caches the Unipile API base URL from 'subdomain' and 'port' credentials. Built on first access and used by all API methods, it raises a ValueError if credentials are missing. This is the default construction, unlike the setter which allows manual override.
         """
         if not self._base_url:
             credentials = self.integration.get_credentials()
@@ -50,7 +50,7 @@ class UnipileApp(APIApplication):
     @base_url.setter
     def base_url(self, base_url: str) -> None:
         """
-        Sets or overrides the base URL for Unipile API requests. This setter allows manually changing the endpoint, bypassing the default URL that is dynamically constructed from integration credentials. It is primarily intended for testing against different environments or for custom deployments.
+        Sets or overrides the Unipile API's base URL. This setter allows manually changing the endpoint, bypassing the default URL that is dynamically constructed from integration credentials. It is primarily intended for testing against different environments or for custom deployments.
         
         Args:
             base_url: The new base URL to set.
@@ -154,7 +154,7 @@ class UnipileApp(APIApplication):
         sender_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves messages from a specific chat identified by `chat_id`. It supports pagination and filtering by date or sender. This function is distinct from `list_all_messages`, which fetches messages across all chats, whereas this method targets the contents of a single conversation.
+        Retrieves messages from a specific chat identified by `chat_id`. Supports pagination and filtering by date or sender. Unlike `list_all_messages`, which fetches from all chats, this function targets the contents of a single conversation.
         
         Args:
             chat_id: The ID of the chat to retrieve messages from.
@@ -195,7 +195,7 @@ class UnipileApp(APIApplication):
         text: str,
     ) -> dict[str, Any]:
         """
-        Sends a text message to a specific chat via a POST request to the Unipile API. Given a chat ID and text content, it creates a new message within that conversation and returns the API's response, typically containing the new message's ID.
+        Sends a text message to a specific chat conversation using its `chat_id`. This function creates a new message via a POST request, distinguishing it from read-only functions like `list_chat_messages`. It returns the API's response, which typically confirms the successful creation of the message.
         
         Args:
             chat_id: The ID of the chat where the message will be sent.
@@ -221,7 +221,7 @@ class UnipileApp(APIApplication):
         self, chat_id: str, account_id: str | None = None
     ) -> dict[str, Any]:
         """
-        Retrieves a single chat by its unique Unipile or provider-specific ID. The `account_id` is required when using a provider ID to specify the correct context. This function fetches one specific chat, unlike `list_all_chats` which retrieves a collection of chats.
+        Retrieves a single chat's details using its Unipile or provider-specific ID. Requires an `account_id` when using a provider ID for context. This function is distinct from `list_all_chats`, which returns a collection, by targeting one specific conversation.
         
         Args:
             chat_id: The Unipile or provider ID of the chat.
@@ -327,7 +327,7 @@ class UnipileApp(APIApplication):
         account_id: str,
     ) -> dict[str, Any]:
         """
-        Retrieves the details of a specific account linked to the Unipile service by its unique ID. This function fetches metadata about the connection itself (e.g., a linked LinkedIn account), distinguishing it from functions that fetch end-user profiles from the external platform.
+        Retrieves details for a specific account linked to Unipile using its ID. It fetches metadata about the connection itself (e.g., a linked LinkedIn account), differentiating it from `retrieve_user_profile` which fetches a user's profile from the external platform.
         
         Args:
             account_id: The ID of the account to retrieve.
@@ -354,7 +354,7 @@ class UnipileApp(APIApplication):
         is_company: bool | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of posts from a specific user or company profile using their provider ID. A Unipile account is required for authorization, and the `is_company` flag must be used to differentiate between entity types.
+        Retrieves a paginated list of posts from a specific user or company profile using their provider ID. An authorizing `account_id` is required, and the `is_company` flag must specify the entity type, distinguishing this from `retrieve_post` which fetches a single post by its own ID.
         
         Args:
             identifier: The entity's provider internal ID (LinkedIn ID).
@@ -389,7 +389,7 @@ class UnipileApp(APIApplication):
         account_id: str,
     ) -> dict[str, Any]:
         """
-        Retrieves the profile details for the user associated with the specified Unipile account ID. This function targets the API's 'me' endpoint to fetch the current authenticated user's profile, distinct from fetching profiles of other users via the `retrieve_profile` function.
+        Retrieves the profile details for the user associated with the specified Unipile account ID. This function targets the API's 'me' endpoint to fetch the authenticated user's profile, distinct from `retrieve_user_profile` which fetches profiles of other users by their public identifier.
         
         Args:
             account_id: The ID of the Unipile account to use for retrieving the profile (REQUIRED).
@@ -414,7 +414,7 @@ class UnipileApp(APIApplication):
         account_id: str,
     ) -> dict[str, Any]:
         """
-        Fetches the details of a specific post by its unique ID. The request is performed using the provided `account_id` for authorization, returning the full post object. This differs from `list_user_posts` which retrieves multiple posts for a specific user or company.
+        Fetches a specific post's details by its unique ID, requiring an `account_id` for authorization. Unlike `list_profile_posts`, which retrieves a collection of posts from a user or company profile, this function targets one specific post and returns its full object.
         
         Args:
             post_id: The ID of the post to retrieve.
@@ -443,7 +443,7 @@ class UnipileApp(APIApplication):
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches comments for a specific post. By providing an optional `comment_id`, the function retrieves replies to that comment instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which adds new comments, and `list_post_reactions`, which retrieves likes.
+        Fetches comments for a specific post using an `account_id` for authorization. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which publishes new comments, and `list_content_reactions`, which retrieves 'likes'.
         
         Args:
             post_id: The social ID of the post.
@@ -481,7 +481,7 @@ class UnipileApp(APIApplication):
         external_link: str | None = None,
     ) -> dict[str, Any]:
         """
-        Publishes a new post to LinkedIn via the Unipile API from a specified account. The post's content can include text, user mentions, and an external link displayed as a card. This function is for creating top-level posts, distinct from `create_post_comment` which replies to existing posts.
+        Publishes a new top-level post from a specified account, including text, user mentions, and an external link. This function creates original content, distinguishing it from `create_post_comment` which adds replies to existing posts.
         
         Args:
             account_id: The ID of the Unipile account that will author the post (added as query parameter).
@@ -523,7 +523,7 @@ class UnipileApp(APIApplication):
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of reactions for a given post or, optionally, a specific comment. This read-only operation uses the provided `account_id` for the request, distinguishing it from `add_reaction_to_post` which creates new reactions.
+        Retrieves a paginated list of reactions for a given post or, optionally, a specific comment. This read-only operation uses the provided `account_id` for the request, distinguishing it from the `create_reaction` function which adds new reactions.
         
         Args:
             post_id: The social ID of the post.
@@ -613,7 +613,7 @@ class UnipileApp(APIApplication):
         comment_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Adds a specified reaction (e.g., 'like', 'love') to a LinkedIn post or, optionally, to a specific comment. This function performs a POST request to create the reaction, differentiating it from `list_post_reactions` which only retrieves existing ones.
+        Adds a specified reaction (e.g., 'like', 'love') to a LinkedIn post or, optionally, to a specific comment. This function performs a POST request to create the reaction, differentiating it from `list_content_reactions` which only retrieves existing ones.
         
         Args:
             post_social_id: The social ID of the post or comment to react to.
@@ -784,7 +784,7 @@ class UnipileApp(APIApplication):
         account_id: str,
     ) -> dict[str, Any]:
         """
-        Retrieves a specific LinkedIn user's profile using their public or internal ID. This is distinct from `retrieve_own_profile`, which retrieves the profile associated with the Unipile account performing the request.
+        Retrieves a specific LinkedIn user's profile using their public or internal ID, authorized via the provided `account_id`. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
         
         Args:
             identifier: Can be the provider's internal id OR the provider's public id of the requested user.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".

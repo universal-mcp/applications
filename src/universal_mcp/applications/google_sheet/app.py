@@ -21,7 +21,7 @@ class GoogleSheetApp(APIApplication):
 
     def create_spreadsheet(self, title: str) -> dict[str, Any]:
         """
-        Creates a new, blank Google Spreadsheet file with a specified title. This function generates a completely new document, unlike `add_sheet` which adds a tab to an existing spreadsheet. It returns the API response containing the new spreadsheet's metadata.
+        Creates a new, blank Google Spreadsheet file with a specified title. This function generates a completely new document, unlike `add_sheet` which adds a worksheet (tab) to an existing spreadsheet. It returns the API response containing the new spreadsheet's metadata.
         
         Args:
             title: String representing the desired title for the new spreadsheet
@@ -43,7 +43,7 @@ class GoogleSheetApp(APIApplication):
 
     def get_spreadsheet_metadata(self, spreadsheet_id: str) -> dict[str, Any]:
         """
-        Retrieves a spreadsheet's metadata and structural properties, such as sheet names, IDs, and named ranges, using its unique ID. This function intentionally excludes cell data, distinguishing it from `get_values` which fetches the actual content within the cells.
+        Retrieves a spreadsheet's metadata and structural properties, such as sheet names, IDs, and named ranges, using its unique ID. This function intentionally excludes cell data, distinguishing it from `get_values` which fetches the actual content within cells.
         
         Args:
             spreadsheet_id: The unique identifier of the Google Spreadsheet to retrieve (found in the spreadsheet's URL)
@@ -72,7 +72,7 @@ class GoogleSheetApp(APIApplication):
         dateTimeRenderOption: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves cell values from a single, specified A1 notation range in a Google Spreadsheet. Unlike `batch_get_values` which fetches multiple ranges, this function is for a singular query and provides options to control the data's output format (e.g., rows vs. columns, formatted vs. raw values).
+        Retrieves cell values from a single, specified A1 notation range. Unlike `batch_get_values_by_range` which fetches multiple ranges, this function is for a singular query and provides options to control the data's output format (e.g., rows vs. columns, formatted vs. raw values).
         
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to retrieve values from
@@ -108,7 +108,7 @@ class GoogleSheetApp(APIApplication):
         self, spreadsheet_id: str, ranges: list[str] | None = None
     ) -> dict[str, Any]:
         """
-        Efficiently retrieves values from multiple specified ranges in a Google Spreadsheet using a single batch API request. This method is distinct from `get_values`, which fetches a single range, and `batch_get_values_by_data_filter`, which uses filtering criteria instead of predefined A1 notation ranges.
+        Efficiently retrieves values from multiple predefined A1 notation ranges in a single API request. Unlike `get_values`, which fetches a single range, or `batch_get_values_by_data_filter`, which uses dynamic filtering criteria, this function operates on a simple list of range strings for bulk data retrieval.
         
         Args:
             spreadsheet_id: The unique identifier of the Google Spreadsheet to retrieve values from
@@ -144,7 +144,7 @@ class GoogleSheetApp(APIApplication):
         response_ranges: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Inserts empty rows or columns at a specified index, shifting existing content. Unlike `append_dimensions`, which adds to the end, this function is used to insert space within the data grid. Returns the API response containing update details.
+        Inserts a specified number of empty rows or columns at a given index, shifting existing content. Distinct from `append_dimensions`, which only adds to the end, this function creates space within the sheet's data grid, preserving surrounding data and formatting.
         
         This function inserts empty rows or columns at a specified location, shifting existing content.
         Use this when you need to add rows/columns in the middle of your data.
@@ -223,7 +223,7 @@ class GoogleSheetApp(APIApplication):
         length: int,
     ) -> dict[str, Any]:
         """
-        Adds a specified number of empty rows or columns to the end of a designated sheet. Unlike `insert_dimensions`, which adds dimensions at a specific index, this function exclusively extends the sheet's boundaries at the bottom or to the right without affecting existing content.
+        Adds a specified number of empty rows or columns to the end of a designated sheet. Unlike `insert_dimensions`, which adds space at a specific index, this function exclusively extends the sheet's boundaries at the bottom or to the right without affecting existing content.
         
         This function adds empty rows or columns to the end of the sheet without affecting existing content.
         Use this when you need to extend the sheet with additional space at the bottom or right.
@@ -282,7 +282,7 @@ class GoogleSheetApp(APIApplication):
         response_ranges: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Deletes a specified range of rows or columns from a sheet, permanently removing them and shifting subsequent cells. This alters the sheet's structure, unlike `clear_values` which only removes cell content. It complements `insert_dimensions` and `append_dimensions` for structural modifications.
+        Deletes a specified range of rows or columns, permanently removing them and shifting subsequent cells. This alters the sheet's structure, unlike `clear_values` which only removes cell content. It is the direct counterpart to `insert_dimensions`, which adds space within the data grid.
         
         Args:
             spreadsheet_id: The ID of the spreadsheet. Example: "abc123xyz789"
@@ -371,7 +371,7 @@ class GoogleSheetApp(APIApplication):
         responseIncludeGridData: bool = False,
     ) -> dict[str, Any]:
         """
-        Adds a new worksheet (tab) to an existing Google Spreadsheet. Allows customization of the new sheet's properties, including its title, index position, size (rows/columns), and visibility. This differs from `create_spreadsheet`, which creates a new spreadsheet file entirely.
+        Adds a new worksheet (tab) to an existing Google Spreadsheet. It allows extensive customization of the new sheet's properties, such as its title, position, and dimensions. This is distinct from `create_spreadsheet`, which generates a completely new spreadsheet file instead of modifying an existing one.
         
         Args:
             spreadsheetId: The ID of the spreadsheet to add the sheet to. This is the long string of characters in the URL of your Google Sheet. Example: "abc123xyz789"
@@ -638,7 +638,7 @@ class GoogleSheetApp(APIApplication):
         pie_hole: float | None = None,
     ) -> dict[str, Any]:
         """
-        Adds a pie or donut chart to a Google Spreadsheet from a specified data range. Unlike the more general `add_basic_chart`, this function is specialized for visualizing data as proportions of a whole and supports pie-specific options like creating a donut chart via the `pie_hole` parameter.
+        Adds a pie or donut chart to a Google Spreadsheet from a specified data range. Unlike the more general `add_basic_chart`, this is specialized for visualizing data as proportions of a whole and supports pie-specific options like creating a donut chart via the `pie_hole` parameter.
         
         This function creates a pie chart from the specified data range and places it in a new sheet or existing sheet.
         Use this when you need to visualize data as proportions of a whole.
@@ -997,7 +997,7 @@ class GoogleSheetApp(APIApplication):
 
     def clear_values(self, spreadsheet_id: str, range: str) -> dict[str, Any]:
         """
-        Clears data from a single, specified cell range in a Google Sheet while preserving all formatting. Unlike `delete_dimensions`, it only removes content, not the cells themselves. For clearing multiple ranges simultaneously, use the `batch_clear_values` function.
+        Clears data from a single, specified cell range while preserving all formatting. Unlike `delete_dimensions`, it only removes content, not the cells themselves. For clearing multiple ranges simultaneously, use the `batch_clear_values` function.
         
         Args:
             spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
@@ -1025,7 +1025,7 @@ class GoogleSheetApp(APIApplication):
         value_input_option: str = "RAW",
     ) -> dict[str, Any]:
         """
-        Overwrites cell values within a specific A1 notation range in a Google Spreadsheet. This function replaces existing data with the provided values, differing from `append_values` which adds new rows. It provides a direct method for targeted data replacement in a predefined area of the sheet.
+        Overwrites cell values within a specific A1 notation range using a provided 2D list. This function replaces existing data in a predefined area, distinguishing it from `append_values`, which adds new rows after a table instead of overwriting a specific block of cells.
         
         Args:
             spreadsheet_id: The unique identifier of the target Google Spreadsheet
@@ -1093,7 +1093,7 @@ class GoogleSheetApp(APIApplication):
         date_time_render_option: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves values from spreadsheet ranges matching a list of data filters. This method provides dynamic, criteria-based selection using A1 notation or grid coordinates, unlike `batch_get_values` which uses a simple list of range strings. It is ideal for fetching multiple, specific datasets in one request.
+        Retrieves values from spreadsheet ranges matching a list of data filters. This method provides dynamic, criteria-based selection using A1 notation or grid coordinates, unlike `batch_get_values_by_range` which uses a simple list of range strings. It is ideal for fetching multiple, specific datasets in one request.
         
         Args:
             spreadsheet_id: The ID of the spreadsheet to retrieve data from. Example: "1q2w3e4r5t6y7u8i9o0p"
@@ -1168,7 +1168,7 @@ class GoogleSheetApp(APIApplication):
         destination_spreadsheet_id: str,
     ) -> dict[str, Any]:
         """
-        Copies a specific sheet, including all its data and formatting, from a source spreadsheet to a different destination spreadsheet. This action duplicates an entire worksheet into another workbook, returning the properties of the newly created sheet in the API response.
+        Copies a specific sheet, including all its data and formatting, from a source spreadsheet to a different destination spreadsheet. This action duplicates an entire worksheet into another workbook, returning properties of the newly created sheet.
         
         
         Args:
@@ -1212,7 +1212,7 @@ class GoogleSheetApp(APIApplication):
         include_values_in_response: bool = False,
     ) -> dict[str, Any]:
         """
-        Writes a 2D list of values to a sheet, overwriting existing data. Data is written starting from a specified cell, or defaults to cell A1 if no location is provided. This differs from `append_values`, which adds new rows after existing data.
+        Writes a 2D list of values to a sheet, overwriting existing data. Data is written starting from a specified cell, or defaults to cell A1 if no location is provided. This differs from `append_values`, which adds new rows after existing data without replacing content.
         
         Args:
             spreadsheet_id: The unique identifier of the Google Sheets spreadsheet to be updated. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
@@ -1278,7 +1278,7 @@ class GoogleSheetApp(APIApplication):
         response_date_time_render_option: str | None = None,
     ) -> dict[str, Any]:
         """
-        Appends rows of data after a table within a specified range. Unlike `batch_update`, this function can optionally insert new rows, shifting existing data down. This provides more granular control for adding data to a sheet without overwriting existing cells below the target table.
+        Appends rows of data after a specified table in a Google Sheet. Distinct from `update_values` which overwrites data, this function adds new rows at the end of the table. It can also insert rows, shifting existing cells down, offering finer control over data addition.
         
         Args:
             spreadsheet_id: The ID of the spreadsheet to update. Example: "1q0gLhLdGXYZblahblahblah"
@@ -1371,7 +1371,7 @@ class GoogleSheetApp(APIApplication):
         sheet_id: int,
     ) -> dict[str, Any]:
         """
-        Removes the basic filter from a specified sheet within a Google Spreadsheet. This action clears any active sorting or filtering criteria, restoring the default data view. It is the direct counterpart to the `set_basic_filter` function.
+        Removes the basic filter from a specified sheet, clearing active sorting and filtering criteria to restore the default data view. As the direct counterpart to `set_basic_filter`, this function removes the entire filter object, not just the cell content.
         
         Args:
             spreadsheet_id: The ID of the spreadsheet. Example: "abc123xyz789"
@@ -1443,7 +1443,7 @@ class GoogleSheetApp(APIApplication):
         min_confidence: float = 0.5,
     ) -> dict[str, Any]:
         """
-        Discovers and lists all table-like data structures within a Google Spreadsheet. It heuristically analyzes each sheet to identify headers and data boundaries, returning tables that meet specified size and confidence criteria. This is distinct from listing formally defined tables.
+        Heuristically analyzes a spreadsheet to discover and list all table-like data structures, identifying headers and data boundaries. It returns informal data blocks meeting specified size criteria, distinguishing it from functions like `add_table` that manage formally defined tables.
         
         Args:
             spreadsheet_id: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'). Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
@@ -1514,7 +1514,7 @@ class GoogleSheetApp(APIApplication):
         sample_size: int = 50,
     ) -> dict[str, Any]:
         """
-        Infers the schema for a specific table within a Google Sheet by analyzing a sample of its data. After locating the table by name (as discovered by `list_tables`), it determines the most likely data type and properties for each column.
+        Infers a specified table's schema by analyzing a data sample. After locating the table by name (a value discovered via `discover_tables`), this function determines the most likely data type and properties for each column, providing a detailed structural breakdown of its content.
         
         Args:
             spreadsheet_id: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms')
@@ -1681,7 +1681,7 @@ class GoogleSheetApp(APIApplication):
         mergeCells: bool = False,
     ) -> dict[str, Any]:
         """
-        Applies comprehensive formatting to a specified cell range in a worksheet. It modifies visual properties like text style, color, alignment, borders, and can merge cells, without altering the underlying cell values.
+        Applies comprehensive formatting to a specified cell range in a worksheet. It modifies visual properties like text style, color, alignment, borders, and can merge cells, without altering the underlying cell values, distinguishing it from data-modification functions like `update_values`.
         
         Args:
             spreadsheetId: Identifier of the Google Sheets spreadsheet. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"

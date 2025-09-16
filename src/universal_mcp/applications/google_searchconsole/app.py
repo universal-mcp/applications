@@ -16,7 +16,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def delete_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
-        Deletes a sitemap from a specified Google Search Console property. It targets the sitemap using the site's URL and the sitemap's `feedpath`, then issues an HTTP DELETE request. This action is distinct from `delete_site`, which removes the entire property, not just a sitemap.
+        Deletes a specific sitemap from a Google Search Console property using its URL (`feedpath`). This function is distinct from `delete_site`, which removes the entire site property, not just a single sitemap file. It issues an HTTP DELETE request to the specified API endpoint.
         
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
@@ -38,7 +38,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def get_sitemap(self, siteUrl: str, feedpath: str) -> dict[str, Any]:
         """
-        Retrieves detailed information for a single, specific sitemap using its full URL (`feedpath`). Unlike `list_sitemaps`, which fetches all sitemaps for a site, this function targets and returns one sitemap resource, providing its status, last processed date, and other API metadata.
+        Retrieves detailed information for a single sitemap from a specified Google Search Console property. Unlike `list_sitemaps` which fetches all sitemaps, this function targets one sitemap by its URL (`feedpath`) to return its resource details, including status and last processed date.
         
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
@@ -62,7 +62,7 @@ class GoogleSearchconsoleApp(APIApplication):
         self, siteUrl: str, sitemapIndex: str | None = None
     ) -> dict[str, Any]:
         """
-        Retrieves a list of sitemaps submitted for a specific site. Optionally, it can list the sitemaps contained within a specified sitemap index file instead of all sitemaps for the site. This contrasts with get_sitemap, which fetches a single sitemap's details.
+        Retrieves a list of sitemaps for a specific site property. It can optionally list sitemaps contained within a specified sitemap index file. This function contrasts with `get_sitemap`, which fetches details for only a single, specified sitemap rather than a collection.
         
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
@@ -88,7 +88,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def submit_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
-        Submits a sitemap to a specified Google Search Console site property. This function notifies Google of the sitemap's location for crawling via a PUT request. It is the primary action for adding or updating a sitemap, complementing `get_sitemap`, `list_sitemaps`, and `delete_sitemap`.
+        Submits a sitemap to a specified Google Search Console property using its URL (feedpath). It notifies Google to crawl the sitemap's location, complementing other sitemap management functions (`list_sitemaps`, `delete_sitemap`) by adding or updating a sitemap's registration for a given site.
         
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
@@ -112,7 +112,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def add_site(self, siteUrl: str) -> dict[str, Any]:
         """
-        Adds a site to the user's Google Search Console account, which requires subsequent ownership verification. Upon success, it returns a dictionary containing the site resource. This method creates a new site entry, unlike `list_sites` which only retrieves existing ones.
+        Adds a site property to the user's Google Search Console account using its URL. This action requires subsequent ownership verification. Unlike `list_sites`, which only retrieves existing properties, this function creates a new entry and returns the corresponding site resource upon successful creation.
         
         Args:
             siteUrl (str): The URL of the site to add. Example: 'http://www.example.com/'.
@@ -134,7 +134,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def delete_site(self, siteUrl: str) -> None:
         """
-        Removes a website property from the user's Google Search Console account using its URL. This function sends a DELETE request to the API, distinguishing it from `delete_sitemap` which only removes a sitemap file rather than the entire site property from the user's management list.
+        Removes a website property from the user's Google Search Console account using its URL. Unlike `delete_sitemap`, which only targets a sitemap file, this function deletes the entire site property, revoking management access and removing it from the user's list of managed sites.
         
         Args:
             siteUrl (str): The URL of the site to delete. Example: 'http://www.example.com/'.
@@ -152,7 +152,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def get_site(self, siteUrl: str) -> dict[str, Any]:
         """
-        Retrieves the resource for a specific site property from Google Search Console, using its URL as an identifier. Unlike `list_sites`, which retrieves all user properties, this function fetches detailed information for a single, known site.
+        Retrieves detailed information for a specific site property from Google Search Console using its URL. Unlike `list_sites`, which fetches all properties associated with the user's account, this function targets and returns the resource for a single, known site.
         
         Args:
             siteUrl (str): The site's URL, including protocol (e.g. 'http://www.example.com/').
@@ -171,7 +171,7 @@ class GoogleSearchconsoleApp(APIApplication):
 
     def list_sites(self) -> dict[str, Any]:
         """
-        Retrieves a list of all websites and domain properties the authenticated user can access in Google Search Console. Unlike `get_site`, which fetches a single property, this function returns a comprehensive overview of all managed sites associated with the user's account.
+        Retrieves all websites and domain properties the authenticated user manages in Google Search Console. While `get_site` fetches a single, specific property, this function returns a comprehensive list of all sites linked to the user's account, providing a complete overview of managed properties.
         
         Returns:
             Dict[str, Any]: List of site resources.

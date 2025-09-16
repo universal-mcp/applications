@@ -11,7 +11,7 @@ class GoogleDocsApp(APIApplication):
 
     def create_document(self, title: str) -> dict[str, Any]:
         """
-        Creates a new, blank Google Document with a specified title via a POST request to the Google Docs API. It returns the API response containing the new document's metadata, including its ID, which is necessary for other functions like `add_content` or `get_document` to interact with it.
+        Creates a blank Google Document with a specified title using a POST request to the Google Docs API. This is the primary creation method, returning the document's metadata, including the ID required by functions like `get_document` or `insert_text` to perform subsequent operations on the new file.
         
         Args:
             title: The title for the new Google Document to be created
@@ -34,7 +34,7 @@ class GoogleDocsApp(APIApplication):
 
     def get_document(self, document_id: str) -> dict[str, Any]:
         """
-        Retrieves the complete content and metadata for a specific Google Document by its unique ID. This function queries the Google Docs API and returns the full JSON response, representing the document's latest version. It's the primary read operation, contrasting with `create_document` which creates new ones.
+        Retrieves the complete content and metadata for a specific Google Document using its unique ID. This function performs a GET request to the API, returning the full JSON response. It's the primary read operation, contrasting with `create_document` which creates new documents.
         
         Args:
             document_id: The unique identifier of the document to retrieve
@@ -57,7 +57,7 @@ class GoogleDocsApp(APIApplication):
         self, document_id: str, content: str, index: int = 1
     ) -> dict[str, Any]:
         """
-        Inserts a string of text at a specified index in an existing Google Document using the `batchUpdate` API. This function specifically adds new textual content, distinguishing it from functions that insert tables or apply styling to existing text.
+        Inserts a text string at a specified index within an existing Google Document using the `batchUpdate` API. This function adds new textual content, distinguishing it from functions that insert non-text elements like tables or apply formatting (`apply_text_style`) to existing content.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -204,7 +204,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Applies paragraph formatting, such as named styles ('TITLE', 'HEADING_1'), alignment, and text direction, to a specified range in a Google Document. It selectively updates only the provided style attributes, distinguishing it from `style_text`, which handles character-level formatting like bolding or italics.
+        Applies paragraph-level formatting, such as named styles (e.g., 'HEADING_1'), alignment, or text direction, to a specified text range. This function handles block-level styles, distinguishing it from `apply_text_style`, which formats individual characters with attributes like bold or italic.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -286,7 +286,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Deletes content within a specified range in a Google Document via a `batchUpdate` API call. The function targets a range defined by start and end indexes and can operate within optional segments like headers or footers, returning the API's response after the deletion operation.
+        Deletes content within a specified index range in a Google Document via the batchUpdate API. It removes any content based on location, distinguishing it from functions like `delete_header` or `delete_paragraph_bullets`, which remove specific structures or styles instead.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -333,7 +333,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Inserts a table with specified row and column dimensions at a given location in a Google Document. It uses the `batchUpdate` API endpoint for precise placement within the document's body, header, or footer, returning the API response.
+        Inserts a table with specified row and column dimensions at a given index in a Google Document. This function uses the `batchUpdate` API for precise placement, allowing the table to be added to the document's body, a header, or a footer, returning the API's response.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -390,7 +390,7 @@ class GoogleDocsApp(APIApplication):
         section_break_tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Creates a footer of a specified type in a Google Document via the batch update API. The footer can optionally be associated with a specific section break, enabling distinct footers for different document sections, distinguishing it from `create_header`.
+        Creates a footer of a specified type in a Google Document via the batch update API. The footer can optionally be associated with a specific section break, enabling distinct footers for different document sections, distinguishing it from the `create_header` and `create_footnote` functions.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -442,7 +442,7 @@ class GoogleDocsApp(APIApplication):
         end_of_segment_tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Creates a footnote segment and inserts a corresponding reference into a Google Document via the API's batch update. The reference can be placed at a specific index or at the end of a document segment. Unlike `create_footer`, this adds a numbered citation within the document body.
+        Creates a footnote via the batch update API, inserting a numbered reference at a specified index or a segment's end. This function adds an in-body citation, distinguishing it from `create_footer` which creates a content block at the bottom of the page.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -505,7 +505,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Deletes a specific footer from a Google Document using its unique ID (`footer_id`). This function constructs and sends a `deleteFooter` request to the Google Docs API's batch update endpoint, optionally targeting a footer within a specific document tab.
+        Deletes a specific footer from a Google Document using its unique ID via a `batchUpdate` request. This operation, the counterpart to `create_footer`, removes an entire footer section, unlike `delete_content_range` which targets text within a specified index range.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -593,7 +593,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Removes a specific header from a Google Document using its unique ID. This function constructs and sends a `deleteHeader` request to the Google Docs API's batch update endpoint, acting as the direct counterpart to the `create_header` function.
+        Removes a specific header from a Google Document using its unique ID. This function sends a `deleteHeader` request to the batch update API, acting as the direct counterpart to `create_header` and distinguishing it from `delete_footer` which removes footers.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -634,7 +634,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Applies a specified bulleted or numbered list format to paragraphs within a given range in a Google Document. The list style is determined by a predefined preset, covering various bullet glyphs and numbering schemes like 'BULLET_DISC_CIRCLE_SQUARE' or 'NUMBERED_DECIMAL_ALPHA_ROMAN'.
+        Applies a predefined bulleted or numbered list format to paragraphs within a specified range using a `bullet_preset`. This function adds list formatting, distinguishing it from its counterpart, `delete_paragraph_bullets`, and other styling functions like `update_paragraph_style`, which handles alignment and headings.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
@@ -704,7 +704,7 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Removes bullet points or numbering from paragraphs within a specified range in a Google Document. This function uses the API's batch update feature to revert list formatting, acting as the direct counterpart to `create_paragraph_bullets` for removing list styles, rather than deleting text content.
+        Removes bullet points or numbering from paragraphs within a specified range in a Google Document. This function reverts list formatting via the batch update API, acting as the direct counterpart to `apply_list_style` and preserving the underlying text content, unlike `delete_content_range`.
         
         Args:
             document_id: The unique identifier of the Google Document to be updated
