@@ -21,7 +21,7 @@ class GoogleDriveApp(APIApplication):
         self, file_id: str, add_parents: str, remove_parents: str
     ) -> dict[str, Any]:
         """
-        Moves a specified file to a new folder in Google Drive by updating its parent references. It adds the file to a destination folder and removes it from the source, returning the updated file metadata.
+        Moves a file to a new folder by updating its parent references. This function adds the file to a destination folder (`add_parents`) and removes it from the source (`remove_parents`), offering a focused alternative to the more comprehensive `update_file_metadata` function.
         
         Args:
             file_id: The ID of the file to move
@@ -48,7 +48,7 @@ class GoogleDriveApp(APIApplication):
 
     def get_drive_info(self) -> dict[str, Any]:
         """
-        Fetches key user and storage quota information for the authenticated Google Drive account. This streamlined function provides a focused alternative to `information_about_user_and_drive`, which queries the same endpoint but exposes all available API parameters.
+        Fetches key user and storage quota information for the authenticated Google Drive account. This streamlined function offers a focused alternative to `get_about_info`, which queries the same endpoint but exposes all available API parameters, providing a simpler way to get essential account details.
         
         Returns:
             A dictionary containing Drive information including storage quota (usage, limit) and user details (name, email, etc.).
@@ -70,7 +70,7 @@ class GoogleDriveApp(APIApplication):
         self, page_size: int = 10, query: str | None = None, order_by: str | None = None
     ) -> dict[str, Any]:
         """
-        Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination. This curated function offers a more user-friendly alternative to the comprehensive `list_user_sfiles` method, making it ideal for targeted queries like finding files by name or type.
+        Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination. This streamlined function offers a more user-friendly alternative to the comprehensive `search_files_advanced` method, making it ideal for targeted queries like finding files by name, type, or parent folder.
         
         Args:
             page_size: Maximum number of files to return per page (default: 10)
@@ -101,7 +101,7 @@ class GoogleDriveApp(APIApplication):
 
     def get_file_details(self, file_id: str) -> dict[str, Any]:
         """
-        Retrieves all default metadata for a specific file from Google Drive using its ID. This is a simplified alternative to `get_file_metadata`, fetching complete file attributes without optional query parameters for customizing the response.
+        Fetches all default metadata for a specific file by its unique ID. This function provides a simple, direct retrieval of a single file's complete attributes, differing from `search_files` which performs broad queries for multiple files based on various criteria.
         
         Args:
             file_id: String identifier of the file whose metadata should be retrieved
@@ -122,7 +122,7 @@ class GoogleDriveApp(APIApplication):
 
     def trash_file(self, file_id: str) -> dict[str, Any]:
         """
-        Moves a specified file to the trash using its ID. It provides simplified error handling by catching exceptions and returning a dictionary with a success or error message, unlike `delete_file_by_id` which raises exceptions on failure.
+        Moves a specified file to the trash using its ID. It provides simplified error handling by returning a dictionary with a success or error message, unlike the `permanently_delete_file` function which raises an exception on failure.
         
         Args:
             file_id: The unique identifier string of the file to be deleted from Google Drive
@@ -151,7 +151,7 @@ class GoogleDriveApp(APIApplication):
         mime_type: str = "text/plain",
     ) -> dict[str, Any]:
         """
-        Creates a new file in Google Drive from a given text string. The function first creates the file's metadata (name, parent folder), then uploads the provided string as its content, returning the new file's full metadata upon completion.
+        Creates a file in Google Drive using an in-memory text string. Unlike `upload_file_from_path`, which reads from a local file, this function first creates the file's metadata (name, parent) and then uploads the provided string content, returning the new file's complete metadata upon completion.
         
         Args:
             file_name: Name of the file to create on Google Drive
@@ -188,7 +188,7 @@ class GoogleDriveApp(APIApplication):
 
     def find_folder_id_by_name(self, folder_name: str) -> str | None:
         """
-        Searches for a non-trashed folder by its exact name and returns the ID of the first match. This utility, used by `create_folder` to resolve parent names, logs errors and returns None if the folder is not found or the API request fails.
+        Searches for a non-trashed folder by its exact name, returning the ID of the first match. As a utility for `create_folder`, it resolves parent names to IDs and returns None if the folder isn't found or an API error occurs, logging the failure internally.
         
         Args:
             folder_name: The name of the folder to search for in Google Drive
@@ -216,7 +216,7 @@ class GoogleDriveApp(APIApplication):
 
     def create_folder(self, folder_name: str, parent_id: str = None) -> dict[str, Any]:
         """
-        Creates a new folder in Google Drive, optionally within a parent folder specified by its name or ID. If a name is provided for the parent, the function automatically resolves it to an ID. Returns the metadata for the newly created folder.
+        Creates a new folder in Google Drive, optionally within a parent specified by name or ID. If a parent name is given, it internally resolves it to an ID using the `find_folder_id_by_name` function. Returns the metadata for the newly created folder upon successful creation.
         
         Args:
             folder_name: Name of the folder to create
@@ -261,7 +261,7 @@ class GoogleDriveApp(APIApplication):
         mime_type: str = None,
     ) -> dict[str, Any]:
         """
-        Uploads a local file to Google Drive by reading its binary content from a path. It first creates the file's metadata entry, then uploads the content, returning the new file's metadata. This differs from `create_file_from_text` which uses in-memory string content instead of a local file.
+        Uploads a local file to Google Drive by reading its binary content from a path. It creates the file's metadata, uploads the content, and returns the new file's metadata. This differs from `create_text_file` which uses in-memory string content instead of a local file path.
         
         Args:
             file_name: Name to give the file on Google Drive
@@ -397,7 +397,7 @@ class GoogleDriveApp(APIApplication):
         xgafv: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves detailed information for a single installed Google Drive application using its unique ID. This function fetches one app, unlike `list_user_sinstalled_apps` which returns a complete list, allowing for targeted data retrieval about a specific application.
+        Retrieves detailed information for a single installed Google Drive application using its unique ID. This provides a targeted alternative to `list_installed_apps`, which returns a complete list, allowing for focused data retrieval about a specific application.
         
         Args:
             appId (string): appId
@@ -467,7 +467,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves information about the user's account and Google Drive settings from the API's `/about` endpoint. This generic function provides full parameter control, offering a more flexible alternative to the `get_drive_info` method, which requests specific predefined fields like storage quota and user details.
+        Retrieves user account and Drive settings from the `/about` endpoint. This generic function provides full parameter control, offering a flexible alternative to the `get_drive_info` method, which requests specific, predefined fields like storage quota and user details.
         
         Args:
             alt (string): Data format for the response. Example: 'json'.
@@ -945,7 +945,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of comments for a specified file in Google Drive. Supports pagination and filtering options, such as including deleted comments or specifying a start time for modifications, to customize the results.
+        Retrieves a paginated list of all top-level comments for a specified Google Drive file. It supports filtering by modification time and including deleted comments, fetching parent comments rather than replies, unlike `list_comment_replies`.
         
         Args:
             fileId (string): fileId
@@ -1028,7 +1028,7 @@ class GoogleDriveApp(APIApplication):
         resolved: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a new comment on a specified Google Drive file. It requires a file ID and the comment's content, returning the new comment's metadata. This adds top-level comments, distinct from `create_areply_to_acomment` which replies to existing comments.
+        Creates a new comment on a specified Google Drive file. It requires a file ID and the comment's content, returning the new comment's metadata. This adds top-level comments, distinct from `create_comment_reply` which replies to existing comments.
         
         Args:
             fileId (string): fileId
@@ -1128,7 +1128,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves the metadata for a specific comment on a file, identified by both the file ID and the comment ID. This function can optionally include deleted comments in the result, returning the comment's details.
+        Retrieves a single comment's metadata using its unique comment and file IDs. This provides targeted access to one comment, unlike `list_file_comments` which lists all comments for a file. It can optionally include deleted comments in the returned data.
         
         Args:
             fileId (string): fileId
@@ -1197,7 +1197,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Permanently deletes a specific comment from a Google Drive file, identified by both the file ID and the comment ID. This action is irreversible and removes the comment from the associated file's history, distinct from deleting a reply.
+        Permanently deletes a specific comment from a Google Drive file, identified by both the file and comment IDs. This irreversible action removes the top-level comment and its replies, distinguishing it from the `delete_reply` function which targets only individual replies within a comment thread.
         
         Args:
             fileId (string): fileId
@@ -1375,7 +1375,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of shared drives accessible to the user. Supports optional query-based filtering and can be executed with domain administrator privileges to list all shared drives within the domain. Returns a dictionary containing the list of drives and pagination details.
+        Retrieves a paginated list of shared drives accessible to the user. Supports optional query-based filtering and can be executed with domain administrator privileges to list all shared drives within the domain, returning a dictionary containing the list of drives and pagination details.
         
         Args:
             pageSize (string): Maximum number of shared drives to return per page. Example: '<integer>'.
@@ -1553,7 +1553,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves metadata for a specific shared drive using its ID. Supports domain administrator access and allows specifying fields for partial responses. Unlike `get_drive_info` which gets user account data, this function targets the properties of a single shared drive.
+        Retrieves metadata for a specific shared drive using its ID. Unlike `get_drive_info`, which gets user account data, this function targets a single drive's properties. It supports domain administrator access and allows specifying fields to customize the response, returning the drive's detailed information.
         
         Args:
             driveId (string): driveId
@@ -1620,7 +1620,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Permanently deletes a shared drive using its unique ID. This action is irreversible. An option is available for domain administrators to simultaneously delete all items contained within the specified drive, making it distinct from file deletion functions like `delete_file`.
+        Permanently deletes a shared drive by its ID. This irreversible action removes the entire drive and, unlike `trash_file`, can optionally delete all its contents for domain administrators, providing a complete removal solution for a shared workspace.
         
         Args:
             driveId (string): driveId
@@ -1700,7 +1700,7 @@ class GoogleDriveApp(APIApplication):
         themeId: str | None = None,
     ) -> dict[str, Any]:
         """
-        Updates metadata properties for a specific shared drive using its ID. Modifiable attributes include name, theme, background, and color. This function sends a PATCH request to the Google Drive API and returns a dictionary containing the updated shared drive's full metadata.
+        Updates a shared drive's metadata properties, such as its name, theme, or color, using its ID. This function sends a PATCH request to modify the drive and returns a dictionary containing the complete, updated metadata for the shared drive upon success.
         
         Args:
             driveId (string): driveId
@@ -1864,7 +1864,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Makes a hidden shared drive visible again in the user's default view by its ID. This function sends a POST request to the Google Drive API's `/unhide` endpoint, effectively reversing the action of the `hide_drive_by_id_post` function.
+        Makes a hidden shared drive visible again in the user's default view by its ID. This function sends a POST request to the Google Drive API's `/unhide` endpoint, effectively reversing the action of the `hide_drive` function, and returns the updated drive metadata.
         
         Args:
             driveId (string): driveId
@@ -1946,7 +1946,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Exhaustively lists or searches for files, exposing numerous API parameters for advanced filtering, sorting, and pagination. This low-level function offers more granular control than the simplified `list_files` method by directly mapping to the Google Drive API's full capabilities for file retrieval.
+        Exhaustively lists or searches files using advanced parameters for filtering, sorting, and pagination. As a low-level alternative to the simplified `search_files` function, it provides granular control by exposing the full range of Google Drive API query options for complex retrieval.
         
         Args:
             corpora (string): Groupings of files to which the query applies. Supported groupings are: 'user' (files created by, opened by, or shared directly with the user), 'drive' (files in the specified shared drive as indicated by the 'driveId'), 'domain' (files shared to the user's domain), and 'allDrives' (A combination of 'user' and 'drive' for all drives where the user is a member). When able, use 'user' or 'drive', instead of 'allDrives', for efficiency. Example: '<string>'.
@@ -2104,7 +2104,7 @@ class GoogleDriveApp(APIApplication):
         writersCanShare: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a new file's metadata resource in Google Drive, allowing for detailed configuration of properties like name, MIME type, and parent folders. Unlike `upload_a_file` or `create_file_from_text`, this function only creates the metadata entry without uploading any actual file content.
+        Creates a new file's metadata resource in Google Drive, allowing detailed configuration of properties like name, MIME type, and parent folders. Unlike `upload_file_from_path` or `create_text_file`, this function only creates the metadata entry without uploading any file content.
         
         Args:
             enforceSingleParent (string): Deprecated. Creating files in multiple folders is no longer supported. Example: '<boolean>'.
@@ -2319,7 +2319,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Pre-generates a specified number of unique IDs for future files or shortcuts from the Google Drive API. Allows specifying the quantity, storage space ('drive' or 'appDataFolder'), and item type, optimizing creation workflows by providing identifiers in advance.
+        Generates a batch of unique IDs for future Google Drive files or shortcuts. This utility optimizes creation workflows by allowing identifiers to be fetched in advance, specifying quantity, storage space (e.g., 'drive'), and item type (e.g., 'files').
         
         Args:
             count (string): The number of IDs to return. Example: '<integer>'.
@@ -2386,7 +2386,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Permanently deletes all files and folders from the trash. It can target the user's main trash or a specific shared drive's trash if a `driveId` is provided. This action is irreversible, differing from `delete_file` which only moves items to the trash.
+        Permanently deletes all files and folders from the trash. This irreversible action can target the user's main trash or a specific shared drive's trash via its `driveId`, distinguishing it from `trash_file` which only moves a single item to the trash.
         
         Args:
             driveId (string): If set, empties the trash of the provided shared drive. Example: '{{driveId}}'.
@@ -2453,7 +2453,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Permanently deletes a specific file by its ID, bypassing the trash. Unlike the simpler `delete_file` wrapper, this function exposes numerous optional API parameters for advanced control over the deletion process, such as handling files in shared drives.
+        Permanently deletes a file by its ID, bypassing the trash for irreversible removal. Unlike the simpler `trash_file` function, this method offers advanced control through numerous optional API parameters, such as handling files located in shared drives.
         
         Args:
             fileId (string): fileId
@@ -2594,7 +2594,7 @@ class GoogleDriveApp(APIApplication):
         writersCanShare: str | None = None,
     ) -> dict[str, Any]:
         """
-        Modifies a file's metadata properties, such as name, description, or trashed status, using its unique ID. It supports a wide range of updatable fields and can also move files between folders by changing parent attributes, acting as a comprehensive alternative to the `move_files` function.
+        Modifies a file's metadata properties, such as name, description, or trashed status, using its unique ID. It also moves files by changing parent attributes, acting as a comprehensive alternative to the more specialized `move_file` function.
         
         Args:
             fileId (string): fileId
@@ -3092,7 +3092,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Exports a Google Workspace document (e.g., Google Doc) by its ID, converting it into a specified format like PDF or XLSX. The target format is determined by the `mimeType` argument. The function returns the raw content of the exported file, not JSON metadata.
+        Exports a Google Workspace document (e.g., Google Doc) by its ID, converting it to a specified format like PDF using the `mimeType` argument. This function returns the raw, converted file content for download, differentiating it from methods that retrieve metadata.
         
         Args:
             fileId (string): fileId
@@ -3159,7 +3159,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of all labels applied to a specific file in Google Drive, identified by its unique ID. It allows controlling the number of results per page and navigating through pages of labels.
+        Retrieves a paginated list of all labels applied to a specific file in Google Drive, identified by its unique ID. It allows controlling the number of results per page and navigating through pages of labels, differing from `modify_file_labels` which alters them.
         
         Args:
             fileId (string): fileId
@@ -3321,7 +3321,7 @@ class GoogleDriveApp(APIApplication):
         type: str | None = None,
     ) -> dict[str, Any]:
         """
-        Establishes a push notification channel to monitor a specific file in Google Drive. This function configures a webhook by sending a POST request to the file's 'watch' endpoint, enabling real-time notifications for any changes, such as content or metadata updates, to the specified file.
+        Establishes a push notification channel for a specific file, enabling real-time updates via webhook. Unlike `watch_drive_changes`, which monitors an entire drive, this function provides targeted notifications for content or metadata updates to a single file identified by its ID.
         
         Args:
             fileId (string): fileId
@@ -3431,7 +3431,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves the list of permissions for a specified file or shared drive in Google Drive. This function supports pagination and various query parameters to customize the results for different access levels, such as domain administration.
+        Retrieves the list of permissions for a specified file or shared drive. This function supports pagination and various query parameters to customize results for different access levels, such as domain administration, unlike `get_permission_by_id` which fetches a single permission.
         
         Args:
             fileId (string): fileId
@@ -3529,7 +3529,7 @@ class GoogleDriveApp(APIApplication):
         view: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a new permission for a file or shared drive, assigning roles like 'reader' to a user, group, or domain. This comprehensive method supports options like notification emails and ownership transfer, distinguishing it from the simplified `grant_google_drive_access` function.
+        Creates a permission for a file or shared drive, assigning roles like 'reader' to a user, group, or domain. This comprehensive method supports advanced options like notification emails and ownership transfer, distinguishing it from the simplified `create_permission` function which offers fewer parameters.
         
         Args:
             fileId (string): fileId
@@ -3653,7 +3653,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves the metadata for a specific permission on a file or shared drive, identified by its unique permission ID. This provides targeted access information, unlike `list_file_permissions`, which fetches all permissions for a file or drive.
+        Retrieves metadata for a specific permission on a file or shared drive, identified by its unique ID. This provides targeted access information, unlike `list_file_permissions` which fetches all permissions for a file.
         
         Args:
             fileId (string): fileId
@@ -3938,7 +3938,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of replies for a specific comment on a Google Drive file, requiring both file and comment IDs. It can optionally include deleted replies. This function targets replies to a single comment, distinguishing it from functions listing all top-level comments on a file.
+        Fetches a paginated list of replies for a specific comment, requiring both file and comment IDs. It can optionally include deleted replies. Unlike `list_file_comments`, which retrieves all top-level comments, this function targets replies within a single comment's thread.
         
         Args:
             fileId (string): fileId
@@ -4118,7 +4118,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a specific reply to a comment on a file, identified by the file, comment, and reply IDs. Unlike `list_acomment_sreplies`, this fetches a single reply's data. It can optionally include deleted replies in the response, returning a dictionary with the reply's metadata.
+        Retrieves a specific reply's metadata from a comment thread using file, comment, and reply IDs. Unlike `list_comment_replies`, which fetches all replies for a comment, this function targets a single one and can optionally include deleted replies in the result.
         
         Args:
             fileId (string): fileId
@@ -4191,7 +4191,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Permanently deletes a specific reply associated with a comment on a Google Drive file. This operation requires the file ID, parent comment ID, and the specific reply ID to make a targeted DELETE request to the Google Drive API.
+        Permanently deletes a specific reply from a comment on a Google Drive file. This targeted operation requires file, comment, and reply IDs to remove a single nested reply, distinguishing it from `delete_comment` which removes an entire top-level comment.
         
         Args:
             fileId (string): fileId
@@ -4435,7 +4435,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves the metadata for a single, specific revision of a file using its file ID and revision ID. This function is distinct from `list_afile_srevisions`, which returns a list of all revisions for a file, by targeting one historical version.
+        Fetches metadata for a single, specific file revision using its file and revision IDs. Unlike `list_file_revisions` which lists a file's complete version history, this function targets one historical version to retrieve its unique metadata.
         
         Args:
             fileId (string): fileId
@@ -4504,7 +4504,7 @@ class GoogleDriveApp(APIApplication):
         userIp: str | None = None,
     ) -> Any:
         """
-        Permanently deletes a specific revision of a file, identified by its file and revision IDs. This action is irreversible and removes a single historical version, which is distinct from other functions in this class that delete the entire file or move it to the trash.
+        Permanently deletes a specific revision of a file, identified by its file and revision IDs. This irreversible action removes a single historical version, distinguishing it from functions like `permanently_delete_file`, which deletes the entire file, or `trash_file`, which moves it to the trash.
         
         Args:
             fileId (string): fileId
@@ -4683,7 +4683,7 @@ class GoogleDriveApp(APIApplication):
         type: str | None = None,
     ) -> dict[str, Any]:
         """
-        Creates a new permission for a file, granting a specified role (e.g., 'reader') to a user, group, or domain. This is a simplified alternative to the more comprehensive `post_file_permission` function, focusing on core sharing functionality.
+        Grants a specified role (e.g., 'reader') to a user or group for a file. This is a simplified alternative to the comprehensive `create_file_permission` function, focusing only on the core arguments required for basic sharing operations and omitting advanced options like notification settings or ownership transfer.
         
         Args:
             fileId (string): fileId

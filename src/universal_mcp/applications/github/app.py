@@ -25,7 +25,7 @@ class GithubApp(APIApplication):
 
     def star_repository(self, repo_full_name: str) -> str:
         """
-        Stars a GitHub repository for the authenticated user via an API request. It uses the repository's full name ('owner/repo') and returns a string message indicating whether the operation was successful, the repository was not found, or an error occurred.
+        Stars a GitHub repository for the authenticated user. This user-centric action takes the full repository name ('owner/repo') and returns a simple string message confirming the outcome, unlike other functions that list or create repository content like issues or pull requests.
         
         Args:
             repo_full_name: The full name of the repository in 'owner/repo' format (e.g., 'octocat/Hello-World')
@@ -52,7 +52,7 @@ class GithubApp(APIApplication):
 
     def list_recent_commits(self, repo_full_name: str) -> str:
         """
-        Fetches and formats the 12 most recent commits from a GitHub repository. It returns a human-readable string summarizing each commit's hash, author, and message, providing a quick overview of recent code changes, distinct from functions that list branches, issues, or pull requests.
+        Fetches and formats the 12 most recent commits from a repository. It returns a human-readable string summarizing each commit's hash, author, and message, providing a focused overview of recent code changes, unlike functions that list branches, issues, or pull requests.
         
         Args:
             repo_full_name: The full name of the repository in 'owner/repo' format
@@ -85,7 +85,7 @@ class GithubApp(APIApplication):
 
     def list_branches(self, repo_full_name: str) -> str:
         """
-        Retrieves all branches for a specified GitHub repository via the API. It formats the results into a human-readable string listing each branch name, suitable for direct user display. This contrasts with functions like `list_issues`, which return raw API data.
+        Fetches all branches for a specified GitHub repository and formats them into a human-readable string. This method is distinct from others like `search_issues`, as it returns a formatted list for display rather than raw JSON data for programmatic use.
         
         Args:
             repo_full_name: The full name of the repository in 'owner/repo' format (e.g., 'octocat/Hello-World')
@@ -115,7 +115,7 @@ class GithubApp(APIApplication):
 
     def list_pull_requests(self, repo_full_name: str, state: str = "open") -> str:
         """
-        Fetches pull requests for a repository, filtered by state (e.g., 'open'). It returns a formatted string summarizing each PR's details. This differs from `get_pull_request`, which fetches a single PR, and `list_issues`, which returns raw JSON data for a different entity.
+        Fetches pull requests for a repository, filtered by state (e.g., 'open'). It returns a formatted string summarizing each PR's details, distinguishing it from `get_pull_request` (single PR) and `search_issues` (raw issue data).
         
         Args:
             repo_full_name: The full name of the repository in the format 'owner/repo' (e.g., 'tensorflow/tensorflow')
@@ -193,7 +193,7 @@ class GithubApp(APIApplication):
 
     def get_pull_request(self, repo_full_name: str, pull_number: int) -> str:
         """
-        Fetches a specific pull request from a repository by its number. The function returns a formatted string summarizing its title, creator, status, and description, unlike `list_pull_requests`, which fetches a list.
+        Fetches a specific pull request from a repository using its unique number. It returns a human-readable string summarizing the PR's title, creator, status, and description, unlike `list_pull_requests` which retrieves a list of multiple PRs.
         
         Args:
             repo_full_name: The full repository name in 'owner/repo' format (e.g., 'octocat/Hello-World')
@@ -239,7 +239,7 @@ class GithubApp(APIApplication):
         draft: bool = False,
     ) -> dict[str, Any]:
         """
-        Creates a pull request in a repository between specified `head` and `base` branches. It can also convert an existing issue into a pull request by providing an issue number. Returns the complete GitHub API response as a dictionary upon successful creation.
+        Creates a pull request between specified `head` and `base` branches, or converts an issue into a PR. Unlike read functions that return formatted strings, this write operation returns the raw API response as a dictionary, providing comprehensive data on the newly created pull request.
         
         Args:
             repo_full_name: The full name of the repository (e.g. 'owner/repo')
@@ -285,7 +285,7 @@ class GithubApp(APIApplication):
         self, repo_full_name: str, title: str, body: str = "", labels=None
     ) -> str:
         """
-        Creates a new issue in a specified GitHub repository with a title, body, and optional labels. This function sends a POST request to the API and returns a formatted confirmation string containing the new issue's number and URL upon successful creation.
+        Creates a new issue in a GitHub repository using a title, body, and optional labels. It returns a formatted confirmation string with the new issue's number and URL, differing from `update_issue` which modifies existing issues and `search_issues` which returns raw API data.
         
         Args:
             repo_full_name: The full name of the repository in 'owner/repo' format
@@ -328,7 +328,7 @@ class GithubApp(APIApplication):
         self, repo_full_name: str, direction: str = "desc", per_page: int = 30
     ) -> str:
         """
-        Fetches a list of recent events for a GitHub repository and formats them into a human-readable string. It summarizes activities with actors and timestamps, providing a general event feed, unlike other `list_*` functions which retrieve specific resources like commits or issues.
+        Fetches recent events for a GitHub repository and formats them into a human-readable string. It summarizes activities with actors and timestamps, providing a general event feed, unlike other `list_*` functions which retrieve specific resources like commits or issues.
         
         Args:
             repo_full_name: The full name of the repository in 'owner/repo' format
@@ -376,7 +376,7 @@ class GithubApp(APIApplication):
         state_reason: str = None,
     ) -> dict[str, Any]:
         """
-        Modifies an existing GitHub issue in a repository by updating optional parameters like title, body, assignee, or state. It targets the issue by its number and returns the complete API response as a dictionary, contrasting with `create_issue` which creates new issues.
+        Modifies an existing GitHub issue, identified by its number within a repository. It can update optional fields like title, body, or state and returns the raw API response as a dictionary, differentiating it from `create_issue` which makes new issues and returns a formatted string.
         
         Args:
             repo_full_name: The full name of the repository in 'owner/repo' format

@@ -37,7 +37,7 @@ class LinkedinApp(APIApplication):
         is_reshare_disabled: bool = False,
     ) -> dict[str, str]:
         """
-        Publishes a new text post to a specified LinkedIn author's feed (person or organization). It requires commentary and allows configuring visibility, distribution, and lifecycle state. Upon success, it returns the unique URN and a direct URL for the newly created post, distinguishing it from update/delete operations.
+        Publishes a new text post to a specified LinkedIn author's feed (person or organization). It allows configuring visibility, distribution, and lifecycle state. Upon success, it returns the unique URN and URL for the new post, distinguishing this creation operation from the update or delete functions.
         
         Args:
             commentary (str): The user generated commentary for the post. Supports mentions using format "@[Entity Name](urn:li:organization:123456)" and hashtags using "#keyword". Text linking to annotated entities must match the name exactly (case sensitive). For member mentions, partial name matching is supported.
@@ -99,7 +99,7 @@ class LinkedinApp(APIApplication):
 
     def get_authenticated_user_profile(self) -> dict[str, Any]:
         """
-        Retrieves the authenticated user's profile information from the LinkedIn `/v2/userinfo` endpoint. It returns a dictionary containing the user's basic profile details, such as name and email, using the credentials from the active integration.
+        Retrieves the authenticated user's profile from the LinkedIn `/v2/userinfo` endpoint. Using credentials from the active integration, it returns a dictionary with basic user details like name and email. This function is for fetching user data, distinct from others that create, update, or delete posts.
         
         Returns:
             dict[str, Any]: Dictionary containing your LinkedIn profile information.
@@ -123,7 +123,7 @@ class LinkedinApp(APIApplication):
 
     def delete_post(self, post_urn: str) -> dict[str, str]:
         """
-        Deletes a specific LinkedIn post identified by its unique Uniform Resource Name (URN). The function sends a DELETE request to the LinkedIn API and returns a confirmation dictionary with the deletion status upon a successful (HTTP 204) response.
+        Deletes a LinkedIn post identified by its unique Uniform Resource Name (URN). This function sends a DELETE request to the API, permanently removing the content. Upon a successful HTTP 204 response, it returns a dictionary confirming the post's deletion status.
         
         Args:
             post_urn (str): The URN of the post to delete. Can be either a ugcPostUrn (urn:li:ugcPost:{id}) or shareUrn (urn:li:share:{id}).
@@ -163,7 +163,7 @@ class LinkedinApp(APIApplication):
         ad_context_status: str | None = None,
     ) -> dict[str, str]:
         """
-        Modifies an existing LinkedIn post identified by its URN. This function performs a partial update, allowing changes to specific attributes such as commentary, call-to-action details, lifecycle state, or sponsored ad context. It returns a confirmation dictionary upon successful completion of the PATCH request.
+        Modifies an existing LinkedIn post, identified by its URN, by performing a partial update. It selectively changes attributes like commentary or ad context, distinguishing it from `create_post` which creates new content. Returns a confirmation dictionary upon successful completion.
         
         Args:
             post_urn (str): The URN of the post to update. Can be either a ugcPostUrn (urn:li:ugcPost:{id}) or shareUrn (urn:li:share:{id}).

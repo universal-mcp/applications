@@ -38,7 +38,7 @@ class FirecrawlApp(APIApplication):
     @property
     def firecrawl_api_key(self) -> str:
         """
-        A property that lazily retrieves and caches the Firecrawl API key from the configured integration. On first access, it fetches credentials and raises a `NotAuthorizedError` if the key is unobtainable, ensuring all subsequent API calls are properly authenticated.
+        A property that lazily retrieves and caches the Firecrawl API key from the configured integration. On first access, it fetches credentials and raises a `NotAuthorizedError` if the key is unobtainable, ensuring all subsequent API calls within the application are properly authenticated before execution.
         """
         if self._firecrawl_api_key is None:
             if not self.integration:
@@ -166,7 +166,7 @@ class FirecrawlApp(APIApplication):
 
     def scrape_url(self, url: str) -> Any:
         """
-        Synchronously scrapes a single web page's content using the Firecrawl service. This function executes immediately and returns the extracted data, unlike the asynchronous `start_batch_scrape` or `start_crawl` jobs which require status checks. Returns an error message on failure.
+        Synchronously scrapes a single URL, immediately returning its content. This provides a direct method for single-page scraping, contrasting with asynchronous, job-based functions like `start_crawl` (for entire sites) and `start_batch_scrape` (for multiple URLs).
         
         Args:
             url: The URL of the web page to scrape.
@@ -198,7 +198,7 @@ class FirecrawlApp(APIApplication):
 
     def search(self, query: str) -> dict[str, Any] | str:
         """
-        Executes a web search using the Firecrawl service for a specified query. It returns a dictionary of results on success or an error string on failure, raising specific exceptions for authorization or SDK installation issues. This provides a direct, synchronous method for information retrieval.
+        Executes a synchronous web search using the Firecrawl service for a given query. Unlike scrape_url which fetches a single page, this function discovers web content. It returns a dictionary of results on success or an error string on failure, raising exceptions for authorization or SDK issues.
         
         Args:
             query: The search query string.
@@ -232,7 +232,7 @@ class FirecrawlApp(APIApplication):
         url: str,
     ) -> dict[str, Any] | str:
         """
-        Initiates an asynchronous Firecrawl job to crawl a website starting from a given URL. It returns immediately with a job ID, which can be used with `check_crawl_status` to monitor progress. This differs from `scrape_url`, which performs a synchronous scrape of a single page.
+        Starts an asynchronous Firecrawl job to crawl a website from a given URL, returning a job ID. Unlike the synchronous `scrape_url` for single pages, this function initiates a comprehensive, link-following crawl. Progress can be monitored using the `check_crawl_status` function with the returned ID.
         
         Args:
             url: The starting URL for the crawl.
@@ -268,7 +268,7 @@ class FirecrawlApp(APIApplication):
 
     def check_crawl_status(self, job_id: str) -> dict[str, Any] | str:
         """
-        Retrieves the status of an asynchronous Firecrawl crawl job using its unique ID. Returns a dictionary with the job's details on success or an error message on failure. This function specifically handles jobs initiated by `start_crawl`, distinct from checkers for batch scrapes or extractions.
+        Retrieves the status of an asynchronous Firecrawl job using its unique ID. As the counterpart to `start_crawl`, this function exclusively monitors website crawl progress, distinct from status checkers for batch scraping or data extraction jobs. Returns job details on success or an error message on failure.
         
         Args:
             job_id: The ID of the crawl job to check.
@@ -303,7 +303,7 @@ class FirecrawlApp(APIApplication):
 
     def cancel_crawl(self, job_id: str) -> dict[str, Any] | str:
         """
-        Cancels a running asynchronous Firecrawl crawl job identified by its unique ID. As part of the crawl job lifecycle, this function terminates a process initiated by `start_crawl`, returning a confirmation status upon success or an error message if the cancellation fails or is not supported.
+        Cancels a running asynchronous Firecrawl crawl job using its unique ID. As a lifecycle management tool for jobs initiated by `start_crawl`, it returns a confirmation status upon success or an error message on failure, distinguishing it from controls for other job types.
         
         Args:
             job_id: The ID of the crawl job to cancel.
@@ -342,7 +342,7 @@ class FirecrawlApp(APIApplication):
         urls: list[str],
     ) -> dict[str, Any] | str:
         """
-        Initiates an asynchronous batch job to scrape a list of URLs using Firecrawl. It returns a response containing a job ID, which can be tracked with `check_batch_scrape_status`. This differs from the synchronous `scrape_url` which handles a single URL and returns data directly.
+        Initiates an asynchronous Firecrawl job to scrape a list of URLs. It returns a job ID for tracking with `check_batch_scrape_status`. Unlike the synchronous `scrape_url` which processes a single URL, this function handles bulk scraping and doesn't wait for completion.
         
         Args:
             urls: A list of URLs to scrape.
@@ -377,7 +377,7 @@ class FirecrawlApp(APIApplication):
 
     def check_batch_scrape_status(self, job_id: str) -> dict[str, Any] | str:
         """
-        Checks the status of a previously initiated asynchronous Firecrawl batch scrape job using its job ID. It returns detailed progress information or an error message. This function is the counterpart to `start_batch_scrape` for monitoring multi-URL scraping tasks.
+        Checks the status of an asynchronous batch scrape job using its job ID. As the counterpart to `start_batch_scrape`, it specifically monitors multi-URL scraping tasks, distinct from checkers for site-wide crawls (`check_crawl_status`) or AI-driven extractions (`check_extract_status`). Returns detailed progress or an error message.
         
         Args:
             job_id: The ID of the batch scrape job to check.
@@ -421,7 +421,7 @@ class FirecrawlApp(APIApplication):
         allow_external_links: bool | None = False,
     ) -> dict[str, Any]:
         """
-        Performs synchronous, AI-driven data extraction from URLs using an optional prompt or schema. Unlike asynchronous job functions (e.g., `start_crawl`), it returns the structured data directly. This function raises `NotAuthorizedError` or `ToolError` on failure, contrasting with others that return an error string.
+        Performs synchronous, AI-driven data extraction from URLs using an optional prompt or schema. Unlike asynchronous jobs like `start_crawl`, it returns structured data directly. This function raises an exception on failure, contrasting with other methods in the class that return an error string upon failure.
         
         Args:
             urls: A list of URLs to extract data from.
@@ -476,7 +476,7 @@ class FirecrawlApp(APIApplication):
 
     def check_extract_status(self, job_id: str) -> dict[str, Any] | str:
         """
-        Checks the status of a specific asynchronous, AI-powered data extraction job on Firecrawl using its job ID. This is distinct from `check_crawl_status` for web crawling and `check_batch_scrape_status` for bulk scraping, as it specifically monitors AI-driven extractions.
+        Checks the status of an asynchronous, AI-powered Firecrawl data extraction job using its ID. Unlike `check_crawl_status` or `check_batch_scrape_status`, this function specifically monitors structured data extraction tasks, returning the job's progress or an error message on failure.
         
         Args:
             job_id: The ID of the extraction job to check.

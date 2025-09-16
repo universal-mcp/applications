@@ -29,7 +29,7 @@ class FalaiApp(APIApplication):
     @property
     def fal_client(self) -> AsyncClient:
         """
-        A cached property that lazily initializes an `AsyncClient` instance for API communication. It retrieves the API key from the configured integration, centralizing authentication for all Fal AI operations. Raises `NotAuthorizedError` if the key is missing.
+        A cached property that lazily initializes an `AsyncClient` instance. It retrieves the API key from the configured integration, providing a single, centralized authentication point for all methods that interact with the Fal AI API. Raises `NotAuthorizedError` if credentials are not found.
         """
         if self._fal_client is None:
             credentials = self.integration.get_credentials()
@@ -101,7 +101,7 @@ class FalaiApp(APIApplication):
         priority: Priority | None = None,
     ) -> str:
         """
-        Submits a job to the Fal AI queue for asynchronous processing. It immediately returns a unique request ID for tracking the job's lifecycle with the `status`, `result`, and `cancel` methods. Unlike the synchronous `run` method, this function does not wait for the job's completion.
+        Submits a job to the Fal AI queue for asynchronous processing, immediately returning a request ID. This contrasts with the `run` method, which waits for completion. The returned ID is used by `check_status`, `get_result`, and `cancel` to manage the job's lifecycle.
         
         Args:
             arguments: A dictionary of arguments for the application
@@ -181,7 +181,7 @@ class FalaiApp(APIApplication):
         self, request_id: str, application: str = "fal-ai/flux/dev"
     ) -> Any:
         """
-        Fetches the final output for an asynchronous job, identified by its request_id. This function blocks execution, waiting for the job initiated by `submit` to complete before returning the result. It complements the non-blocking `status` check by providing a synchronous way to get a completed job's data.
+        Retrieves the final result of an asynchronous job, identified by its `request_id`. This function waits for the job, initiated via `submit`, to complete. Unlike the non-blocking `check_status`, this method blocks execution to fetch and return the job's actual output upon completion.
         
         Args:
             request_id: The unique identifier of the submitted request
@@ -215,7 +215,7 @@ class FalaiApp(APIApplication):
         self, request_id: str, application: str = "fal-ai/flux/dev"
     ) -> None:
         """
-        Asynchronously cancels a running or queued Fal AI job identified by its `request_id`. This function complements the `submit` method, providing a way to terminate asynchronous tasks before completion. API errors during the cancellation process are wrapped in a `ToolError`.
+        Asynchronously cancels a running or queued Fal AI job using its `request_id`. This function complements the `submit` method, providing a way to terminate asynchronous tasks before completion. It raises a `ToolError` if the cancellation request fails.
         
         Args:
             request_id: The unique identifier of the submitted Fal AI request to cancel
@@ -244,7 +244,7 @@ class FalaiApp(APIApplication):
 
     async def upload_file(self, path: str) -> str:
         """
-        Asynchronously uploads a local file from a specified path to the Fal Content Delivery Network (CDN). Upon success, it returns a public URL for the file, making it accessible for use as input in other Fal AI application requests. A `ToolError` is raised on failure.
+        Asynchronously uploads a local file to the Fal Content Delivery Network (CDN), returning a public URL. This URL makes the file accessible for use as input in other Fal AI job execution methods like `run` or `submit`. A `ToolError` is raised if the upload fails.
         
         Args:
             path: The absolute or relative path to the local file
@@ -280,7 +280,7 @@ class FalaiApp(APIApplication):
         hint: str | None = None,
     ) -> Any:
         """
-        A specialized wrapper for the `run` method that synchronously generates images using the 'fal-ai/flux/dev' model. It simplifies image creation with common parameters like `prompt` and `seed`, waits for the task to complete, and returns the result containing image URLs and metadata.
+        A specialized wrapper for the `run` method that synchronously generates images using the 'fal-ai/flux/dev' model. It simplifies image creation with common parameters like `prompt` and `seed`, waits for the task to complete, and directly returns the result containing image URLs and metadata.
         
         Args:
             prompt: The text prompt used to guide the image generation

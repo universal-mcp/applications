@@ -24,7 +24,7 @@ class GoogleMailApp(APIApplication):
         thread_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Composes and immediately sends an email message via the Gmail API. It can function as a reply within an existing conversation if a `thread_id` is provided. This action is distinct from `send_draft`, which sends a previously saved draft message.
+        Composes and immediately sends an email message via the Gmail API. It can function as a reply within an existing conversation if a `thread_id` is provided. This action is distinct from `send_draft`, which sends a previously saved draft message, or `create_draft`, which only saves an email.
         
         Args:
             to: The email address of the recipient
@@ -79,7 +79,7 @@ class GoogleMailApp(APIApplication):
         thread_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Saves a new draft email in Gmail with a specified recipient, subject, and body. An optional thread ID can be provided to create the draft as a reply within an existing conversation, distinguishing it from `send_email` which sends immediately.
+        Saves a new email draft in Gmail with a specified recipient, subject, and body. An optional thread ID can create the draft as a reply within an existing conversation, distinguishing it from `send_email`, which sends immediately.
         
         Args:
             to: The email address of the recipient
@@ -118,7 +118,7 @@ class GoogleMailApp(APIApplication):
 
     def send_draft(self, draft_id: str) -> dict[str, Any]:
         """
-        Sends a pre-existing Gmail draft identified by its unique ID. It posts to the `/drafts/send` endpoint, converting a saved draft into a sent message. This function acts on drafts created via `create_draft` and differs from `send_email`, which sends a new email in one step.
+        Sends a pre-existing Gmail draft identified by its unique ID. It posts to the `/drafts/send` endpoint, converting a saved draft into a sent message. This function acts on drafts from `create_draft` and differs from `send_email`, which composes and sends an email in one step.
         
         Args:
             draft_id: The unique identifier of the Gmail draft to be sent
@@ -183,7 +183,7 @@ class GoogleMailApp(APIApplication):
         include_spam_trash: bool = False,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of email drafts from a Gmail account, supporting filtering via search query and limiting results. Can optionally include drafts from spam and trash, returning the raw API response with draft objects and metadata, distinguishing it from `get_draft` which fetches a single, specific draft.
+        Fetches a list of email drafts, allowing filtering by a search query and limiting results. It can optionally include drafts from spam and trash, returning a collection of draft objects. This is distinct from `get_draft`, which retrieves only a single, specific draft by its ID.
         
         Args:
             max_results: Maximum number of drafts to return (max 500, default 20)
@@ -221,7 +221,7 @@ class GoogleMailApp(APIApplication):
 
     def get_message_details(self, message_id: str) -> dict[str, Any]:
         """
-        Retrieves a specific email from Gmail by its ID. It parses the API response to extract and format key details—including sender, recipient, subject, and full body content—into a structured dictionary. This provides detailed data for other functions like `list_messages`.
+        Retrieves a specific email from Gmail by its ID. It parses the API response to extract and format key details—including sender, subject, body, and attachments—into a structured dictionary. This function provides detailed data for a single message, distinguishing it from `list_messages` which fetches multiple messages.
         
         Args:
             message_id: The unique identifier of the Gmail message to retrieve
@@ -387,7 +387,7 @@ class GoogleMailApp(APIApplication):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches a paginated list of detailed email messages from Gmail using optional search queries. It concurrently retrieves the full content (sender, subject, body) for each message, returning the results and a token to access the next page. This differs from `get_message_details` which fetches only one.
+        Fetches a paginated list of detailed email messages using optional search queries. It concurrently retrieves full content (sender, subject, body) for each message, returning the results and a pagination token. This differs from `get_message_details`, which fetches only a single message.
         
         Args:
             max_results: Maximum number of messages to return (max 500, default 20)
@@ -471,7 +471,7 @@ class GoogleMailApp(APIApplication):
 
     def get_email_thread(self, thread_id: str) -> dict[str, Any]:
         """
-        Retrieves a complete email conversation from the Gmail API by its thread ID. It returns a dictionary containing all messages and metadata for the entire thread, providing the full context of the conversation.
+        Fetches a complete email conversation by its unique thread ID. Unlike `get_message_details`, which retrieves a single message, this returns all messages and metadata for the entire thread, providing the full context of the conversation.
         
         Args:
             thread_id: The unique identifier of the Gmail thread to retrieve
@@ -494,7 +494,7 @@ class GoogleMailApp(APIApplication):
 
     def list_labels(self) -> dict[str, Any]:
         """
-        Fetches a complete list of all available labels from the user's Gmail account via the API. This includes both system-defined (e.g., INBOX) and user-created labels, returning details such as their names, IDs, and types after standard response handling.
+        Fetches a complete list of all available labels from the user's Gmail account via the API. It retrieves both system-defined (e.g., INBOX) and user-created labels, returning their names and IDs, complementing management functions like `create_label` and `update_label`.
         
         Args:
             None: This method takes no arguments
@@ -520,7 +520,7 @@ class GoogleMailApp(APIApplication):
 
     def create_label(self, name: str) -> dict[str, Any]:
         """
-        Creates a new Gmail label with a specified name. The function hardcodes the label's visibility settings to ensure it appears in both the label and message lists. It returns the API response, which includes the new label's details upon success or an error message on failure.
+        Creates a new Gmail label with a specified name, hardcoding its visibility to ensure it appears in both label and message lists. This function complements `update_label` and `delete_label` by adding new organizational tags to the user's account via the API.
         
         Args:
             name: The display name of the label to create
@@ -594,7 +594,7 @@ class GoogleMailApp(APIApplication):
         message=None,
     ) -> dict[str, Any]:
         """
-        Updates a specific Gmail draft by its ID, replacing its existing content and metadata. The new message body and headers are provided in a message object, allowing for complete modification of the draft before it is sent.
+        Replaces the entire content of a specific Gmail draft, identified by its ID, with a new message object. This allows complete modification of the recipient, subject, and body, serving as the primary "edit" function for drafts created via `create_draft`.
         
         Args:
             userId (string): userId
@@ -713,7 +713,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Moves a specific Gmail message to the trash folder using its unique ID. This action serves as a soft delete and is the direct counterpart to `untrash_messages`, which restores a trashed message. It requires both a user ID and message ID to execute.
+        Moves a specific Gmail message to the trash folder by its unique ID. This action performs a soft delete and is the direct counterpart to `untrash_message`, which restores a message. It requires both a user ID and the specific message ID to make the API call.
         
         Args:
             userId (string): userId
@@ -779,7 +779,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Restores a specific Gmail message from the trash to the user's mailbox, identified by its unique ID. It serves as the direct counterpart to `trash_messsages`, undoing the deletion action and making the message visible again in the user's account via an API call.
+        Restores a specific Gmail message from the trash to the user's mailbox, identified by its unique ID. It serves as the direct counterpart to `trash_message`, undoing the deletion action and making the message visible again in the user's account via an API call.
         
         Args:
             userId (string): userId
@@ -846,7 +846,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Retrieves a specific email attachment's content by its unique ID from a specified message. It requires the user, message, and attachment IDs to make a targeted API request, returning the attachment's size and base64-encoded data.
+        Fetches the raw, base64-encoded content of a specific email attachment using its unique ID. It requires the parent message and user IDs for a targeted API request, returning the file's size and data for download or processing, unlike functions that only list attachment metadata.
         
         Args:
             userId (string): userId
@@ -924,7 +924,7 @@ class GoogleMailApp(APIApplication):
         type=None,
     ) -> dict[str, Any]:
         """
-        Updates an existing Gmail label's properties, such as its name, color, or visibility, using its unique ID. It sends a PUT request to the Gmail API and returns the full, updated label resource as a dictionary upon successful modification.
+        Updates an existing Gmail label's properties, such as its name, color, or visibility, using its unique ID. This modification function is distinct from `create_label` and `delete_label`, returning the full, updated label resource from the API upon successful completion.
         
         Args:
             userId (string): userId
@@ -1030,7 +1030,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> Any:
         """
-        Permanently removes a specific Gmail label from a user's account, identified by its unique ID. This function performs an irreversible deletion via an API call, requiring both the `userId` and the label `id`. It is the destructive counterpart to `create_label` and `update_labels`.
+        Permanently removes a specific Gmail label from a user's account, identified by its unique ID. This function performs an irreversible deletion via an API call, requiring both the `userId` and the label `id`. It is the destructive counterpart to `create_label` and `update_label`.
         
         Args:
             userId (string): userId
@@ -1096,7 +1096,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Fetches the configuration for a single Gmail filter using its unique ID. It returns the specific criteria (e.g., from, subject) and the automated actions (e.g., add label, archive) defined for that filter.
+        Fetches a single Gmail filter's configuration by its unique ID for a specified user. It returns the filter’s criteria (e.g., sender) and actions (e.g., add label). This differs from `get_all_filters`, which retrieves a complete list of all filters for the user.
         
         Args:
             userId (string): userId
@@ -1162,7 +1162,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> Any:
         """
-        Deletes a specific Gmail filter using its unique ID for a specified user account. This action permanently removes the filter and its associated automation rules, such as applying labels or forwarding messages, from the user's Gmail settings.
+        Permanently removes a specific Gmail filter, identified by its unique ID, from a user's account. This action deletes the filter's criteria and all associated automation rules, making it the destructive counterpart to `create_filter` and `get_filter`.
         
         Args:
             userId (string): userId
@@ -1227,7 +1227,7 @@ class GoogleMailApp(APIApplication):
         xgafv=None,
     ) -> dict[str, Any]:
         """
-        Retrieves all configured email filters for a specified Gmail user ID. It fetches a list of a user's filters, including their matching criteria and automated actions, providing a comprehensive overview of their email organization rules via the Gmail API.
+        Retrieves all configured email filters for a specified Gmail user ID. It fetches a list of a user's filters, including their matching criteria and automated actions, distinguishing it from `get_filter`, which retrieves only a single filter.
         
         Args:
             userId (string): userId
@@ -1292,7 +1292,7 @@ class GoogleMailApp(APIApplication):
         id=None,
     ) -> dict[str, Any]:
         """
-        Sets up a new automated email filter in Gmail. It requires defining matching criteria (like sender or subject) and an action (like adding a label) to apply to emails that meet those criteria for a specified user account.
+        Creates a new automated email filter in Gmail for a specified user. It requires defining matching criteria (e.g., sender, subject) and an action (e.g., add label). This function adds new rules, distinguishing it from `get_all_filters` and `delete_filter` which manage existing ones.
         
         Args:
             userId (string): userId

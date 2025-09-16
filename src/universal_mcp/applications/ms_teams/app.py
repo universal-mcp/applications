@@ -62,7 +62,7 @@ class MsTeamsApp(APIApplication):
 
     def get_joined_teams(self) -> list[dict[str, Any]]:
         """
-        Fetches all Microsoft Teams the authenticated user is a member of. This function queries the `/me/joinedTeams` API endpoint, returning a list of dictionaries where each dictionary contains the details of a specific team.
+        Fetches all Microsoft Teams the authenticated user belongs to by querying the `/me/joinedTeams` Graph API endpoint. It returns a list of dictionaries, where each dictionary represents a single team's details, unlike functions that list channels or chats for a specific team.
         
         Returns:
             A list of dictionaries, where each dictionary represents a team.
@@ -92,7 +92,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves channels for a specified Microsoft Teams team using its unique ID. Optional parameters allow for advanced querying, including filtering, searching, sorting, and pagination of the results, to customize the returned collection of channels.
+        Retrieves the collection of channels for a specified Microsoft Teams team by its ID. It supports advanced OData query parameters for filtering, sorting, and pagination, distinguishing it from functions that fetch single channels like `get_channel_details`.
         
         Args:
             team_id (string): team-id
@@ -136,7 +136,7 @@ class MsTeamsApp(APIApplication):
 
     def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
         """
-        Posts a new message to a specific Microsoft Teams chat using its unique ID. It sends a POST request to the Graph API endpoint with the provided content (text/HTML). This function targets direct/group chats, differentiating it from `send_channel_message`, which posts to team channels.
+        Posts a new message to a specific Microsoft Teams chat using its unique ID. This function targets direct or group chats, distinguishing it from `send_channel_message`, which posts to public team channels, and `reply_to_chat_message`, which responds to existing messages.
         
         Args:
             chat_id: The unique identifier of the chat.
@@ -160,7 +160,7 @@ class MsTeamsApp(APIApplication):
         self, team_id: str, channel_id: str, content: str
     ) -> dict[str, Any]:
         """
-        Posts a new message to a specified channel within a Microsoft Teams team using the team and channel IDs. This function initiates a new conversation thread, unlike `reply_to_channel_message`. The content can be plain text or HTML. It differs from `send_chat_message` which targets private/group chats.
+        Posts a new message to a specified team channel, initiating a new conversation thread. Unlike `reply_to_channel_message`, which replies to a message, this function starts a new topic. It's distinct from `send_chat_message`, which is for private or group chats, not team channels.
         
         Args:
             team_id: The unique identifier of the team.
@@ -185,7 +185,7 @@ class MsTeamsApp(APIApplication):
         self, team_id: str, channel_id: str, message_id: str, content: str
     ) -> dict[str, Any]:
         """
-        Posts a reply to a specific message within a Microsoft Teams channel. It uses the team, channel, and original message IDs to target the correct conversation thread, distinguishing it from `send_channel_message` which starts a new thread.
+        Posts a reply to a specific message within a Microsoft Teams channel. It uses the team, channel, and original message IDs to target an existing conversation thread, distinguishing it from `send_channel_message` which starts a new one.
         
         Args:
             team_id: The unique identifier of the team.
@@ -228,7 +228,7 @@ class MsTeamsApp(APIApplication):
         tabs: list[Any] | None = None,
     ) -> Any:
         """
-        Creates a new Microsoft Teams chat conversation. It takes optional parameters like chat type, topic, and members to configure the chat. This function sends a POST request to the `/chats` API endpoint, initiating a new one-on-one or group chat based on the provided details.
+        Creates a new one-on-one or group chat in Microsoft Teams. This function provisions a new conversation using optional parameters like chatType and members, distinguishing it from functions that create teams (`create_team`) or send messages to existing chats (`send_chat_message`).
         
         Args:
             id (string): The unique identifier for an entity. Read-only.
@@ -298,7 +298,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves the properties and relationships of a specific chat conversation by its unique ID. Optional parameters can select specific fields or expand related entities in the response, such as chat members or installed apps.
+        Retrieves the properties and relationships of a specific chat conversation by its unique ID. Unlike `get_user_chats` which lists all chats, this targets one chat. Optional parameters can select specific fields or expand related entities like members or apps to customize the returned data.
         
         Args:
             chat_id (string): chat-id
@@ -345,7 +345,7 @@ class MsTeamsApp(APIApplication):
         tabs: list[Any] | None = None,
     ) -> Any:
         """
-        Updates properties of a specific chat, such as its topic, using its unique ID. This function performs a partial update (PATCH) on an existing chat, distinguishing it from `get_chat` which only retrieves data, and `create_chat_operation` which creates an entirely new chat conversation.
+        Updates properties of a specific chat, such as its topic, using its unique ID. This function performs a partial update (PATCH), distinguishing it from `get_chat_details` which only retrieves data, and `create_chat` which creates an entirely new chat conversation.
         
         Args:
             chat_id (string): chat-id
@@ -419,7 +419,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves the collection of applications installed within a specific Microsoft Teams chat, identified by its ID. It supports advanced querying through optional parameters for pagination, filtering, searching, and sorting to customize the results.
+        Retrieves applications installed in a specific chat, identified by `chat_id`. Differentiating from `list_user_installed_apps`, which targets a user's personal scope, this function queries a single conversation. It supports optional parameters for advanced filtering, sorting, and pagination to customize the returned collection.
         
         Args:
             chat_id (string): chat-id
@@ -474,7 +474,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of members for a specific chat, identified by `chat_id`. Supports advanced querying, including pagination, filtering, searching, and sorting. This function lists all members, unlike `get_chat_member_details` which fetches information for a single member.
+        Retrieves a collection of all members in a specific chat using its ID. It supports OData query parameters for pagination, filtering, and sorting. Unlike `get_chat_member`, which fetches a single individual, this function returns the entire collection of members for the specified chat.
         
         Args:
             chat_id (string): chat-id
@@ -525,7 +525,7 @@ class MsTeamsApp(APIApplication):
         visibleHistoryStartDateTime: str | None = None,
     ) -> Any:
         """
-        Adds a member to a specified Microsoft Teams chat using its `chat_id`. Details such as the member's roles and the extent of their visible chat history can be provided. This operation sends a POST request to the `/chats/{chat_id}/members` API endpoint.
+        Adds a new member to a specific Microsoft Teams chat using its `chat_id`. This function allows for configuring member roles and chat history visibility. It is the direct counterpart to `delete_chat_member`, performing the 'create' action for a chat's membership.
         
         Args:
             chat_id (string): chat-id
@@ -573,7 +573,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves detailed information for a specific member within a chat using their unique ID. Unlike `list_chat_members` which fetches all members, this function targets a single individual. The response can be customized by selecting specific properties or expanding related entities.
+        Retrieves detailed information for a specific member within a chat using their unique ID. This function targets a single individual, distinguishing it from `list_chat_members` which returns all members. The response can be customized by selecting specific properties or expanding related entities.
         
         Args:
             chat_id (string): chat-id
@@ -603,7 +603,7 @@ class MsTeamsApp(APIApplication):
 
     def delete_chat_member(self, chat_id: str, conversationMember_id: str) -> Any:
         """
-        Removes a specific member from a chat using their unique ID and the chat's ID. This function sends a DELETE request to the Microsoft Graph API to permanently remove the user from the specified conversation, acting as the counterpart to `add_member_to_chat`.
+        Removes a specific member from a chat using their unique ID and the chat's ID. This function sends a DELETE request to the Microsoft Graph API to permanently remove the user from the conversation, acting as the counterpart to `add_member_to_chat`.
         
         Args:
             chat_id (string): chat-id
@@ -640,7 +640,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a collection of messages from a specific chat, identified by its unique ID. Supports advanced querying with options for pagination (top, skip), filtering, sorting, and searching to refine the results, distinguishing it from functions that get single messages or replies.
+        Retrieves messages from a specific chat using its ID. Unlike `get_chat_message`, which fetches a single message, this function returns a collection and supports advanced querying for filtering, sorting, and pagination to refine the results.
         
         Args:
             chat_id (string): chat-id
@@ -690,7 +690,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves the full details of a single message from a specific chat, identified by both the chat and message IDs. Supports optional query parameters to select specific properties or expand related entities, enabling customized API responses for a particular message.
+        Retrieves the full details of a single message from a specific chat using both chat and message IDs. This function targets an individual message, differentiating it from `list_chat_messages`, which retrieves a collection. Optional parameters can customize the response by selecting specific properties or expanding entities.
         
         Args:
             chat_id (string): chat-id
@@ -732,7 +732,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a collection of replies for a specific message within a given chat. It identifies the parent message using `chat_id` and `chatMessage_id` and supports optional OData query parameters for advanced filtering, sorting, and pagination of the results.
+        Retrieves all replies for a specific message within a chat, using the parent message's ID. This function, unlike `get_chat_reply_details`, returns a collection and supports OData query parameters for advanced filtering, sorting, and pagination of the results.
         
         Args:
             chat_id (string): chat-id
@@ -808,7 +808,7 @@ class MsTeamsApp(APIApplication):
         replies: list[Any] | None = None,
     ) -> Any:
         """
-        Posts a reply to a specific message within a chat. This comprehensive function allows for detailed configuration of the reply message's properties, such as its body and attachments. It is distinct from `reply_to_channel_message`, which sends simple replies to messages within team channels.
+        Posts a reply to a specific message within a chat. This comprehensive function allows for detailed configuration of the reply's properties, like its body and attachments. It differs from `reply_to_channel_message`, which sends simpler replies to messages within team channels.
         
         Args:
             chat_id (string): chat-id
@@ -902,7 +902,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves a single, specific reply from a chat message thread using its unique ID, requiring the parent message and chat IDs. It targets one reply for detailed information, unlike `read_chat_replies` which lists all replies to a parent message.
+        Retrieves a specific reply from a chat message thread using the chat, parent message, and reply IDs. Unlike `list_chat_message_replies`, which fetches all replies, this function targets a single reply for detailed information, allowing for customized field selection.
         
         Args:
             chat_id (string): chat-id
@@ -968,7 +968,7 @@ class MsTeamsApp(APIApplication):
         template: Any | None = None,
     ) -> Any:
         """
-        Enables a Microsoft Teams instance for a pre-existing Microsoft 365 group, identified by its ID. This 'team-ifies' the group, allowing optional team properties to be configured. It differs from `create_team`, which provisions a new team and group simultaneously.
+        Enables Microsoft Teams functionality for a pre-existing Microsoft 365 group using its ID. This 'team-ifies' the group, allowing optional configuration of team properties. It differs from `create_team`, which provisions both a new team and its associated group simultaneously.
         
         Args:
             group_id (string): group-id
@@ -1191,7 +1191,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves detailed information for a specific channel within a Microsoft Teams team, identified by both team and channel IDs. Optional parameters allow for selecting specific properties or expanding related entities in the response to get more targeted data.
+        Retrieves detailed information for a specific channel within a Microsoft Teams team, identified by both team and channel IDs. Optional parameters can select specific properties or expand related entities in the response, distinguishing it from list_channels_for_team, which retrieves a collection of channels.
         
         Args:
             team_id (string): team-id
@@ -1251,7 +1251,7 @@ class MsTeamsApp(APIApplication):
         replies: list[Any] | None = None,
     ) -> Any:
         """
-        Updates properties of a specific message within a Microsoft Teams channel, identified by its team, channel, and message IDs. It applies modifications like changing the message body or attachments by sending a PATCH request to the Microsoft Graph API.
+        Updates an existing message within a Microsoft Teams channel, identified by team, channel, and message IDs. This function modifies the original message's properties, like its body, via a PATCH request, distinguishing it from functions that create new messages or update replies.
         
         Args:
             team_id (string): team-id
@@ -1467,7 +1467,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of all tabs within a specific channel of a Microsoft Teams team. Supports advanced OData query parameters for filtering, sorting, and pagination, allowing for customized retrieval of the tab collection.
+        Retrieves a collection of tabs from a specified channel within a Microsoft Teams team. Unlike `get_channel_tab_details`, which fetches a single tab, this function lists all tabs and supports advanced OData query parameters for filtering, sorting, and pagination of the entire collection.
         
         Args:
             team_id (string): team-id
@@ -1523,7 +1523,7 @@ class MsTeamsApp(APIApplication):
         teamsApp: Any | None = None,
     ) -> Any:
         """
-        Adds a new tab to a specified channel within a Microsoft Teams team. It requires team and channel IDs to target the location, and accepts optional configuration details like the tab's display name and associated application to create the new tab.
+        Creates a new tab in a specified Microsoft Teams channel using team and channel IDs. This function configures the tab's initial properties, such as display name and application, distinguishing it from functions that list (`list_channel_tabs`) or modify (`update_channel_tab`) existing tabs.
         
         Args:
             team_id (string): team-id
@@ -1577,7 +1577,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves detailed information for a specific tab within a channel using its unique ID. Requires team and channel identifiers to locate the resource. This function fetches a single tab, unlike `get_channel_tabs` which lists all tabs for the channel.
+        Fetches properties for a single tab within a specific Microsoft Teams channel, identified by its team, channel, and tab IDs. Unlike `list_channel_tabs` which gets all tabs, this targets a specific one, with options to select fields or expand related entities in the response.
         
         Args:
             team_id (string): team-id
@@ -1622,7 +1622,7 @@ class MsTeamsApp(APIApplication):
         teamsApp: Any | None = None,
     ) -> Any:
         """
-        Updates an existing tab within a specific channel of a Microsoft Teams team. It identifies the tab using team, channel, and tab IDs to modify properties like its display name or configuration. This function performs a partial update on the tab's resource.
+        Modifies properties of an existing tab within a specific Microsoft Teams channel. It uses the team, channel, and tab IDs to target the tab, allowing for partial updates to its configuration or display name via a PATCH request, differentiating it from tab creation or deletion functions.
         
         Args:
             team_id (string): team-id
@@ -1671,7 +1671,7 @@ class MsTeamsApp(APIApplication):
         self, team_id: str, channel_id: str, teamsTab_id: str
     ) -> Any:
         """
-        Deletes a specific tab from a Microsoft Teams channel. The function requires the team ID, channel ID, and the tab's unique ID to target and permanently remove the specified tab from the channel's interface.
+        Permanently removes a specific tab from a Microsoft Teams channel using its unique ID, along with the parent team and channel IDs. This function is the destructive counterpart to `create_channel_tab`, designed to delete a tab rather than create, list, or update one.
         
         Args:
             team_id (string): team-id
@@ -1707,7 +1707,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> Any:
         """
-        Retrieves details for the primary channel (typically 'General') of a specified Microsoft Teams team. Optional parameters allow for selecting specific properties or expanding related entities in the API response. This differs from `get_team_channel_info`, which requires a specific channel ID.
+        Retrieves the primary channel (usually 'General') for a specified team using its ID. Unlike `get_channel_details`, this function directly accesses the team's default channel without requiring a specific channel ID. Optional parameters can select or expand properties in the returned data.
         
         Args:
             team_id (string): team-id
@@ -1745,7 +1745,7 @@ class MsTeamsApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves the collection of applications installed in a specific user's personal Microsoft Teams scope. This function accepts optional parameters for filtering, sorting, and pagination, enabling customized queries to refine the list of apps returned from the Microsoft Graph API.
+        Retrieves applications installed in a user's personal Microsoft Teams scope, identified by their ID. Unlike `list_installed_chat_apps` which targets chat installations, this focuses on the user's scope. It supports optional OData parameters for filtering, sorting, and pagination to customize the returned app collection.
         
         Args:
             user_id (string): user-id

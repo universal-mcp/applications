@@ -47,7 +47,7 @@ class ScraperApp(APIApplication):
         content_type: Optional[str] = None,
     ) -> dict[str, Any]:
         """
-        Performs a general LinkedIn search for posts using keywords and filters like date and content type. It supports pagination and can utilize either the 'classic' or 'sales_navigator' API, searching broadly across the platform rather than fetching posts from a specific user's profile.
+        Performs a paginated, platform-wide search for LinkedIn posts using keywords and filters like date and content type. This enables broad content discovery, distinguishing it from `linkedin_list_profile_posts` which only fetches posts from a specific profile. Supports both 'classic' and 'sales_navigator' APIs for comprehensive results.
         
         Args:
             category: Type of search to perform (defaults to "posts").
@@ -88,7 +88,7 @@ class ScraperApp(APIApplication):
         limit: Optional[int] = None,
     ) -> dict[str, Any]:
         """
-        Fetches a paginated list of all LinkedIn posts from a specific user or company profile using their unique identifier. This function retrieves content directly from a profile, unlike `linkedin_post_search` which finds posts across LinkedIn based on keywords and other filters.
+        Fetches a paginated list of all LinkedIn posts from a specific user or company profile using their unique identifier. Unlike `linkedin_post_search`, which searches broadly with keywords, this function retrieves content directly from a single profile, providing a focused view of an entity's activity.
         
         Args:
             identifier: The entity's provider internal ID (LinkedIn ID).starts with ACo for users, while for companies it's a series of numbers.
@@ -117,7 +117,7 @@ class ScraperApp(APIApplication):
         identifier: str,
     ) -> dict[str, Any]:
         """
-        Retrieves a specific LinkedIn user's profile by their unique identifier, which can be an internal provider ID or a public username. This function simplifies data access by delegating the actual profile retrieval request to the integrated Unipile application, distinct from functions that list posts or comments.
+        Retrieves a LinkedIn user's profile using their provider ID or public username. Unlike functions that list posts or comments, this method exclusively fetches core profile data by delegating the request to the integrated Unipile application, providing a focused way to gather user-specific information.
         
         Args:
             identifier: Can be the provider's internal id OR the provider's public id of the requested user.
