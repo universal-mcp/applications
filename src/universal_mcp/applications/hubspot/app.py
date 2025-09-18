@@ -1,38 +1,23 @@
-from datetime import UTC, datetime
-from typing import Any
-
-from universal_mcp.applications.application import APIApplication
+from universal_mcp.applications import APIApplication
 from universal_mcp.integrations import Integration
-
-
-class CrmApi:
-    def __init__(self, api_client):
-        pass
-
-    def list_tools(self):
-        return []
-
-
-class MarketingApi:
-    def __init__(self, api_client):
-        pass
-
-    def list_tools(self):
-        return []
-
+from universal_mcp_hubspot.api_segments.crm_api import CrmApi
+from universal_mcp_hubspot.api_segments.marketing_api import MarketingApi
+from typing import List, Optional, Any
+from datetime import datetime, timezone
 
 class HubspotApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="hubspot", integration=integration, **kwargs)
-        self.base_url = "https://api.hubapi.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='hubspot', integration=integration, **kwargs)
+        self.base_url = 'https://api.hubapi.com'
         self.crm = CrmApi(self)
         self.marketing = MarketingApi(self)
-
+    
     def add_a_note(
         self,
         hs_note_body: str,
-        hs_timestamp: str | None = None,
-        associations: list[dict[str, Any]] | None = None,
+        hs_timestamp: Optional[str] = None,
+        associations: Optional[List[dict[str, Any]]] = None,
     ) -> dict[str, Any]:
         """
         Create a note in HubSpot with the given properties and associations.
@@ -53,30 +38,28 @@ class HubspotApp(APIApplication):
         """
         if hs_note_body is None:
             raise ValueError("Missing required parameter 'hs_note_body'.")
-
+        
         url = f"{self.base_url}/crm/v3/objects/notes"
-
+        
         # Build the properties object
         properties = {
             "hs_note_body": hs_note_body,
-            "hs_timestamp": hs_timestamp
-            if hs_timestamp
-            else datetime.now(UTC).isoformat(),
+            "hs_timestamp": hs_timestamp if hs_timestamp else datetime.now(timezone.utc).isoformat()
         }
-
+        
         # Build the request body
-        request_body_data: dict[str, Any] = {"properties": properties}
-
+        request_body_data: dict[str, Any] = {
+            "properties": properties
+        }
+        
         # Add associations if provided
         if associations:
             request_body_data["associations"] = associations
-
+        
         response = self._post(url, data=request_body_data)
         return self._handle_response(response)
 
-    def fetch_multiple_lists(
-        self, listIds: list[str] | None = None, includeFilters: bool | None = None
-    ) -> dict[str, Any]:
+    def fetch_multiple_lists(self, listIds: Optional[List[str]] = None, includeFilters: Optional[bool] = None) -> dict[str, Any]:
         """
         Fetch multiple lists in a single request by ILS list ID. The response will include the definitions of all lists that exist for the listIds provided.
 
@@ -94,20 +77,16 @@ class HubspotApp(APIApplication):
             Lists
         """
         url = f"{self.base_url}/crm/v3/lists/"
-        query_params = {
-            k: v
-            for k, v in [("listIds", listIds), ("includeFilters", includeFilters)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [('listIds', listIds), ('includeFilters', includeFilters)] if v is not None}
         response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        return self._handle_response(response)   
 
     def fetch_list_memberships(
         self,
         listId: str,
-        after: str | None = None,
-        before: str | None = None,
-        limit: int | None = None,
+        after: Optional[str] = None,
+        before: Optional[str] = None,
+        limit: Optional[int] = None,
     ) -> dict[str, Any]:
         """
         Fetch the memberships of a list in order sorted by the recordId of the records in the list.
@@ -129,34 +108,24 @@ class HubspotApp(APIApplication):
         """
         if listId is None:
             raise ValueError("Missing required parameter 'listId'.")
-
+        
         url = f"{self.base_url}/crm/v3/lists/{listId}/memberships"
         query_params = {}
-
+        
         if after is not None:
             query_params["after"] = after
         if before is not None:
             query_params["before"] = before
         if limit is not None:
             query_params["limit"] = limit
-
+        
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_list(
-        self,
-        objectTypeId: str,
-        processingType: str,
-        name: str,
-        membershipSettings: dict[str, Any] | None = None,
-        customProperties: dict[str, str] | None = None,
-        listFolderId: int | None = None,
-        listPermissions: dict[str, Any] | None = None,
-        filterBranch: Any | None = None,
-    ) -> dict[str, Any]:
+    def create_list(self, objectTypeId: str, processingType: str, name: str, membershipSettings: Optional[dict[str, Any]] = None, customProperties: Optional[dict[str, str]] = None, listFolderId: Optional[int] = None, listPermissions: Optional[dict[str, Any]] = None, filterBranch: Optional[Any] = None) -> dict[str, Any]:
         """
-        Create a new list in HubSpot with the specified object type, processing type, and name.
-        Optionally use this to provide membership settings, custom properties, a folder ID, list permissions,
+        Create a new list in HubSpot with the specified object type, processing type, and name. 
+        Optionally use this to provide membership settings, custom properties, a folder ID, list permissions, 
         and a filter branch to further configure the list.
 
         Args:
@@ -180,31 +149,22 @@ class HubspotApp(APIApplication):
         """
         request_body_data = None
         request_body_data = {
-            "membershipSettings": membershipSettings,
-            "objectTypeId": objectTypeId,
-            "processingType": processingType,
-            "customProperties": customProperties,
-            "listFolderId": listFolderId,
-            "name": name,
-            "listPermissions": listPermissions,
-            "filterBranch": filterBranch,
+            'membershipSettings': membershipSettings,
+            'objectTypeId': objectTypeId,
+            'processingType': processingType,
+            'customProperties': customProperties,
+            'listFolderId': listFolderId,
+            'name': name,
+            'listPermissions': listPermissions,
+            'filterBranch': filterBranch,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/crm/v3/lists/"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type='application/json')
         return self._handle_response(response)
 
-    def get_list_by_id(
-        self, listId: str, includeFilters: bool | None = None
-    ) -> dict[str, Any]:
+    def get_list_by_id(self, listId: str, includeFilters: Optional[bool] = None) -> dict[str, Any]:
         """
         Fetch a single list by ILS list ID.
 
@@ -224,9 +184,7 @@ class HubspotApp(APIApplication):
         if listId is None:
             raise ValueError("Missing required parameter 'listId'.")
         url = f"{self.base_url}/crm/v3/lists/{listId}"
-        query_params = {
-            k: v for k, v in [("includeFilters", includeFilters)] if v is not None
-        }
+        query_params = {k: v for k, v in [('includeFilters', includeFilters)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -252,8 +210,8 @@ class HubspotApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
-
-    def add_records_to_list(self, listId: str, items: list[str]) -> dict[str, Any]:
+      
+    def add_records_to_list(self, listId: str, items: List[str]) -> dict[str, Any]:
         """
         Add the records provided to the list. Records that do not exist or that are already members of the list are ignored.
         This only works for lists that have a processingType of MANUAL or SNAPSHOT.
@@ -278,15 +236,10 @@ class HubspotApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/crm/v3/lists/{listId}/memberships/add"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
-        return self._handle_response(response)
+        response = self._put(url, data=request_body_data, params=query_params, content_type='application/json')
+        return self._handle_response(response) 
 
-    def remove_records_from_list(self, listId: str, items: list[str]) -> dict[str, Any]:
+    def remove_records_from_list(self, listId: str, items: List[str]) -> dict[str, Any]:
         """
         Remove the records provided from the list. Records that are not members of the list are ignored.
         This only works for lists that have a processingType of MANUAL or SNAPSHOT.
@@ -311,24 +264,10 @@ class HubspotApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/crm/v3/lists/{listId}/memberships/remove"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type='application/json')
         return self._handle_response(response)
 
-    def search_lists(
-        self,
-        listIds: list[str] | None = None,
-        offset: int | None = None,
-        query: str | None = None,
-        count: int | None = None,
-        processingTypes: list[str] | None = None,
-        additionalProperties: list[str] | None = None,
-        sort: str | None = None,
-    ) -> dict[str, Any]:
+    def search_lists(self, listIds: Optional[List[str]] = None, offset: Optional[int] = None, query: Optional[str] = None, count: Optional[int] = None, processingTypes: Optional[List[str]] = None, additionalProperties: Optional[List[str]] = None, sort: Optional[str] = None) -> dict[str, Any]:
         """
         Search lists by list name or page through all lists by providing an empty query value.
 
@@ -360,30 +299,21 @@ class HubspotApp(APIApplication):
         """
         request_body_data = None
         request_body_data = {
-            "listIds": listIds,
-            "offset": offset,
-            "query": query,
-            "count": count,
-            "processingTypes": processingTypes,
-            "additionalProperties": additionalProperties,
-            "sort": sort,
+            'listIds': listIds,
+            'offset': offset,
+            'query': query,
+            'count': count,
+            'processingTypes': processingTypes,
+            'additionalProperties': additionalProperties,
+            'sort': sort,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/crm/v3/lists/search"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type='application/json')
         return self._handle_response(response)
 
-    def fetch_list_by_name(
-        self, objectTypeId: str, listName: str, includeFilters: bool | None = None
-    ) -> dict[str, Any]:
+    def fetch_list_by_name(self, objectTypeId: str, listName: str, includeFilters: Optional[bool] = None) -> dict[str, Any]:
         """
         Fetch a list by its name and object type ID.
 
@@ -406,25 +336,23 @@ class HubspotApp(APIApplication):
         if listName is None:
             raise ValueError("Missing required parameter 'listName'.")
         url = f"{self.base_url}/crm/v3/lists/object-type-id/{objectTypeId}/name/{listName}"
-        query_params = {
-            k: v for k, v in [("includeFilters", includeFilters)] if v is not None
-        }
+        query_params = {k: v for k, v in [('includeFilters', includeFilters)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
+
     def list_tools(self):
         all_tools = [
-            self.add_a_note,
-            self.fetch_multiple_lists,
-            self.fetch_list_memberships,
-            self.create_list,
-            self.get_list_by_id,
-            self.delete_list_by_id,
-            self.add_records_to_list,
-            self.remove_records_from_list,
-            self.search_lists,
-            self.fetch_list_by_name,
-        ]
+         self.add_a_note,
+         self.fetch_multiple_lists,
+         self.fetch_list_memberships,
+         self.create_list,
+         self.get_list_by_id,
+         self.delete_list_by_id,
+         self.add_records_to_list, 
+         self.remove_records_from_list,
+         self.search_lists, 
+         self.fetch_list_by_name]
         all_tools.extend(self.crm.list_tools())
         all_tools.extend(self.marketing.list_tools())
         return all_tools
