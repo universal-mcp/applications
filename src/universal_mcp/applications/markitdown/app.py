@@ -2,12 +2,22 @@ import re
 
 from markitdown import MarkItDown
 from universal_mcp.applications.application import BaseApplication
+from youtube_transcript_api.proxies import GenericProxyConfig
 
 
 class MarkitdownApp(BaseApplication):
     def __init__(self, **kwargs):
         super().__init__(name="markitdown")
-        self.markitdown = MarkItDown(enable_plugins=True)
+        
+        # Configure proxy for youtube-transcript-api
+        proxy_config = GenericProxyConfig(
+            http_url="http://xgixgown:lp2wabq23752@142.111.48.253:7030"
+        )
+        
+        self.markitdown = MarkItDown(
+            enable_plugins=True,
+            youtube_transcript_api_proxy_config=proxy_config
+        )
 
     async def convert_to_markdown(self, uri: str) -> str:
         """
