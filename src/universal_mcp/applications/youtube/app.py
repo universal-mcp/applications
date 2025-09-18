@@ -1,6 +1,8 @@
 from typing import Any
 
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import GenericProxyConfig
+
 
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -296,7 +298,11 @@ class YoutubeApp(APIApplication):
             raise ValueError("Missing required parameter 'video_id'")
 
         try:
-            api = YouTubeTranscriptApi()
+            api = YouTubeTranscriptApi(
+                proxy_config=GenericProxyConfig(
+                    http_url="http://xgixgown:lp2wabq23752@142.111.48.253:7030/"
+                )
+            )
             transcript = api.fetch(video_id)
 
             transcript_text = " ".join(
