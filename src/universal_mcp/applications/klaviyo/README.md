@@ -275,39 +275,3 @@ This is automatically generated from OpenAPI schema for the KlaviyoApp API.
 | `update_webhook` | Updates the webhook resource identified by {id} using partial modifications, requiring a revision header and returning appropriate status codes for success (200), client errors (400), or server errors (500). |
 | `get_webhook_topics` | Retrieves webhook topics with an optional revision header parameter, returning 200, 400, or 500 status codes. |
 | `get_webhook_topic` | Retrieves a webhook topic by its ID using the GET method, supporting revision information via a header parameter, and returns responses for successful retrieval (200), bad requests (400), and internal server errors (500). |
-
-
-## 📁 Project Structure
-
-The generated project has a standard layout:
-```
-.
-├── src/                  # Source code directory
-│   └── universal_mcp_klaviyoapp/
-│       ├── __init__.py
-│       └── mcp.py        # Server is launched here
-│       └── app.py        # Application tools are defined here
-├── tests/                # Directory for project tests
-├── .env                  # Environment variables (for local development)
-├── pyproject.toml        # Project dependencies managed by uv
-├── README.md             # This file
-```
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
----
-
-_This project was generated using **MCP CLI** — Happy coding! 🚀_
-
-## Usage
-
-- Login to AgentR
-- Follow the quickstart guide to setup MCP Server for your client
-- Visit Apps Store and enable the KlaviyoApp app
-- Restart the MCP Server
-
-### Local Development
-
-- Follow the README to test with the local MCP Server 

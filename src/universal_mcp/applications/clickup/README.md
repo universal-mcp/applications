@@ -1,10 +1,10 @@
-# Clickup MCP Server
+# ClickupApp MCP Server
 
-An MCP Server for the Clickup API.
+An MCP Server for the ClickupApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Clickup API.
+This is automatically generated from OpenAPI schema for the ClickupApp API.
 
 
 | Tool | Description |
@@ -60,7 +60,7 @@ This is automatically generated from OpenAPI schema for the Clickup API.
 | `lists_get_folderless` | Retrieves all lists within the specified space that are not associated with a folder. |
 | `lists_create_folderless_list` | Creates a new list within a specified space without associating it with a folder. |
 | `lists_get_list_details` | Retrieves the details of a specific list by its unique identifier. |
-| `lists_update_list_info_due_date_priority_assignee_color` | Updates the information of a list, including name, content, due date, priority, assignee, status, and color attributes. |
+| `lists_update_list` | Updates the information of a list, including name, content, due date, priority, assignee, status, and color attributes. |
 | `lists_remove_list` | Removes a list with the specified list ID via an HTTP DELETE request and returns the API response as a dictionary. |
 | `lists_add_task_to_list` | Adds a task to a specified list. |
 | `lists_remove_task_from_list` | Removes a specific task from a list by sending a DELETE request to the appropriate API endpoint. |

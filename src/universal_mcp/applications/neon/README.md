@@ -1,10 +1,10 @@
-# Neon MCP Server
+# NeonApp MCP Server
 
-An MCP Server for the Neon API.
+An MCP Server for the NeonApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Neon API.
+This is automatically generated from OpenAPI schema for the NeonApp API.
 
 
 | Tool | Description |

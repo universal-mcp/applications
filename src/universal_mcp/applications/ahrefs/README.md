@@ -1,10 +1,10 @@
-# Ahrefs MCP Server
+# AhrefsApp MCP Server
 
-An MCP Server for the Ahrefs API.
+An MCP Server for the AhrefsApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Ahrefs API.
+This is automatically generated from OpenAPI schema for the AhrefsApp API.
 
 
 | Tool | Description |

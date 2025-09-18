@@ -3,7 +3,7 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from .helper import (
+from universal_mcp.applications.google_sheet.helper import (
     analyze_sheet_for_tables,
     analyze_table_schema,
 )

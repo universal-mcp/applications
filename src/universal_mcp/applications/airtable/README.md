@@ -1,10 +1,10 @@
-# Airtable MCP Server
+# AirtableApp MCP Server
 
-An MCP Server for the Airtable API.
+An MCP Server for the AirtableApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Airtable API.
+This is automatically generated from OpenAPI schema for the AirtableApp API.
 
 
 | Tool | Description |

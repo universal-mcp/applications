@@ -1,10 +1,10 @@
-# Shortcut MCP Server
+# ShortcutApp MCP Server
 
-An MCP Server for the Shortcut API.
+An MCP Server for the ShortcutApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Shortcut API.
+This is automatically generated from OpenAPI schema for the ShortcutApp API.
 
 
 | Tool | Description |

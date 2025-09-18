@@ -1,17 +1,17 @@
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from .api_segments.compliance_api import ComplianceApi
-from .api_segments.dm_conversations_api import DmConversationsApi
-from .api_segments.dm_events_api import DmEventsApi
-from .api_segments.likes_api import LikesApi
-from .api_segments.lists_api import ListsApi
-from .api_segments.openapi_json_api import OpenapiJsonApi
-from .api_segments.spaces_api import SpacesApi
-from .api_segments.trends_api import TrendsApi
-from .api_segments.tweets_api import TweetsApi
-from .api_segments.usage_api import UsageApi
-from .api_segments.users_api import UsersApi
+from universal_mcp.applications.twitter.api_segments.compliance_api import ComplianceApi
+from universal_mcp.applications.twitter.api_segments.dm_conversations_api import DmConversationsApi
+from universal_mcp.applications.twitter.api_segments.dm_events_api import DmEventsApi
+from universal_mcp.applications.twitter.api_segments.likes_api import LikesApi
+from universal_mcp.applications.twitter.api_segments.lists_api import ListsApi
+from universal_mcp.applications.twitter.api_segments.openapi_json_api import OpenapiJsonApi
+from universal_mcp.applications.twitter.api_segments.spaces_api import SpacesApi
+from universal_mcp.applications.twitter.api_segments.trends_api import TrendsApi
+from universal_mcp.applications.twitter.api_segments.tweets_api import TweetsApi
+from universal_mcp.applications.twitter.api_segments.usage_api import UsageApi
+from universal_mcp.applications.twitter.api_segments.users_api import UsersApi
 
 
 class TwitterApp(APIApplication):

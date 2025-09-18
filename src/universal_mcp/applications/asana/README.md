@@ -1,10 +1,10 @@
-# Asana MCP Server
+# AsanaApp MCP Server
 
-An MCP Server for the Asana API.
+An MCP Server for the AsanaApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Asana API.
+This is automatically generated from OpenAPI schema for the AsanaApp API.
 
 
 | Tool | Description |

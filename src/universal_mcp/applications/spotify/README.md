@@ -1,10 +1,10 @@
-# Spotify MCP Server
+# SpotifyApp MCP Server
 
-An MCP Server for the Spotify API.
+An MCP Server for the SpotifyApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Spotify API.
+This is automatically generated from OpenAPI schema for the SpotifyApp API.
 
 
 | Tool | Description |

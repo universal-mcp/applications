@@ -1,10 +1,10 @@
-# Figma MCP Server
+# FigmaApp MCP Server
 
-An MCP Server for the Figma API.
+An MCP Server for the FigmaApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Figma API.
+This is automatically generated from OpenAPI schema for the FigmaApp API.
 
 
 | Tool | Description |

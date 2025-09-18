@@ -42,3 +42,6 @@ This is automatically generated from OpenAPI schema for the SemrushApp API.
 | `referring_domains` | Get domains pointing to the queried domain, root domain, or URL. |
 | `referring_domains_by_country` | Get referring domain distribution by country based on IP addresses. |
 | `related_keywords` | Get extended list of related keywords, synonyms, and variations relevant to a queried term. |
+| `tlds_distribution` | Get referring domain distribution by top-level domain (e.g., .com, .org, .net). |
+| `url_organic_search_keywords` | Get keywords that bring users to a URL via Google's top 100 organic search results. |
+| `url_paid_search_keywords` | Get keywords that bring users to a URL via Google's paid search results. |

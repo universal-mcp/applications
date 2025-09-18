@@ -1,43 +1,43 @@
 from typing import Any
 
 import requests
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     WHATSAPP_API_BASE_URL,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     download_media as whatsapp_download_media,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     get_chat as whatsapp_get_chat,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     get_contact_chats as whatsapp_get_contact_chats,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     get_direct_chat_by_contact as whatsapp_get_direct_chat_by_contact,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     get_last_interaction as whatsapp_get_last_interaction,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     get_message_context as whatsapp_get_message_context,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     list_chats as whatsapp_list_chats,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     list_messages as whatsapp_list_messages,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     search_contacts as whatsapp_search_contacts,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     send_audio_message as whatsapp_audio_voice_message,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     send_file as whatsapp_send_file,
 )
-from .whatsapp import (
+from universal_mcp.applications.whatsapp.whatsapp import (
     send_message as whatsapp_send_message,
 )
 

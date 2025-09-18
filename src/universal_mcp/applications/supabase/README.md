@@ -1,10 +1,10 @@
-# Supabase MCP Server
+# SupabaseApp MCP Server
 
-An MCP Server for the Supabase API.
+An MCP Server for the SupabaseApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Supabase API.
+This is automatically generated from OpenAPI schema for the SupabaseApp API.
 
 
 | Tool | Description |

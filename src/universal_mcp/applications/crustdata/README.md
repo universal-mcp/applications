@@ -1,10 +1,10 @@
-# Crustdata MCP Server
+# CrustdataApp MCP Server
 
-An MCP Server for the Crustdata API.
+An MCP Server for the CrustdataApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Crustdata API.
+This is automatically generated from OpenAPI schema for the CrustdataApp API.
 
 
 | Tool | Description |

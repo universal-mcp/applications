@@ -7,8 +7,8 @@ import requests
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from .utils.api import api
-from .utils.fixtures import (
+from universal_mcp.applications.fpl.utils.api import api
+from universal_mcp.applications.fpl.utils.fixtures import (
     analyze_player_fixtures,
     get_blank_gameweeks,
     get_double_gameweeks,
@@ -16,20 +16,20 @@ from .utils.fixtures import (
     get_player_fixtures,
     get_player_gameweek_history,
 )
-from .utils.helper import (
+from universal_mcp.applications.fpl.utils.helper import (
     find_players_by_name,
     get_player_info,
     get_players_resource,
     get_team_by_name,
     search_players,
 )
-from .utils.league_utils import (
+from universal_mcp.applications.fpl.utils.league_utils import (
     _get_league_historical_performance,
     _get_league_standings,
     _get_league_team_composition,
     parse_league_standings,
 )
-from .utils.position_utils import normalize_position
+from universal_mcp.applications.fpl.utils.position_utils import normalize_position
 
 
 class FplApp(APIApplication):

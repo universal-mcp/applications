@@ -9,60 +9,57 @@ This is automatically generated from OpenAPI schema for the GoogleDriveApp API.
 
 | Tool | Description |
 |------|-------------|
-| `get_drive_info` | Retrieves detailed information about the user's Google Drive storage and account. |
-| `list_files` | Lists and retrieves files from Google Drive with optional filtering, pagination, and sorting. |
-| `create_file_from_text` | Creates a new file in Google Drive with specified text content and returns the file's metadata. |
-| `upload_a_file` | Uploads a file to Google Drive by creating a file metadata entry and uploading the binary content. |
-| `find_folder_id_by_name` | Searches for and retrieves a Google Drive folder's ID using its name. |
-| `create_folder` | Creates a new folder in Google Drive with optional parent folder specification |
-| `get_file` | Retrieves detailed metadata for a specific file using its ID. |
-| `delete_file` | Deletes a specified file from Google Drive and returns a status message. |
-| `list_user_sinstalled_apps` | List user's installed apps |
-| `get_aspecific_app` | Get a specific app |
-| `information_about_user_and_drive` | Information about user and drive |
-| `list_changes_made_to_afile_or_drive` | List changes made to a file or drive |
-| `get_start_page_token` | Gets the starting pageToken for listing future changes |
-| `subscribe_to_changes_for_auser` | Subscribe to changes for a user |
-| `post_stop_channel` | Stop watching resources through a channel |
-| `lists_afile_scomments` | Lists a file's comments |
-| `create_acomment_on_afile` | Create a comment on a file |
-| `get_comment_by_id` | Get comment by ID |
-| `delete_acomment` | Delete a comment |
-| `update_comment` | Update comment |
-| `list_user_sshared_drive` | List user's shared drive |
-| `create_ashared_drive` | Create a shared drive |
-| `get_ashared_drive_smetadata_by_id` | Get a shared drive's metadata by ID |
-| `permanently_delete_ashared_drive` | Permanently delete a shared drive |
-| `update_metadata_for_ashared_drive` | Update metadata for a shared drive |
-| `hide_drive_by_id_post` | Hide a shared drive from the default view |
-| `unhide_drive` | Restore shared drive to default view |
-| `list_user_sfiles` | List user's files |
-| `create_anew_file` | Create a new file |
-| `generate_aset_of_file_ids` | Generate a set of file IDs |
-| `empty_trash_files` | Permanently delete all of the trashed files |
-| `get_file_metadata` | Get a file's metadata. Use to it to get infromation like parents |
-| `delete_file_by_id` | Permanently delete a file without moving it to the trash |
-| `update_file` | Update a file's metadata and/or content |
-| `copy_file_by_id` | Create a copy of a file and apply any requested update |
-| `export_agoogle_workspace_document` | Export a Google Workspace document |
-| `list_the_labels_on_afile` | List the labels on a file |
-| `modify_labels_applied_to_afile` | Modify labels applied to a file |
-| `subscribe_to_changes_to_afile` | Subscribe to changes to a file |
-| `list_file_permissions` | List a file's or shared drive's permissions |
-| `post_file_permission` | Create a permission for a file or shared drive |
-| `get_permission_by_id` | Get permission by ID |
-| `delete_apermission` | Delete a permission |
-| `update_apermission` | Update a permission |
-| `list_acomment_sreplies` | List a comment's replies |
-| `create_areply_to_acomment` | Create a reply to a comment |
-| `get_reply_by_id` | Get reply by ID |
-| `delete_areply` | Delete a reply |
-| `update_areply` | Update a reply |
-| `list_afile_srevisions` | List a file's revisions |
-| `get_aspecific_revision` | Get a specific revision |
-| `permanently_delete_afile_version` | Permanently delete a file version |
-| `update_arevision` | Update a revision |
-| `list_all_members_of_achannel` | List all members of a channel |
-| `fetch_user_email` | Fetch User Email |
-| `grant_google_drive_access` | Grant Google Drive Access |
-| `move_files` | Moves a file from one folder to another by adding a new parent and removing the old parent. |
+| `get_drive_info` | Fetches key user and storage quota information for the authenticated Google Drive account. This streamlined function offers a focused alternative to `get_about_info`, which queries the same endpoint but exposes all available API parameters, providing a simpler way to get essential account details. |
+| `search_files` | Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination. This streamlined function offers a more user-friendly alternative to the comprehensive `search_files_advanced` method, making it ideal for targeted queries like finding files by name, type, or parent folder. |
+| `create_text_file` | Creates a file in Google Drive using an in-memory text string. Unlike `upload_file_from_path`, which reads from a local file, this function first creates the file's metadata (name, parent) and then uploads the provided string content, returning the new file's complete metadata upon completion. |
+| `upload_file_from_path` | Uploads a local file to Google Drive by reading its binary content from a path. It creates the file's metadata, uploads the content, and returns the new file's metadata. This differs from `create_text_file` which uses in-memory string content instead of a local file path. |
+| `find_folder_id_by_name` | Searches for a non-trashed folder by its exact name, returning the ID of the first match. As a utility for `create_folder`, it resolves parent names to IDs and returns None if the folder isn't found or an API error occurs, logging the failure internally. |
+| `create_folder` | Creates a new folder in Google Drive, optionally within a parent specified by name or ID. If a parent name is given, it internally resolves it to an ID using the `find_folder_id_by_name` function. Returns the metadata for the newly created folder upon successful creation. |
+| `get_file_details` | Fetches all default metadata for a specific file by its unique ID. This function provides a simple, direct retrieval of a single file's complete attributes, differing from `search_files` which performs broad queries for multiple files based on various criteria. |
+| `trash_file` | Moves a specified file to the trash using its ID. It provides simplified error handling by returning a dictionary with a success or error message, unlike the `permanently_delete_file` function which raises an exception on failure. |
+| `list_installed_apps` | Retrieves a list of the user's installed Google Drive applications. Allows optional filtering by file extensions or MIME types to find apps capable of opening specific file formats, returning a detailed list of matching applications. |
+| `get_app_by_id` | Retrieves detailed information for a single installed Google Drive application using its unique ID. This provides a targeted alternative to `list_installed_apps`, which returns a complete list, allowing for focused data retrieval about a specific application. |
+| `get_about_info` | Retrieves user account and Drive settings from the `/about` endpoint. This generic function provides full parameter control, offering a flexible alternative to the `get_drive_info` method, which requests specific, predefined fields like storage quota and user details. |
+| `list_drive_changes` | Fetches a paginated list of file changes for a user's account or a specific shared drive, using a required page token. Supports various filters to customize the change log, enabling tracking of file activity for synchronization or auditing. |
+| `get_changes_start_token` | Retrieves a starting page token representing the current state of a user's Drive or a shared drive. This token serves as a baseline for subsequent calls to list future file and folder changes, enabling efficient, incremental change tracking. |
+| `watch_drive_changes` | Sets up a push notification channel to monitor changes across a user's Google Drive or a specific shared drive. This allows an external service to receive updates when files are modified, added, or deleted, based on specified filters. |
+| `stop_watching_channel` | Terminates an active push notification channel, ceasing the delivery of updates for a watched Google Drive resource. This requires the channel's ID and resource ID to identify and close the specific notification stream, effectively unsubscribing from real-time changes. |
+| `list_file_comments` | Retrieves a paginated list of all top-level comments for a specified Google Drive file. It supports filtering by modification time and including deleted comments, fetching parent comments rather than replies, unlike `list_comment_replies`. |
+| `create_file_comment` | Creates a new comment on a specified Google Drive file. It requires a file ID and the comment's content, returning the new comment's metadata. This adds top-level comments, distinct from `create_comment_reply` which replies to existing comments. |
+| `get_file_comment_by_id` | Retrieves a single comment's metadata using its unique comment and file IDs. This provides targeted access to one comment, unlike `list_file_comments` which lists all comments for a file. It can optionally include deleted comments in the returned data. |
+| `delete_comment` | Permanently deletes a specific comment from a Google Drive file, identified by both the file and comment IDs. This irreversible action removes the top-level comment and its replies, distinguishing it from the `delete_reply` function which targets only individual replies within a comment thread. |
+| `update_comment` | Updates an existing comment on a specified file using its unique ID. This function allows for partial modification of the comment's properties, such as its content or resolved status, and returns the updated comment's metadata. |
+| `list_shared_drives` | Retrieves a paginated list of shared drives accessible to the user. Supports optional query-based filtering and can be executed with domain administrator privileges to list all shared drives within the domain, returning a dictionary containing the list of drives and pagination details. |
+| `create_shared_drive` | Creates a new shared drive using a unique `requestId` for idempotency. This function allows specifying initial properties such as its name, background image, and access restrictions, returning the created drive's metadata on success. |
+| `get_shared_drive_metadata` | Retrieves metadata for a specific shared drive using its ID. Unlike `get_drive_info`, which gets user account data, this function targets a single drive's properties. It supports domain administrator access and allows specifying fields to customize the response, returning the drive's detailed information. |
+| `delete_shared_drive` | Permanently deletes a shared drive by its ID. This irreversible action removes the entire drive and, unlike `trash_file`, can optionally delete all its contents for domain administrators, providing a complete removal solution for a shared workspace. |
+| `update_shared_drive` | Updates a shared drive's metadata properties, such as its name, theme, or color, using its ID. This function sends a PATCH request to modify the drive and returns a dictionary containing the complete, updated metadata for the shared drive upon success. |
+| `hide_drive` | Hides a specified shared drive from the user's default view using its ID. This function sends a POST request to the API's hide endpoint, returning updated drive metadata. It is the direct counterpart to the `unhide_drive` function, which restores visibility. |
+| `unhide_drive` | Makes a hidden shared drive visible again in the user's default view by its ID. This function sends a POST request to the Google Drive API's `/unhide` endpoint, effectively reversing the action of the `hide_drive` function, and returns the updated drive metadata. |
+| `search_files_advanced` | Exhaustively lists or searches files using advanced parameters for filtering, sorting, and pagination. As a low-level alternative to the simplified `search_files` function, it provides granular control by exposing the full range of Google Drive API query options for complex retrieval. |
+| `create_file_metadata` | Creates a new file's metadata resource in Google Drive, allowing detailed configuration of properties like name, MIME type, and parent folders. Unlike `upload_file_from_path` or `create_text_file`, this function only creates the metadata entry without uploading any file content. |
+| `generate_file_ids` | Generates a batch of unique IDs for future Google Drive files or shortcuts. This utility optimizes creation workflows by allowing identifiers to be fetched in advance, specifying quantity, storage space (e.g., 'drive'), and item type (e.g., 'files'). |
+| `empty_trash` | Permanently deletes all files and folders from the trash. This irreversible action can target the user's main trash or a specific shared drive's trash via its `driveId`, distinguishing it from `trash_file` which only moves a single item to the trash. |
+| `permanently_delete_file` | Permanently deletes a file by its ID, bypassing the trash for irreversible removal. Unlike the simpler `trash_file` function, this method offers advanced control through numerous optional API parameters, such as handling files located in shared drives. |
+| `update_file_metadata` | Modifies a file's metadata properties, such as name, description, or trashed status, using its unique ID. It also moves files by changing parent attributes, acting as a comprehensive alternative to the more specialized `move_file` function. |
+| `copy_file` | Creates a copy of a file using its ID. This function can simultaneously apply metadata updates, such as a new name or parent folder, to the duplicate upon creation and returns the new file's metadata. |
+| `export_file` | Exports a Google Workspace document (e.g., Google Doc) by its ID, converting it to a specified format like PDF using the `mimeType` argument. This function returns the raw, converted file content for download, differentiating it from methods that retrieve metadata. |
+| `list_file_labels` | Retrieves a paginated list of all labels applied to a specific file in Google Drive, identified by its unique ID. It allows controlling the number of results per page and navigating through pages of labels, differing from `modify_file_labels` which alters them. |
+| `modify_file_labels` | Atomically modifies the set of labels on a specified file in Google Drive. It can add, update, or remove labels based on the provided list of modifications, returning the updated label metadata for the file. |
+| `watch_file_for_changes` | Establishes a push notification channel for a specific file, enabling real-time updates via webhook. Unlike `watch_drive_changes`, which monitors an entire drive, this function provides targeted notifications for content or metadata updates to a single file identified by its ID. |
+| `list_file_permissions` | Retrieves the list of permissions for a specified file or shared drive. This function supports pagination and various query parameters to customize results for different access levels, such as domain administration, unlike `get_permission_by_id` which fetches a single permission. |
+| `create_file_permission` | Creates a permission for a file or shared drive, assigning roles like 'reader' to a user, group, or domain. This comprehensive method supports advanced options like notification emails and ownership transfer, distinguishing it from the simplified `create_permission` function which offers fewer parameters. |
+| `get_permission_by_id` | Retrieves metadata for a specific permission on a file or shared drive, identified by its unique ID. This provides targeted access information, unlike `list_file_permissions` which fetches all permissions for a file. |
+| `delete_permission` | Deletes a specific permission from a Google Drive file or shared drive, identified by their respective IDs. This action permanently revokes the access associated with that permission, with optional parameters for shared drives and domain administrator access. |
+| `update_permission` | Updates an existing permission for a file or shared drive using its permission ID. This function can modify a user's role (e.g., from reader to writer), transfer ownership, or change expiration settings, returning the updated permission object upon success. |
+| `list_comment_replies` | Fetches a paginated list of replies for a specific comment, requiring both file and comment IDs. It can optionally include deleted replies. Unlike `list_file_comments`, which retrieves all top-level comments, this function targets replies within a single comment's thread. |
+| `create_comment_reply` | Creates a reply to a specific comment on a Google Drive file. It requires the file ID and the parent comment ID, posting the new reply's content to the correct comment thread. |
+| `get_reply_by_id` | Retrieves a specific reply's metadata from a comment thread using file, comment, and reply IDs. Unlike `list_comment_replies`, which fetches all replies for a comment, this function targets a single one and can optionally include deleted replies in the result. |
+| `delete_reply` | Permanently deletes a specific reply from a comment on a Google Drive file. This targeted operation requires file, comment, and reply IDs to remove a single nested reply, distinguishing it from `delete_comment` which removes an entire top-level comment. |
+| `update_reply` | Updates a specific reply to a comment on a file in Google Drive. It uses file, comment, and reply IDs to locate the reply, allowing modification of its properties like content. The function then returns the updated reply's metadata. |
+| `list_file_revisions` | Retrieves a paginated list of all historical versions (revisions) for a specific file in Google Drive. Supports page size and token parameters to navigate a file's change history, differentiating it from functions that get, update, or delete a single revision. |
+| `get_revision` | Fetches metadata for a single, specific file revision using its file and revision IDs. Unlike `list_file_revisions` which lists a file's complete version history, this function targets one historical version to retrieve its unique metadata. |
+| `delete_file_revision` | Permanently deletes a specific revision of a file, identified by its file and revision IDs. This irreversible action removes a single historical version, distinguishing it from functions like `permanently_delete_file`, which deletes the entire file, or `trash_file`, which moves it to the trash. |
+| `update_revision` | Updates the metadata for a specific file revision using its file and revision IDs. It modifies properties such as pinning the revision (`keepForever`) or its publication status, and returns the updated revision metadata upon success. |
+| `create_permission` | Grants a specified role (e.g., 'reader') to a user or group for a file. This is a simplified alternative to the comprehensive `create_file_permission` function, focusing only on the core arguments required for basic sharing operations and omitting advanced options like notification settings or ownership transfer. |
+| `move_file` | Moves a file to a new folder by updating its parent references. This function adds the file to a destination folder (`add_parents`) and removes it from the source (`remove_parents`), offering a focused alternative to the more comprehensive `update_file_metadata` function. |

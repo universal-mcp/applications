@@ -9,32 +9,32 @@ This is automatically generated from OpenAPI schema for the ResendApp API.
 
 | Tool | Description |
 |------|-------------|
-| `send_email` | Sends an email to specified recipients using the Resend API. |
-| `send_batch_emails` | Sends a batch of emails using the Resend API. |
-| `get_email` | Retrieves a single email by its specified ID. |
-| `update_scheduled_email` | Updates the scheduling of an email to a new time. |
-| `cancel_scheduled_email` | Cancels a scheduled email using the provided email ID. |
-| `create_domain` | Creates a new domain with the specified name. |
-| `get_domain` | Retrieves a single domain by its ID. |
-| `verify_domain` | Verifies an existing domain using the provided domain ID. |
-| `update_domain` | Updates an existing domain's settings regarding open tracking, click tracking, and TLS enforcement. |
-| `list_domains` | Retrieves a list of all domains for the authenticated user. |
-| `remove_domain` | Removes an existing domain by its ID using the Resend API. |
-| `create_api_key` | Creates a new API key for authenticating with Resend. |
-| `list_api_keys` | Retrieves a list of all API keys available through the resend service. |
-| `remove_api_key` | Removes an existing API key using the specified key ID. |
-| `create_broadcast` | Creates a new broadcast to send to a specified audience. |
-| `get_broadcast` | Retrieves a single broadcast by its ID. |
-| `update_broadcast` | Updates a broadcast by modifying its HTML content and/or subject line. |
-| `send_broadcast` | Starts sending a broadcast via the API. |
-| `remove_broadcast` | Removes an existing broadcast with 'draft' status. |
-| `list_broadcasts` | Retrieves a list of all available broadcasts using the configured API key. |
-| `create_audience` | Creates a new audience (a list of contacts) with the specified name. |
-| `get_audience` | Retrieves a single audience object from the API using the specified audience ID. |
-| `remove_audience` | Removes an existing audience using the provided audience ID and returns the API response. |
-| `list_audiences` | Retrieves a list of all audiences. |
-| `create_contact` | Creates a contact within a specific audience. |
-| `get_contact` | Retrieves a single contact from an audience by providing either a unique contact ID or an email address, ensuring exactly one identifier is given. |
-| `update_contact` | Updates an existing contact, identified by ID or email, within a specified audience. |
-| `remove_contact` | Removes a contact from an audience, identified by ID or email. |
-| `list_contacts` | Lists all contacts from a specified audience. |
+| `send_email` | Sends a single email with a specified subject and text body to a list of recipients via the Resend API. Unlike `send_batch_emails`, which processes multiple distinct emails at once, this function is designed for dispatching one individual email composition per API call. |
+| `send_batch_emails` | Sends multiple emails (1-100) in a single API request. Unlike the `send_email` function which handles a single message, this accepts a list of email objects for efficient, high-volume delivery. It validates that the batch size is within the allowed limits before making the API call. |
+| `retrieve_email_by_id` | Retrieves the details and status of a single email from the Resend API using its unique identifier. This function allows for looking up a specific email that has already been sent or scheduled, distinct from functions that initiate sending. |
+| `reschedule_email` | Modifies the delivery time for a specific, previously scheduled email using its ID. It updates the `scheduled_at` attribute to a new ISO 8601 formatted time, effectively rescheduling its dispatch. This differs from `cancel_scheduled_email`, which permanently stops the send. |
+| `cancel_scheduled_email` | Cancels a previously scheduled email using its unique ID, preventing it from being sent. This function calls the Resend API's cancellation endpoint, returning a confirmation response. It is distinct from `update_scheduled_email`, which reschedules the email instead of stopping its transmission. |
+| `create_domain` | Registers a new sending domain with the Resend service using the provided name. This is a prerequisite for sending emails from your own domain and returns a dictionary containing details of the new domain object, which can then be verified and managed with other domain-related functions. |
+| `get_domain` | Retrieves the details of a specific domain from the Resend API using its unique ID. Unlike `list_domains`, which fetches all domains, this function targets a single record and returns a dictionary containing the domain's properties, like its verification status and tracking settings. |
+| `verify_domain` | Triggers the verification process for a registered domain using its unique ID. This action is crucial for authorizing the domain to send emails via Resend and returns an API response containing the verification status and necessary DNS records to complete the process. |
+| `update_domain_settings` | Updates settings for a specific domain identified by its ID. This function can modify configurations like open and click tracking, and TLS enforcement. It returns the updated domain object from the API, raising a ToolError if the update fails. Only the provided settings are modified. |
+| `list_domains` | Fetches a complete list of all domains registered with the Resend account. Unlike `get_domain`, which retrieves a single domain by ID, this provides a comprehensive overview of all configured domains for management and verification tasks. |
+| `remove_domain` | Permanently removes a specific domain from the Resend account using its unique ID. This function makes an authenticated API call to delete the domain, distinguishing it from retrieval (`get_domain`) or modification (`update_domain`) operations, and raises an error if the process fails. |
+| `create_api_key` | Creates a new API key for authenticating with the Resend service, identified by a specified name. It returns a dictionary containing the new key object, including the generated token required for subsequent API requests. |
+| `list_api_keys` | Retrieves a list of all API keys for the authenticated Resend account. This read-only operation allows for auditing and viewing existing credentials, contrasting with `create_api_key` and `remove_api_key` which are used to add or delete keys. |
+| `remove_api_key` | Deletes a specific Resend API key identified by its unique ID. This function, part of the key management suite alongside `create_api_key` and `list_api_keys`, returns an API confirmation response or raises a `ToolError` if the operation fails. |
+| `register_broadcast` | Registers a new email broadcast campaign for a specific audience using the Resend API. This function creates the broadcast object but does not send it; use the `send_broadcast` function to dispatch the created campaign to the audience. |
+| `get_broadcast` | Retrieves a specific broadcast's complete details, including its status and content, by its unique ID. Unlike `list_broadcasts` which retrieves all broadcasts, this function targets a single entry for inspection. |
+| `update_broadcast` | Updates the HTML content and/or subject of an existing broadcast, identified by its ID. Requires that at least one modifiable field (html or subject) is provided. This function alters a broadcast's content, differing from `send_broadcast` which triggers its delivery. |
+| `send_or_schedule_broadcast` | Initiates the delivery of a pre-existing broadcast, identified by its ID, to its target audience. The broadcast can be sent immediately or scheduled for a future time via the optional `scheduled_at` parameter. It returns the API response upon execution. |
+| `remove_draft_broadcast` | Deletes a broadcast from the Resend service using its unique ID. This action is restricted to broadcasts that have a 'draft' status and have not been sent, returning the API's response upon successful removal or raising an error if the operation fails. |
+| `list_broadcasts` | Retrieves a list of all broadcasts associated with the authenticated account. Unlike `get_broadcast` which fetches a single item by ID, this function returns a list of dictionaries, each containing the attributes of a specific broadcast. Raises a `ToolError` on API failure. |
+| `create_audience` | Creates a new audience, a named list for contacts, within the Resend service. This function requires a name for the audience and returns a dictionary representing the newly created object, enabling subsequent management of contacts within that specific list. |
+| `get_audience` | Retrieves the details of a single audience using its unique ID. This provides a targeted lookup for one audience, distinct from `list_audiences` which fetches all available audiences in the account. |
+| `remove_audience` | Deletes a specific audience from the Resend service using its unique identifier. This function wraps the Resend API's remove operation, returning the API's response. Unlike `remove_contact`, which targets individuals, this function removes the entire contact list defined by the audience ID. |
+| `list_audiences` | Retrieves a complete list of all audiences from the Resend account. It returns a list of dictionaries, with each containing the details of a specific audience. This function is distinct from `get_audience`, which fetches a single audience by its ID. |
+| `create_contact` | Creates a new contact with a given email, optional name, and subscription status, adding it to a specific audience. This function populates audience lists, differing from `update_contact` which modifies existing entries, and requires a valid `audience_id` to function. |
+| `get_contact` | Fetches a single contact's details from a specified audience by its unique ID or email address. The function requires exactly one identifier for the lookup, raising an error if the identifier is missing, ambiguous, or if the API call fails. |
+| `update_contact` | Updates an existing contact's details (e.g., name, subscription status) within a specific audience. The contact is identified by its unique ID or email address. This function validates inputs and returns the Resend API response, raising a ToolError on failure or if arguments are invalid. |
+| `remove_contact` | Removes a contact from a specified audience. The contact must be identified by either its unique ID or email address, but not both. Raises an error if the identifier is missing, ambiguous, or if the API call to the Resend service fails. |
+| `list_contacts` | Retrieves a complete list of contacts belonging to a specific audience, identified by its unique ID. This function returns all contacts within the audience, unlike `get_contact` which retrieves only a single contact by its ID or email. |

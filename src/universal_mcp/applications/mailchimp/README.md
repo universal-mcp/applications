@@ -1,10 +1,10 @@
-# Mailchimp MCP Server
+# MailchimpApp MCP Server
 
-An MCP Server for the Mailchimp API.
+An MCP Server for the MailchimpApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the Mailchimp API.
+This is automatically generated from OpenAPI schema for the MailchimpApp API.
 
 
 | Tool | Description |

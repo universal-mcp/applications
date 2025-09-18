@@ -9,49 +9,49 @@ This is automatically generated from OpenAPI schema for the YoutubeApp API.
 
 | Tool | Description |
 |------|-------------|
-| `get_jobs_job_reports` | Retrieves job reports for a specified job based on provided filters and parameters. |
-| `get_jobs_job_reports_report` | Retrieves a specific report associated with a job using the provided job and report identifiers. |
-| `delete_jobs_job` | Deletes a job with the specified ID, optionally acting on behalf of a content owner. |
-| `get_jobs` | Retrieves a list of jobs from the server with optional filtering by query parameters. |
-| `get_media_resource_name` | Retrieves a media resource by name and returns its JSON representation. |
-| `get_reporttypes` | Retrieves a paginated list of report types from the API with optional filtering. |
-| `delete_captions` | Deletes specified captions from a YouTube resource and returns the API response. |
-| `get_captions` | Retrieves caption tracks for a specified video ID from a remote API, supporting optional query parameters for request customization. |
-| `delete_comments` | Deletes a comment or comments from the server based on the specified ID. |
-| `add_comments_mark_as_spam` | Marks a comment as spam by sending a POST request to the API endpoint. |
-| `add_comments_set_moderation_status` | Sets the moderation status for a comment and optionally bans the author through a POST request to a defined endpoint. |
-| `delete_live_broadcasts` | Deletes specified live broadcasts using query parameters to filter requests. |
-| `add_live_broadcasts_bind` | Binds a live broadcast to a stream on YouTube, using specified parameters for authentication and identification. |
-| `add_live_broadcasts_control` | Controls a live broadcast by sending a POST request with specified parameters. |
-| `add_live_broadcasts_transition` | Transitions a live broadcast to a specified status for a given broadcast ID via API. |
-| `delete_live_chat_bans` | Deletes a live chat ban identified by the specified ID from the server. |
-| `delete_live_chat_messages` | Deletes live chat messages based on the specified message ID. |
-| `delete_live_chat_moderators` | Deletes a live chat moderator by ID using the specified endpoint. |
-| `delete_videos` | Deletes specified videos from a video platform using API endpoints. |
-| `get_videos_get_rating` | Retrieves the rating of a video using its ID and optional content owner specification. |
-| `add_videos_rate` | Submits a rating for a video on the server using the provided video ID and rating value. |
-| `add_videos_report_abuse` | Sends an abuse report for videos via the YouTube API, typically used to flag inappropriate content. |
-| `add_watermarks_set` | Sets watermarks on a specified YouTube channel using optional content owner credentials. |
-| `add_watermarks_unset` | Removes watermarks from a YouTube channel specified by channel ID. |
-| `get_activities` | Retrieve YouTube channel activities based on specified filters and parameters. |
-| `add_channel_banners_insert` | Inserts a new channel banner for a YouTube channel using the YouTube Data API. |
-| `delete_channel_sections` | Deletes one or more channel sections from the specified platform using the provided identifiers. |
-| `get_channels` | Retrieves YouTube channels based on specified parameters. |
-| `get_comment_threads` | Retrieve YouTube comment threads based on specified filters and pagination parameters. |
-| `get_fanfundingevents` | Retrieves fan funding events based on specified filter criteria. |
-| `get_guecategories` | Fetches guide categories from a remote service based on specified parameters. |
-| `get_languages` | Fetches a list of supported languages from the internationalization API, returning localized names when specified. |
-| `get_regions` | Retrieves a list of i18n regions from an API endpoint. |
-| `delete_livestreams` | Deletes a YouTube livestream resource using the YouTube Data API with optional filtering parameters. |
-| `delete_play_list_items` | Deletes playlist items identified by the given ID or on behalf of the specified content owner. |
-| `delete_playlists` | Deletes playlists via the YouTube Data API based on specified criteria. |
-| `get_search` | Submits a search query to the YouTube Data API with optional filters. |
-| `get_sponsors` | Fetches a list of sponsors from a server with optional filtering and pagination. |
-| `delete_subscriptions` | Deletes one or all subscriptions by sending a DELETE request to the API endpoint. |
-| `get_superchatevents` | Fetches a list of super chat events from the YouTube API with optional filtering parameters. |
-| `add_thumbnails_set` | Sets a thumbnail for a specified video on behalf of a content owner using the YouTube API. |
-| `get_video_abuse_report_reasons` | Fetches video abuse report reasons with optional localization and response filtering. |
-| `get_veocategories` | Fetches video categories from an external API using specified query parameters and returns the parsed JSON response. |
-| `delete_groupitems` | Deletes group items based on the provided parameters. |
-| `delete_groups` | Deletes specified groups via API, optionally on behalf of a content owner. |
-| `get_reports` | Fetches and returns report data based on specified filtering, sorting, and range criteria. |
+| `list_job_reports` | Retrieves a paginated list of all reports for a specific job ID, with options for filtering by date. Unlike `get_jobs_job_reports_report`, which fetches a single report by its ID, this function returns a collection of reports associated with a job. |
+| `get_job_report` | Fetches a single, specific report identified by its `reportId` from within a given `jobId`. This retrieves an individual record, distinguishing it from `get_jobs_job_reports`, which returns a list of reports for a job. The request can be made on behalf of a content owner. |
+| `delete_job` | Deletes a specific job resource using its unique `jobId`, optionally on behalf of a content owner. This action permanently removes the job itself, differentiating it from functions that only retrieve or manage job reports. |
+| `list_jobs` | Retrieves a paginated list of asynchronous jobs from the YouTube Reporting API. Supports filtering by content owner and including system-managed jobs. This function lists multiple jobs, distinct from `get_jobs_job_reports` which retrieves reports for a single job. |
+| `download_report_media` | Downloads the content of a bulk data report from the YouTube Reporting API by its unique `resourceName`. This function retrieves the actual media file generated by a reporting job, distinct from functions that only fetch report metadata. |
+| `get_reporttypes` | Retrieves a list of available report types from the YouTube Reporting API, supporting pagination and filtering. This function returns metadata about what kinds of reports can be generated, distinct from functions like `get_reports` that fetch actual report content. |
+| `delete_captions` | Deletes a specific YouTube caption resource using its unique ID, with optional delegation for content owners. This management function removes the entire caption track, unlike `get_captions` which only retrieves the transcript text for a given video ID. |
+| `get_transcript_text` | Fetches the full text transcript for a YouTube video using its ID. Unlike other methods using the official API, this function utilizes the `youtube-transcript-api` library to extract and concatenate all caption snippets into a single, timestamp-free string of the video's spoken content. |
+| `delete_comments` | Permanently removes a specific comment identified by its unique ID via a DELETE request. Unlike moderation functions like `add_comments_mark_as_spam`, which only alter a comment's state, this action is irreversible and deletes the resource. An `id` is required to specify the target comment. |
+| `mark_comment_as_spam` | Marks a specified YouTube comment as spam via a POST request to the API. This moderation action is distinct from deleting comments (`delete_comments`) or setting other statuses like 'approved' or 'rejected' (`add_comments_set_moderation_status`). |
+| `set_comment_moderation_status` | Sets the moderation status (e.g., 'approved', 'rejected') for specified comments and can optionally ban the author. Unlike `add_comments_mark_as_spam`, this function allows for various moderation states, providing more granular control over comment management. |
+| `delete_live_broadcasts` | Deletes a YouTube live broadcast event by its unique ID via the API. This request can be made on behalf of a content owner or channel. It targets the `/liveBroadcasts` endpoint, distinguishing it from `delete_livestreams` which manages the actual content stream. |
+| `bind_live_broadcast_to_stream` | Binds a YouTube live broadcast to a video stream using their respective IDs. This action associates the broadcast's metadata with the content stream, optionally performing the action on behalf of a content owner, facilitating the link between a planned event and its live video feed. |
+| `control_live_broadcast` | Sends control commands to a YouTube live broadcast, identified by its ID. It can display a slate or schedule an action using a time offset. Unlike `add_live_broadcasts_transition`, which alters broadcast status (e.g., 'live'), this function manages in-stream state. |
+| `transition_live_broadcast` | Changes a YouTube live broadcast's status (e.g., making it 'live' or 'complete') by posting to the API's transition endpoint. This function alters the broadcast's lifecycle state, distinct from other control actions like binding it to a stream, and returns the API's JSON response. |
+| `delete_live_chat_ban` | Deletes a specific YouTube live chat ban using its unique ID. It sends a DELETE request to the `/liveChat/bans` endpoint to revoke the ban, allowing the user to participate in the chat again. |
+| `delete_live_chat_message` | Deletes a specific YouTube live chat message identified by its unique ID. This function targets the `/liveChat/messages` endpoint, distinguishing it from `delete_live_chat_bans` and `delete_live_chat_moderators`, which manage different aspects of a live chat. |
+| `delete_live_chat_moderators` | Deletes a specific YouTube live chat moderator using their unique ID. This function sends a DELETE request to the `/liveChat/moderators` API endpoint and returns the server's JSON response, confirming the successful removal or detailing errors. The moderator ID is a required parameter for this action. |
+| `delete_videos` | Deletes a specified YouTube video using its unique ID. The operation can be performed on behalf of a content owner by sending an HTTP DELETE request to the `/videos` endpoint. It's distinct from other video functions that only modify or retrieve metadata, like rating or abuse reports. |
+| `get_video_ratings` | Retrieves the authenticated user's rating (e.g., 'like', 'dislike') for specified videos. This function fetches existing rating data, distinct from `add_videos_rate` which submits a new rating, and can be performed on behalf of a content owner. |
+| `rate_video` | Submits a rating (e.g., 'like', 'dislike') for a video specified by its unique ID. This function sends a POST request to the YouTube API's `/videos/rate` endpoint and returns the server's JSON response upon successful submission. |
+| `report_video_for_abuse` | Reports a video for abuse via a POST request to the YouTube API. An optional parameter allows a content owner to submit the report on behalf of their account, flagging potentially inappropriate content for review by YouTube. |
+| `set_channel_watermark` | Sets a branding watermark on a specified YouTube channel. The operation targets the channel using its ID and can be executed on behalf of a content owner. This function contrasts with `add_watermarks_unset`, which removes the watermark. |
+| `unset_channel_watermark` | Removes the branding watermark for a specified YouTube channel via an API POST request. This operation, the inverse of `add_watermarks_set`, can be executed on behalf of a content owner to unset the channel's current watermark. |
+| `get_activities` | Retrieves a list of YouTube activities, such as video uploads or social posts. Supports filtering by channel, authenticated user's feed, publication date, and region. The function also handles pagination to navigate through large result sets and returns the JSON response from the API. |
+| `insert_channel_banner` | Uploads and sets a new banner image for a specified YouTube channel. This function makes a POST request to the `/channelBanners/insert` endpoint, optionally on behalf of a content owner, and returns details of the newly created banner. |
+| `delete_channel_sections` | Deletes a YouTube channel section by its unique ID via an API request. The operation can be performed on behalf of a content owner for delegated management, returning a JSON response upon success or raising an HTTPError for failures like invalid IDs or insufficient permissions. |
+| `list_channels` | Retrieves channel data from the YouTube API using specific filters like ID, username, or ownership status (`mine`, `managedByMe`). The function supports pagination and localization, returning a JSON object containing details for the targeted channels. |
+| `get_comment_threads` | Retrieves YouTube comment threads using filters like channel ID, video ID, or search terms. It supports pagination and sorting, serving as the primary method for fetching comment data, distinct from other functions in the script that moderate or delete individual comments. |
+| `get_fanfundingevents` | Fetches a list of fan funding events from the YouTube API for the authenticated user's channel. Supports pagination, localization, and partial responses to retrieve customized event data like Super Chat or Super Stickers based on specified filter criteria and response parts. |
+| `get_guide_categories` | Retrieves a list of official YouTube guide categories (e.g., Music, Sports). This function queries the `/guideCategories` endpoint, allowing results to be filtered by ID or region and localized for a specific language. These are distinct from the categories assigned to individual videos. |
+| `get_i18n_languages` | Retrieves a list of supported internationalization (i18n) languages from the YouTube API's `/i18nLanguages` endpoint. It can optionally localize the language names in the response. This function is distinct from `get_regions`, which fetches supported geographical regions. |
+| `get_i18n_regions` | Fetches a list of geographic regions supported by the YouTube API for content localization. It can localize region names using the 'hl' parameter. This is distinct from get_languages, which retrieves supported languages, not geographic areas. |
+| `delete_livestreams` | Deletes one or more YouTube livestreams by ID via the `/liveStreams` API endpoint, optionally on behalf of a content owner. This function is distinct from `delete_live_broadcasts`, which targets a different live video resource, and returns the server's JSON response upon successful deletion. |
+| `delete_playlist_items` | Deletes one or more YouTube playlist items by their unique IDs. The operation can be performed on behalf of a content owner for delegated authorization, sending a DELETE request to the `/playlistItems` endpoint and returning the server's response. |
+| `delete_playlists` | Deletes a YouTube playlist by its unique ID via a DELETE request to the API. The operation can be performed on behalf of a specific content owner for delegated management. This function targets the entire playlist, distinct from `delete_play_list_items` which removes individual videos from a playlist. |
+| `get_search` | Performs a versatile search on YouTube for videos, channels, or playlists. This function supports extensive filters, including keywords, publication dates, location, and specific video attributes like category or duration, returning a paginated list of matching resources from the YouTube Data API. |
+| `list_sponsors` | Retrieves a list of sponsors for the authenticated user's YouTube channel. This function supports filtering, pagination, and specifying which resource parts to include in the response, allowing for flexible and customized data fetching of sponsor information. |
+| `delete_subscriptions` | Deletes a specific YouTube channel subscription identified by its unique ID. This function sends a DELETE request to the `/subscriptions` API endpoint and returns the server's JSON response, confirming the operation's success or failure. |
+| `get_super_chat_events` | Retrieves a paginated list of Super Chat events from the YouTube Data API. Allows for localization and specifying which resource parts to include in the response. This function is distinct from `get_fanfundingevents`, which fetches a different type of monetary contribution event. |
+| `set_video_thumbnail` | Sets a custom thumbnail for a specified YouTube video via a POST request to the `/thumbnails/set` API endpoint. The operation can be performed on behalf of a content owner for delegated management of video assets. |
+| `get_video_abuse_report_reasons` | Retrieves a list of valid reasons (e.g., spam, hate speech) for reporting abusive video content. Supports response localization using a language code (`hl`) and allows filtering which parts of the reason resource (e.g., ID, snippet) are returned, providing metadata before submitting a report. |
+| `get_video_categories` | Retrieves official YouTube video categories used for classifying uploaded videos, allowing filtering by ID, region, or language. This is distinct from `get_guecategories`, which fetches channel browsing guides, not categories for individual video uploads. |
+| `delete_group_items` | Deletes specified items from a YouTube Analytics group via an API request. An item can be targeted by its unique ID, and the action can be performed on behalf of a content owner. This function is distinct from `delete_groups`, which removes the entire group. |
+| `delete_groups` | Deletes a YouTube group by its ID via an API request, optionally on behalf of a content owner. Unlike `delete_groupitems`, which only removes an item from a group, this function deletes the entire group entity. |
+| `get_analytics_report` | Queries the YouTube Analytics API for performance reports, allowing customization via metrics, dimensions, and filters. Unlike `get_jobs_job_reports` which manages bulk report jobs, this function fetches analytical data directly, providing on-demand insights into channel or content performance. |
