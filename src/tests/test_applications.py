@@ -9,18 +9,18 @@ ALL_APPS = [
     "apollo",
     "asana",
     "aws_s3",
-    "bill",
+    "bill",     # not seeded
     "box",
     "braze",
-    #"cal_com_v2",
+    #"cal_com_v2",   # not seeded
     "calendly",
     "canva",
     "clickup",
     "coda",
-    "confluence",
+    "confluence",  # not seeded
     "contentful",
     "crustdata",
-    "dialpad",
+    "dialpad",     # not seeded
     "digitalocean",
     "domain_checker",
     "e2b",
@@ -58,23 +58,22 @@ ALL_APPS = [
     "openai",
     "outlook",
     "perplexity",
-    "pipedrive",
+    "pipedrive",  # not seeded
     "posthog",
     "reddit",
-    "replicate",
     "resend",
     "retell",
     "rocketlane",
     "scraper",
     "semanticscholar",
-    "semrush",
+    "semrush",   # not seeded
     "sendgrid",
     "sentry",
     "serpapi",
-    "sharepoint",
+    "sharepoint",  # not seeded
     "shopify",
     "shortcut",
-    "slack",
+    "slack",    # not seeded
     "spotify",
     "supabase",
     "tavily",
@@ -84,7 +83,7 @@ ALL_APPS = [
     "unipile",
     "whatsapp",
     "whatsapp_business",
-    "wrike",
+    "wrike",   # not seeded
     "youtube",
     "zenquotes",
 ]
