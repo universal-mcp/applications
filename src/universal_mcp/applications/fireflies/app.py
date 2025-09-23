@@ -175,8 +175,116 @@ class FirefliesApp(GraphQLApplication):
         query_gql = gql("""
         query Transcript($transcriptId: String!) {
           transcript(id: $transcriptId) {
-            title
             id
+            title
+            host_email
+            organizer_email
+            user {
+              user_id
+              email
+              name
+              num_transcripts
+              recent_meeting
+              minutes_consumed
+              is_admin
+              integrations
+            }
+            speakers {
+              id
+              name
+            }
+            transcript_url
+            participants
+            meeting_attendees {
+              displayName
+              email
+              phoneNumber
+              name
+              location
+            }
+            fireflies_users
+            duration
+            dateString
+            date
+            audio_url
+            video_url
+            sentences {
+              index
+              speaker_name
+              speaker_id
+              text
+              raw_text
+              start_time
+              end_time
+              ai_filters {
+                task
+                pricing
+                metric
+                question
+                date_and_time
+                text_cleanup
+                sentiment
+              }
+            }
+            calendar_id
+            summary {
+              action_items
+              keywords
+              outline
+              overview
+              shorthand_bullet
+              gist
+              bullet_gist
+              short_summary
+              short_overview
+              meeting_type
+              topics_discussed
+              transcript_chapters
+            }
+            meeting_info {
+              fred_joined
+              silent_meeting
+              summary_status
+            }
+            cal_id
+            calendar_type
+            apps_preview {
+              outputs {
+                transcript_id
+                user_id
+                app_id
+                created_at
+                title
+                prompt
+                response
+              }
+            }
+            meeting_link
+            analytics {
+              sentiments {
+                negative_pct
+                neutral_pct
+                positive_pct
+              }
+              categories {
+                questions
+                date_times
+                metrics
+                tasks
+              }
+              speakers {
+                speaker_id
+                name
+                duration
+                word_count
+                longest_monologue
+                monologues_count
+                filler_words
+                questions
+                duration_pct
+                words_per_minute
+              }
+            }
           }
         }
         """)
