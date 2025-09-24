@@ -84,6 +84,7 @@ ALL_APPS = [
     "whatsapp",
     "whatsapp_business",
     "wrike",   # not seeded
+    "yahoo_finance",
     "youtube",
     "zenquotes",
 ]
