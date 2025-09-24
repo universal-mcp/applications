@@ -2,7 +2,6 @@ from typing import Any
 
 import httpx
 from loguru import logger
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError
 from universal_mcp.integrations import Integration
@@ -50,19 +49,19 @@ class RedditApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a specified number of top-rated posts from a particular subreddit, allowing results to be filtered by a specific timeframe (e.g., 'day', 'week'). This is a simplified version compared to `get_subreddit_top_posts`, which uses more complex pagination parameters instead of a direct time filter.
-        
+
         Args:
             subreddit: The name of the subreddit (e.g., 'python', 'worldnews') without the 'r/' prefix
             limit: The maximum number of posts to return (default: 5, max: 100)
             timeframe: The time period for top posts. Valid options: 'hour', 'day', 'week', 'month', 'year', 'all' (default: 'day')
-        
+
         Returns:
             A formatted string containing a numbered list of top posts, including titles, authors, scores, and URLs, or an error message if the request fails
-        
+
         Raises:
             RequestException: When the HTTP request to the Reddit API fails
             JSONDecodeError: When the API response contains invalid JSON
-        
+
         Tags:
             fetch, reddit, api, list, social-media, important, read-only
         """
@@ -86,19 +85,19 @@ class RedditApp(APIApplication):
     ) -> str:
         """
         Searches for subreddits by name and description using a query string, with results sortable by relevance or activity. Unlike the broader `search_reddit` function, this method exclusively discovers subreddits, not posts, comments, or users.
-        
+
         Args:
             query: The text to search for in subreddit names and descriptions
             limit: The maximum number of subreddits to return, between 1 and 100 (default: 5)
             sort: The order of results, either 'relevance' or 'activity' (default: 'relevance')
-        
+
         Returns:
             A formatted string containing a list of matching subreddits with their names, subscriber counts, and descriptions, or an error message if the search fails or parameters are invalid
-        
+
         Raises:
             RequestException: When the HTTP request to Reddit's API fails
             JSONDecodeError: When the API response contains invalid JSON
-        
+
         Tags:
             search, important, reddit, api, query, format, list, validation
         """
@@ -124,17 +123,17 @@ class RedditApp(APIApplication):
     def get_post_flairs(self, subreddit: str):
         """
         Fetches a list of available post flairs (tags) for a specified subreddit. This is primarily used to discover the correct `flair_id` needed to categorize a new submission when using the `create_post` function. It returns flair details or a message if none are available.
-        
+
         Args:
             subreddit: The name of the subreddit (e.g., 'python', 'worldnews') without the 'r/' prefix
-        
+
         Returns:
             A list of dictionaries containing flair details if flairs exist, or a string message indicating no flairs are available
-        
+
         Raises:
             RequestException: When the API request fails or network connectivity issues occur
             JSONDecodeError: When the API response contains invalid JSON data
-        
+
         Tags:
             fetch, get, reddit, flair, api, read-only
         """
@@ -157,7 +156,7 @@ class RedditApp(APIApplication):
     ):
         """
         Creates a new Reddit post in a specified subreddit. It supports text ('self') or link posts, requiring a title and corresponding content (text or URL). An optional flair can be assigned. Returns the API response or a formatted error message on failure.
-        
+
         Args:
             subreddit: The name of the subreddit (e.g., 'python', 'worldnews') without the 'r/'
             title: The title of the post
@@ -165,13 +164,13 @@ class RedditApp(APIApplication):
             text: The text content of the post; required if kind is 'self'
             url: The URL of the link or image; required if kind is 'link'. Must end with valid image extension for image posts
             flair_id: The ID of the flair to assign to the post
-        
+
         Returns:
             The JSON response from the Reddit API, or an error message as a string if the API returns an error
-        
+
         Raises:
             ValueError: Raised when kind is invalid or when required parameters (text for self posts, url for link posts) are missing
-        
+
         Tags:
             create, post, social-media, reddit, api, important
         """
@@ -210,17 +209,17 @@ class RedditApp(APIApplication):
     def get_comment_by_id(self, comment_id: str) -> dict:
         """
         Retrieves a single Reddit comment's data, such as author and score, using its unique 't1_' prefixed ID. Unlike `get_post_comments_details` which fetches all comments for a post, this function targets one specific comment directly, returning an error dictionary if it is not found.
-        
+
         Args:
             comment_id: The full unique identifier of the comment (prefixed with 't1_', e.g., 't1_abcdef')
-        
+
         Returns:
             A dictionary containing the comment data including attributes like author, body, score, etc. If the comment is not found, returns a dictionary with an error message.
-        
+
         Raises:
             HTTPError: When the Reddit API request fails due to network issues or invalid authentication
             JSONDecodeError: When the API response cannot be parsed as valid JSON
-        
+
         Tags:
             retrieve, get, reddit, comment, api, fetch, single-item, important
         """
@@ -236,18 +235,18 @@ class RedditApp(APIApplication):
     def post_comment(self, parent_id: str, text: str) -> dict:
         """
         Posts a new comment as a reply to a specified Reddit post or another comment. Using the parent's full ID and the desired text, it submits the comment via the API and returns the response containing the new comment's details.
-        
+
         Args:
             parent_id: The full ID of the parent comment or post (e.g., 't3_abc123' for a post, 't1_def456' for a comment)
             text: The text content of the comment to be posted
-        
+
         Returns:
             A dictionary containing the Reddit API response with details about the posted comment
-        
+
         Raises:
             RequestException: If the API request fails or returns an error status code
             JSONDecodeError: If the API response cannot be parsed as JSON
-        
+
         Tags:
             post, comment, social, reddit, api, important
         """
@@ -263,18 +262,18 @@ class RedditApp(APIApplication):
     def edit_content(self, content_id: str, text: str) -> dict:
         """
         Modifies the text of a specific Reddit post or comment via its unique ID. Unlike creation or deletion functions, this method specifically handles updates to existing user-generated content, submitting the new text to the API and returning a JSON response detailing the edited item.
-        
+
         Args:
             content_id: The full ID of the content to edit (e.g., 't3_abc123' for a post, 't1_def456' for a comment)
             text: The new text content to replace the existing content
-        
+
         Returns:
             A dictionary containing the API response with details about the edited content
-        
+
         Raises:
             RequestException: When the API request fails or network connectivity issues occur
             ValueError: When invalid content_id format or empty text is provided
-        
+
         Tags:
             edit, update, content, reddit, api, important
         """
@@ -290,17 +289,17 @@ class RedditApp(APIApplication):
     def delete_content(self, content_id: str) -> dict:
         """
         Deletes a specified Reddit post or comment using its full identifier (`content_id`). It sends a POST request to the `/api/del` endpoint for permanent removal, unlike `edit_content` which only modifies. On success, it returns a confirmation message.
-        
+
         Args:
             content_id: The full ID of the content to delete (e.g., 't3_abc123' for a post, 't1_def456' for a comment)
-        
+
         Returns:
             A dictionary containing a success message with the deleted content ID
-        
+
         Raises:
             HTTPError: When the API request fails or returns an error status code
             RequestException: When there are network connectivity issues or API communication problems
-        
+
         Tags:
             delete, content-management, api, reddit, important
         """
@@ -316,10 +315,10 @@ class RedditApp(APIApplication):
     def get_current_user_info(self) -> Any:
         """
         Retrieves the full profile information for the currently authenticated user by making a GET request to the `/api/v1/me` Reddit API endpoint. This differs from `get_user_profile`, which requires a username, and `get_current_user_karma`, which specifically fetches karma data.
-        
+
         Returns:
             Any: API response data.
-        
+
         Tags:
             users
         """
@@ -332,10 +331,10 @@ class RedditApp(APIApplication):
     def get_current_user_karma(self) -> Any:
         """
         Fetches the karma breakdown for the authenticated user from the Reddit API. This function specifically targets the `/api/v1/me/karma` endpoint, returning karma statistics per subreddit, which is more specific than `get_current_user_info` that retrieves general profile information.
-        
+
         Returns:
             Any: API response data.
-        
+
         Tags:
             account
         """
@@ -348,13 +347,13 @@ class RedditApp(APIApplication):
     def get_post_comments_details(self, post_id: str) -> Any:
         """
         Fetches a specific Reddit post's details and its complete comment tree using the post's unique ID. This function returns the entire discussion, including the original post and all associated comments, providing broader context than `get_comment_by_id` which only retrieves a single comment.
-        
+
         Args:
             post_id (string): The Reddit post ID ( e.g. '1m734tx' for https://www.reddit.com/r/mcp/comments/1m734tx/comment/n4occ77/)
-        
+
         Returns:
             Any: API response data containing post details and comments.
-        
+
         Tags:
             listings, comments, posts, important
         """
@@ -375,7 +374,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Fetches a global list of the most controversial posts from across all of Reddit, distinct from subreddit-specific queries. Optional parameters allow for pagination and customization of the results, returning the direct API response data with the post listings.
-        
+
         Args:
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
             before: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results before.
@@ -383,10 +382,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of controversial posts.
-        
+
         Tags:
             listings, posts, controversial, read-only
         """
@@ -419,7 +418,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Retrieves trending 'hot' posts from the global Reddit feed. Unlike `get_subreddit_hot_posts`, this operates across all of Reddit, not a specific subreddit. It supports pagination and optional filtering by geographical region to customize the listing of returned posts.
-        
+
         Args:
             g: Optional. A geographical region to filter posts by (e.g., 'GLOBAL', 'US', 'GB').
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
@@ -428,10 +427,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of hot posts.
-        
+
         Tags:
             listings, posts, hot, read-only
         """
@@ -464,7 +463,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Fetches a list of the newest posts from across all of Reddit, not limited to a specific subreddit. This function supports optional pagination and filtering parameters to customize the API response, differentiating it from `get_subreddit_new_posts` which targets a single subreddit.
-        
+
         Args:
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
             before: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results before.
@@ -472,10 +471,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of new posts.
-        
+
         Tags:
             listings, posts, new, read-only
         """
@@ -509,7 +508,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Retrieves a list of 'hot' posts from a specified subreddit, supporting pagination and geographical filtering. Unlike `get_hot_posts`, which queries all of Reddit, this function targets a single subreddit to fetch its currently trending content, distinct from top or new posts.
-        
+
         Args:
             subreddit: The name of the subreddit (e.g., 'python', 'worldnews') without the 'r/' prefix.
             g: Optional. A geographical region to filter posts by (e.g., 'GLOBAL', 'US', 'GB').
@@ -519,10 +518,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of hot posts from the subreddit.
-        
+
         Tags:
             listings, posts, subreddit, hot, read-only
         """
@@ -558,7 +557,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Retrieves a list of the newest posts from a specified subreddit, sorted chronologically. Unlike `get_new_posts` which targets all of Reddit, this function is subreddit-specific and supports standard pagination parameters like `limit` and `after` to navigate through the listing of recent submissions.
-        
+
         Args:
             subreddit: The name of the subreddit (e.g., 'python', 'worldnews') without the 'r/' prefix.
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
@@ -567,10 +566,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of new posts from the subreddit.
-        
+
         Tags:
             listings, posts, subreddit, new, read-only
         """
@@ -605,7 +604,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Fetches top-rated posts from a specific subreddit using standard API pagination parameters. Unlike the simpler `get_subreddit_posts` which filters by timeframe, this function offers more direct control over retrieving listings, distinguishing it from the site-wide `get_top_posts` which queries all of Reddit.
-        
+
         Args:
             subreddit: The name of the subreddit (e.g., 'python', 'worldnews') without the 'r/' prefix.
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
@@ -614,10 +613,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of top posts from the subreddit.
-        
+
         Tags:
             listings, posts, subreddit, top, read-only
         """
@@ -651,7 +650,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Retrieves a list of rising posts from across all of Reddit. Unlike subreddit-specific listing functions (e.g., `get_subreddit_hot_posts`), this operates globally. It supports optional pagination and filtering parameters, such as `limit` and `after`, to customize the API response and navigate through results.
-        
+
         Args:
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
             before: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results before.
@@ -659,10 +658,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of rising posts.
-        
+
         Tags:
             listings, posts, rising, read-only
         """
@@ -694,7 +693,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Fetches top-rated posts from across all of Reddit, distinct from `get_subreddit_top_posts`, which operates on a specific subreddit. The function supports standard API pagination parameters like `limit`, `after`, and `before` to navigate results, providing a broad, site-wide view of top content.
-        
+
         Args:
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
             before: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results before.
@@ -702,10 +701,10 @@ class RedditApp(APIApplication):
             limit: Optional. The maximum number of items desired (default: 25, maximum: 100).
             show: Optional. The string "all" to show all posts.
             sr_detail: Optional. Expand subreddit details.
-        
+
         Returns:
             Any: API response data containing a list of top posts.
-        
+
         Tags:
             listings, posts, top, read-only
         """
@@ -744,7 +743,7 @@ class RedditApp(APIApplication):
     ) -> Any:
         """
         Executes a broad, keyword-based search across Reddit for various content types like posts, comments, or users. This general-purpose function offers extensive filtering options, distinguishing it from the more specialized `search_subreddits` which only finds communities.
-        
+
         Args:
             after: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results after.
             before: Optional. The fullname of a thing (e.g., 't3_xxxxxx') to return results before.
@@ -759,10 +758,10 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
             t: Optional. One of ('hour', 'day', 'week', 'month', 'year', 'all') to filter by time.
             type: Optional. A comma-separated list of result types ('sr', 'link', 'user').
-        
+
         Returns:
             Any: API response data containing search results.
-        
+
         Tags:
             search, reddit, posts, comments, users, read-only
         """
@@ -793,13 +792,13 @@ class RedditApp(APIApplication):
     def get_user_profile(self, username: str) -> Any:
         """
         Retrieves public profile information for a specified Reddit user via the `/user/{username}/about` endpoint. Unlike `get_current_user_info`, which targets the authenticated user, this function fetches data like karma and account age for any user identified by their username.
-        
+
         Args:
             username: The username of the user to look up.
-        
+
         Returns:
             A dictionary containing the user's profile data.
-        
+
         Tags:
             users, profile, fetch
         """

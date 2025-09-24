@@ -28,7 +28,7 @@ class ExaApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Executes a query against the Exa API's `/search` endpoint, returning a list of results. This function supports extensive filtering by search type, category, domains, publication dates, and specific text content to refine the search query and tailor the API's response.
-        
+
         Args:
             query (string): The query string for the search. Example: 'Latest developments in LLM capabilities'.
             useAutoprompt (boolean): Autoprompt converts your query to an Exa-style query. Enabled by default for auto search, optional for neural search, and not available for keyword search. Example: 'True'.
@@ -44,10 +44,10 @@ class ExaApp(APIApplication):
             includeText (array): List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['large language model']".
             excludeText (array): List of strings that must not be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['course']".
             contents (object): contents
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             important
         """
@@ -90,7 +90,7 @@ class ExaApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Finds web pages semantically similar to a given URL. Unlike the `search` function, which uses a text query, this method takes a specific link and returns a list of related results, with options to filter by domain, publication date, and content.
-        
+
         Args:
             url (string): The url for which you would like to find similar links. Example: 'https://arxiv.org/abs/2307.06435'.
             numResults (integer): Number of results to return (up to thousands of results available for custom plans) Example: '10'.
@@ -103,10 +103,10 @@ class ExaApp(APIApplication):
             includeText (array): List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['large language model']".
             excludeText (array): List of strings that must not be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words. Example: "['course']".
             contents (object): contents
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             important
         """
@@ -145,7 +145,7 @@ class ExaApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves and processes content from a list of URLs, returning full text, summaries, or highlights. Unlike the search function which finds links, this function fetches the actual page content, with optional support for live crawling to get the most up-to-date information.
-        
+
         Args:
             urls (array): Array of URLs to crawl (backwards compatible with 'ids' parameter). Example: "['https://arxiv.org/pdf/2307.06435']".
             ids (array): Deprecated - use 'urls' instead. Array of document IDs obtained from searches. Example: "['https://arxiv.org/pdf/2307.06435']".
@@ -162,10 +162,10 @@ class ExaApp(APIApplication):
             subpages (integer): The number of subpages to crawl. The actual number crawled may be limited by system constraints. Example: '1'.
             subpageTarget (string): Keyword to find specific subpages of search results. Can be a single string or an array of strings, comma delimited. Example: 'sources'.
             extras (object): Extra parameters to pass.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             important
         """
@@ -191,16 +191,16 @@ class ExaApp(APIApplication):
     def answer(self, query, stream=None, text=None, model=None) -> dict[str, Any]:
         """
         Retrieves a direct, synthesized answer for a given query by calling the Exa `/answer` API endpoint. Unlike `search`, which returns web results, this function provides a conclusive response. It supports streaming, including source text, and selecting a search model.
-        
+
         Args:
             query (string): The question or query to answer. Example: 'What is the latest valuation of SpaceX?'.
             stream (boolean): If true, the response is returned as a server-sent events (SSS) stream.
             text (boolean): If true, the response includes full text content in the search results
             model (string): The search model to use for the answer. Exa passes only one query to exa, while exa-pro also passes 2 expanded queries to our search model.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             important
         """
@@ -219,8 +219,8 @@ class ExaApp(APIApplication):
 
     def list_tools(self):
         return [
-            self.search_with_filters, 
-            self.find_similar_by_url, 
-            self.fetch_page_content, 
-            self.answer
-            ]
+            self.search_with_filters,
+            self.find_similar_by_url,
+            self.fetch_page_content,
+            self.answer,
+        ]

@@ -4,7 +4,6 @@ from typing import Any
 
 import dns.resolver
 import requests
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -94,15 +93,15 @@ class DomainCheckerApp(APIApplication):
     async def check_domain_registration(self, domain: str) -> dict[str, Any]:
         """
         Determines a domain's availability by querying DNS and RDAP servers. For registered domains, it returns details like registrar and key dates. This function provides a comprehensive analysis for a single, fully qualified domain name, unlike `check_keyword_across_tlds_tool` which checks a keyword across multiple domains.
-        
+
         This method performs a comprehensive domain availability check by first checking DNS records
         and then querying RDAP (Registration Data Access Protocol) servers for detailed registration
         information. It provides detailed information about registered domains including registrar,
         registration date, and expiration date.
-        
+
         Args:
             domain: String representing the domain name to check (e.g., "example.com")
-        
+
         Returns:
             Dictionary containing domain availability information with the following keys:
             - domain: The domain name that was checked
@@ -113,12 +112,12 @@ class DomainCheckerApp(APIApplication):
             - has_dns: Boolean indicating if DNS records exist
             - rdap_data_available: Boolean indicating if RDAP data was retrieved
             - note: Additional information when needed
-        
+
         Raises:
             DNSException: When DNS resolution fails due to network issues or invalid domain format
             RequestException: When RDAP queries fail due to network issues or server errors
             ValueError: When the domain parameter is empty or contains invalid characters
-        
+
         Tags:
             domain, availability, registration, dns, rdap, important
         """
@@ -206,15 +205,15 @@ class DomainCheckerApp(APIApplication):
     async def find_available_domains_for_keyword(self, keyword: str) -> dict[str, Any]:
         """
         Checks a keyword's availability across a predefined list of popular TLDs. Using DNS and RDAP lookups, it generates a summary report of available and taken domains. This bulk-check differs from `check_domain_registration`, which deeply analyzes a single, fully-qualified domain.
-        
+
         This method systematically checks a given keyword across 14 popular TLDs including .com, .net,
         .org, .io, .co, .app, .dev, .ai, .me, .info, .xyz, .online, .site, and .tech. It performs
         DNS lookups and RDAP queries to determine domain availability and provides a comprehensive
         report of available and taken domains.
-        
+
         Args:
             keyword: String representing the keyword to check across TLDs (e.g., "myapp")
-        
+
         Returns:
             Dictionary containing TLD availability information with the following keys:
             - keyword: The keyword that was checked
@@ -224,12 +223,12 @@ class DomainCheckerApp(APIApplication):
             - available_domains: List of available domain names
             - taken_domains: List of taken domain names
             - tlds_checked_list: Complete list of TLDs that were checked
-        
+
         Raises:
             DNSException: When DNS resolution fails due to network issues or invalid domain format
             RequestException: When RDAP queries fail due to network issues or server errors
             ValueError: When the keyword parameter is empty or contains invalid characters
-        
+
         Tags:
             tld, keyword, domain-search, availability, bulk-check, important
         """
@@ -267,7 +266,4 @@ class DomainCheckerApp(APIApplication):
         """
         Lists the available tools (methods) for this application.
         """
-        return [
-            self.check_domain_registration, 
-            self.find_available_domains_for_keyword
-            ]
+        return [self.check_domain_registration, self.find_available_domains_for_keyword]

@@ -2,11 +2,15 @@ from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 from universal_mcp.applications.twitter.api_segments.compliance_api import ComplianceApi
-from universal_mcp.applications.twitter.api_segments.dm_conversations_api import DmConversationsApi
+from universal_mcp.applications.twitter.api_segments.dm_conversations_api import (
+    DmConversationsApi,
+)
 from universal_mcp.applications.twitter.api_segments.dm_events_api import DmEventsApi
 from universal_mcp.applications.twitter.api_segments.likes_api import LikesApi
 from universal_mcp.applications.twitter.api_segments.lists_api import ListsApi
-from universal_mcp.applications.twitter.api_segments.openapi_json_api import OpenapiJsonApi
+from universal_mcp.applications.twitter.api_segments.openapi_json_api import (
+    OpenapiJsonApi,
+)
 from universal_mcp.applications.twitter.api_segments.spaces_api import SpacesApi
 from universal_mcp.applications.twitter.api_segments.trends_api import TrendsApi
 from universal_mcp.applications.twitter.api_segments.tweets_api import TweetsApi

@@ -21,6 +21,7 @@ classifiers = [
 ]
 dependencies = [
     "boto3>=1.38.32",
+    "browser-use-sdk>=2.0.4",
     "dnspython>=2.4.0",
     "e2b-code-interpreter>=1.2.1",
     "elevenlabs>=2.14.0",
@@ -45,7 +46,6 @@ dependencies = [
     "universal-mcp>=0.1.24rc21",
     "yfinance>=0.2.66",
     "youtube-transcript-api==1.2.2",
-    
 ]
 
 [project.license]
@@ -77,7 +77,6 @@ test-cov = "pytest --cov-report term-missing --cov-config=pyproject.toml --cov=s
 lint = "ruff check . && ruff format --check ."
 format = "ruff format ."
 
-
 [tool.hatch.build.targets.wheel]
 packages = [
     "src/universal_mcp",
@@ -85,7 +84,7 @@ packages = [
 
 [tool.coverage.run]
 source = [
-    "src",   
+    "src",
 ]
 branch = true
 
@@ -94,12 +93,11 @@ show_missing = true
 fail_under = 70
 
 [tool.ruff]
-line-length = 88
-select = [
+line-length = 140
+lint.select = [
     "E", "W", "F", "I", "UP", "PL", "T20",
 ]
-ignore = []
-
+lint.ignore = []
 
 [tool.ruff.format]
 quote-style = "double"
@@ -114,4 +112,3 @@ dev = [
     "litellm>=1.77.3",
     "universal-mcp-agents>=0.1.13",
 ]
-

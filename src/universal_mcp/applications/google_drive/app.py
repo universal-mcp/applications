@@ -2,7 +2,6 @@ from typing import Any
 
 import httpx
 from loguru import logger
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -22,20 +21,20 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Moves a file to a new folder by updating its parent references. This function adds the file to a destination folder (`add_parents`) and removes it from the source (`remove_parents`), offering a focused alternative to the more comprehensive `update_file_metadata` function.
-        
+
         Args:
             file_id: The ID of the file to move
             add_parents: The ID of the destination folder (new parent)
             remove_parents: The ID of the source folder (old parent to remove)
-        
+
         Returns:
             A dictionary containing the updated file information
-        
+
         Raises:
             HTTPError: If the API request fails or returns an error status code
             ConnectionError: If there are network connectivity issues
             AuthenticationError: If the authentication credentials are invalid or expired
-        
+
         Tags:
             move, file, folder, parent, patch, api, important
         """
@@ -49,15 +48,15 @@ class GoogleDriveApp(APIApplication):
     def get_drive_info(self) -> dict[str, Any]:
         """
         Fetches key user and storage quota information for the authenticated Google Drive account. This streamlined function offers a focused alternative to `get_about_info`, which queries the same endpoint but exposes all available API parameters, providing a simpler way to get essential account details.
-        
+
         Returns:
             A dictionary containing Drive information including storage quota (usage, limit) and user details (name, email, etc.).
-        
+
         Raises:
             HTTPError: If the API request fails or returns an error status code
             ConnectionError: If there are network connectivity issues
             AuthenticationError: If the authentication credentials are invalid or expired
-        
+
         Tags:
             get, info, storage, drive, quota, user, api, important
         """
@@ -80,7 +79,7 @@ class GoogleDriveApp(APIApplication):
                 - Supported operators: `=`, `!=`, `<`, `<=`, `>`, `>=`, `contains`, `in`
                 - Combine conditions with `and` / `or`
                 - String values must be in single quotes `'...'`
-                
+
                 Examples:
                     - "mimeType='application/pdf'"
                     - "name contains 'contract' or name contains 'agreement'"
@@ -114,17 +113,17 @@ class GoogleDriveApp(APIApplication):
     def get_file_details(self, file_id: str) -> dict[str, Any]:
         """
         Fetches all default metadata for a specific file by its unique ID. This function provides a simple, direct retrieval of a single file's complete attributes, differing from `search_files` which performs broad queries for multiple files based on various criteria.
-        
+
         Args:
             file_id: String identifier of the file whose metadata should be retrieved
-        
+
         Returns:
             Dictionary containing the file's metadata including properties such as name, size, type, and other attributes
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid file_id or network issues
             JSONDecodeError: When the API response cannot be parsed as JSON
-        
+
         Tags:
             retrieve, file, metadata, get, api, important
         """
@@ -135,16 +134,16 @@ class GoogleDriveApp(APIApplication):
     def trash_file(self, file_id: str) -> dict[str, Any]:
         """
         Moves a specified file to the trash using its ID. It provides simplified error handling by returning a dictionary with a success or error message, unlike the `permanently_delete_file` function which raises an exception on failure.
-        
+
         Args:
             file_id: The unique identifier string of the file to be deleted from Google Drive
-        
+
         Returns:
             A dictionary containing either a success message {'message': 'File deleted successfully'} or an error message {'error': 'error description'}
-        
+
         Raises:
             Exception: When the DELETE request fails due to network issues, invalid file_id, insufficient permissions, or other API errors
-        
+
         Tags:
             delete, file-management, google-drive, api, important
         """
@@ -164,20 +163,20 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a file in Google Drive using an in-memory text string. Unlike `upload_file_from_path`, which reads from a local file, this function first creates the file's metadata (name, parent) and then uploads the provided string content, returning the new file's complete metadata upon completion.
-        
+
         Args:
             file_name: Name of the file to create on Google Drive
             text_content: Plain text content to be written to the file
             parent_id: Optional ID of the parent folder where the file will be created
             mime_type: MIME type of the file (defaults to 'text/plain')
-        
+
         Returns:
             Dictionary containing metadata of the created file including ID, name, and other Google Drive file properties
-        
+
         Raises:
             HTTPStatusError: Raised when the API request fails during file creation or content upload
             UnicodeEncodeError: Raised when the text_content cannot be encoded in UTF-8
-        
+
         Tags:
             create, file, upload, drive, text, important, storage, document
         """
@@ -201,16 +200,16 @@ class GoogleDriveApp(APIApplication):
     def find_folder_id_by_name(self, folder_name: str) -> str | None:
         """
         Searches for a non-trashed folder by its exact name, returning the ID of the first match. As a utility for `create_folder`, it resolves parent names to IDs and returns None if the folder isn't found or an API error occurs, logging the failure internally.
-        
+
         Args:
             folder_name: The name of the folder to search for in Google Drive
-        
+
         Returns:
             str | None: The folder's ID if a matching folder is found, None if no folder is found or if an error occurs
-        
+
         Raises:
             Exception: Caught internally and logged when API requests fail or response parsing errors occur
-        
+
         Tags:
             search, find, google-drive, folder, query, api, utility
         """
@@ -229,17 +228,17 @@ class GoogleDriveApp(APIApplication):
     def create_folder(self, folder_name: str, parent_id: str = None) -> dict[str, Any]:
         """
         Creates a new folder in Google Drive, optionally within a parent specified by name or ID. If a parent name is given, it internally resolves it to an ID using the `find_folder_id_by_name` function. Returns the metadata for the newly created folder upon successful creation.
-        
+
         Args:
             folder_name: Name of the folder to create
             parent_id: ID or name of the parent folder. Can be either a folder ID string or a folder name that will be automatically looked up
-        
+
         Returns:
             Dictionary containing the created folder's metadata including its ID, name, and other Drive-specific information
-        
+
         Raises:
             ValueError: Raised when a parent folder name is provided but cannot be found in Google Drive
-        
+
         Tags:
             create, folder, drive, storage, important, management
         """
@@ -274,21 +273,21 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Uploads a local file to Google Drive by reading its binary content from a path. It creates the file's metadata, uploads the content, and returns the new file's metadata. This differs from `create_text_file` which uses in-memory string content instead of a local file path.
-        
+
         Args:
             file_name: Name to give the file on Google Drive
             file_path: Path to the local file to upload
             parent_id: Optional ID of the parent folder to create the file in
             mime_type: MIME type of the file (e.g., 'image/jpeg', 'image/png', 'application/pdf')
-        
+
         Returns:
             Dictionary containing the uploaded file's metadata from Google Drive
-        
+
         Raises:
             FileNotFoundError: When the specified file_path does not exist or is not accessible
             HTTPError: When the API request fails or returns an error status code
             IOError: When there are issues reading the file content
-        
+
         Tags:
             upload, file-handling, google-drive, api, important, binary, storage
         """
@@ -332,7 +331,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a list of the user's installed Google Drive applications. Allows optional filtering by file extensions or MIME types to find apps capable of opening specific file formats, returning a detailed list of matching applications.
-        
+
         Args:
             appFilterExtensions (string): A query parameter to filter applications based on extensions, allowing string values to be specified in the URL. Example: '<string>'.
             appFilterMimeTypes (string): Filters the results to include only apps that can open any of the provided comma-separated list of MIME types[4][1]. Example: '<string>'.
@@ -348,14 +347,14 @@ class GoogleDriveApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '<string>'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '<string>'.
             xgafv (string): V1 error format. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Apps
         """
@@ -410,7 +409,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves detailed information for a single installed Google Drive application using its unique ID. This provides a targeted alternative to `list_installed_apps`, which returns a complete list, allowing for focused data retrieval about a specific application.
-        
+
         Args:
             appId (string): appId
             access_token (string): OAuth access token. Example: '{{accessToken}}'.
@@ -424,14 +423,14 @@ class GoogleDriveApp(APIApplication):
             upload_protocol (string): Upload protocol for media (e.g. "raw", "multipart"). Example: '<string>'.
             uploadType (string): Legacy upload protocol for media (e.g. "media", "multipart"). Example: '<string>'.
             xgafv (string): V1 error format. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Apps
         """
@@ -480,7 +479,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves user account and Drive settings from the `/about` endpoint. This generic function provides full parameter control, offering a flexible alternative to the `get_drive_info` method, which requests specific, predefined fields like storage quota and user details.
-        
+
         Args:
             alt (string): Data format for the response. Example: 'json'.
             fields (string): Selector specifying which fields to include in a partial response. Example: '<string>'.
@@ -489,14 +488,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Information
         """
@@ -553,7 +552,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of file changes for a user's account or a specific shared drive, using a required page token. Supports various filters to customize the change log, enabling tracking of file activity for synchronization or auditing.
-        
+
         Args:
             pageToken (string): (Required) The token for continuing a previous list request on the next page. This should be set to the value of 'nextPageToken' from the previous response or to the response from the getStartPageToken method. Example: '{{pageToken}}'.
             driveId (string): The shared drive from which changes are returned. If specified the change IDs will be reflective of the shared drive; use the combined drive ID and change ID as an identifier. Example: '{{driveId}}'.
@@ -576,14 +575,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Changes
         """
@@ -644,7 +643,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a starting page token representing the current state of a user's Drive or a shared drive. This token serves as a baseline for subsequent calls to list future file and folder changes, enabling efficient, incremental change tracking.
-        
+
         Args:
             driveId (string): The ID of the shared drive for which the starting pageToken for listing future changes from that shared drive is returned. Example: '{{driveId}}'.
             supportsAllDrives (string): Whether the requesting application supports both My Drives and shared drives. Example: '<boolean>'.
@@ -657,14 +656,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Changes
         """
@@ -735,7 +734,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Sets up a push notification channel to monitor changes across a user's Google Drive or a specific shared drive. This allows an external service to receive updates when files are modified, added, or deleted, based on specified filters.
-        
+
         Args:
             pageToken (string): (Required) The token for continuing a previous list request on the next page. This should be set to the value of 'nextPageToken' from the previous response or to the response from the getStartPageToken method. Example: '{{pageToken}}'.
             driveId (string): The shared drive from which changes are returned. If specified the change IDs will be reflective of the shared drive; use the combined drive ID and change ID as an identifier. Example: '{{driveId}}'.
@@ -768,14 +767,14 @@ class GoogleDriveApp(APIApplication):
             resourceUri (string): resourceUri Example: '<string>'.
             token (string): token Example: '<string>'.
             type (string): type Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Changes
         """
@@ -863,7 +862,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Terminates an active push notification channel, ceasing the delivery of updates for a watched Google Drive resource. This requires the channel's ID and resource ID to identify and close the specific notification stream, effectively unsubscribing from real-time changes.
-        
+
         Args:
             alt (string): Data format for the response. Example: 'json'.
             fields (string): Selector specifying which fields to include in a partial response. Example: '<string>'.
@@ -882,14 +881,14 @@ class GoogleDriveApp(APIApplication):
             resourceUri (string): resourceUri Example: '<string>'.
             token (string): token Example: '<string>'.
             type (string): type Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Channels
         """
@@ -958,7 +957,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all top-level comments for a specified Google Drive file. It supports filtering by modification time and including deleted comments, fetching parent comments rather than replies, unlike `list_comment_replies`.
-        
+
         Args:
             fileId (string): fileId
             includeDeleted (string): Whether to include deleted comments. Deleted comments will not include their original content. Example: '<boolean>'.
@@ -972,14 +971,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Comments
         """
@@ -1041,7 +1040,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a new comment on a specified Google Drive file. It requires a file ID and the comment's content, returning the new comment's metadata. This adds top-level comments, distinct from `create_comment_reply` which replies to existing comments.
-        
+
         Args:
             fileId (string): fileId
             alt (string): Data format for the response. Example: 'json'.
@@ -1063,14 +1062,14 @@ class GoogleDriveApp(APIApplication):
             quotedFileContent (object): quotedFileContent Example: {'mimeType': '<string>', 'value': '<string>'}.
             replies (array): replies Example: "[{'action': '<string>', 'author': {'displayName': '<string>', 'emailAddress': '<string>', 'kind': 'drive#user', 'me': '<boolean>', 'permissionId': '<string>', 'photoLink': '<string>'}, 'content': '<string>', 'createdTime': '<dateTime>', 'deleted': '<boolean>', 'htmlContent': '<string>', 'id': '<string>', 'kind': 'drive#reply', 'modifiedTime': '<dateTime>'}, {'action': '<string>', 'author': {'displayName': '<string>', 'emailAddress': '<string>', 'kind': 'drive#user', 'me': '<boolean>', 'permissionId': '<string>', 'photoLink': '<string>'}, 'content': '<string>', 'createdTime': '<dateTime>', 'deleted': '<boolean>', 'htmlContent': '<string>', 'id': '<string>', 'kind': 'drive#reply', 'modifiedTime': '<dateTime>'}]".
             resolved (string): resolved Example: '<boolean>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Comments
         """
@@ -1141,7 +1140,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a single comment's metadata using its unique comment and file IDs. This provides targeted access to one comment, unlike `list_file_comments` which lists all comments for a file. It can optionally include deleted comments in the returned data.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -1153,14 +1152,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Comments
         """
@@ -1210,7 +1209,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Permanently deletes a specific comment from a Google Drive file, identified by both the file and comment IDs. This irreversible action removes the top-level comment and its replies, distinguishing it from the `delete_reply` function which targets only individual replies within a comment thread.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -1221,14 +1220,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Comments
         """
@@ -1289,7 +1288,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates an existing comment on a specified file using its unique ID. This function allows for partial modification of the comment's properties, such as its content or resolved status, and returns the updated comment's metadata.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -1312,14 +1311,14 @@ class GoogleDriveApp(APIApplication):
             quotedFileContent (object): quotedFileContent Example: {'mimeType': '<string>', 'value': '<string>'}.
             replies (array): replies Example: "[{'action': '<string>', 'author': {'displayName': '<string>', 'emailAddress': '<string>', 'kind': 'drive#user', 'me': '<boolean>', 'permissionId': '<string>', 'photoLink': '<string>'}, 'content': '<string>', 'createdTime': '<dateTime>', 'deleted': '<boolean>', 'htmlContent': '<string>', 'id': '<string>', 'kind': 'drive#reply', 'modifiedTime': '<dateTime>'}, {'action': '<string>', 'author': {'displayName': '<string>', 'emailAddress': '<string>', 'kind': 'drive#user', 'me': '<boolean>', 'permissionId': '<string>', 'photoLink': '<string>'}, 'content': '<string>', 'createdTime': '<dateTime>', 'deleted': '<boolean>', 'htmlContent': '<string>', 'id': '<string>', 'kind': 'drive#reply', 'modifiedTime': '<dateTime>'}]".
             resolved (string): resolved Example: '<boolean>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Comments
         """
@@ -1388,7 +1387,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of shared drives accessible to the user. Supports optional query-based filtering and can be executed with domain administrator privileges to list all shared drives within the domain, returning a dictionary containing the list of drives and pagination details.
-        
+
         Args:
             pageSize (string): Maximum number of shared drives to return per page. Example: '<integer>'.
             pageToken (string): Page token for shared drives. Example: '{{pageToken}}'.
@@ -1401,14 +1400,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1468,7 +1467,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a new shared drive using a unique `requestId` for idempotency. This function allows specifying initial properties such as its name, background image, and access restrictions, returning the created drive's metadata on success.
-        
+
         Args:
             requestId (string): (Required) An ID, such as a random UUID, which uniquely identifies this user's request for idempotent creation of a shared drive. A repeated request by the same user and with the same request ID will avoid creating duplicates by attempting to create the same shared drive. If the shared drive already exists a 409 error will be returned. Example: 'requestId'.
             alt (string): Data format for the response. Example: 'json'.
@@ -1490,14 +1489,14 @@ class GoogleDriveApp(APIApplication):
             orgUnitId (string): orgUnitId Example: '<string>'.
             restrictions (object): restrictions Example: {'adminManagedRestrictions': '<boolean>', 'copyRequiresWriterPermission': '<boolean>', 'domainUsersOnly': '<boolean>', 'driveMembersOnly': '<boolean>', 'sharingFoldersRequiresOrganizerPermission': '<boolean>'}.
             themeId (string): themeId Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1566,7 +1565,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves metadata for a specific shared drive using its ID. Unlike `get_drive_info`, which gets user account data, this function targets a single drive's properties. It supports domain administrator access and allows specifying fields to customize the response, returning the drive's detailed information.
-        
+
         Args:
             driveId (string): driveId
             useDomainAdminAccess (string): Issue the request as a domain administrator; if set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs. Example: '<boolean>'.
@@ -1577,14 +1576,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1633,7 +1632,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Permanently deletes a shared drive by its ID. This irreversible action removes the entire drive and, unlike `trash_file`, can optionally delete all its contents for domain administrators, providing a complete removal solution for a shared workspace.
-        
+
         Args:
             driveId (string): driveId
             allowItemDeletion (string): Whether any items inside the shared drive should also be deleted. This option is only supported when useDomainAdminAccess is also set to true. Example: '<boolean>'.
@@ -1645,14 +1644,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1713,7 +1712,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates a shared drive's metadata properties, such as its name, theme, or color, using its ID. This function sends a PATCH request to modify the drive and returns a dictionary containing the complete, updated metadata for the shared drive upon success.
-        
+
         Args:
             driveId (string): driveId
             useDomainAdminAccess (string): Issue the request as a domain administrator. If set to true, then the requester is granted access if they're an administrator of the domain to which the shared drive belongs. Example: '<boolean>'.
@@ -1736,14 +1735,14 @@ class GoogleDriveApp(APIApplication):
             orgUnitId (string): orgUnitId Example: '<string>'.
             restrictions (object): restrictions Example: {'adminManagedRestrictions': '<boolean>', 'copyRequiresWriterPermission': '<boolean>', 'domainUsersOnly': '<boolean>', 'driveMembersOnly': '<boolean>', 'sharingFoldersRequiresOrganizerPermission': '<boolean>'}.
             themeId (string): themeId Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1808,7 +1807,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Hides a specified shared drive from the user's default view using its ID. This function sends a POST request to the API's hide endpoint, returning updated drive metadata. It is the direct counterpart to the `unhide_drive` function, which restores visibility.
-        
+
         Args:
             driveId (string): driveId
             alt (string): Data format for the response. Example: 'json'.
@@ -1818,14 +1817,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1877,7 +1876,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Makes a hidden shared drive visible again in the user's default view by its ID. This function sends a POST request to the Google Drive API's `/unhide` endpoint, effectively reversing the action of the `hide_drive` function, and returns the updated drive metadata.
-        
+
         Args:
             driveId (string): driveId
             alt (string): Data format for the response. Example: 'json'.
@@ -1887,14 +1886,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Shared Drive
         """
@@ -1959,7 +1958,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Exhaustively lists or searches files using advanced parameters for filtering, sorting, and pagination. As a low-level alternative to the simplified `search_files` function, it provides granular control by exposing the full range of Google Drive API query options for complex retrieval.
-        
+
         Args:
             corpora (string): Groupings of files to which the query applies. Supported groupings are: 'user' (files created by, opened by, or shared directly with the user), 'drive' (files in the specified shared drive as indicated by the 'driveId'), 'domain' (files shared to the user's domain), and 'allDrives' (A combination of 'user' and 'drive' for all drives where the user is a member). When able, use 'user' or 'drive', instead of 'allDrives', for efficiency. Example: '<string>'.
             driveId (string): ID of the shared drive to search. Example: '{{driveId}}'.
@@ -1982,14 +1981,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -2117,7 +2116,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a new file's metadata resource in Google Drive, allowing detailed configuration of properties like name, MIME type, and parent folders. Unlike `upload_file_from_path` or `create_text_file`, this function only creates the metadata entry without uploading any file content.
-        
+
         Args:
             enforceSingleParent (string): Deprecated. Creating files in multiple folders is no longer supported. Example: '<boolean>'.
             ignoreDefaultVisibility (string): Whether to ignore the domain's default visibility settings for the created file. Domain administrators can choose to make all uploaded files visible to the domain by default; this parameter bypasses that behavior for the request. Permissions are still inherited from parent folders. Example: '<boolean>'.
@@ -2197,14 +2196,14 @@ class GoogleDriveApp(APIApplication):
             webContentLink (string): webContentLink Example: '<string>'.
             webViewLink (string): webViewLink Example: '<string>'.
             writersCanShare (string): writersCanShare Example: '<boolean>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -2332,7 +2331,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Generates a batch of unique IDs for future Google Drive files or shortcuts. This utility optimizes creation workflows by allowing identifiers to be fetched in advance, specifying quantity, storage space (e.g., 'drive'), and item type (e.g., 'files').
-        
+
         Args:
             count (string): The number of IDs to return. Example: '<integer>'.
             space (string): The space in which the IDs can be used to create new files. Supported values are 'drive' and 'appDataFolder'. (Default: 'drive') Example: '<string>'.
@@ -2344,14 +2343,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -2399,7 +2398,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Permanently deletes all files and folders from the trash. This irreversible action can target the user's main trash or a specific shared drive's trash via its `driveId`, distinguishing it from `trash_file` which only moves a single item to the trash.
-        
+
         Args:
             driveId (string): If set, empties the trash of the provided shared drive. Example: '{{driveId}}'.
             enforceSingleParent (string): Deprecated. If an item is not in a shared drive and its last parent is deleted but the item itself is not, the item will be placed under its owner's root. Example: '<boolean>'.
@@ -2410,14 +2409,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -2466,7 +2465,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Permanently deletes a file by its ID, bypassing the trash for irreversible removal. Unlike the simpler `trash_file` function, this method offers advanced control through numerous optional API parameters, such as handling files located in shared drives.
-        
+
         Args:
             fileId (string): fileId
             enforceSingleParent (string): Deprecated. If an item is not in a shared drive and its last parent is deleted but the item itself is not, the item will be placed under its owner's root. Example: '<boolean>'.
@@ -2479,14 +2478,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -2607,7 +2606,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Modifies a file's metadata properties, such as name, description, or trashed status, using its unique ID. It also moves files by changing parent attributes, acting as a comprehensive alternative to the more specialized `move_file` function.
-        
+
         Args:
             fileId (string): fileId
             addParents (string): A comma-separated list of parent IDs to add. Example: '<string>'.
@@ -2689,14 +2688,14 @@ class GoogleDriveApp(APIApplication):
             webContentLink (string): webContentLink Example: '<string>'.
             webViewLink (string): webViewLink Example: '<string>'.
             writersCanShare (string): writersCanShare Example: '<boolean>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -2890,7 +2889,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a copy of a file using its ID. This function can simultaneously apply metadata updates, such as a new name or parent folder, to the duplicate upon creation and returns the new file's metadata.
-        
+
         Args:
             fileId (string): fileId
             enforceSingleParent (string): Deprecated. Copying files into multiple folders is no longer supported. Use shortcuts instead. Example: '<boolean>'.
@@ -2970,14 +2969,14 @@ class GoogleDriveApp(APIApplication):
             webContentLink (string): webContentLink Example: '<string>'.
             webViewLink (string): webViewLink Example: '<string>'.
             writersCanShare (string): writersCanShare Example: '<boolean>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -3105,7 +3104,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Exports a Google Workspace document (e.g., Google Doc) by its ID, converting it to a specified format like PDF using the `mimeType` argument. This function returns the raw, converted file content for download, differentiating it from methods that retrieve metadata.
-        
+
         Args:
             fileId (string): fileId
             mimeType (string): (Required) The MIME type of the format requested for this export. Example: 'mimeType'.
@@ -3116,14 +3115,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -3172,7 +3171,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all labels applied to a specific file in Google Drive, identified by its unique ID. It allows controlling the number of results per page and navigating through pages of labels, differing from `modify_file_labels` which alters them.
-        
+
         Args:
             fileId (string): fileId
             maxResults (string): The maximum number of labels to return per page. When not set, this defaults to 100. Example: '<integer>'.
@@ -3184,14 +3183,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -3241,7 +3240,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Atomically modifies the set of labels on a specified file in Google Drive. It can add, update, or remove labels based on the provided list of modifications, returning the updated label metadata for the file.
-        
+
         Args:
             fileId (string): fileId
             alt (string): Data format for the response. Example: 'json'.
@@ -3253,14 +3252,14 @@ class GoogleDriveApp(APIApplication):
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
             kind (string): kind Example: 'drive#modifyLabelsRequest'.
             labelModifications (array): labelModifications Example: "[{'fieldModifications': [{'fieldId': '<string>', 'kind': 'drive#labelFieldModification', 'setDateValues': ['<date>', '<date>'], 'setIntegerValues': ['<int64>', '<int64>'], 'setSelectionValues': ['<string>', '<string>'], 'setTextValues': ['<string>', '<string>'], 'setUserValues': ['<string>', '<string>'], 'unsetValues': '<boolean>'}, {'fieldId': '<string>', 'kind': 'drive#labelFieldModification', 'setDateValues': ['<date>', '<date>'], 'setIntegerValues': ['<int64>', '<int64>'], 'setSelectionValues': ['<string>', '<string>'], 'setTextValues': ['<string>', '<string>'], 'setUserValues': ['<string>', '<string>'], 'unsetValues': '<boolean>'}], 'kind': 'drive#labelModification', 'labelId': '<string>', 'removeLabel': '<boolean>'}, {'fieldModifications': [{'fieldId': '<string>', 'kind': 'drive#labelFieldModification', 'setDateValues': ['<date>', '<date>'], 'setIntegerValues': ['<int64>', '<int64>'], 'setSelectionValues': ['<string>', '<string>'], 'setTextValues': ['<string>', '<string>'], 'setUserValues': ['<string>', '<string>'], 'unsetValues': '<boolean>'}, {'fieldId': '<string>', 'kind': 'drive#labelFieldModification', 'setDateValues': ['<date>', '<date>'], 'setIntegerValues': ['<int64>', '<int64>'], 'setSelectionValues': ['<string>', '<string>'], 'setTextValues': ['<string>', '<string>'], 'setUserValues': ['<string>', '<string>'], 'unsetValues': '<boolean>'}], 'kind': 'drive#labelModification', 'labelId': '<string>', 'removeLabel': '<boolean>'}]".
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -3334,7 +3333,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Establishes a push notification channel for a specific file, enabling real-time updates via webhook. Unlike `watch_drive_changes`, which monitors an entire drive, this function provides targeted notifications for content or metadata updates to a single file identified by its ID.
-        
+
         Args:
             fileId (string): fileId
             acknowledgeAbuse (string): Whether the user is acknowledging the risk of downloading known malware or other abusive files. This is only applicable when alt=media. Example: '<boolean>'.
@@ -3359,14 +3358,14 @@ class GoogleDriveApp(APIApplication):
             resourceUri (string): resourceUri Example: '<string>'.
             token (string): token Example: '<string>'.
             type (string): type Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Files
         """
@@ -3444,7 +3443,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves the list of permissions for a specified file or shared drive. This function supports pagination and various query parameters to customize results for different access levels, such as domain administration, unlike `get_permission_by_id` which fetches a single permission.
-        
+
         Args:
             fileId (string): fileId
             includePermissionsForView (string): Specifies which additional view's permissions to include in the response. Only 'published' is supported. Example: '<string>'.
@@ -3460,14 +3459,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Permissions
         """
@@ -3542,7 +3541,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a permission for a file or shared drive, assigning roles like 'reader' to a user, group, or domain. This comprehensive method supports advanced options like notification emails and ownership transfer, distinguishing it from the simplified `create_permission` function which offers fewer parameters.
-        
+
         Args:
             fileId (string): fileId
             emailMessage (string): A plain text custom message to include in the notification email. Example: '<string>'.
@@ -3575,14 +3574,14 @@ class GoogleDriveApp(APIApplication):
             teamDrivePermissionDetails (array): teamDrivePermissionDetails Example: "[{'inherited': '<boolean>', 'inheritedFrom': '<string>', 'role': '<string>', 'teamDrivePermissionType': '<string>'}, {'inherited': '<boolean>', 'inheritedFrom': '<string>', 'role': '<string>', 'teamDrivePermissionType': '<string>'}]".
             type (string): type Example: '<string>'.
             view (string): view Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Permissions
         """
@@ -3666,7 +3665,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves metadata for a specific permission on a file or shared drive, identified by its unique ID. This provides targeted access information, unlike `list_file_permissions` which fetches all permissions for a file.
-        
+
         Args:
             fileId (string): fileId
             permissionId (string): permissionId
@@ -3680,14 +3679,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Permissions
         """
@@ -3742,7 +3741,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Deletes a specific permission from a Google Drive file or shared drive, identified by their respective IDs. This action permanently revokes the access associated with that permission, with optional parameters for shared drives and domain administrator access.
-        
+
         Args:
             fileId (string): fileId
             permissionId (string): permissionId
@@ -3756,14 +3755,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Permissions
         """
@@ -3835,7 +3834,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates an existing permission for a file or shared drive using its permission ID. This function can modify a user's role (e.g., from reader to writer), transfer ownership, or change expiration settings, returning the updated permission object upon success.
-        
+
         Args:
             fileId (string): fileId
             permissionId (string): permissionId
@@ -3866,14 +3865,14 @@ class GoogleDriveApp(APIApplication):
             teamDrivePermissionDetails (array): teamDrivePermissionDetails Example: "[{'inherited': '<boolean>', 'inheritedFrom': '<string>', 'role': '<string>', 'teamDrivePermissionType': '<string>'}, {'inherited': '<boolean>', 'inheritedFrom': '<string>', 'role': '<string>', 'teamDrivePermissionType': '<string>'}]".
             type (string): type Example: '<string>'.
             view (string): view Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Permissions
         """
@@ -3951,7 +3950,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of replies for a specific comment, requiring both file and comment IDs. It can optionally include deleted replies. Unlike `list_file_comments`, which retrieves all top-level comments, this function targets replies within a single comment's thread.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -3965,14 +3964,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Replies
         """
@@ -4033,7 +4032,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a reply to a specific comment on a Google Drive file. It requires the file ID and the parent comment ID, posting the new reply's content to the correct comment thread.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -4053,14 +4052,14 @@ class GoogleDriveApp(APIApplication):
             id (string): id Example: '<string>'.
             kind (string): kind Example: 'drive#reply'.
             modifiedTime (string): modifiedTime Example: '<dateTime>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Replies
         """
@@ -4131,7 +4130,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a specific reply's metadata from a comment thread using file, comment, and reply IDs. Unlike `list_comment_replies`, which fetches all replies for a comment, this function targets a single one and can optionally include deleted replies in the result.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -4144,14 +4143,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Replies
         """
@@ -4204,7 +4203,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Permanently deletes a specific reply from a comment on a Google Drive file. This targeted operation requires file, comment, and reply IDs to remove a single nested reply, distinguishing it from `delete_comment` which removes an entire top-level comment.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -4216,14 +4215,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Replies
         """
@@ -4284,7 +4283,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates a specific reply to a comment on a file in Google Drive. It uses file, comment, and reply IDs to locate the reply, allowing modification of its properties like content. The function then returns the updated reply's metadata.
-        
+
         Args:
             fileId (string): fileId
             commentId (string): commentId
@@ -4305,14 +4304,14 @@ class GoogleDriveApp(APIApplication):
             id (string): id Example: '<string>'.
             kind (string): kind Example: 'drive#reply'.
             modifiedTime (string): modifiedTime Example: '<dateTime>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Replies
         """
@@ -4379,7 +4378,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all historical versions (revisions) for a specific file in Google Drive. Supports page size and token parameters to navigate a file's change history, differentiating it from functions that get, update, or delete a single revision.
-        
+
         Args:
             fileId (string): fileId
             pageSize (string): The maximum number of revisions to return per page. Example: '<integer>'.
@@ -4391,14 +4390,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Revisions
         """
@@ -4448,7 +4447,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches metadata for a single, specific file revision using its file and revision IDs. Unlike `list_file_revisions` which lists a file's complete version history, this function targets one historical version to retrieve its unique metadata.
-        
+
         Args:
             fileId (string): fileId
             revisionId (string): revisionId
@@ -4460,14 +4459,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Revisions
         """
@@ -4517,7 +4516,7 @@ class GoogleDriveApp(APIApplication):
     ) -> Any:
         """
         Permanently deletes a specific revision of a file, identified by its file and revision IDs. This irreversible action removes a single historical version, distinguishing it from functions like `permanently_delete_file`, which deletes the entire file, or `trash_file`, which moves it to the trash.
-        
+
         Args:
             fileId (string): fileId
             revisionId (string): revisionId
@@ -4528,14 +4527,14 @@ class GoogleDriveApp(APIApplication):
             prettyPrint (string): Returns response with indentations and line breaks. Example: '<boolean>'.
             quotaUser (string): An opaque string that represents a user for quota purposes. Must not exceed 40 characters. Example: '<string>'.
             userIp (string): Deprecated. Please use quotaUser instead. Example: '<string>'.
-        
+
         Returns:
             Any: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Revisions
         """
@@ -4598,7 +4597,7 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates the metadata for a specific file revision using its file and revision IDs. It modifies properties such as pinning the revision (`keepForever`) or its publication status, and returns the updated revision metadata upon success.
-        
+
         Args:
             fileId (string): fileId
             revisionId (string): revisionId
@@ -4623,14 +4622,14 @@ class GoogleDriveApp(APIApplication):
             publishedLink (string): publishedLink Example: '<string>'.
             publishedOutsideDomain (string): publishedOutsideDomain Example: '<boolean>'.
             size (string): size Example: '<int64>'.
-        
+
         Returns:
             dict[str, Any]: Successful response
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Revisions
         """
@@ -4685,8 +4684,6 @@ class GoogleDriveApp(APIApplication):
         except ValueError:
             return None
 
-    
-
     def create_permission(
         self,
         fileId: str,
@@ -4696,20 +4693,20 @@ class GoogleDriveApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Grants a specified role (e.g., 'reader') to a user or group for a file. This is a simplified alternative to the comprehensive `create_file_permission` function, focusing only on the core arguments required for basic sharing operations and omitting advanced options like notification settings or ownership transfer.
-        
+
         Args:
             fileId (string): fileId
             emailAddress (string): emailAddress Example: '{{currentEmailId}}'.
             role (string): role Example: 'reader'.
             type (string): type Example: 'user'.
-        
+
         Returns:
             dict[str, Any]: Grant Google Drive Access
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Google Drive API Use Cases, Share file access to a slack channel
         """

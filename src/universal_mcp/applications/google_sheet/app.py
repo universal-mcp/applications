@@ -22,17 +22,17 @@ class GoogleSheetApp(APIApplication):
     def create_spreadsheet(self, title: str) -> dict[str, Any]:
         """
         Creates a new, blank Google Spreadsheet file with a specified title. This function generates a completely new document, unlike `add_sheet` which adds a worksheet (tab) to an existing spreadsheet. It returns the API response containing the new spreadsheet's metadata.
-        
+
         Args:
             title: String representing the desired title for the new spreadsheet
-        
+
         Returns:
             Dictionary containing the full response from the Google Sheets API, including the spreadsheet's metadata and properties
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid authentication, network issues, or API limitations
             ValueError: When the title parameter is empty or contains invalid characters
-        
+
         Tags:
             create, spreadsheet, google-sheets, api, important
         """
@@ -44,18 +44,18 @@ class GoogleSheetApp(APIApplication):
     def get_spreadsheet_metadata(self, spreadsheetId: str) -> dict[str, Any]:
         """
         Retrieves a spreadsheet's metadata and structural properties, such as sheet names, IDs, and named ranges, using its unique ID. This function intentionally excludes cell data, distinguishing it from `get_values` which fetches the actual content within cells.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to retrieve (found in the spreadsheet's URL)
-        
+
         Returns:
             A dictionary containing the full spreadsheet metadata and contents, including properties, sheets, named ranges, and other spreadsheet-specific information from the Google Sheets API
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid spreadsheetId or insufficient permissions
             ConnectionError: When there's a network connectivity issue
             ValueError: When the response cannot be parsed as JSON
-        
+
         Tags:
             get, retrieve, spreadsheet, api, metadata, read, important
         """
@@ -73,21 +73,21 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves cell values from a single, specified A1 notation range. Unlike `batch_get_values_by_range` which fetches multiple ranges, this function is for a singular query and provides options to control the data's output format (e.g., rows vs. columns, formatted vs. raw values).
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to retrieve values from
             range: A1 notation range string (e.g., 'Sheet1!A1:B2')
             majorDimension: The major dimension that results should use. "ROWS" or "COLUMNS". Example: "ROWS"
             valueRenderOption: How values should be represented in the output. "FORMATTED_VALUE", "UNFORMATTED_VALUE", or "FORMULA". Example: "FORMATTED_VALUE"
             dateTimeRenderOption: How dates, times, and durations should be represented. "SERIAL_NUMBER" or "FORMATTED_STRING". Example: "FORMATTED_STRING"
-        
+
         Returns:
             A dictionary containing the API response with the requested spreadsheet values and metadata
-        
+
         Raises:
             HTTPError: If the API request fails due to invalid spreadsheetId, insufficient permissions, or invalid range format
             ValueError: If the spreadsheetId is empty or invalid
-        
+
         Tags:
             get, read, spreadsheet, values, important
         """
@@ -109,18 +109,18 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Efficiently retrieves values from multiple predefined A1 notation ranges in a single API request. Unlike `get_values`, which fetches a single range, or `batch_get_values_by_data_filter`, which uses dynamic filtering criteria, this function operates on a simple list of range strings for bulk data retrieval.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to retrieve values from
             ranges: Optional list of A1 notation or R1C1 notation range strings (e.g., ['Sheet1!A1:B2', 'Sheet2!C3:D4']). If None, returns values from the entire spreadsheet
-        
+
         Returns:
             A dictionary containing the API response with the requested spreadsheet values and metadata
-        
+
         Raises:
             HTTPError: If the API request fails due to invalid spreadsheetId, insufficient permissions, or invalid range format
             ValueError: If the spreadsheetId is empty or invalid
-        
+
         Tags:
             get, batch, read, spreadsheet, values
         """
@@ -145,10 +145,10 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Inserts a specified number of empty rows or columns at a given index, shifting existing content. Distinct from `append_dimensions`, which only adds to the end, this function creates space within the sheet's data grid, preserving surrounding data and formatting.
-        
+
         This function inserts empty rows or columns at a specified location, shifting existing content.
         Use this when you need to add rows/columns in the middle of your data.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet to update. Example: "abc123spreadsheetId"
             sheet_id: The ID of the sheet where the dimensions will be inserted. Example: 0
@@ -159,14 +159,14 @@ class GoogleSheetApp(APIApplication):
             include_spreadsheet_in_response: True if the updated spreadsheet should be included in the response. Example: True
             response_include_grid_data: True if grid data should be included in the response (if includeSpreadsheetInResponse is true). Example: True
             response_ranges: Limits the ranges of the spreadsheet to include in the response. Example: ["Sheet1!A1:B10"]
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or dimension is not "ROWS" or "COLUMNS"
-        
+
         Tags:
             insert, modify, spreadsheet, rows, columns, dimensions, important
         """
@@ -224,23 +224,23 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Adds a specified number of empty rows or columns to the end of a designated sheet. Unlike `insert_dimensions`, which adds space at a specific index, this function exclusively extends the sheet's boundaries at the bottom or to the right without affecting existing content.
-        
+
         This function adds empty rows or columns to the end of the sheet without affecting existing content.
         Use this when you need to extend the sheet with additional space at the bottom or right.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             sheet_id: The ID of the sheet within the spreadsheet (0 for first sheet)
             dimension: The type of dimension to append - "ROWS" or "COLUMNS"
             length: The number of rows or columns to append to the end
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty, dimension is not "ROWS" or "COLUMNS", or length is not positive
-        
+
         Tags:
             append, modify, spreadsheet, rows, columns, dimensions, important
         """
@@ -283,7 +283,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Deletes a specified range of rows or columns, permanently removing them and shifting subsequent cells. This alters the sheet's structure, unlike `clear_values` which only removes cell content. It is the direct counterpart to `insert_dimensions`, which adds space within the data grid.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet. Example: "abc123xyz789"
             sheet_id: The ID of the sheet from which to delete the dimension. Example: 0 for first sheet
@@ -293,14 +293,14 @@ class GoogleSheetApp(APIApplication):
             include_spreadsheet_in_response: Determines if the update response should include the spreadsheet resource. Example: True
             response_include_grid_data: True if grid data should be returned. This parameter is ignored if a field mask was set in the request. Example: True
             response_ranges: Limits the ranges of cells included in the response spreadsheet. Example: ["Sheet1!A1:B2", "Sheet2!C:C"]
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty, dimension is not "ROWS" or "COLUMNS", or indices are invalid
-        
+
         Tags:
             delete, modify, spreadsheet, rows, columns, dimensions, important
         """
@@ -372,7 +372,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Adds a new worksheet (tab) to an existing Google Spreadsheet. It allows extensive customization of the new sheet's properties, such as its title, position, and dimensions. This is distinct from `create_spreadsheet`, which generates a completely new spreadsheet file instead of modifying an existing one.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet to add the sheet to. This is the long string of characters in the URL of your Google Sheet. Example: "abc123xyz789"
             title: The name of the sheet. Example: "Q3 Report"
@@ -391,14 +391,14 @@ class GoogleSheetApp(APIApplication):
             columnGroupControlAfter: True if the column group control toggle is shown after the group, false if before.
             includeSpreadsheetInResponse: Whether the response should include the entire spreadsheet resource. Defaults to false.
             responseIncludeGridData: True if grid data should be returned. This parameter is ignored if includeSpreadsheetInResponse is false. Defaults to false.
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with the new sheet details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or invalid parameters are provided
-        
+
         Tags:
             add, sheet, spreadsheet, create
         """
@@ -492,10 +492,10 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Adds various axis-based charts (e.g., column, bar, line, area) to a spreadsheet from specified data ranges. The chart can be placed on a new sheet or positioned on an existing one. This is distinct from `add_pie_chart`, which creates proportional visualizations instead of axis-based charts.
-        
+
         This function creates various types of charts from the specified data ranges and places it in a new sheet or existing sheet.
         Use this when you need to visualize data in different chart formats.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             source_sheet_id: The ID of the sheet containing the source data
@@ -507,14 +507,14 @@ class GoogleSheetApp(APIApplication):
             chart_position: Optional positioning for chart when new_sheet=False. Example: {"overlayPosition": {"anchorCell": {"sheetId": 0, "rowIndex": 10, "columnIndex": 5}, "offsetXPixels": 0, "offsetYPixels": 0, "widthPixels": 600, "heightPixels": 400}}
             x_axis_title: Optional title for the X-axis (bottom axis). If not provided, defaults to "Categories"
             y_axis_title: Optional title for the Y-axis (left axis). If not provided, defaults to "Values"
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with the chart details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or invalid parameters are provided
-        
+
         Tags:
             add, chart, basic-chart, visualization
         """
@@ -639,10 +639,10 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Adds a pie or donut chart to a Google Spreadsheet from a specified data range. Unlike the more general `add_basic_chart`, this is specialized for visualizing data as proportions of a whole and supports pie-specific options like creating a donut chart via the `pie_hole` parameter.
-        
+
         This function creates a pie chart from the specified data range and places it in a new sheet or existing sheet.
         Use this when you need to visualize data as proportions of a whole.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             source_sheet_id: The ID of the sheet containing the source data
@@ -652,14 +652,14 @@ class GoogleSheetApp(APIApplication):
             chart_position: Optional positioning for chart when new_sheet=False. Example: {"overlayPosition": {"anchorCell": {"sheetId": 0, "rowIndex": 10, "columnIndex": 5}, "offsetXPixels": 0, "offsetYPixels": 0, "widthPixels": 600, "heightPixels": 400}}
             legend_position: Position of the legend. Options: "BOTTOM_LEGEND", "LEFT_LEGEND", "RIGHT_LEGEND", "TOP_LEGEND", "NO_LEGEND"
             pie_hole: Optional hole size for creating a donut chart (0.0 to 1.0). 0.0 = solid pie, 0.5 = 50% hole
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with the chart details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or invalid parameters are provided
-        
+
         Tags:
             add, chart, pie, visualization
         """
@@ -759,10 +759,10 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a structured table within a specified range on a Google Sheet. Defines the table's name, ID, and dimensions, and can optionally configure column properties like data types and validation rules. This action creates a formal table object, distinct from functions that only write cell values.
-        
+
         This function creates a table with specified properties and column types.
         Use this when you need to create structured data with headers, footers, and column types.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             sheet_id: The ID of the sheet where the table will be created
@@ -775,11 +775,11 @@ class GoogleSheetApp(APIApplication):
             column_properties: Optional list of column properties with types and validation rules. Valid column types: "TEXT", "PERCENT", "DROPDOWN", "DOUBLE", "CURRENCY", "DATE", "TIME", "DATE_TIME". Example: [{"columnIndex": 0, "columnName": "Model Number", "columnType": "TEXT"}, {"columnIndex": 1, "columnName": "Sales - Jan", "columnType": "DOUBLE"}, {"columnIndex": 2, "columnName": "Price", "columnType": "CURRENCY"}, {"columnIndex": 3, "columnName": "Progress", "columnType": "PERCENT"}, {"columnIndex": 4, "columnName": "Created Date", "columnType": "DATE"}, {"columnIndex": 5, "columnName": "Status", "columnType": "DROPDOWN", "dataValidationRule": {"condition": {"type": "ONE_OF_LIST", "values": [{"userEnteredValue": "Active"}, {"userEnteredValue": "Inactive"}]}}}]
         Returns:
             A dictionary containing the Google Sheets API response with the table details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or invalid parameters are provided
-        
+
         Tags:
             add, table, structured-data
         """
@@ -865,10 +865,10 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Modifies properties of an existing table within a Google Sheet, such as its name, data range, or column specifications. This function updates the table's structural metadata, distinguishing it from `update_values` which alters the cell data within the table's range.
-        
+
         This function modifies table properties such as name, range, and column properties.
         Use this when you need to modify an existing table's structure or properties.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             table_id: The unique identifier of the table to update
@@ -878,14 +878,14 @@ class GoogleSheetApp(APIApplication):
             start_column_index: Optional new starting column index (0-based)
             end_column_index: Optional new ending column index (exclusive)
             column_properties: Optional list of column properties with types and validation rules. Valid column types: "TEXT", "PERCENT", "DROPDOWN", "DOUBLE", "CURRENCY", "DATE", "TIME", "DATE_TIME". Example: [{"columnIndex": 0, "columnName": "Model Number", "columnType": "TEXT"}, {"columnIndex": 1, "columnName": "Sales - Jan", "columnType": "DOUBLE"}, {"columnIndex": 2, "columnName": "Price", "columnType": "CURRENCY"}, {"columnIndex": 3, "columnName": "Progress", "columnType": "PERCENT"}, {"columnIndex": 4, "columnName": "Created Date", "columnType": "DATE"}, {"columnIndex": 5, "columnName": "Status", "columnType": "DROPDOWN", "dataValidationRule": {"condition": {"type": "ONE_OF_LIST", "values": [{"userEnteredValue": "Active"}, {"userEnteredValue": "Inactive"}]}}}]
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with the updated table details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId or table_id is empty or invalid parameters are provided
-        
+
         Tags:
             update, table, modify, structured-data
         """
@@ -998,18 +998,18 @@ class GoogleSheetApp(APIApplication):
     def clear_values(self, spreadsheetId: str, range: str) -> dict[str, Any]:
         """
         Clears data from a single, specified cell range while preserving all formatting. Unlike `delete_dimensions`, it only removes content, not the cells themselves. For clearing multiple ranges simultaneously, use the `batch_clear_values` function.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             range: The A1 or R1C1 notation range of cells to clear (e.g., 'Sheet1!A1:B2')
-        
+
         Returns:
             A dictionary containing the Google Sheets API response
-        
+
         Raises:
             HttpError: When the API request fails due to invalid spreadsheetId, invalid range format, or insufficient permissions
             ValueError: When spreadsheetId is empty or range is in invalid format
-        
+
         Tags:
             clear, modify, spreadsheet, api, sheets, data-management, important
         """
@@ -1026,20 +1026,20 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Overwrites cell values within a specific A1 notation range using a provided 2D list. This function replaces existing data in a predefined area, distinguishing it from `append_values`, which adds new rows after a table instead of overwriting a specific block of cells.
-        
+
         Args:
             spreadsheetId: The unique identifier of the target Google Spreadsheet
             range: The A1 notation range where values will be updated (e.g., 'Sheet1!A1:B2')
             values: A list of lists containing the data to write, where each inner list represents a row of values
             value_input_option: Determines how input data should be interpreted: 'RAW' (as-is) or 'USER_ENTERED' (parsed as UI input). Defaults to 'RAW'
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             RequestError: When the API request fails due to invalid parameters or network issues
             AuthenticationError: When authentication with the Google Sheets API fails
-        
+
         Tags:
             update, write, sheets, api, important, data-modification, google-sheets
         """
@@ -1056,18 +1056,18 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Clears cell values from multiple specified ranges in a single batch operation, preserving existing formatting. Unlike `clear_values`, which handles a single range, this method efficiently processes a list of ranges at once, removing only the content and not the cells themselves.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet to update. Example: "1q2w3e4r5t6y7u8i9o0p"
             ranges: The ranges to clear, in A1 notation or R1C1 notation. Example: ["Sheet1!A1:B2", "Sheet1!C3:D4"]
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with clear details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or ranges is empty
-        
+
         Tags:
             clear, batch, values, spreadsheet
         """
@@ -1094,7 +1094,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves values from spreadsheet ranges matching a list of data filters. This method provides dynamic, criteria-based selection using A1 notation or grid coordinates, unlike `batch_get_values_by_range` which uses a simple list of range strings. It is ideal for fetching multiple, specific datasets in one request.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet to retrieve data from. Example: "1q2w3e4r5t6y7u8i9o0p"
             data_filters: The data filters used to match the ranges of values to retrieve. Ranges that match any of the specified data filters are included in the response. Each filter can contain:
@@ -1103,14 +1103,14 @@ class GoogleSheetApp(APIApplication):
             major_dimension: The major dimension that results should use. For example, if the spreadsheet data is: A1=1,B1=2,A2=3,B2=4, then a request that selects that range and sets majorDimension=ROWS returns [[1,2],[3,4]], whereas a request that sets majorDimension=COLUMNS returns [[1,3],[2,4]]. Options: "ROWS" or "COLUMNS". Example: "ROWS"
             value_render_option: How values should be represented in the output. The default render option is FORMATTED_VALUE. Options: "FORMATTED_VALUE", "UNFORMATTED_VALUE", or "FORMULA". Example: "FORMATTED_VALUE"
             date_time_render_option: How dates, times, and durations should be represented in the output. This is ignored if valueRenderOption is FORMATTED_VALUE. The default dateTime render option is SERIAL_NUMBER. Options: "SERIAL_NUMBER" or "FORMATTED_STRING". Example: "SERIAL_NUMBER"
-        
+
         Returns:
             A dictionary containing the filtered values that match the specified data filters
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or data_filters is empty
-        
+
         Tags:
             get, batch, data-filter, values, spreadsheet
         """
@@ -1169,20 +1169,20 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Copies a specific sheet, including all its data and formatting, from a source spreadsheet to a different destination spreadsheet. This action duplicates an entire worksheet into another workbook, returning properties of the newly created sheet.
-        
-        
+
+
         Args:
             spreadsheetId: The ID of the spreadsheet containing the sheet to copy. Example: "1qZ_..."
             sheet_id: The ID of the sheet to copy. Example: 0
             destination_spreadsheetId: The ID of the spreadsheet to copy the sheet to. Example: "2rY_..."
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with copy details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When any required parameter is empty or invalid
-        
+
         Tags:
             copy, sheet, spreadsheet, duplicate
         """
@@ -1213,7 +1213,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Writes a 2D list of values to a sheet, overwriting existing data. Data is written starting from a specified cell, or defaults to cell A1 if no location is provided. This differs from `append_values`, which adds new rows after existing data without replacing content.
-        
+
         Args:
             spreadsheetId: The unique identifier of the Google Sheets spreadsheet to be updated. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             sheet_name: The name of the specific sheet within the spreadsheet to update. Example: "Sheet1"
@@ -1221,14 +1221,14 @@ class GoogleSheetApp(APIApplication):
             first_cell_location: The starting cell for the update range, specified in A1 notation (e.g., 'A1', 'B2'). The update will extend from this cell to the right and down, based on the provided values. If omitted, values are appended to the end of the sheet. Example: "A1"
             value_input_option: How input data is interpreted. 'USER_ENTERED': Values parsed as if typed by a user (e.g., strings may become numbers/dates, formulas are calculated); recommended for formulas. 'RAW': Values stored as-is without parsing (e.g., '123' stays string, '=SUM(A1:B1)' stays string). Defaults to 'USER_ENTERED'. Example: "USER_ENTERED"
             include_values_in_response: If set to True, the response will include the updated values from the spreadsheet. Defaults to False. Example: True
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty, sheet_name is empty, or values is empty
-        
+
         Tags:
             batch, update, write, sheets, api, important, data-modification, google-sheets
         """
@@ -1279,7 +1279,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Appends rows of data after a specified table in a Google Sheet. Distinct from `update_values` which overwrites data, this function adds new rows at the end of the table. It can also insert rows, shifting existing cells down, offering finer control over data addition.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet to update. Example: "1q0gLhLdGXYZblahblahblah"
             range: The A1 notation of a range to search for a logical table of data. Values are appended after the last row of the table. Example: "Sheet1!A1:B2"
@@ -1289,14 +1289,14 @@ class GoogleSheetApp(APIApplication):
             include_values_in_response: Determines if the update response should include the values of the cells that were appended. By default, responses do not include the updated values. Example: True
             response_value_render_option: Determines how values in the response should be rendered. The default render option is FORMATTED_VALUE. Options: "FORMATTED_VALUE", "UNFORMATTED_VALUE", or "FORMULA". Example: "FORMATTED_VALUE"
             response_date_time_render_option: Determines how dates, times, and durations in the response should be rendered. This is ignored if responseValueRenderOption is FORMATTED_VALUE. The default dateTime render option is SERIAL_NUMBER. Options: "SERIAL_NUMBER" or "FORMATTED_STRING". Example: "SERIAL_NUMBER"
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with append details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When required parameters are empty or invalid
-        
+
         Tags:
             append, values, spreadsheet, data, important
         """
@@ -1372,18 +1372,18 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Removes the basic filter from a specified sheet, clearing active sorting and filtering criteria to restore the default data view. As the direct counterpart to `set_basic_filter`, this function removes the entire filter object, not just the cell content.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet. Example: "abc123xyz789"
             sheet_id: The ID of the sheet on which the basic filter should be cleared. Example: 0
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or sheet_id is negative
-        
+
         Tags:
             clear, filter, basic-filter, spreadsheet
         """
@@ -1407,18 +1407,18 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Permanently deletes a specific sheet (worksheet) from a Google Spreadsheet using its sheet ID. This operation removes the target sheet and all its contents, acting as the direct counterpart to the `add_sheet` function which creates new sheets within a spreadsheet.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet from which to delete the sheet. Example: "abc123xyz789"
             sheet_id: The ID of the sheet to delete. If the sheet is of DATA_SOURCE type, the associated DataSource is also deleted. Example: 123456789
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with update details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or sheet_id is negative
-        
+
         Tags:
             delete, sheet, spreadsheet, worksheet
         """
@@ -1444,20 +1444,20 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Heuristically analyzes a spreadsheet to discover and list all table-like data structures, identifying headers and data boundaries. It returns informal data blocks meeting specified size criteria, distinguishing it from functions like `add_table` that manage formally defined tables.
-        
+
         Args:
             spreadsheetId: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'). Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             min_rows: Minimum number of data rows to consider a valid table. Example: 2
             min_columns: Minimum number of columns to consider a valid table. Example: 1
             min_confidence: Minimum confidence score (0.0-1.0) to consider a valid table. Example: 0.5
-        
+
         Returns:
             A dictionary containing the list of discovered tables with their properties
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or parameters are invalid
-        
+
         Tags:
             list, tables, discover, analyze, spreadsheet, important
         """
@@ -1515,20 +1515,20 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Infers a specified table's schema by analyzing a data sample. After locating the table by name (a value discovered via `discover_tables`), this function determines the most likely data type and properties for each column, providing a detailed structural breakdown of its content.
-        
+
         Args:
             spreadsheetId: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms')
             table_name: Specific table name from LIST_TABLES response (e.g., 'Sales_Data', 'Employee_List'). Use 'auto' to analyze the largest/most prominent table
             sheet_name: Sheet/tab name if table_name is ambiguous across multiple sheets
             sample_size: Number of rows to sample for type inference (1-1000, default 50)
-        
+
         Returns:
             A dictionary containing the table schema with column names, types, and constraints
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty, table_name is empty, or sample_size is invalid
-        
+
         Tags:
             schema, analyze, table, structure, types, columns
         """
@@ -1596,7 +1596,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Sets or updates a basic filter on a specified range within a sheet, enabling data sorting and filtering. The filter's target range and optional sort specifications are defined in a dictionary argument. It is the counterpart to `clear_basic_filter`, which removes an existing filter.
-        
+
         Args:
             spreadsheetId: The ID of the spreadsheet. Example: "abc123xyz789"
             filter: The filter to set. This parameter is required. Contains:
@@ -1609,14 +1609,14 @@ class GoogleSheetApp(APIApplication):
                 - sortSpecs: The sort specifications for the filter (optional)
                     - dimensionIndex: The dimension the sort should be applied to
                     - sortOrder: The order data should be sorted ("ASCENDING", "DESCENDING", "SORT_ORDER_UNSPECIFIED")
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with filter details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty or filter is missing required fields
-        
+
         Tags:
             filter, basic-filter, spreadsheet, sort, important
         """
@@ -1682,7 +1682,7 @@ class GoogleSheetApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Applies comprehensive formatting to a specified cell range in a worksheet. It modifies visual properties like text style, color, alignment, borders, and can merge cells, without altering the underlying cell values, distinguishing it from data-modification functions like `update_values`.
-        
+
         Args:
             spreadsheetId: Identifier of the Google Sheets spreadsheet. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             worksheetId: ID (sheetId) of the worksheet. Use `get_spreadsheet_metadata` to find this ID. Example: 123456789
@@ -1690,44 +1690,44 @@ class GoogleSheetApp(APIApplication):
             startColumnIndex: 0-based index of the first column in the range. Example: 0
             endRowIndex: 0-based index of the row *after* the last row in the range (exclusive). Example: 1
             endColumnIndex: 0-based index of the column *after* the last column in the range (exclusive). Example: 2
-        
-        
+
+
             bold: Apply bold formatting. Example: True
             italic: Apply italic formatting. Example: False
             underline: Apply underline formatting. Example: False
             strikethrough: Apply strikethrough formatting. Example: False
             fontSize: Font size in points. Example: 12
             fontFamily: Font family name. Example: "Arial", "Times New Roman"
-        
+
             backgroundRed: Red component of background color. Example: 0.9
             backgroundGreen: Green component of background color. Example: 0.9
             backgroundBlue: Blue component of background color. Example: 0.9
-        
+
             textRed: Red component of text color. Example: 0.0
             textGreen: Green component of text color. Example: 0.0
             textBlue: Blue component of text color. Example: 0.0
-        
+
             horizontalAlignment: "LEFT", "CENTER", or "RIGHT". Example: "CENTER"
             verticalAlignment: "TOP", "MIDDLE", or "BOTTOM". Example: "MIDDLE"
-        
+
             wrapStrategy: "OVERFLOW_CELL", "LEGACY_WRAP", "CLIP", or "WRAP". Example: "WRAP"
-        
+
             numberFormat: Number format string. Example: "#,##0.00", "0.00%", "$#,##0.00"
-        
+
             borderTop: Top border settings. Example: {"style": "SOLID", "color": {"red": 0, "green": 0, "blue": 0}}
             borderBottom: Bottom border settings. Example: {"style": "SOLID", "color": {"red": 0, "green": 0, "blue": 0}}
             borderLeft: Left border settings. Example: {"style": "SOLID", "color": {"red": 0, "green": 0, "blue": 0}}
             borderRight: Right border settings. Example: {"style": "SOLID", "color": {"red": 0, "green": 0, "blue": 0}}
-        
+
             mergeCells: Whether to merge the specified range into a single cell. Example: True
-        
+
         Returns:
             A dictionary containing the Google Sheets API response with formatting details
-        
+
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
             ValueError: When spreadsheetId is empty, indices are invalid, or color values are out of range
-        
+
         Tags:
             format, cells, styling, text-formatting, background-color, borders, alignment, merge
         """

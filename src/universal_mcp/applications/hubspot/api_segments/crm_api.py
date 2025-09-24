@@ -1,19 +1,19 @@
-from typing import Any, List, Optional
+from typing import Any
+
 from .api_segment_base import APISegmentBase
 
 
 class CrmApi(APISegmentBase):
-
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
     def batch_read_emails(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -58,11 +58,11 @@ class CrmApi(APISegmentBase):
     def get_email_by_id(
         self,
         emailId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -127,7 +127,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def update_email_by_id(
-        self, emailId: str, properties: dict[str, str], idProperty: Optional[str] = None
+        self, emailId: str, properties: dict[str, str], idProperty: str | None = None
     ) -> dict[str, Any]:
         """
 
@@ -197,7 +197,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_emails_batch(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_emails_batch(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of emails by sending a POST request to the "/crm/v3/objects/emails/batch/archive" endpoint with a JSON payload containing the email IDs to be archived.
@@ -229,7 +229,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_emails_batch_post(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_emails_batch_post(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates a batch of email objects in the CRM using the POST method, requiring JSON content and authorization through OAuth2 or private apps.
@@ -261,7 +261,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_emails_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def update_emails_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple email objects in a CRM system using a batch operation via the POST method, returning status messages for each update.
@@ -294,7 +294,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_email_gdpr_data(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -330,12 +330,12 @@ class CrmApi(APISegmentBase):
 
     def list_emails_with_filters(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -375,7 +375,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_email(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -413,10 +413,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -463,11 +463,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_products_post(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -512,11 +512,11 @@ class CrmApi(APISegmentBase):
     def get_product_by_id(
         self,
         productId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -584,7 +584,7 @@ class CrmApi(APISegmentBase):
         self,
         productId: str,
         properties: dict[str, str],
-        idProperty: Optional[str] = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -654,7 +654,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_products_batch_post(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_products_batch_post(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of products by ID using the POST method, accepting JSON-formatted request bodies and returning a 204 status upon successful execution.
@@ -686,7 +686,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_products_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_products_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple product records in a single batch request within the CRM system.
@@ -718,7 +718,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_products_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def update_products_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple product records in a batch using the HubSpot CRM v3 API and returns a status response indicating success or partial failure.
@@ -751,7 +751,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_product_gdpr_data(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -787,12 +787,12 @@ class CrmApi(APISegmentBase):
 
     def list_products(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -832,7 +832,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_product(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -870,10 +870,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -952,10 +952,10 @@ class CrmApi(APISegmentBase):
         objectType: str,
         pipelineId: str,
         displayOrder: int,
-        stages: List[dict[str, Any]],
+        stages: list[dict[str, Any]],
         label: str,
-        validateReferencesBeforeDelete: Optional[bool] = None,
-        validateDealStageUsagesBeforeDelete: Optional[bool] = None,
+        validateReferencesBeforeDelete: bool | None = None,
+        validateDealStageUsagesBeforeDelete: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1016,8 +1016,8 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         pipelineId: str,
-        validateReferencesBeforeDelete: Optional[bool] = None,
-        validateDealStageUsagesBeforeDelete: Optional[bool] = None,
+        validateReferencesBeforeDelete: bool | None = None,
+        validateDealStageUsagesBeforeDelete: bool | None = None,
     ) -> Any:
         """
 
@@ -1061,11 +1061,11 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         pipelineId: str,
-        validateReferencesBeforeDelete: Optional[bool] = None,
-        validateDealStageUsagesBeforeDelete: Optional[bool] = None,
-        archived: Optional[bool] = None,
-        displayOrder: Optional[int] = None,
-        label: Optional[str] = None,
+        validateReferencesBeforeDelete: bool | None = None,
+        validateDealStageUsagesBeforeDelete: bool | None = None,
+        archived: bool | None = None,
+        displayOrder: int | None = None,
+        label: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1258,7 +1258,7 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         displayOrder: int,
-        stages: List[dict[str, Any]],
+        stages: list[dict[str, Any]],
         label: str,
     ) -> dict[str, Any]:
         """
@@ -1430,9 +1430,9 @@ class CrmApi(APISegmentBase):
         pipelineId: str,
         stageId: str,
         metadata: dict[str, str],
-        archived: Optional[bool] = None,
-        displayOrder: Optional[int] = None,
-        label: Optional[str] = None,
+        archived: bool | None = None,
+        displayOrder: int | None = None,
+        label: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1483,11 +1483,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_companies_post(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1532,11 +1532,11 @@ class CrmApi(APISegmentBase):
     def get_company_by_id(
         self,
         companyId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1604,7 +1604,7 @@ class CrmApi(APISegmentBase):
         self,
         companyId: str,
         properties: dict[str, str],
-        idProperty: Optional[str] = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1674,7 +1674,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_companies_batch_post(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_companies_batch_post(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of companies using the HubSpot CRM API, requiring a JSON body and returning a 204 status on successful operation.
@@ -1706,7 +1706,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_companies_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_companies_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple company records in batch using the HubSpot CRM API and returns a status message, requiring authorization via OAuth2 or private apps.
@@ -1738,7 +1738,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_companies_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def update_companies_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple company records in a single request using the HubSpot CRM API.
@@ -1771,7 +1771,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_company_gdpr_data(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -1807,12 +1807,12 @@ class CrmApi(APISegmentBase):
 
     def get_companies(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1852,7 +1852,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_company(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -1890,10 +1890,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1967,10 +1967,10 @@ class CrmApi(APISegmentBase):
         appId: str,
         name: str,
         url: str,
-        supportsCustomObjects: Optional[bool] = None,
-        isReady: Optional[bool] = None,
-        width: Optional[int] = None,
-        height: Optional[int] = None,
+        supportsCustomObjects: bool | None = None,
+        isReady: bool | None = None,
+        width: int | None = None,
+        height: int | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2045,12 +2045,12 @@ class CrmApi(APISegmentBase):
     def update_calling_settings(
         self,
         appId: str,
-        supportsCustomObjects: Optional[bool] = None,
-        isReady: Optional[bool] = None,
-        name: Optional[str] = None,
-        width: Optional[int] = None,
-        url: Optional[str] = None,
-        height: Optional[int] = None,
+        supportsCustomObjects: bool | None = None,
+        isReady: bool | None = None,
+        name: str | None = None,
+        width: int | None = None,
+        url: str | None = None,
+        height: int | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2157,7 +2157,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def update_recording_settings(
-        self, appId: str, urlToRetrieveAuthedRecording: Optional[str] = None
+        self, appId: str, urlToRetrieveAuthedRecording: str | None = None
     ) -> dict[str, Any]:
         """
 
@@ -2192,11 +2192,11 @@ class CrmApi(APISegmentBase):
 
     def read_quotes_batch(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2241,11 +2241,11 @@ class CrmApi(APISegmentBase):
     def get_quote_by_id(
         self,
         quoteId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2310,7 +2310,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def update_quote(
-        self, quoteId: str, properties: dict[str, str], idProperty: Optional[str] = None
+        self, quoteId: str, properties: dict[str, str], idProperty: str | None = None
     ) -> dict[str, Any]:
         """
 
@@ -2380,7 +2380,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_quotes_batch(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_quotes_batch(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of quotes by sending a POST request to the "/crm/v3/objects/quotes/batch/archive" endpoint, requiring a JSON body and authentication via OAuth2 or private apps with the "crm.objects.quotes.write" permission.
@@ -2412,7 +2412,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_quote_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_quote_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates a batch of sales quotes using the HubSpot CRM API, requiring a JSON body and returning a status message upon successful creation.
@@ -2444,7 +2444,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_quotes_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def update_quotes_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates a batch of quote objects in the CRM system using a single POST request, returning a status code indicating success or partial failure.
@@ -2477,7 +2477,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_quote_gdpr_data(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -2513,12 +2513,12 @@ class CrmApi(APISegmentBase):
 
     def get_quotes(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2558,7 +2558,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_quote(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -2596,10 +2596,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2646,11 +2646,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_deals_post(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2695,11 +2695,11 @@ class CrmApi(APISegmentBase):
     def get_deal_by_id(
         self,
         dealId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -2764,7 +2764,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def update_deal_by_id(
-        self, dealId: str, properties: dict[str, str], idProperty: Optional[str] = None
+        self, dealId: str, properties: dict[str, str], idProperty: str | None = None
     ) -> dict[str, Any]:
         """
 
@@ -2832,7 +2832,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_deals_batch_post(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_deals_batch_post(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of deal records in the CRM by their IDs using the POST method.
@@ -2864,7 +2864,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_deals_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_deals_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple deals in a CRM using a batch operation via the POST method, requiring a JSON body with deal data and appropriate permissions for writing deals.
@@ -2896,7 +2896,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def batch_update_deals(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def batch_update_deals(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple deals in HubSpot CRM in a single operation using a POST request to "/crm/v3/objects/deals/batch/update", requiring a JSON body with deal identifiers and updates, and supports OAuth2 and private app authentication for the "crm.objects.deals.write" scope.
@@ -2929,7 +2929,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def post_deal_gdpr_delete(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -2965,12 +2965,12 @@ class CrmApi(APISegmentBase):
 
     def list_deals(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3010,7 +3010,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_deal(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -3048,10 +3048,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3151,7 +3151,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def get_import_errors_by_id(
-        self, importId: str, after: Optional[str] = None, limit: Optional[int] = None
+        self, importId: str, after: str | None = None, limit: int | None = None
     ) -> dict[str, Any]:
         """
 
@@ -3205,7 +3205,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_schema_by_type(
-        self, objectType: str, archived: Optional[bool] = None
+        self, objectType: str, archived: bool | None = None
     ) -> Any:
         """
 
@@ -3234,13 +3234,13 @@ class CrmApi(APISegmentBase):
     def patch_crm_schema_by_object_type(
         self,
         objectType: str,
-        description: Optional[str] = None,
-        secondaryDisplayProperties: Optional[List[str]] = None,
-        requiredProperties: Optional[List[str]] = None,
-        searchableProperties: Optional[List[str]] = None,
-        primaryDisplayProperty: Optional[str] = None,
-        restorable: Optional[bool] = None,
-        labels: Optional[dict[str, Any]] = None,
+        description: str | None = None,
+        secondaryDisplayProperties: list[str] | None = None,
+        requiredProperties: list[str] | None = None,
+        searchableProperties: list[str] | None = None,
+        primaryDisplayProperty: str | None = None,
+        restorable: bool | None = None,
+        labels: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3290,7 +3290,7 @@ class CrmApi(APISegmentBase):
         objectType: str,
         fromObjectTypeId: str,
         toObjectTypeId: str,
-        name: Optional[str] = None,
+        name: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3387,7 +3387,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def list_schemas(self, archived: Optional[bool] = None) -> dict[str, Any]:
+    def list_schemas(self, archived: bool | None = None) -> dict[str, Any]:
         """
 
         Retrieves a list of custom object schemas in the CRM, optionally filtering by archived status, using either legacy private apps or OAuth2 credentials for authentication.
@@ -3411,15 +3411,15 @@ class CrmApi(APISegmentBase):
 
     def create_crm_schema(
         self,
-        requiredProperties: List[str],
+        requiredProperties: list[str],
         name: str,
-        associatedObjects: List[str],
-        properties: List[dict[str, Any]],
+        associatedObjects: list[str],
+        properties: list[dict[str, Any]],
         labels: dict[str, Any],
-        description: Optional[str] = None,
-        secondaryDisplayProperties: Optional[List[str]] = None,
-        searchableProperties: Optional[List[str]] = None,
-        primaryDisplayProperty: Optional[str] = None,
+        description: str | None = None,
+        secondaryDisplayProperties: list[str] | None = None,
+        searchableProperties: list[str] | None = None,
+        primaryDisplayProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3471,7 +3471,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def archive_properties_batch_post(
-        self, objectType: str, inputs: List[dict[str, Any]]
+        self, objectType: str, inputs: list[dict[str, Any]]
     ) -> Any:
         """
 
@@ -3565,8 +3565,8 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         groupName: str,
-        displayOrder: Optional[int] = None,
-        label: Optional[str] = None,
+        displayOrder: int | None = None,
+        label: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3605,8 +3605,8 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         propertyName: str,
-        archived: Optional[bool] = None,
-        properties: Optional[str] = None,
+        archived: bool | None = None,
+        properties: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3671,16 +3671,16 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         propertyName: str,
-        description: Optional[str] = None,
-        groupName: Optional[str] = None,
-        hidden: Optional[bool] = None,
-        options: Optional[List[dict[str, Any]]] = None,
-        displayOrder: Optional[int] = None,
-        calculationFormula: Optional[str] = None,
-        label: Optional[str] = None,
-        type: Optional[str] = None,
-        fieldType: Optional[str] = None,
-        formField: Optional[bool] = None,
+        description: str | None = None,
+        groupName: str | None = None,
+        hidden: bool | None = None,
+        options: list[dict[str, Any]] | None = None,
+        displayOrder: int | None = None,
+        calculationFormula: str | None = None,
+        label: str | None = None,
+        type: str | None = None,
+        fieldType: str | None = None,
+        formField: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3735,7 +3735,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def batch_read_properties_by_object_type(
-        self, objectType: str, archived: bool, inputs: List[dict[str, Any]]
+        self, objectType: str, archived: bool, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -3775,7 +3775,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_batch_properties(
-        self, objectType: str, inputs: List[dict[str, Any]]
+        self, objectType: str, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -3814,8 +3814,8 @@ class CrmApi(APISegmentBase):
     def get_properties_by_object_type(
         self,
         objectType: str,
-        archived: Optional[bool] = None,
-        properties: Optional[str] = None,
+        archived: bool | None = None,
+        properties: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3854,15 +3854,15 @@ class CrmApi(APISegmentBase):
         groupName: str,
         name: str,
         fieldType: str,
-        description: Optional[str] = None,
-        hidden: Optional[bool] = None,
-        displayOrder: Optional[int] = None,
-        formField: Optional[bool] = None,
-        referencedObjectType: Optional[str] = None,
-        options: Optional[List[dict[str, Any]]] = None,
-        calculationFormula: Optional[str] = None,
-        hasUniqueValue: Optional[bool] = None,
-        externalOptions: Optional[bool] = None,
+        description: str | None = None,
+        hidden: bool | None = None,
+        displayOrder: int | None = None,
+        formField: bool | None = None,
+        referencedObjectType: str | None = None,
+        options: list[dict[str, Any]] | None = None,
+        calculationFormula: str | None = None,
+        hasUniqueValue: bool | None = None,
+        externalOptions: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -3951,7 +3951,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_property_group(
-        self, objectType: str, name: str, label: str, displayOrder: Optional[int] = None
+        self, objectType: str, name: str, label: str, displayOrder: int | None = None
     ) -> dict[str, Any]:
         """
 
@@ -3992,8 +3992,8 @@ class CrmApi(APISegmentBase):
     def get_owner_by_id(
         self,
         ownerId: str,
-        idProperty: Optional[str] = None,
-        archived: Optional[bool] = None,
+        idProperty: str | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4025,7 +4025,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def batch_create_timeline_events(
-        self, inputs: List[dict[str, Any]]
+        self, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -4092,10 +4092,10 @@ class CrmApi(APISegmentBase):
         appId: str,
         eventTemplateId: str,
         name: str,
-        tokens: List[dict[str, Any]],
+        tokens: list[dict[str, Any]],
         id: str,
-        detailTemplate: Optional[str] = None,
-        headerTemplate: Optional[str] = None,
+        detailTemplate: str | None = None,
+        headerTemplate: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4182,14 +4182,14 @@ class CrmApi(APISegmentBase):
         self,
         eventTemplateId: str,
         tokens: dict[str, str],
-        extraData: Optional[dict[str, Any]] = None,
-        timelineIFrame: Optional[dict[str, Any]] = None,
-        domain: Optional[str] = None,
-        id: Optional[str] = None,
-        utk: Optional[str] = None,
-        email: Optional[str] = None,
-        objectId: Optional[str] = None,
-        timestamp: Optional[str] = None,
+        extraData: dict[str, Any] | None = None,
+        timelineIFrame: dict[str, Any] | None = None,
+        domain: str | None = None,
+        id: str | None = None,
+        utk: str | None = None,
+        email: str | None = None,
+        objectId: str | None = None,
+        timestamp: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4249,10 +4249,10 @@ class CrmApi(APISegmentBase):
         name: str,
         label: str,
         type: str,
-        createdAt: Optional[str] = None,
-        options: Optional[List[dict[str, Any]]] = None,
-        objectPropertyName: Optional[str] = None,
-        updatedAt: Optional[str] = None,
+        createdAt: str | None = None,
+        options: list[dict[str, Any]] | None = None,
+        objectPropertyName: str | None = None,
+        updatedAt: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4311,8 +4311,8 @@ class CrmApi(APISegmentBase):
         eventTemplateId: str,
         tokenName: str,
         label: str,
-        options: Optional[List[dict[str, Any]]] = None,
-        objectPropertyName: Optional[str] = None,
+        options: list[dict[str, Any]] | None = None,
+        objectPropertyName: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4478,10 +4478,10 @@ class CrmApi(APISegmentBase):
         self,
         appId: str,
         name: str,
-        tokens: List[dict[str, Any]],
+        tokens: list[dict[str, Any]],
         objectType: str,
-        detailTemplate: Optional[str] = None,
-        headerTemplate: Optional[str] = None,
+        detailTemplate: str | None = None,
+        headerTemplate: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4533,7 +4533,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def get_timeline_event_render(
-        self, eventTemplateId: str, eventId: str, detail: Optional[bool] = None
+        self, eventTemplateId: str, eventId: str, detail: bool | None = None
     ) -> Any:
         """
 
@@ -4564,11 +4564,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_contacts_post(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4613,10 +4613,10 @@ class CrmApi(APISegmentBase):
     def get_contact_by_id(
         self,
         contactId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4748,7 +4748,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_contacts_batch_post(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_contacts_batch_post(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of contacts by ID using the HubSpot CRM API, returning a "204 No Content" response upon success.
@@ -4780,7 +4780,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_contacts_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_contacts_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates a batch of contacts in HubSpot using the CRM API, requiring a JSON payload and OAuth2 or private app authentication.
@@ -4812,7 +4812,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def batch_update_contacts(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def batch_update_contacts(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple contact records in a single request by providing their IDs or unique property values, overwriting specified properties in batch.
@@ -4845,7 +4845,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_contact_gdpr_data(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -4881,12 +4881,12 @@ class CrmApi(APISegmentBase):
 
     def get_contacts(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -4926,7 +4926,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_contact(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -4964,10 +4964,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5014,11 +5014,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_feedback_submissions(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5063,11 +5063,11 @@ class CrmApi(APISegmentBase):
     def get_feedback_submission_by_id(
         self,
         feedbackSubmissionId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5135,7 +5135,7 @@ class CrmApi(APISegmentBase):
         self,
         feedbackSubmissionId: str,
         properties: dict[str, str],
-        idProperty: Optional[str] = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5207,7 +5207,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_feedback_submissions_batch(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_feedback_submissions_batch(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of feedback submissions by ID using the HubSpot API and returns a status response with a 204 status code upon successful completion.
@@ -5240,7 +5240,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_feedback_submissions_batch(
-        self, inputs: List[dict[str, Any]]
+        self, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -5274,7 +5274,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def update_feedback_submissions_batch(
-        self, inputs: List[dict[str, Any]]
+        self, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -5308,7 +5308,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def post_feedback_submissions_gdpr_delete(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -5344,12 +5344,12 @@ class CrmApi(APISegmentBase):
 
     def get_feedback_submissions(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5389,7 +5389,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_feedback_submission(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -5427,10 +5427,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5478,11 +5478,11 @@ class CrmApi(APISegmentBase):
     def read_batch_objects(
         self,
         objectType: str,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5531,11 +5531,11 @@ class CrmApi(APISegmentBase):
         self,
         objectType: str,
         objectId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5610,7 +5610,7 @@ class CrmApi(APISegmentBase):
         objectType: str,
         objectId: str,
         properties: dict[str, str],
-        idProperty: Optional[str] = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5687,7 +5687,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def archive_batch_objects_by_type(
-        self, objectType: str, inputs: List[dict[str, Any]]
+        self, objectType: str, inputs: list[dict[str, Any]]
     ) -> Any:
         """
 
@@ -5726,7 +5726,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def batch_create_object_records(
-        self, objectType: str, inputs: List[dict[str, Any]]
+        self, objectType: str, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -5765,7 +5765,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def update_batch_object(
-        self, objectType: str, inputs: List[dict[str, Any]]
+        self, objectType: str, inputs: list[dict[str, Any]]
     ) -> dict[str, Any]:
         """
 
@@ -5804,7 +5804,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def gdpr_delete_object(
-        self, objectType: str, objectId: str, idProperty: Optional[str] = None
+        self, objectType: str, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -5844,12 +5844,12 @@ class CrmApi(APISegmentBase):
     def list_objects_by_type(
         self,
         objectType: str,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -5894,7 +5894,7 @@ class CrmApi(APISegmentBase):
     def create_object_by_type(
         self,
         objectType: str,
-        associations: List[dict[str, Any]],
+        associations: list[dict[str, Any]],
         properties: dict[str, str],
     ) -> dict[str, Any]:
         """
@@ -5937,10 +5937,10 @@ class CrmApi(APISegmentBase):
         objectType: str,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6016,10 +6016,10 @@ class CrmApi(APISegmentBase):
         self,
         appId: str,
         createMeetingUrl: str,
-        userVerifyUrl: Optional[str] = None,
-        fetchAccountsUri: Optional[str] = None,
-        updateMeetingUrl: Optional[str] = None,
-        deleteMeetingUrl: Optional[str] = None,
+        userVerifyUrl: str | None = None,
+        fetchAccountsUri: str | None = None,
+        updateMeetingUrl: str | None = None,
+        deleteMeetingUrl: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6091,11 +6091,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_tickets_post(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6140,11 +6140,11 @@ class CrmApi(APISegmentBase):
     def get_ticket_by_id(
         self,
         ticketId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6212,7 +6212,7 @@ class CrmApi(APISegmentBase):
         self,
         ticketId: str,
         properties: dict[str, str],
-        idProperty: Optional[str] = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6282,7 +6282,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_tickets_batch_post(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_tickets_batch_post(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of tickets by ID using the HubSpot API and returns a status message.
@@ -6314,7 +6314,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_tickets_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_tickets_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates a batch of tickets in the CRM using the HubSpot API and returns a status message.
@@ -6346,7 +6346,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_tickets_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def update_tickets_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple tickets in a single request using the HubSpot CRM API, returning a status message indicating the success or partial success of the operation.
@@ -6379,7 +6379,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_ticket_gdpr(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -6415,12 +6415,12 @@ class CrmApi(APISegmentBase):
 
     def get_tickets(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6460,7 +6460,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_ticket(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -6498,10 +6498,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6548,11 +6548,11 @@ class CrmApi(APISegmentBase):
 
     def batch_read_line_items_post(
         self,
-        propertiesWithHistory: List[str],
-        inputs: List[dict[str, Any]],
-        properties: List[str],
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        propertiesWithHistory: list[str],
+        inputs: list[dict[str, Any]],
+        properties: list[str],
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6597,11 +6597,11 @@ class CrmApi(APISegmentBase):
     def get_line_item_by_id(
         self,
         lineItemId: str,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
-        idProperty: Optional[str] = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6669,7 +6669,7 @@ class CrmApi(APISegmentBase):
         self,
         lineItemId: str,
         properties: dict[str, str],
-        idProperty: Optional[str] = None,
+        idProperty: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6739,7 +6739,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_line_items_batch_post(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_line_items_batch_post(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of line items by their IDs in the CRM using a POST request.
@@ -6771,7 +6771,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_line_items_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_line_items_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates a batch of line items using the HubSpot API and returns a status message upon successful creation.
@@ -6803,7 +6803,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def batch_update_line_items(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def batch_update_line_items(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates a batch of line items using their internal IDs or unique property values via the POST method, requiring authentication with the "crm.objects.line_items.write" scope.
@@ -6836,7 +6836,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def gdpr_delete_line_items(
-        self, objectId: str, idProperty: Optional[str] = None
+        self, objectId: str, idProperty: str | None = None
     ) -> Any:
         """
 
@@ -6872,12 +6872,12 @@ class CrmApi(APISegmentBase):
 
     def list_line_items(
         self,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
-        properties: Optional[List[str]] = None,
-        propertiesWithHistory: Optional[List[str]] = None,
-        associations: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        limit: int | None = None,
+        after: str | None = None,
+        properties: list[str] | None = None,
+        propertiesWithHistory: list[str] | None = None,
+        associations: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -6917,7 +6917,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_line_item(
-        self, associations: List[dict[str, Any]], properties: dict[str, str]
+        self, associations: list[dict[str, Any]], properties: dict[str, str]
     ) -> dict[str, Any]:
         """
 
@@ -6955,10 +6955,10 @@ class CrmApi(APISegmentBase):
         self,
         limit: int,
         after: str,
-        sorts: List[str],
-        properties: List[str],
-        filterGroups: List[dict[str, Any]],
-        query: Optional[str] = None,
+        sorts: list[str],
+        properties: list[str],
+        filterGroups: list[dict[str, Any]],
+        query: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -7005,9 +7005,9 @@ class CrmApi(APISegmentBase):
 
     def get_crm_imports(
         self,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
-        limit: Optional[int] = None,
+        after: str | None = None,
+        before: str | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -7037,7 +7037,7 @@ class CrmApi(APISegmentBase):
         return self._handle_response(response)
 
     def create_crm_import(
-        self, files: Optional[bytes] = None, importRequest: Optional[str] = None
+        self, files: bytes | None = None, importRequest: str | None = None
     ) -> dict[str, Any]:
         """
 
@@ -7080,10 +7080,10 @@ class CrmApi(APISegmentBase):
 
     def get_owners_list(
         self,
-        email: Optional[str] = None,
-        after: Optional[str] = None,
-        limit: Optional[int] = None,
-        archived: Optional[bool] = None,
+        email: str | None = None,
+        after: str | None = None,
+        limit: int | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 

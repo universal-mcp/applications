@@ -2,12 +2,12 @@ import uuid
 from io import BytesIO
 
 import requests
-
-from elevenlabs import ElevenLabs
 from universal_mcp.applications.application import APIApplication
-from universal_mcp.applications.file_system.app import FileSystemApp
 from universal_mcp.exceptions import NotAuthorizedError
 from universal_mcp.integrations import Integration
+
+from elevenlabs import ElevenLabs
+from universal_mcp.applications.file_system.app import FileSystemApp
 
 
 class ElevenlabsApp(APIApplication):
@@ -24,7 +24,11 @@ class ElevenlabsApp(APIApplication):
             credentials = self.integration.get_credentials()
             if not credentials:
                 raise NotAuthorizedError("No credentials found")
-            api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+            api_key = (
+                credentials.get("api_key")
+                or credentials.get("API_KEY")
+                or credentials.get("apiKey")
+            )
             if not api_key:
                 raise NotAuthorizedError("No api key found")
             self._client = ElevenLabs(api_key=api_key)
@@ -41,17 +45,17 @@ class ElevenlabsApp(APIApplication):
     ) -> bytes:
         """
         Converts a text string into speech using the ElevenLabs API. The function then saves the generated audio to a temporary MP3 file and returns a public URL to access it, rather than the raw audio bytes.
-        
+
         Args:
             text (str): The text to convert to speech.
             voice_id (str): The ID of the voice to use.
             model_id (str, optional): The model to use. Defaults to "eleven_multilingual_v2".
             stability (float, optional): The stability of the voice.
             similarity_boost (float, optional): The similarity boost of the voice.
-        
+
         Returns:
             bytes: The audio data.
-            
+
         Tags:
             important
         """
@@ -77,13 +81,13 @@ class ElevenlabsApp(APIApplication):
     ) -> str:
         """
         Transcribes an audio file into text using the ElevenLabs API. It supports language specification and speaker diarization, providing the inverse operation to the audio-generating `text_to_speech` method. Note: The docstring indicates this is a placeholder for an undocumented endpoint.
-        
+
         Args:
             audio_file_path (str): The path to the audio file.
-        
+
         Returns:
             str: The transcribed text.
-            
+
         Tags:
             important
         """
@@ -104,15 +108,15 @@ class ElevenlabsApp(APIApplication):
     ) -> bytes:
         """
         Downloads an audio file from a URL and converts the speech into a specified target voice using the ElevenLabs API. This function transforms the speaker's voice in an existing recording and returns the new audio data as bytes, distinct from creating audio from text.
-        
+
         Args:
             voice_id (str): The ID of the voice to use for the conversion.
             audio_file_path (str): The path to the audio file to transform.
             model_id (str, optional): The model to use. Defaults to "eleven_multilingual_sts_v2".
-        
+
         Returns:
             bytes: The transformed audio data.
-            
+
         Tags:
             important
         """
@@ -139,8 +143,7 @@ async def demo_text_to_speech():
     A demonstration function that instantiates the `ElevenlabsApp` to test its `text_to_speech` method. It converts a sample string to audio and prints the resulting file URL to the console, serving as a basic usage example when the script is executed directly.
     """
     app = ElevenlabsApp()
-    audio = await app.generate_speech_audio_url("Hello, world!")
-    print(audio)
+    await app.generate_speech_audio_url("Hello, world!")
 
 
 if __name__ == "__main__":

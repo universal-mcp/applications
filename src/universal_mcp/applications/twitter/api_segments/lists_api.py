@@ -7,24 +7,22 @@ class ListsApi(APISegmentBase):
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
-    def create_list(
-        self, description=None, name=None, private=None
-    ) -> dict[str, Any]:
+    def create_list(self, description=None, name=None, private=None) -> dict[str, Any]:
         """
         Creates a new list on X (formerly Twitter) with an optional name, description, and privacy setting. It sends a POST request to the `/2/lists` endpoint and returns the JSON data of the newly created list upon success.
-        
+
         Args:
             description (string): description
             name (string): name
             private (boolean): private
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Lists, important
         """
@@ -51,17 +49,17 @@ class ListsApi(APISegmentBase):
     def delete_list(self, id) -> dict[str, Any]:
         """
         Permanently deletes a specific Twitter List identified by its unique ID. This function sends an authorized DELETE request to the API's `/2/lists/{id}` endpoint, returning a confirmation response upon successful removal. It is distinct from `list_remove_member`, which only removes a user from a list.
-        
+
         Args:
             id (string): id
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Lists
         """
@@ -78,20 +76,20 @@ class ListsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific list by its ID. This function allows for response customization by specifying which list and user fields to return and supports expansions to include related objects like the owner's user data.
-        
+
         Args:
             id (string): id
             list_fields (array): A comma separated list of List fields to display. Example: "['created_at', 'description', 'follower_count', 'id', 'member_count', 'name', 'owner_id', 'private']".
             expansions (array): A comma separated list of fields to expand. Example: "['owner_id']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Lists
         """
@@ -116,20 +114,20 @@ class ListsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Modifies an existing Twitter list identified by its unique ID. This function updates the list's name, description, or privacy status by sending a PUT request to the API and returns the updated list data upon success.
-        
+
         Args:
             id (string): id
             description (string): description
             name (string): name
             private (boolean): private
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Lists
         """
@@ -166,7 +164,7 @@ class ListsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves the users who follow a specific list, identified by its ID. Supports pagination and allows for the customization of returned user, tweet, and expansion fields to tailor the response data, differentiating it from fetching list members.
-        
+
         Args:
             id (string): id
             max_results (integer): Specifies the maximum number of follower results to return, with a default value of 100.
@@ -174,14 +172,14 @@ class ListsApi(APISegmentBase):
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             expansions (array): A comma separated list of fields to expand. Example: "['affiliation.user_id', 'most_recent_tweet_id', 'pinned_tweet_id']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Users
         """
@@ -214,7 +212,7 @@ class ListsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves users who are members of a specific Twitter list, identified by its ID. Unlike `list_get_followers`, this returns users explicitly added to the list, not subscribers. Supports pagination and customization of the returned user data fields to include expanded objects and specific details.
-        
+
         Args:
             id (string): id
             max_results (integer): The maximum number of list members to return per page, defaulting to 100.
@@ -222,14 +220,14 @@ class ListsApi(APISegmentBase):
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             expansions (array): A comma separated list of fields to expand. Example: "['affiliation.user_id', 'most_recent_tweet_id', 'pinned_tweet_id']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Users
         """
@@ -254,18 +252,18 @@ class ListsApi(APISegmentBase):
     def list_add_member(self, id, user_id=None) -> dict[str, Any]:
         """
         Adds a user to a specified Twitter list via a POST request to the `/2/lists/{id}/members` endpoint, requiring list and user IDs. This function modifies a list's membership, distinguishing it from `list_get_members` (retrieves) and its counterpart `list_remove_member` (deletes).
-        
+
         Args:
             id (string): id
             user_id (string): Unique identifier of this User. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers. Example: '2244994945'.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Lists
         """
@@ -290,18 +288,18 @@ class ListsApi(APISegmentBase):
     def delete_list_member(self, id, user_id) -> dict[str, Any]:
         """
         Removes a specific user from a Twitter list. This function sends a DELETE request to the `/2/lists/{id}/members/{user_id}` API endpoint, requiring both the list ID and the user ID to perform the action and confirm the member's removal.
-        
+
         Args:
             id (string): id
             user_id (string): user_id
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Lists
         """
@@ -329,7 +327,7 @@ class ListsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves tweets from a specified Twitter List using its ID. Supports pagination and allows extensive customization of returned fields for tweets, users, media, and other entities. This function uniquely fetches the list's tweet timeline, distinguishing it from functions that retrieve list members or followers.
-        
+
         Args:
             id (string): id
             max_results (integer): The maximum number of tweets to return per request, with a default value of 100.
@@ -340,14 +338,14 @@ class ListsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """

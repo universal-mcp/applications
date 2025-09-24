@@ -1,6 +1,10 @@
 from typing import Any
 
 import requests
+from universal_mcp.agentr.integration import AgentrIntegration
+from universal_mcp.applications.application import BaseApplication
+from universal_mcp.exceptions import NotAuthorizedError
+
 from universal_mcp.applications.whatsapp.whatsapp import (
     WHATSAPP_API_BASE_URL,
 )
@@ -41,10 +45,6 @@ from universal_mcp.applications.whatsapp.whatsapp import (
     send_message as whatsapp_send_message,
 )
 
-from universal_mcp.applications.application import BaseApplication
-from universal_mcp.exceptions import NotAuthorizedError
-from universal_mcp.agentr.integration import AgentrIntegration
-
 
 class WhatsappApp(BaseApplication):
     """
@@ -63,11 +63,10 @@ class WhatsappApp(BaseApplication):
         """
         if not self.integration:
             raise ValueError("No integration available to get API key from")
-        
 
         try:
             headers = self.integration.client.client.headers
-            api_key = headers.get('X-API-KEY')
+            api_key = headers.get("X-API-KEY")
             if api_key:
                 return api_key
             else:
@@ -160,16 +159,16 @@ class WhatsappApp(BaseApplication):
     ) -> list[dict[str, Any]]:
         """
         Searches for WhatsApp contacts by name or phone number. This function takes a query string, handles user authentication, and calls the underlying API to find and return a list of matching contacts. It serves as the primary method to look up contact information within the application.
-        
+
         Args:
             query (string): Search term to match against contact names or phone numbers
-        
+
         Returns:
             List[Dict[str, Any]]: Retrieved collection
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.contacts, important
         """
@@ -198,7 +197,7 @@ class WhatsappApp(BaseApplication):
     ) -> list[dict[str, Any]]:
         """
         Searches for and retrieves a paginated list of WhatsApp messages using various filters like date, sender, chat, or content query. It can optionally include surrounding contextual messages for each result, unlike `get_message_context` which targets a single message ID.
-        
+
         Args:
             after (string): Optional ISO-8601 formatted string to only return messages after this date
             before (string): Optional ISO-8601 formatted string to only return messages before this date
@@ -210,13 +209,13 @@ class WhatsappApp(BaseApplication):
             include_context (boolean): Whether to include messages before and after matches (default True)
             context_before (integer): Number of messages to include before each match (default 1)
             context_after (integer): Number of messages to include after each match (default 1)
-        
+
         Returns:
             List[Dict[str, Any]]: Retrieved collection
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.messages, important
         """
@@ -249,20 +248,20 @@ class WhatsappApp(BaseApplication):
     ) -> list[dict[str, Any]]:
         """
         Retrieves a paginated list of WhatsApp chats, allowing filtering by a search query and sorting by activity or name. Unlike `get_chat`, which fetches a single known chat, this function provides broad search and discovery capabilities across multiple user conversations.
-        
+
         Args:
             query (string): Optional search term to filter chats by name or JID
             limit (integer): Maximum number of chats to return (default 20)
             page (integer): Page number for pagination (default 0)
             include_last_message (boolean): Whether to include the last message in each chat (default True)
             sort_by (string): Field to sort results by, either "last_active" or "name" (default "last_active")
-        
+
         Returns:
             List[Dict[str, Any]]: Retrieved collection
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.chats, important
         """
@@ -287,17 +286,17 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Retrieves metadata for a specific WhatsApp chat (direct or group) using its unique JID. It can optionally include the most recent message. This precise JID-based lookup distinguishes it from `get_direct_chat_by_contact`, which uses a phone number, and `list_chats`, which performs a broader search.
-        
+
         Args:
             chat_jid (string): The JID of the chat to retrieve
             include_last_message (boolean): Whether to include the last message (default True)
-        
+
         Returns:
             Dict[str, Any]: Retrieved chat metadata
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.chat, important
         """
@@ -317,16 +316,16 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Retrieves metadata for a direct (one-on-one) WhatsApp chat using a contact's phone number. Unlike `get_chat` which requires a JID, this provides a simpler way to find direct conversations. Returns a dictionary containing the chat's details, such as its JID and name.
-        
+
         Args:
             sender_phone_number (string): The phone number to search for
-        
+
         Returns:
             Dict[str, Any]: Retrieved chat metadata
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.chat, important
         """
@@ -348,18 +347,18 @@ class WhatsappApp(BaseApplication):
     ) -> list[dict[str, Any]]:
         """
         Retrieves a paginated list of all WhatsApp chats, including direct messages and groups, that a specific contact participates in. The contact is identified by their unique JID. This differs from `get_direct_chat_by_contact` which only finds one-on-one chats.
-        
+
         Args:
             jid (string): The contact's JID to search for
             limit (integer): Maximum number of chats to return (default 20)
             page (integer): Page number for pagination (default 0)
-        
+
         Returns:
             List[Dict[str, Any]]: Retrieved collection
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.contact_chats, important
         """
@@ -379,16 +378,16 @@ class WhatsappApp(BaseApplication):
     ) -> str:
         """
         Retrieves the content of the most recent message involving a specific contact, identified by their JID. It authenticates the user and returns the message directly as a string, offering a quick way to view the last communication without fetching full message objects or chat histories.
-        
+
         Args:
             jid (string): The JID of the contact to search for
-        
+
         Returns:
             string: Retrieved message
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.interaction, important
         """
@@ -410,18 +409,18 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Fetches the conversational context surrounding a specific WhatsApp message ID. It retrieves a configurable number of messages immediately preceding and following the target message. This provides a focused view of a dialogue, unlike `list_messages` which performs broader, filter-based searches.
-        
+
         Args:
             message_id (string): The ID of the message to get context for
             before (integer): Number of messages to include before the target message (default 5)
             after (integer): Number of messages to include after the target message (default 5)
-        
+
         Returns:
             Dict[str, Any]: Retrieved message context
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.message_context, important
         """
@@ -442,18 +441,18 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Authenticates the user and sends a text message to a specified WhatsApp recipient. The recipient can be an individual (via phone number) or a group (via JID). It returns a dictionary indicating the operation's success status and a corresponding message.
-        
+
         Args:
             recipient (string): The recipient - either a phone number with country code but no + or other symbols,
                              or a JID (e.g., "123456789@s.whatsapp.net" or a group JID like "123456789@g.us")
             message (string): The message text to send
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing success status and a status message
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.send_message, important
         """
@@ -480,18 +479,18 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Sends a media file (image, video, document, raw audio) as a standard attachment to a WhatsApp contact or group using their phone number or JID. Unlike `send_audio_message`, which creates a playable voice note, this function handles general file transfers. Returns a success status dictionary.
-        
+
         Args:
             recipient (string): The recipient - either a phone number with country code but no + or other symbols,
                              or a JID (e.g., "123456789@s.whatsapp.net" or a group JID like "123456789@g.us")
             media_path (string): The absolute path to the media file to send (image, video, document)
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing success status and a status message
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.send_file, important
         """
@@ -518,18 +517,18 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Sends a local audio file as a playable WhatsApp voice message, converting it to the required format. Unlike `send_file` which sends audio as a document attachment, this function formats the audio as a voice note. It can be sent to an individual contact or a group chat.
-        
+
         Args:
             recipient (string): The recipient - either a phone number with country code but no + or other symbols,
                              or a JID (e.g., "123456789@s.whatsapp.net" or a group JID like "123456789@g.us")
             media_path (string): The absolute path to the audio file to send (will be converted to Opus .ogg if it's not a .ogg file)
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing success status and a status message
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.send_audio_message, important
         """
@@ -557,17 +556,17 @@ class WhatsappApp(BaseApplication):
     ) -> dict[str, Any]:
         """
         Downloads media from a specific WhatsApp message, identified by its ID and chat JID. It saves the content to a local file and returns the file's path upon success. The function automatically handles user authentication before initiating the download.
-        
+
         Args:
             message_id (string): The ID of the message containing the media
             chat_jid (string): The JID of the chat containing the message
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing success status, a status message, and the file path if successful
-        
+
         Raises:
             ValueError: Raised when required parameters are missing.
-        
+
         Tags:
             whatsapp.download_media, important
         """

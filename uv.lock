@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -480,6 +480,21 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/74/f6/cb228f5949553a5c01d1d5a3c933f0216d78540d9e0bf8dd4343bb449681/bottleneck-1.6.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:4dd7ac619570865fcb7a0e8925df418005f076286ad2c702dd0f447231d7a055", size = 386909, upload-time = "2025-09-08T16:30:34.973Z" },
     { url = "https://files.pythonhosted.org/packages/09/9a/425065c37a67a9120bf53290371579b83d05bf46f3212cce65d8c01d470a/bottleneck-1.6.0-cp314-cp314t-win32.whl", hash = "sha256:7fb694165df95d428fe00b98b9ea7d126ef786c4a4b7d43ae2530248396cadcb", size = 111636, upload-time = "2025-09-08T16:30:36.044Z" },
     { url = "https://files.pythonhosted.org/packages/ad/23/c41006e42909ec5114a8961818412310aa54646d1eae0495dbff3598a095/bottleneck-1.6.0-cp314-cp314t-win_amd64.whl", hash = "sha256:174b80930ce82bd8456c67f1abb28a5975c68db49d254783ce2cb6983b4fea40", size = 117611, upload-time = "2025-09-08T16:30:37.055Z" },
+]
+
+[[package]]
+name = "browser-use-sdk"
+version = "2.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "pydantic-core" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/37/8f/62ddf607b11b3643aac640e744b35b1412a935b2aa0b026f794f49ed3ca0/browser_use_sdk-2.0.4.tar.gz", hash = "sha256:c895ff11fca7e7b75e1dde82437e155c5c19bd24960d5f14ea167ed9df8f7796", size = 41068, upload-time = "2025-09-08T07:49:37.634Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/64/40/e1edec8db433a20151ed222b7973b9a2a7d01cbe24ad06ec08f7e3c71d89/browser_use_sdk-2.0.4-py3-none-any.whl", hash = "sha256:01898714aaee3f2996df8f134eb7eb3dd30064ebf4a620575653526ee8a891e0", size = 79281, upload-time = "2025-09-08T07:49:36.622Z" },
 ]
 
 [[package]]
@@ -4577,10 +4592,11 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.20"
+version = "0.1.21"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
+    { name = "browser-use-sdk" },
     { name = "dnspython" },
     { name = "e2b-code-interpreter" },
     { name = "elevenlabs" },
@@ -4625,6 +4641,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "boto3", specifier = ">=1.38.32" },
+    { name = "browser-use-sdk", specifier = ">=2.0.4" },
     { name = "dnspython", specifier = ">=2.4.0" },
     { name = "e2b-code-interpreter", specifier = ">=1.2.1" },
     { name = "elevenlabs", specifier = ">=2.14.0" },

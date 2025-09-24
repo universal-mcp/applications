@@ -1,7 +1,8 @@
 import re
 
-from markitdown import MarkItDown
 from universal_mcp.applications.application import BaseApplication
+
+from markitdown import MarkItDown
 
 
 class MarkitdownApp(BaseApplication):
@@ -61,11 +62,15 @@ class MarkitdownApp(BaseApplication):
             self.convert_to_markdown,
         ]
 
+
 async def main():
     app = MarkitdownApp()
-    result = await app.convert_to_markdown("https://www.youtube.com/watch?v=Cr9B6yyLZSk")
-    print(result)
-    
+    await app.convert_to_markdown(
+        "https://www.youtube.com/watch?v=Cr9B6yyLZSk"
+    )
+
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

@@ -1,5 +1,4 @@
 import pytest
-
 from universal_mcp.applications.utils import app_from_slug
 from universal_mcp.utils.testing import check_application_instance
 
@@ -9,10 +8,10 @@ ALL_APPS = [
     "apollo",
     "asana",
     "aws_s3",
-    "bill",     # not seeded
+    "bill",  # not seeded
     "box",
     "braze",
-    #"cal_com_v2",   # not seeded
+    # "cal_com_v2",   # not seeded
     "calendly",
     "canva",
     "clickup",
@@ -20,7 +19,7 @@ ALL_APPS = [
     "confluence",  # not seeded
     "contentful",  # not seeded
     "crustdata",
-    "dialpad",     # not seeded
+    "dialpad",  # not seeded
     "digitalocean",
     "domain_checker",
     "e2b",
@@ -66,14 +65,14 @@ ALL_APPS = [
     "rocketlane",
     "scraper",
     "semanticscholar",
-    "semrush",   # not seeded
+    "semrush",  # not seeded
     "sendgrid",
     "sentry",
     "serpapi",
     "sharepoint",  # not seeded
     "shopify",
     "shortcut",
-    "slack",    # not seeded
+    "slack",  # not seeded
     "spotify",
     "supabase",
     "tavily",
@@ -83,7 +82,7 @@ ALL_APPS = [
     "unipile",
     "whatsapp",
     "whatsapp_business",
-    "wrike",   # not seeded
+    "wrike",  # not seeded
     "yahoo_finance",
     "youtube",
     "zenquotes",

@@ -12,19 +12,19 @@ class DmConversationsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Creates a new group Direct Message conversation with specified participants and sends an initial message. This function specifically handles the creation of new multi-participant conversations, distinct from other methods in this class that add messages to existing one-to-one or group DMs.
-        
+
         Args:
             conversation_type (string): The conversation type that is being created.
             message (string): message
             participant_ids (array): Participants for the DM Conversation.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Direct Messages
         """
@@ -62,7 +62,7 @@ class DmConversationsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves direct message events from a conversation identified by a specific participant's ID. Supports pagination and filtering by event type. This method is distinct from `get_dm_conversations_id_dm_events`, which uses a direct conversation ID for retrieval instead of a participant's ID.
-        
+
         Args:
             participant_id (string): participant_id
             max_results (integer): The maximum number of direct message events to return in the response, with a default of 100.
@@ -73,14 +73,14 @@ class DmConversationsApi(APISegmentBase):
             media_fields (array): A comma separated list of Media fields to display. Example: "['alt_text', 'duration_ms', 'height', 'media_key', 'non_public_metrics', 'organic_metrics', 'preview_image_url', 'promoted_metrics', 'public_metrics', 'type', 'url', 'variants', 'width']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Direct Messages
         """
@@ -110,19 +110,19 @@ class DmConversationsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Sends a direct message to a user specified by their participant ID. It creates a new one-on-one conversation or appends the message to an existing one. Unlike other functions, this method identifies the conversation using the participant's ID rather than a pre-existing conversation ID.
-        
+
         Args:
             participant_id (string): participant_id
             attachments (array): Attachments to a DM Event.
             text (string): Text of the message.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Direct Messages
         """
@@ -149,19 +149,19 @@ class DmConversationsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Sends a new message with optional text and attachments to an existing Direct Message conversation. The target conversation is specified by its `dm_conversation_id`, distinguishing it from functions that create new conversations or send one-to-one messages using a participant ID.
-        
+
         Args:
             dm_conversation_id (string): dm_conversation_id
             attachments (array): Attachments to a DM Event.
             text (string): Text of the message.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Direct Messages
         """
@@ -197,7 +197,7 @@ class DmConversationsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves direct message events for a specific conversation using its unique ID. This function, distinct from fetching by participant ID, supports pagination, event type filtering, and data field expansion for detailed results.
-        
+
         Args:
             id (string): id
             max_results (integer): Limits the number of DM events returned in the response, with a default value of 100, allowing users to customize the amount of data retrieved.
@@ -208,14 +208,14 @@ class DmConversationsApi(APISegmentBase):
             media_fields (array): A comma separated list of Media fields to display. Example: "['alt_text', 'duration_ms', 'height', 'media_key', 'non_public_metrics', 'organic_metrics', 'preview_image_url', 'promoted_metrics', 'public_metrics', 'type', 'url', 'variants', 'width']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Direct Messages
         """

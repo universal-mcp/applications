@@ -19,7 +19,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Fetches detailed information for multiple tweets, specified by a list of their IDs. Optional parameters allow response customization by including specific fields (e.g., media, user, polls) and expansions. This function handles batch lookups, distinguishing it from `find_tweet_by_id` which retrieves a single tweet.
-        
+
         Args:
             ids (array): An array of IDs for the tweets to retrieve, required for the operation.
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
@@ -28,14 +28,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -73,7 +73,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Posts a new tweet for an authenticated user, supporting optional parameters like text, media, polls, replies, and quote tweets. This function constructs a POST request to the `/2/tweets` endpoint, enabling the creation of diverse tweet formats with specific visibility and reply settings.
-        
+
         Args:
             card_uri (string): Card Uri Parameter. This is mutually exclusive from Quote Tweet Id, Poll, Media, and Direct Message Deep Link.
             direct_message_deep_link (string): Link to take the conversation from the public timeline to a private Direct Message.
@@ -85,15 +85,15 @@ class TweetsApi(APISegmentBase):
             quote_tweet_id (string): Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers. Example: '1346889436626259968'.
             reply (object): Tweet information of the Tweet being replied to.
             reply_settings (string): Settings to indicate who can reply to the Tweet.
-            text (string): The content of the Tweet. Example: 'Learn how to use the user Tweet timeline and user mention timeline endpoints in the X API v2 to explore Tweet\u2026 https:\/\/t.co\/56a0vZUx7i'.
-        
+            text (string): The content of the Tweet. Example: 'Learn how to use the user Tweet timeline and user mention timeline endpoints in the X API v2 to explore Tweet\u2026 https:\\/\\/t.co\\/56a0vZUx7i'.
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -130,20 +130,20 @@ class TweetsApi(APISegmentBase):
     ) -> Any:
         """
         Streams real-time compliance events for tweets, such as deletions and user updates, from a specified partition. Unlike other stream functions that return tweet content, this provides metadata about content and user status changes, supporting optional time-based filtering and backfilling.
-        
+
         Args:
             partition (integer): Specifies the partition number from which to retrieve compliance stream events, with a required integer value between 1 and 4.
             backfill_minutes (integer): Optional integer parameter to specify the number of minutes of data to recover from a stream disconnection, allowing retrieval of missed tweets.
             start_time (string): Optional string parameter specifying the earliest UTC timestamp from which compliance events will be provided, formatted as YYYY-MM-DDTHH:mm:ssZ. Example: '2021-02-01T18:40:40.000Z'.
             end_time (string): The `end_time` parameter specifies the latest UTC timestamp (in ISO 8601 format) until which compliance events will be streamed. Example: '2021-02-14T18:40:40.000Z'.
-        
+
         Returns:
             Any: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Compliance
         """
@@ -176,7 +176,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Calculates the number of tweets from the entire historical archive that match a given search query. Results can be aggregated by minute, hour, or day over a specific time range to analyze historical tweet volume trends.
-        
+
         Args:
             query (string): The "query" parameter is a required string used to filter tweets by specifying keywords or phrases, allowing users to retrieve counts for specific topics or hashtags. Example: '(from:TwitterDev OR from:TwitterAPI) has:media -is:retweet'.
             start_time (string): The start_time parameter sets the earliest timestamp from which to begin counting Tweets in the full-archive matching the query, formatted as an ISO 8601 string.
@@ -187,14 +187,14 @@ class TweetsApi(APISegmentBase):
             pagination_token (string): Used to request the next page of results, providing the value of `next_token` from the previous response to paginate through data.
             granularity (string): The **granularity** parameter specifies the time unit for retrieving tweet counts, allowing options of "minute", "hour", or "day", with "hour" as the default.
             search_count_fields (array): A comma separated list of SearchCount fields to display. Example: "['end', 'start', 'tweet_count']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -232,7 +232,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves the total count of tweets from the last seven days matching a specified query. Results can be aggregated by minute, hour, or day and filtered by time range or tweet ID. This function contrasts with `tweet_counts_full_archive_search`, which queries the entire tweet history.
-        
+
         Args:
             query (string): The search query to filter recent tweets for counting matching tweets. Example: '(from:TwitterDev OR from:TwitterAPI) has:media -is:retweet'.
             start_time (string): Optional start time for the recent Tweet counts query, specified in ISO 8601 format, which determines the beginning of the time window for which Tweet counts are returned.
@@ -243,14 +243,14 @@ class TweetsApi(APISegmentBase):
             pagination_token (string): Optional parameter to paginate through the results, used by passing the `next_token` value from the previous response to retrieve the next page of tweet count data.
             granularity (string): The granularity parameter specifies the time interval for aggregating Tweet counts in the response, with possible values of "minute," "hour" (default), or "day".
             search_count_fields (array): A comma separated list of SearchCount fields to display. Example: "['end', 'start', 'tweet_count']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -289,7 +289,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams all public tweets in real-time from the Firehose API for a specified partition. This unfiltered feed can be customized with optional parameters to backfill data, define a time window, and specify desired tweet, user, and media fields.
-        
+
         Args:
             partition (integer): A required integer parameter that specifies the partition from which to retrieve the firehose stream data.
             backfill_minutes (integer): The backfill_minutes parameter allows requesting up to five minutes of missed streaming data to be delivered upon reconnection, helping recover Tweets lost during short disconnections; it accepts an integer value from 1 to 5 and is available only with Academic Research access.
@@ -301,14 +301,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -348,7 +348,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams real-time public tweets from the Firehose API, specifically filtered for the English language. Requires a partition number and supports optional parameters to customize the data payload. It is distinct from other language-specific (`_ja`, `_ko`, `_pt`) or the unfiltered `get_tweets_firehose_stream` functions.
-        
+
         Args:
             partition (integer): The `partition` parameter is an integer value required in the query for the GET operation at path "/2/tweets/firehose/stream/lang/en", specifying the partition number for the stream.
             backfill_minutes (integer): Requests up to five minutes of missed streaming data to be delivered upon reconnection, useful for recovering data lost during brief disconnections.
@@ -360,14 +360,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -407,7 +407,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams real-time tweets specifically in Japanese from the Twitter Firehose API, requiring a partition number. It supports optional parameters for time ranges, backfill, and customizable fields. This method is distinct from other `get_tweets_firehose_stream` variants, which target different languages or the entire stream.
-        
+
         Args:
             partition (integer): The partition number used to identify and organize the data stream, which is required for this operation.
             backfill_minutes (integer): The number of minutes (1 to 5) of missed streaming data to backfill and recover upon reconnection, available only with Academic Research access.
@@ -419,14 +419,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -466,7 +466,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams real-time tweets filtered for the Korean language from the Firehose API. This function allows customization via parameters for partitions, time range, backfill, and specific data fields for tweets, users, and media, distinguishing it from other language-specific stream functions.
-        
+
         Args:
             partition (integer): The partition parameter specifies the integer partition number to use for streaming tweets.
             backfill_minutes (integer): The number of minutes (1 to 5) of previously missed Tweets to backfill and deliver upon reconnection, allowing recovery of up to five minutes of data missed during a disconnection; duplicates may occur and this feature requires Academic Research access.
@@ -478,14 +478,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -525,7 +525,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams real-time tweets in Portuguese from the Firehose API, requiring a partition number. It allows data customization via optional parameters for time ranges and fields, specifically targeting the Portuguese language stream, unlike other general or language-specific firehose functions.
-        
+
         Args:
             partition (integer): The **partition** parameter is a required integer that specifies the partition number for the GET operation at the "/2/tweets/firehose/stream/lang/pt" path, used to distribute the stream of tweets across multiple partitions for efficient processing.
             backfill_minutes (integer): The number of minutes (1-5) of missed streaming data to recover and deliver upon reconnection, available only for Academic Research access.
@@ -537,14 +537,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -574,19 +574,19 @@ class TweetsApi(APISegmentBase):
     ) -> Any:
         """
         Streams real-time Tweet objects labeled for compliance reasons, such as withheld content. Unlike `get_tweets_compliance_stream`, which provides events, this returns the actual tweets. Supports filtering by a time window and backfilling missed data upon reconnection.
-        
+
         Args:
             backfill_minutes (integer): The number of minutes (up to five) of missed tweet data to recover and backfill after a disconnection, available for Academic Research access.
             start_time (string): Optional parameter specifying the earliest UTC timestamp (in ISO 8601/RFC 3339 format) from which to retrieve tweets, allowing filtering by creation time. Example: '2021-02-01T18:40:40.000Z'.
             end_time (string): Optional parameter specifying the end time in ISO 8601 format for retrieving tweets from a label stream, used to filter tweets created before this time. Example: '2021-02-01T18:40:40.000Z'.
-        
+
         Returns:
             Any: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Compliance
         """
@@ -616,7 +616,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams a real-time, random sample of public tweets from the API. It allows data customization through optional field and expansion parameters. This function targets the standard (~1%) sample stream, distinct from `get_tweets_sample_stream` which accesses the partitioned 10% stream.
-        
+
         Args:
             backfill_minutes (integer): The number of minutes (1 to 5) of missed streaming Tweets to backfill and receive upon reconnection, available for Academic Research access.
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
@@ -625,14 +625,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -669,7 +669,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams a 10% random sample of real-time tweets from a specified partition, offering a larger volume than `sample_stream`. It supports optional time-based filtering and customization of returned data for tweets, media, users, and places using field selectors and expansions.
-        
+
         Args:
             partition (integer): The "partition" parameter specifies the partition number for the stream, which is required for the GET operation at path "/2/tweets/sample10/stream".
             backfill_minutes (integer): The `backfill_minutes` parameter allows you to request up to five minutes of missed streaming data to be delivered upon reconnection, helping recover data lost during disconnections; it is only available for Academic Research access.
@@ -681,14 +681,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -733,7 +733,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Searches the entire historical archive of public Tweets using a specific query. It supports filtering by time range and pagination, allowing customization of returned fields. This differs from `tweets_recent_search`, which only covers the last seven days, and `tweet_counts_full_archive_search`, which returns counts instead of tweet data.
-        
+
         Args:
             query (string): The "query" parameter is a required string input used to specify the search criteria for retrieving tweets. Example: '(from:TwitterDev OR from:TwitterAPI) has:media -is:retweet'.
             start_time (string): Optional timestamp specifying the earliest date and time from which to retrieve Tweets, formatted as YYYY-MM-DDTHH:mm:ssZ in ISO 8601/RFC 3339 format; if not specified and end_time is provided, it defaults to 30 days before end_time.
@@ -750,14 +750,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -807,7 +807,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Searches for tweets from the past seven days matching a specific query. Allows advanced filtering, pagination, and data expansions to customize results. Unlike `tweet_counts_recent_search`, it returns full tweet objects instead of just a count.
-        
+
         Args:
             query (string): A string parameter used to specify the search query for retrieving recent tweets. Example: '(from:TwitterDev OR from:TwitterAPI) has:media -is:retweet'.
             start_time (string): Optional parameter to specify the earliest time to search for tweets, formatted as ISO8601/RFC3339 (e.g., 2023-05-12T00:00:00Z).
@@ -824,14 +824,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -875,7 +875,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Streams real-time tweets matching a user's pre-configured filtering rules from the Twitter API. Unlike `sample_stream` or `get_tweets_firehose_stream`, this provides a targeted feed. Optional parameters can customize returned data fields and specify a time window.
-        
+
         Args:
             backfill_minutes (integer): The "backfill_minutes" parameter allows clients to request up to five minutes of missed data upon reconnection, helping to recover Tweets that were missed due to a disconnection.
             start_time (string): The "start_time" parameter specifies the earliest UTC timestamp (in ISO 8601 format) from which to include Tweets in the search results. Example: '2021-02-01T18:40:40.000Z'.
@@ -886,14 +886,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -922,19 +922,19 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves the active filtering rules for a Twitter API v2 filtered stream. It can fetch all rules or a subset specified by rule IDs, with support for pagination to manage large rule sets, complementing the `add_or_delete_rules` and `search_stream` functions.
-        
+
         Args:
             ids (array): Optional array of rule IDs to fetch a subset of rules from the user's active rule set.
             max_results (integer): The maximum number of stream filtering rules to return per response, up to 1000; defaults to 1000 if not specified.
             pagination_token (string): The `pagination_token` parameter is a string used to request the next page of results in a paginated response, typically obtained from the `next_token` value in the previous response.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -957,20 +957,20 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Adds or removes filtering rules for a tweet stream. Supports a dry-run mode to validate rule syntax without application and an option to delete all existing rules. This function directly modifies the active rule set used by the `search_stream` function.
-        
+
         Args:
             dry_run (boolean): Indicates whether to test the syntax of the rule without applying it to the stream, allowing validation of rule changes without taking effect.
             delete_all (boolean): Indicates whether to delete all existing rules for the user before applying new rules; if true, all existing rules will be deleted.
             add (array): add
             delete (object): IDs and values of all deleted user-specified stream filtering rules.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -997,17 +997,17 @@ class TweetsApi(APISegmentBase):
     def get_stream_rule_usage(self, rules_count_fields=None) -> dict[str, Any]:
         """
         Retrieves the number of active filtered stream rules for the user's project and app. This helps manage usage against API limits by providing metadata about rule counts, not the number of tweets matching those rules.
-        
+
         Args:
             rules_count_fields (array): A comma separated list of RulesCount fields to display. Example: "['all_project_client_apps', 'cap_per_client_app', 'cap_per_project', 'client_app_rules_count', 'project_rules_count']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             General
         """
@@ -1024,17 +1024,17 @@ class TweetsApi(APISegmentBase):
     def delete_tweet_by_id(self, id) -> dict[str, Any]:
         """
         Deletes a specific Tweet, identified by its unique ID, on behalf of the authenticated user. This function permanently removes the targeted Tweet by sending a DELETE request to the API's corresponding endpoint.
-        
+
         Args:
             id (string): id
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -1058,7 +1058,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves detailed information for a single Tweet by its unique ID. It supports optional parameters to customize the response by specifying fields for the tweet, user, and media. Unlike `find_tweets_by_id`, which retrieves a batch of tweets, this function fetches exactly one.
-        
+
         Args:
             id (string): id
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
@@ -1067,14 +1067,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -1108,7 +1108,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves a list of users who have liked a specific tweet, identified by its ID. Supports pagination and allows for customization of the returned data fields for users and tweets, including expansions for related objects.
-        
+
         Args:
             id (string): id
             max_results (integer): Specifies the maximum number of liking users to return in a response, with a default value of 100 and a maximum allowed value of 100.
@@ -1116,14 +1116,14 @@ class TweetsApi(APISegmentBase):
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             expansions (array): A comma separated list of fields to expand. Example: "['affiliation.user_id', 'most_recent_tweet_id', 'pinned_tweet_id']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Users
         """
@@ -1160,7 +1160,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves a list of tweets that have quoted a specified tweet ID. Supports pagination and allows for response customization by specifying additional data fields for tweets, media, users, polls, and places through various expansion parameters.
-        
+
         Args:
             id (string): id
             max_results (integer): Specifies the maximum number of quote Tweets to return in the response, ranging from 1 to 100, with a default of 10.
@@ -1172,14 +1172,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -1216,7 +1216,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves a list of users who retweeted a specific tweet, identified by its ID. Supports pagination and allows customizing the response with optional fields. This function returns user objects, unlike `find_tweets_that_retweet_atweet` which returns the actual retweet objects.
-        
+
         Args:
             id (string): id
             max_results (integer): The `max_results` parameter specifies the maximum number of users to return who have retweeted the specified Tweet, with a default value of 100 and a required range of 1 to 100.
@@ -1224,14 +1224,14 @@ class TweetsApi(APISegmentBase):
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             expansions (array): A comma separated list of fields to expand. Example: "['affiliation.user_id', 'most_recent_tweet_id', 'pinned_tweet_id']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Users
         """
@@ -1267,7 +1267,7 @@ class TweetsApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves Tweet objects that are retweets of a specified tweet ID, supporting pagination and data customization. This function returns the actual retweets, distinguishing it from `tweets_id_retweeting_users` which returns the users who retweeted.
-        
+
         Args:
             id (string): id
             max_results (integer): Specifies the maximum number of retweets to return per request, with a default of 100 and a maximum value of 100.
@@ -1278,14 +1278,14 @@ class TweetsApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """
@@ -1313,18 +1313,18 @@ class TweetsApi(APISegmentBase):
     def set_reply_visibility(self, tweet_id, hidden=None) -> dict[str, Any]:
         """
         Updates the visibility of a specific reply tweet. This function sends a PUT request to hide or unhide a reply, identified by its `tweet_id`, based on the provided boolean `hidden` parameter, thus managing its state within a conversation.
-        
+
         Args:
             tweet_id (string): tweet_id
             hidden (boolean): hidden
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Tweets
         """

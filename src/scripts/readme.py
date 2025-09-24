@@ -87,29 +87,30 @@ APPS = [
     "zenquotes",
 ]
 
+
 def main():
     """
     Runs the readme generation for a predefined list of applications.
     """
-    base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'universal_mcp', 'applications'))
-    
+    base_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "universal_mcp", "applications")
+    )
+
     for app in APPS:
         app_path = os.path.join(base_path, app, "app.py")
         command = ["universal_mcp", "codegen", "readme", app_path]
-        
-        print(f"Running readme codegen for: {app}")
+
         try:
             # Using 'uv run' to ensure the command is executed in the correct environment
-            result = subprocess.run(["uv", "run"] + command, check=True, capture_output=True, text=True)
-            print(f"Successfully generated readme for: {app}")
+            subprocess.run(
+                ["uv", "run"] + command, check=True, capture_output=True, text=True
+            )
             # print(result.stdout) # Optional: print stdout for more details
-        except subprocess.CalledProcessError as e:
-            print(f"Error generating readme for {app}: {e}")
-            print(f"Stderr: {e.stderr}")
-            print(f"Stdout: {e.stdout}")
+        except subprocess.CalledProcessError:
+            pass
         except FileNotFoundError:
-            print(f"Error: Could not find app file for {app} at {app_path}")
-        print("-" * 20)
+            pass
+
 
 if __name__ == "__main__":
     main()

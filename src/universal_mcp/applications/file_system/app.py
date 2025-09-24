@@ -17,18 +17,18 @@ class FileSystemApp(BaseApplication):
     async def read_file(file_path: str):
         """
         Asynchronously reads the entire content of a specified file in binary mode. This static method takes a file path and returns its data as a bytes object, serving as a fundamental file retrieval operation within the FileSystem application.
-        
+
         Args:
             file_path (str): The path to the file to read.
-        
+
         Returns:
             bytes: The file content as bytes.
-        
+
         Raises:
             FileNotFoundError: If the file doesn't exist.
             IOError: If there's an error reading the file.
-            
-        Tags: 
+
+        Tags:
             important
         """
         with open(file_path, "rb") as f:
@@ -38,12 +38,12 @@ class FileSystemApp(BaseApplication):
     async def write_file(file_data: bytes, file_path: str = None):
         """
         Writes binary data to a specified file path. If no path is provided, it creates a unique temporary file in `/tmp`. The function returns a dictionary confirming success and providing metadata about the new file, including its path and size.
-        
+
         Args:
             file_data (bytes): The data to write to the file.
             file_path (str, optional): The path where to write the file.
                 If None, generates a random path in /tmp. Defaults to None.
-        
+
         Returns:
             dict: A dictionary containing the operation result with keys:
                 - status (str): "success" if the operation completed successfully
@@ -51,11 +51,11 @@ class FileSystemApp(BaseApplication):
                     - url (str): The file path where the data was written
                     - filename (str): The filename (same as url in this implementation)
                     - size (int): The size of the written data in bytes
-        
+
         Raises:
             IOError: If there's an error writing the file.
             PermissionError: If there are insufficient permissions to write to the path.
-            
+
         Tags:
             important
         """

@@ -1,19 +1,19 @@
-from typing import Any, List, Optional
+from typing import Any
+
 from .api_segment_base import APISegmentBase
 
 
 class MarketingApi(APISegmentBase):
-
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
     def get_marketing_campaigns(
         self,
-        sort: Optional[str] = None,
-        after: Optional[str] = None,
-        limit: Optional[int] = None,
-        name: Optional[str] = None,
-        properties: Optional[List[str]] = None,
+        sort: str | None = None,
+        after: str | None = None,
+        limit: int | None = None,
+        name: str | None = None,
+        properties: list[str] | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -84,10 +84,10 @@ class MarketingApi(APISegmentBase):
 
     def batch_read_campaigns_post(
         self,
-        inputs: List[dict[str, Any]],
-        startDate: Optional[str] = None,
-        endDate: Optional[str] = None,
-        properties: Optional[List[str]] = None,
+        inputs: list[dict[str, Any]],
+        startDate: str | None = None,
+        endDate: str | None = None,
+        properties: list[str] | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -131,7 +131,7 @@ class MarketingApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_campaigns_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def update_campaigns_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple marketing campaigns in a batch using the POST method, requiring a JSON body and authentication via OAuth2 or private apps with "marketing.campaigns.read" permissions.
@@ -166,8 +166,8 @@ class MarketingApi(APISegmentBase):
     def get_campaign_metrics(
         self,
         campaignGuid: str,
-        startDate: Optional[str] = None,
-        endDate: Optional[str] = None,
+        startDate: str | None = None,
+        endDate: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -202,10 +202,10 @@ class MarketingApi(APISegmentBase):
         self,
         campaignGuid: str,
         assetType: str,
-        after: Optional[str] = None,
-        limit: Optional[str] = None,
-        startDate: Optional[str] = None,
-        endDate: Optional[str] = None,
+        after: str | None = None,
+        limit: str | None = None,
+        startDate: str | None = None,
+        endDate: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -246,7 +246,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def archive_campaigns_batch(self, inputs: List[dict[str, Any]]) -> Any:
+    def archive_campaigns_batch(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of marketing campaigns using the HubSpot API, requiring a JSON request body and returning a 204 status upon successful completion.
@@ -351,9 +351,9 @@ class MarketingApi(APISegmentBase):
     def get_campaign_revenue_report(
         self,
         campaignGuid: str,
-        attributionModel: Optional[str] = None,
-        startDate: Optional[str] = None,
-        endDate: Optional[str] = None,
+        attributionModel: str | None = None,
+        startDate: str | None = None,
+        endDate: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -389,7 +389,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_campaigns_batch(self, inputs: List[dict[str, Any]]) -> dict[str, Any]:
+    def create_campaigns_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple marketing campaigns in a single operation using the "POST" method, accepting a JSON body with campaign details and returning a status message upon successful creation.
@@ -448,9 +448,9 @@ class MarketingApi(APISegmentBase):
     def get_campaign_by_guid(
         self,
         campaignGuid: str,
-        startDate: Optional[str] = None,
-        endDate: Optional[str] = None,
-        properties: Optional[List[str]] = None,
+        startDate: str | None = None,
+        endDate: str | None = None,
+        properties: list[str] | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -546,10 +546,10 @@ class MarketingApi(APISegmentBase):
         self,
         campaignGuid: str,
         contactType: str,
-        startDate: Optional[str] = None,
-        endDate: Optional[str] = None,
-        limit: Optional[int] = None,
-        after: Optional[str] = None,
+        startDate: str | None = None,
+        endDate: str | None = None,
+        limit: int | None = None,
+        after: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -592,10 +592,10 @@ class MarketingApi(APISegmentBase):
 
     def list_email_statistics(
         self,
-        startTimestamp: Optional[str] = None,
-        endTimestamp: Optional[str] = None,
-        emailIds: Optional[List[int]] = None,
-        property: Optional[str] = None,
+        startTimestamp: str | None = None,
+        endTimestamp: str | None = None,
+        emailIds: list[int] | None = None,
+        property: str | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -667,10 +667,10 @@ class MarketingApi(APISegmentBase):
 
     def get_email_statistics_histogram(
         self,
-        interval: Optional[str] = None,
-        startTimestamp: Optional[str] = None,
-        endTimestamp: Optional[str] = None,
-        emailIds: Optional[List[int]] = None,
+        interval: str | None = None,
+        startTimestamp: str | None = None,
+        endTimestamp: str | None = None,
+        emailIds: list[int] | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -825,24 +825,24 @@ class MarketingApi(APISegmentBase):
     def update_email_draft_by_id(
         self,
         emailId: str,
-        rssData: Optional[dict[str, Any]] = None,
-        subject: Optional[str] = None,
-        testing: Optional[dict[str, Any]] = None,
-        publishDate: Optional[str] = None,
-        language: Optional[str] = None,
-        businessUnitId: Optional[str] = None,
-        content: Optional[dict[str, Any]] = None,
-        webversion: Optional[dict[str, Any]] = None,
-        archived: Optional[bool] = None,
-        subscriptionDetails: Optional[dict[str, Any]] = None,
-        activeDomain: Optional[str] = None,
-        name: Optional[str] = None,
-        campaign: Optional[str] = None,
-        from_: Optional[dict[str, Any]] = None,
-        state: Optional[str] = None,
-        to: Optional[dict[str, Any]] = None,
-        subcategory: Optional[str] = None,
-        sendOnPublish: Optional[bool] = None,
+        rssData: dict[str, Any] | None = None,
+        subject: str | None = None,
+        testing: dict[str, Any] | None = None,
+        publishDate: str | None = None,
+        language: str | None = None,
+        businessUnitId: str | None = None,
+        content: dict[str, Any] | None = None,
+        webversion: dict[str, Any] | None = None,
+        archived: bool | None = None,
+        subscriptionDetails: dict[str, Any] | None = None,
+        activeDomain: str | None = None,
+        name: str | None = None,
+        campaign: str | None = None,
+        from_: dict[str, Any] | None = None,
+        state: str | None = None,
+        to: dict[str, Any] | None = None,
+        subcategory: str | None = None,
+        sendOnPublish: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -936,9 +936,9 @@ class MarketingApi(APISegmentBase):
     def get_email_revisions(
         self,
         emailId: str,
-        after: Optional[str] = None,
-        before: Optional[str] = None,
-        limit: Optional[int] = None,
+        after: str | None = None,
+        before: str | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -997,7 +997,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def clone_email(self, id: str, cloneName: Optional[str] = None) -> dict[str, Any]:
+    def clone_email(self, id: str, cloneName: str | None = None) -> dict[str, Any]:
         """
 
         Clones a marketing email using the POST method at the "/marketing/v3/emails/clone" endpoint, creating a duplicate email with the same properties as the original but with a unique ID.
@@ -1032,20 +1032,20 @@ class MarketingApi(APISegmentBase):
 
     def list_marketing_emails(
         self,
-        createdAt: Optional[str] = None,
-        createdAfter: Optional[str] = None,
-        createdBefore: Optional[str] = None,
-        updatedAt: Optional[str] = None,
-        updatedAfter: Optional[str] = None,
-        updatedBefore: Optional[str] = None,
-        sort: Optional[List[str]] = None,
-        after: Optional[str] = None,
-        limit: Optional[int] = None,
-        includeStats: Optional[bool] = None,
-        type: Optional[str] = None,
-        isPublished: Optional[bool] = None,
-        includedProperties: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        createdAt: str | None = None,
+        createdAfter: str | None = None,
+        createdBefore: str | None = None,
+        updatedAt: str | None = None,
+        updatedAfter: str | None = None,
+        updatedBefore: str | None = None,
+        sort: list[str] | None = None,
+        after: str | None = None,
+        limit: int | None = None,
+        includeStats: bool | None = None,
+        type: str | None = None,
+        isPublished: bool | None = None,
+        includedProperties: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1103,24 +1103,24 @@ class MarketingApi(APISegmentBase):
     def create_email_marketing_campaign(
         self,
         name: str,
-        feedbackSurveyId: Optional[str] = None,
-        rssData: Optional[dict[str, Any]] = None,
-        subject: Optional[str] = None,
-        testing: Optional[dict[str, Any]] = None,
-        publishDate: Optional[str] = None,
-        language: Optional[str] = None,
-        businessUnitId: Optional[str] = None,
-        content: Optional[dict[str, Any]] = None,
-        webversion: Optional[dict[str, Any]] = None,
-        archived: Optional[bool] = None,
-        subscriptionDetails: Optional[dict[str, Any]] = None,
-        activeDomain: Optional[str] = None,
-        campaign: Optional[str] = None,
-        from_: Optional[dict[str, Any]] = None,
-        state: Optional[str] = None,
-        to: Optional[dict[str, Any]] = None,
-        subcategory: Optional[str] = None,
-        sendOnPublish: Optional[bool] = None,
+        feedbackSurveyId: str | None = None,
+        rssData: dict[str, Any] | None = None,
+        subject: str | None = None,
+        testing: dict[str, Any] | None = None,
+        publishDate: str | None = None,
+        language: str | None = None,
+        businessUnitId: str | None = None,
+        content: dict[str, Any] | None = None,
+        webversion: dict[str, Any] | None = None,
+        archived: bool | None = None,
+        subscriptionDetails: dict[str, Any] | None = None,
+        activeDomain: str | None = None,
+        campaign: str | None = None,
+        from_: dict[str, Any] | None = None,
+        state: str | None = None,
+        to: dict[str, Any] | None = None,
+        subcategory: str | None = None,
+        sendOnPublish: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1251,9 +1251,9 @@ class MarketingApi(APISegmentBase):
     def get_email_by_id_marketing(
         self,
         emailId: str,
-        includeStats: Optional[bool] = None,
-        includedProperties: Optional[List[str]] = None,
-        archived: Optional[bool] = None,
+        includeStats: bool | None = None,
+        includedProperties: list[str] | None = None,
+        archived: bool | None = None,
     ) -> dict[str, Any]:
         """
 
@@ -1290,7 +1290,7 @@ class MarketingApi(APISegmentBase):
         return self._handle_response(response)
 
     def delete_email_by_id_marketing(
-        self, emailId: str, archived: Optional[bool] = None
+        self, emailId: str, archived: bool | None = None
     ) -> Any:
         """
 
@@ -1319,25 +1319,25 @@ class MarketingApi(APISegmentBase):
     def patch_email_by_id(
         self,
         emailId: str,
-        archived: Optional[bool] = None,
-        rssData: Optional[dict[str, Any]] = None,
-        subject: Optional[str] = None,
-        testing: Optional[dict[str, Any]] = None,
-        publishDate: Optional[str] = None,
-        language: Optional[str] = None,
-        businessUnitId: Optional[str] = None,
-        content: Optional[dict[str, Any]] = None,
-        webversion: Optional[dict[str, Any]] = None,
-        archived_body: Optional[bool] = None,
-        subscriptionDetails: Optional[dict[str, Any]] = None,
-        activeDomain: Optional[str] = None,
-        name: Optional[str] = None,
-        campaign: Optional[str] = None,
-        from_: Optional[dict[str, Any]] = None,
-        state: Optional[str] = None,
-        to: Optional[dict[str, Any]] = None,
-        subcategory: Optional[str] = None,
-        sendOnPublish: Optional[bool] = None,
+        archived: bool | None = None,
+        rssData: dict[str, Any] | None = None,
+        subject: str | None = None,
+        testing: dict[str, Any] | None = None,
+        publishDate: str | None = None,
+        language: str | None = None,
+        businessUnitId: str | None = None,
+        content: dict[str, Any] | None = None,
+        webversion: dict[str, Any] | None = None,
+        archived_body: bool | None = None,
+        subscriptionDetails: dict[str, Any] | None = None,
+        activeDomain: str | None = None,
+        name: str | None = None,
+        campaign: str | None = None,
+        from_: dict[str, Any] | None = None,
+        state: str | None = None,
+        to: dict[str, Any] | None = None,
+        subcategory: str | None = None,
+        sendOnPublish: bool | None = None,
     ) -> dict[str, Any]:
         """
 

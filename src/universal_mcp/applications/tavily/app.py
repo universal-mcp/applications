@@ -11,17 +11,17 @@ class TavilyApp(APIApplication):
     def search_and_summarize(self, query: str) -> str:
         """
         Queries the Tavily API to perform a web search. It returns a direct AI-generated answer if available; otherwise, it provides a formatted summary of the top three search results, including their titles and snippets.
-        
+
         Args:
             query: The search query string to be processed by Tavily's search engine
-        
+
         Returns:
             A string containing either a direct answer from Tavily's AI or a formatted summary of the top 3 search results, with each result containing the title and snippet
-        
+
         Raises:
             ValueError: When authentication credentials are invalid or missing (via validate() method)
             HTTPError: When the API request fails or returns an error response
-        
+
         Tags:
             search, ai, web, query, important, api-client, text-processing
         """

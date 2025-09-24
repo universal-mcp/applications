@@ -7,11 +7,8 @@ from typing import Annotated
 
 from google import genai
 from google.genai import types
-from loguru import logger
 from PIL import Image
-
 from universal_mcp.applications.application import APIApplication
-from universal_mcp.applications.file_system.app import FileSystemApp
 from universal_mcp.integrations import Integration
 
 
@@ -216,10 +213,9 @@ class GoogleGeminiApp(APIApplication):
 
 async def test_google_gemini():
     app = GoogleGeminiApp()
-    result = await app.generate_image(
+    await app.generate_image(
         "A beautiful women potrait with red green hair color"
     )
-    print(result)
 
 
 if __name__ == "__main__":

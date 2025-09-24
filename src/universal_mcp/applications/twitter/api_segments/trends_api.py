@@ -10,18 +10,18 @@ class TrendsApi(APISegmentBase):
     def get_trends_by_woeid(self, woeid, trend_fields=None) -> dict[str, Any]:
         """
         Fetches trending topics for a specific location identified by its Where On Earth ID (WOEID). It builds and executes an authenticated API request, optionally allowing users to specify which trend-related fields (e.g., 'tweet_count') to include in the returned JSON response.
-        
+
         Args:
             woeid (string): woeid
             trend_fields (array): A comma separated list of Trend fields to display. Example: "['trend_name', 'tweet_count']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Trends
         """

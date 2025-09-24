@@ -1,15 +1,14 @@
-import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 from typing import Any
 
-from universal_mcp.applications.application import APIApplication
-from universal_mcp.applications.unipile import UnipileApp
-from typing import Any, Optional
-from universal_mcp.integrations import Integration
 from loguru import logger
+from universal_mcp.applications.application import APIApplication
+from universal_mcp.integrations import Integration
+
+from universal_mcp.applications.unipile import UnipileApp
 
 
 class ScraperApp(APIApplication):
@@ -33,7 +32,7 @@ class ScraperApp(APIApplication):
             self.account_id = credentials.get("account_id")
             self._unipile_app = UnipileApp(integration=self.integration)
         else:
-            logger.warning(f"Integration not found")
+            logger.warning("Integration not found")
             self.account_id = None
             self._unipile_app = None
 
@@ -41,12 +40,12 @@ class ScraperApp(APIApplication):
         self,
         category: str = "posts",
         api: str = "classic",
-        cursor: Optional[str] = None,
-        limit: Optional[int] = None,
-        keywords: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        date_posted: Optional[str] = None,
-        content_type: Optional[str] = None,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        sort_by: str | None = None,
+        date_posted: str | None = None,
+        content_type: str | None = None,
     ) -> dict[str, Any]:
         """
         Performs a general LinkedIn search for posts using keywords and filters like date and content type. It supports pagination and can utilize either the 'classic' or 'sales_navigator' API, searching broadly across the platform rather than fetching posts from a specific user's profile.
@@ -86,8 +85,8 @@ class ScraperApp(APIApplication):
     def linkedin_list_profile_posts(
         self,
         identifier: str,
-        cursor: Optional[str] = None,
-        limit: Optional[int] = None,
+        cursor: str | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of all LinkedIn posts from a specific user or company profile using their unique identifier. This function retrieves content directly from a profile, unlike `linkedin_post_search` which finds posts across LinkedIn based on keywords and other filters.
@@ -143,9 +142,9 @@ class ScraperApp(APIApplication):
     def linkedin_list_post_comments(
         self,
         post_id: str,
-        comment_id: Optional[str] = None,
-        cursor: Optional[str] = None,
-        limit: Optional[int] = None,
+        comment_id: str | None = None,
+        cursor: str | None = None,
+        limit: int | None = None,
     ) -> dict[str, Any]:
         """
         Fetches comments for a specified LinkedIn post. If a `comment_id` is provided, it retrieves replies to that comment instead of top-level comments. This function supports pagination and specifically targets comments, unlike others in the class that search for or list entire posts.
@@ -176,54 +175,54 @@ class ScraperApp(APIApplication):
 
     def linkedin_people_search(
         self,
-        cursor: Optional[str] = None,
-        limit: Optional[int] = None,
-        keywords: Optional[str] = None,
-        last_viewed_at: Optional[int] = None,
-        saved_search_id: Optional[str] = None,
-        recent_search_id: Optional[str] = None,
-        location: Optional[dict[str, Any]] = None,
-        location_by_postal_code: Optional[dict[str, Any]] = None,
-        industry: Optional[dict[str, Any]] = None,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
-        tenure: Optional[list[dict[str, Any]]] = None,
-        groups: Optional[list[str]] = None,
-        school: Optional[dict[str, Any]] = None,
-        profile_language: Optional[list[str]] = None,
-        company: Optional[dict[str, Any]] = None,
-        company_headcount: Optional[list[dict[str, Any]]] = None,
-        company_type: Optional[list[str]] = None,
-        company_location: Optional[dict[str, Any]] = None,
-        tenure_at_company: Optional[list[dict[str, Any]]] = None,
-        past_company: Optional[dict[str, Any]] = None,
-        function: Optional[dict[str, Any]] = None,
-        role: Optional[dict[str, Any]] = None,
-        tenure_at_role: Optional[list[dict[str, Any]]] = None,
-        seniority: Optional[dict[str, Any]] = None,
-        past_role: Optional[dict[str, Any]] = None,
-        following_your_company: Optional[bool] = None,
-        viewed_your_profile_recently: Optional[bool] = None,
-        network_distance: Optional[list[str]] = None,
-        connections_of: Optional[list[str]] = None,
-        past_colleague: Optional[bool] = None,
-        shared_experiences: Optional[bool] = None,
-        changed_jobs: Optional[bool] = None,
-        posted_on_linkedin: Optional[bool] = None,
-        mentionned_in_news: Optional[bool] = None,
-        persona: Optional[list[str]] = None,
-        account_lists: Optional[dict[str, Any]] = None,
-        lead_lists: Optional[dict[str, Any]] = None,
-        viewed_profile_recently: Optional[bool] = None,
-        messaged_recently: Optional[bool] = None,
-        include_saved_leads: Optional[bool] = None,
-        include_saved_accounts: Optional[bool] = None,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        last_viewed_at: int | None = None,
+        saved_search_id: str | None = None,
+        recent_search_id: str | None = None,
+        location: dict[str, Any] | None = None,
+        location_by_postal_code: dict[str, Any] | None = None,
+        industry: dict[str, Any] | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        tenure: list[dict[str, Any]] | None = None,
+        groups: list[str] | None = None,
+        school: dict[str, Any] | None = None,
+        profile_language: list[str] | None = None,
+        company: dict[str, Any] | None = None,
+        company_headcount: list[dict[str, Any]] | None = None,
+        company_type: list[str] | None = None,
+        company_location: dict[str, Any] | None = None,
+        tenure_at_company: list[dict[str, Any]] | None = None,
+        past_company: dict[str, Any] | None = None,
+        function: dict[str, Any] | None = None,
+        role: dict[str, Any] | None = None,
+        tenure_at_role: list[dict[str, Any]] | None = None,
+        seniority: dict[str, Any] | None = None,
+        past_role: dict[str, Any] | None = None,
+        following_your_company: bool | None = None,
+        viewed_your_profile_recently: bool | None = None,
+        network_distance: list[str] | None = None,
+        connections_of: list[str] | None = None,
+        past_colleague: bool | None = None,
+        shared_experiences: bool | None = None,
+        changed_jobs: bool | None = None,
+        posted_on_linkedin: bool | None = None,
+        mentionned_in_news: bool | None = None,
+        persona: list[str] | None = None,
+        account_lists: dict[str, Any] | None = None,
+        lead_lists: dict[str, Any] | None = None,
+        viewed_profile_recently: bool | None = None,
+        messaged_recently: bool | None = None,
+        include_saved_leads: bool | None = None,
+        include_saved_accounts: bool | None = None,
     ) -> dict[str, Any]:
         """
         Performs a comprehensive LinkedIn Sales Navigator people search with advanced targeting options.
         This function provides access to LinkedIn's Sales Navigator search capabilities for finding people
         with precise filters including experience, company details, education, and relationship criteria.
-        
+
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return.
@@ -267,13 +266,13 @@ class ScraperApp(APIApplication):
             messaged_recently: LinkedIn native filter: PEOPLE YOU INTERACTED WITH / MESSAGED. Example: True
             include_saved_leads: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED LEADS. Example: True
             include_saved_accounts: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED ACCOUNTS. Example: True
-        
+
         Returns:
             A dictionary containing search results and pagination details.
-        
+
         Raises:
             httpx.HTTPError: If the API request fails.
-        
+
         Tags:
             linkedin, sales_navigator, people, search, advanced, scraper, api, important
         """
@@ -325,27 +324,27 @@ class ScraperApp(APIApplication):
 
     def linkedin_company_search(
         self,
-        cursor: Optional[str] = None,
-        limit: Optional[int] = None,
-        keywords: Optional[str] = None,
-        last_viewed_at: Optional[int] = None,
-        saved_search_id: Optional[str] = None,
-        recent_search_id: Optional[str] = None,
-        location: Optional[dict[str, Any]] = None,
-        location_by_postal_code: Optional[dict[str, Any]] = None,
-        industry: Optional[dict[str, Any]] = None,
-        company_headcount: Optional[list[dict[str, Any]]] = None,
-        company_type: Optional[list[str]] = None,
-        company_location: Optional[dict[str, Any]] = None,
-        following_your_company: Optional[bool] = None,
-        account_lists: Optional[dict[str, Any]] = None,
-        include_saved_accounts: Optional[bool] = None,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        last_viewed_at: int | None = None,
+        saved_search_id: str | None = None,
+        recent_search_id: str | None = None,
+        location: dict[str, Any] | None = None,
+        location_by_postal_code: dict[str, Any] | None = None,
+        industry: dict[str, Any] | None = None,
+        company_headcount: list[dict[str, Any]] | None = None,
+        company_type: list[str] | None = None,
+        company_location: dict[str, Any] | None = None,
+        following_your_company: bool | None = None,
+        account_lists: dict[str, Any] | None = None,
+        include_saved_accounts: bool | None = None,
     ) -> dict[str, Any]:
         """
         Performs a comprehensive LinkedIn Sales Navigator company search with advanced targeting options.
         This function provides access to LinkedIn's Sales Navigator search capabilities for finding companies
         with precise filters including size, location, industry, and relationship criteria.
-        
+
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return.
@@ -362,13 +361,13 @@ class ScraperApp(APIApplication):
             following_your_company: LinkedIn native filter: FOLLOWING YOUR COMPANY. Example: True
             account_lists: LinkedIn native filter: ACCOUNT LISTS. Example: {"include": ["account_list_id_1"]}
             include_saved_accounts: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED ACCOUNTS. Example: True
-        
+
         Returns:
             A dictionary containing search results and pagination details.
-        
+
         Raises:
             httpx.HTTPError: If the API request fails.
-        
+
         Tags:
             linkedin, sales_navigator, companies, search, advanced, scraper, api, important
         """

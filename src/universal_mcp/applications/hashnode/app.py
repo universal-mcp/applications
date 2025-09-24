@@ -1,5 +1,4 @@
 from gql import gql
-
 from universal_mcp.applications.application import GraphQLApplication
 from universal_mcp.integrations import Integration
 
@@ -69,13 +68,102 @@ class HashnodeApp(GraphQLApplication):
             variables["input"]["subtitle"] = subtitle
 
         if cover_image:
-            variables["input"]["bannerImageOptions"] = {
-                "url": cover_image,
-                "potrait": False,
-            }
+            variables["input"]["coverImageOptions"] = {"coverImageURL": cover_image}
 
         result = self.mutate(publish_post_mutation, variables)
         return result["publishPost"]["post"]["url"]
+
+    def create_draft(
+        self,
+        publication_id: str,
+        title: str,
+        content: str,
+        tags: list[str] = None,
+        slug: str = None,
+        subtitle: str = None,
+        cover_image: str = None,
+    ) -> dict:
+        """
+        Creates a draft post on Hashnode.
+
+        Args:
+            publication_id: The ID of the publication to create the draft in.
+            title: The title of the draft.
+            content: The markdown content of the draft.
+            tags: Optional list of tag names to add to the draft.
+            slug: Optional custom URL slug for the draft.
+            subtitle: Optional subtitle for the draft.
+            cover_image: Optional URL of the cover image for the draft.
+
+        Returns:
+            A dictionary containing the created draft's details, including its ID.
+
+        Raises:
+            GraphQLError: If the API request fails.
+
+        Tags:
+            create, draft, post, hashnode, api, important
+        """
+        create_draft_mutation = gql("""
+        mutation CreateDraft($input: CreateDraftInput!) {
+          createDraft(input: $input) {
+            draft {
+              id
+              slug
+              title
+            }
+          }
+        }
+        """)
+        variables = {
+            "input": {
+                "publicationId": publication_id,
+                "title": title,
+                "contentMarkdown": content,
+            }
+        }
+        if tags:
+            variables["input"]["tags"] = [
+                {"name": tag, "slug": tag.replace(" ", "-").lower()} for tag in tags
+            ]
+        if slug:
+            variables["input"]["slug"] = slug
+        if subtitle:
+            variables["input"]["subtitle"] = subtitle
+        if cover_image:
+            variables["input"]["coverImageOptions"] = {"coverImageURL": cover_image}
+
+        result = self.mutate(create_draft_mutation, variables)
+        return result["createDraft"]["draft"]
+
+    def publish_draft(self, post_id: str) -> str:
+        """
+        Publishes a draft post.
+
+        Args:
+            post_id: The ID of the draft to publish.
+
+        Returns:
+            The URL of the published post.
+
+        Raises:
+            GraphQLError: If the API request fails.
+
+        Tags:
+            publish, draft, post, hashnode, api, important
+        """
+        publish_draft_mutation = gql("""
+        mutation PublishDraft($input: PublishDraftInput!) {
+          publishDraft(input: $input) {
+            post {
+              url
+            }
+          }
+        }
+        """)
+        variables = {"input": {"draftId": post_id}}
+        result = self.mutate(publish_draft_mutation, variables)
+        return result["publishDraft"]["post"]["url"]
 
     def get_me(self) -> dict:
         """
@@ -190,25 +278,82 @@ class HashnodeApp(GraphQLApplication):
         result = self.query(get_publication_query, variables)
         return result.get("publication")
 
-    def get_post(self, post_id: str) -> dict:
+    def list_posts(
+        self, publication_id: str, first: int = 10, after: str = None
+    ) -> dict:
         """
-        Fetches details of a single post by slug and hostname.
+        Lists posts from a publication.
 
         Args:
-            post_id: The ID of the post to fetch details for. This can be fetched by using get_publication method.
+            publication_id: The ID of the publication.
+            first: The number of posts to fetch. Defaults to 10.
+            after: The cursor for pagination.
+
+        Returns:
+            A dictionary containing the list of posts and pagination info.
+
+        Raises:
+            GraphQLError: If the API request fails.
+
+        Tags:
+            list, posts, hashnode, api, query, important
+        """
+        list_posts_query = gql("""
+        query Publication($id: ObjectId!, $first: Int!, $after: String) {
+            publication(id: $id) {
+                posts(first: $first, after: $after) {
+                    edges {
+                        node {
+                            id
+                            title
+                            slug
+                            url
+                        }
+                        cursor
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
+            }
+        }
+        """)
+        variables = {"id": publication_id, "first": first}
+        if after:
+            variables["after"] = after
+        result = self.query(list_posts_query, variables)
+        return result.get("publication", {}).get("posts")
+
+    def get_post(
+        self, post_id: str = None, slug: str = None, hostname: str = None
+    ) -> dict:
+        """
+        Fetches details of a single post by ID, or by slug and hostname.
+
+        Args:
+            post_id: The ID of the post to fetch.
+            slug: The slug of the post.
+            hostname: The hostname of the publication the post belongs to.
 
         Returns:
             A dictionary containing post details.
 
         Raises:
             GraphQLError: If the API request fails.
+            ValueError: If neither post_id nor both slug and hostname are provided.
 
         Tags:
             get, post, hashnode, api, query, important
         """
+        if not post_id and not (slug and hostname):
+            raise ValueError(
+                "Either post_id or both slug and hostname must be provided."
+            )
+
         get_post_query = gql("""
-        query Post($id: ID!) {
-            post(id: $id) {
+        query Post($id: ID, $slug: String, $hostname: String) {
+            post(id: $id, slug: $slug, hostname: $hostname) {
                 id
                 slug
                 previousSlugs
@@ -229,11 +374,17 @@ class HashnodeApp(GraphQLApplication):
             }
         }
         """)
-        variables = {"id": post_id}
+        variables = {}
+        if post_id:
+            variables["id"] = post_id
+        else:
+            variables["slug"] = slug
+            variables["hostname"] = hostname
+
         result = self.query(get_post_query, variables)
         return result.get("post")
 
-    def update_post(
+    def modify_post(
         self,
         post_id: str,
         title: str = None,
@@ -244,7 +395,7 @@ class HashnodeApp(GraphQLApplication):
         cover_image: str = None,
     ) -> str:
         """
-        Updates an existing post using the GraphQL API.
+        Modifies an existing post using the GraphQL API.
 
         Args:
             post_id: The ID of the post to update.
@@ -262,7 +413,7 @@ class HashnodeApp(GraphQLApplication):
             GraphQLError: If the API request fails.
 
         Tags:
-            update, post, hashnode, api
+            modify, post, hashnode, api, important
         """
         update_post_mutation = gql("""
         mutation UpdatePost($input: UpdatePostInput!) {
@@ -283,9 +434,7 @@ class HashnodeApp(GraphQLApplication):
         if title:
             variables["input"]["title"] = title
         if content:
-            variables["input"]["contentMarkdown"] = (
-                content  # Assuming 'contentMarkdown' is the field name for content
-            )
+            variables["input"]["contentMarkdown"] = content
         if tags:
             variables["input"]["tags"] = [
                 {"name": tag, "slug": tag.replace(" ", "-").lower()} for tag in tags
@@ -295,10 +444,7 @@ class HashnodeApp(GraphQLApplication):
         if subtitle:
             variables["input"]["subtitle"] = subtitle
         if cover_image:
-            variables["input"]["bannerImageOptions"] = {
-                "url": cover_image,
-                "potrait": False,  # Assuming 'potrait' is a required field for bannerImageOptions
-            }
+            variables["input"]["coverImageOptions"] = {"coverImageURL": cover_image}
 
         result = self.mutate(update_post_mutation, variables)
         return result["updatePost"]["post"]["url"]
@@ -334,7 +480,7 @@ class HashnodeApp(GraphQLApplication):
         """)
         variables = {"input": {"id": post_id}}
         result = self.mutate(delete_post_mutation, variables)
-        return result.get("deletePost", {}).get("id", "Post deleted successfully")
+        return result.get("removePost", {}).get("post", "Post deleted successfully")
 
     def add_comment(self, post_id: str, content: str) -> dict:
         """
@@ -406,8 +552,8 @@ class HashnodeApp(GraphQLApplication):
         variables = {"input": {"id": comment_id}}
         result = self.mutate(delete_comment_mutation, variables)
         return result.get("removeComment", {}).get(
-            "id", "Comment deleted successfully"
-        )  # Adjust based on actual API return
+            "comment", "Comment deleted successfully"
+        )
 
     def get_user(self, username: str) -> dict:
         """
@@ -445,10 +591,13 @@ class HashnodeApp(GraphQLApplication):
     def list_tools(self):
         return [
             self.publish_post,
+            self.create_draft,
+            self.publish_draft,
             self.get_me,
             self.get_publication,
+            self.list_posts,
             self.get_post,
-            self.update_post,
+            self.modify_post,
             self.delete_post,
             self.add_comment,
             self.delete_comment,

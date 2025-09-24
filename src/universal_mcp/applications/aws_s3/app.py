@@ -4,7 +4,6 @@ from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
-
 from universal_mcp.applications.application import BaseApplication
 from universal_mcp.integrations import Integration
 
@@ -49,7 +48,7 @@ class AwsS3App(BaseApplication):
     def list_buckets(self) -> list[str]:
         """
         Retrieves all S3 buckets accessible by the configured AWS credentials. It calls the S3 API's list_buckets operation and processes the response to return a simple list containing just the names of the buckets.
-        
+
         Returns:
             List[str]: A list of bucket names.
         """
@@ -59,11 +58,11 @@ class AwsS3App(BaseApplication):
     def create_bucket(self, bucket_name: str, region: str | None = None) -> bool:
         """
         Creates a new Amazon S3 bucket with a specified name and optional region. Returns `True` upon successful creation, or `False` if an AWS client error, such as a naming conflict or permission issue, occurs.
-        
+
         Args:
             bucket_name (str): The name of the bucket to create.
             region (str, optional): The region to create the bucket in.
-        
+
         Returns:
             bool: True if the bucket was created successfully.
         Tags:
@@ -84,10 +83,10 @@ class AwsS3App(BaseApplication):
     def delete_bucket(self, bucket_name: str) -> bool:
         """
         Deletes a specified S3 bucket. The operation requires the bucket to be empty to succeed. It returns `True` if the bucket is successfully deleted and `False` if an error occurs, such as the bucket not being found or containing objects.
-        
+
         Args:
             bucket_name (str): The name of the bucket to delete.
-        
+
         Returns:
             bool: True if the bucket was deleted successfully.
         Tags:
@@ -102,10 +101,10 @@ class AwsS3App(BaseApplication):
     def get_bucket_policy(self, bucket_name: str) -> dict[str, Any]:
         """
         Retrieves the IAM resource policy for a specified S3 bucket, parsing the JSON string into a dictionary. If the operation fails due to permissions or a non-existent policy, it returns an error dictionary. This complements `put_bucket_policy`, which applies a new policy.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
-        
+
         Returns:
             Dict[str, Any]: The bucket policy as a dictionary.
         Tags:
@@ -120,11 +119,11 @@ class AwsS3App(BaseApplication):
     def set_bucket_policy(self, bucket_name: str, policy: dict[str, Any]) -> bool:
         """
         Applies or replaces the access policy for a specified S3 bucket. The function accepts the policy as a dictionary, converts it to JSON, and assigns it to the bucket. This write operation is the counterpart to `get_bucket_policy` and returns `True` on success.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             policy (Dict[str, Any]): The bucket policy as a dictionary.
-        
+
         Returns:
             bool: True if the policy was set successfully.
         Tags:
@@ -136,14 +135,16 @@ class AwsS3App(BaseApplication):
         except ClientError:
             return False
 
-    def list_subdirectories(self, bucket_name: str, prefix: str | None = None) -> list[str]:
+    def list_subdirectories(
+        self, bucket_name: str, prefix: str | None = None
+    ) -> list[str]:
         """
         Lists immediate subdirectories (common prefixes) within an S3 bucket. If a prefix is provided, it returns subdirectories under that path; otherwise, it lists top-level directories. This function specifically lists folders, distinguishing it from `list_objects`, which lists files.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix (str, optional): The prefix to list folders under.
-        
+
         Returns:
             List[str]: A list of folder prefixes.
         Tags:
@@ -168,12 +169,12 @@ class AwsS3App(BaseApplication):
     ) -> bool:
         """
         Creates a prefix (folder) in an S3 bucket, optionally nested under a parent prefix. It simulates a directory by creating a zero-byte object with a key ending in a slash ('/'), distinguishing it from put_object, which uploads content.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix_name (str): The name of the prefix to create.
             parent_prefix (str, optional): The parent prefix (folder path).
-        
+
         Returns:
             bool: True if the prefix was created successfully.
         Tags:
@@ -189,11 +190,11 @@ class AwsS3App(BaseApplication):
     def list_objects(self, bucket_name: str, prefix: str) -> list[dict[str, Any]]:
         """
         Paginates through and lists all objects within a specified S3 bucket prefix. It returns a curated list of metadata for each object (key, name, size, last modified), excluding folder placeholders. This function specifically lists files, distinguishing it from `list_prefixes` which lists folders.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix (str): The prefix (folder path) to list objects under.
-        
+
         Returns:
             List[Dict[str, Any]]: A list of dictionaries containing object metadata.
         Tags:
@@ -222,13 +223,13 @@ class AwsS3App(BaseApplication):
     ) -> bool:
         """
         Uploads string content to create an object in a specified S3 bucket and prefix. The content is UTF-8 encoded before being written. This method is for text, distinguishing it from `put_object_from_base64` which handles binary data.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix (str): The prefix (folder path) where the object will be created.
             object_name (str): The name of the object to create.
             content (str): The content to write into the object.
-        
+
         Returns:
             bool: True if the object was created successfully.
         Tags:
@@ -245,13 +246,13 @@ class AwsS3App(BaseApplication):
     ) -> bool:
         """
         Decodes a base64 string into binary data and uploads it as an object to a specified S3 location. This method is designed for binary files, differentiating it from `put_object` which handles plain text content. Returns true on success.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix (str): The prefix (folder path) where the object will be created.
             object_name (str): The name of the object to create.
             base64_content (str): The base64-encoded content to upload.
-        
+
         Returns:
             bool: True if the object was created successfully.
         Tags:
@@ -268,11 +269,11 @@ class AwsS3App(BaseApplication):
     def get_object_with_content(self, bucket_name: str, key: str) -> dict[str, Any]:
         """
         Retrieves an S3 object's content. It decodes text files as UTF-8 or encodes binary files as base64 based on the object's key. This function downloads the full object body, unlike `get_object_metadata` which only fetches metadata without content, returning the content, name, size, and type.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             key (str): The key (path) to the object.
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing the object's name, content type, content (as text or base64), and size.
         Tags:
@@ -301,11 +302,11 @@ class AwsS3App(BaseApplication):
     def get_object_metadata(self, bucket_name: str, key: str) -> dict[str, Any]:
         """
         Efficiently retrieves metadata for a specified S3 object, such as size and last modified date, without downloading its content. This function uses a HEAD request, making it faster than `get_object_content` for accessing object properties. Returns a dictionary of metadata or an error message on failure.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             key (str): The key (path) to the object.
-        
+
         Returns:
             Dict[str, Any]: A dictionary containing the object's metadata.
         Tags:
@@ -332,13 +333,13 @@ class AwsS3App(BaseApplication):
     ) -> bool:
         """
         Copies an S3 object from a specified source location to a destination, which can be in the same or a different bucket. Unlike `move_object`, the original object remains at the source after the copy operation. It returns `True` for a successful operation.
-        
+
         Args:
             source_bucket (str): The source bucket name.
             source_key (str): The source object key.
             dest_bucket (str): The destination bucket name.
             dest_key (str): The destination object key.
-        
+
         Returns:
             bool: True if the object was copied successfully.
         Tags:
@@ -358,13 +359,13 @@ class AwsS3App(BaseApplication):
     ) -> bool:
         """
         Moves an S3 object from a source to a destination. This is achieved by first copying the object to the new location and subsequently deleting the original. The move can occur within the same bucket or between different ones, returning `True` on success.
-        
+
         Args:
             source_bucket (str): The source bucket name.
             source_key (str): The source object key.
             dest_bucket (str): The destination bucket name.
             dest_key (str): The destination object key.
-        
+
         Returns:
             bool: True if the object was moved successfully.
         Tags:
@@ -377,11 +378,11 @@ class AwsS3App(BaseApplication):
     def delete_single_object(self, bucket_name: str, key: str) -> bool:
         """
         Deletes a single, specified object from an S3 bucket using its key. Returns `True` if successful, otherwise `False`. For bulk deletions in a single request, the `delete_objects` function should be used instead.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             key (str): The key (path) to the object to delete.
-        
+
         Returns:
             bool: True if the object was deleted successfully.
         Tags:
@@ -396,11 +397,11 @@ class AwsS3App(BaseApplication):
     def delete_objects(self, bucket_name: str, keys: list[str]) -> dict[str, Any]:
         """
         Performs a bulk deletion of objects from a specified S3 bucket in a single request. Given a list of keys, it returns a dictionary detailing successful deletions and any errors. This method is the batch-processing counterpart to the singular `delete_object` function, designed for efficiency.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             keys (List[str]): List of object keys to delete.
-        
+
         Returns:
             Dict[str, Any]: Results of the deletion operation.
         Tags:
@@ -427,13 +428,13 @@ class AwsS3App(BaseApplication):
     ) -> str:
         """
         Generates a temporary, secure URL for a specific S3 object. This URL grants time-limited permissions for actions like GET, PUT, or DELETE, expiring after a defined period. It allows object access without sharing permanent AWS credentials.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             key (str): The key (path) to the object.
             expiration (int): Time in seconds for the presigned URL to remain valid (default: 3600).
             http_method (str): HTTP method for the presigned URL (default: 'GET').
-        
+
         Returns:
             str: The presigned URL or error message.
         Tags:
@@ -465,14 +466,14 @@ class AwsS3App(BaseApplication):
     ) -> list[dict[str, Any]]:
         """
         Filters objects within an S3 bucket and prefix based on a name pattern and size range. It retrieves all objects via `list_objects` and then applies the specified criteria client-side, returning a refined list of matching objects and their metadata.
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix (str): The prefix to search within.
             name_pattern (str): Pattern to match in object names (case-insensitive).
             min_size (int, optional): Minimum object size in bytes.
             max_size (int, optional): Maximum object size in bytes.
-        
+
         Returns:
             List[Dict[str, Any]]: List of matching objects with metadata.
         Tags:
@@ -499,11 +500,11 @@ class AwsS3App(BaseApplication):
     def get_storage_summary(self, bucket_name: str, prefix: str = "") -> dict[str, Any]:
         """
         Calculates and returns statistics for an S3 bucket or prefix. The result includes the total number of objects, their combined size in bytes, and a human-readable string representation of the size (e.g., '15.2 MB').
-        
+
         Args:
             bucket_name (str): The name of the S3 bucket.
             prefix (str): The prefix to calculate size for (default: entire bucket).
-        
+
         Returns:
             Dict[str, Any]: Dictionary containing total size, object count, and human-readable size.
         Tags:

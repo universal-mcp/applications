@@ -17,21 +17,21 @@ class SpacesApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves detailed information for a batch of spaces, specified by a list of their unique IDs. Optional parameters allow for customizing the response by including specific fields and expansions. This method is distinct from `find_space_by_id`, which fetches only a single space per call.
-        
+
         Args:
             ids (array): Required array of IDs for the requested spaces.
             space_fields (array): A comma separated list of Space fields to display. Example: "['created_at', 'creator_id', 'ended_at', 'host_ids', 'id', 'invited_user_ids', 'is_ticketed', 'lang', 'participant_count', 'scheduled_start', 'speaker_ids', 'started_at', 'state', 'subscriber_count', 'title', 'topic_ids', 'updated_at']".
             expansions (array): A comma separated list of fields to expand. Example: "['creator_id', 'host_ids', 'invited_user_ids', 'speaker_ids', 'topic_ids']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             topic_fields (array): A comma separated list of Topic fields to display. Example: "['description', 'id', 'name']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Spaces
         """
@@ -61,21 +61,21 @@ class SpacesApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Fetches a list of spaces created by specified users, identified by their user IDs. This function is distinct from `find_spaces_by_ids`, which retrieves spaces by their own unique IDs. Optional parameters allow for customizing the fields returned for spaces, users, and topics.
-        
+
         Args:
             user_ids (array): **user_ids**: Required array of user IDs for filtering spaces by their creators.
             space_fields (array): A comma separated list of Space fields to display. Example: "['created_at', 'creator_id', 'ended_at', 'host_ids', 'id', 'invited_user_ids', 'is_ticketed', 'lang', 'participant_count', 'scheduled_start', 'speaker_ids', 'started_at', 'state', 'subscriber_count', 'title', 'topic_ids', 'updated_at']".
             expansions (array): A comma separated list of fields to expand. Example: "['creator_id', 'host_ids', 'invited_user_ids', 'speaker_ids', 'topic_ids']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             topic_fields (array): A comma separated list of Topic fields to display. Example: "['description', 'id', 'name']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Spaces
         """
@@ -107,7 +107,7 @@ class SpacesApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Performs a keyword-based search for Twitter Spaces, allowing filters by state (e.g., 'live', 'scheduled'). The function supports customizing the response data by specifying fields for spaces, users, and topics, distinguishing it from methods that find spaces by specific IDs.
-        
+
         Args:
             query (string): The "query" parameter is a required string input for the GET operation at path "/2/spaces/search", used to specify search terms for finding spaces. Example: 'crypto'.
             state (string): Optional query parameter to filter search results by space state, which can be "live," "scheduled," or "all" (default).
@@ -116,14 +116,14 @@ class SpacesApi(APISegmentBase):
             expansions (array): A comma separated list of fields to expand. Example: "['creator_id', 'host_ids', 'invited_user_ids', 'speaker_ids', 'topic_ids']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             topic_fields (array): A comma separated list of Topic fields to display. Example: "['description', 'id', 'name']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Spaces
         """
@@ -155,21 +155,21 @@ class SpacesApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves detailed information for a single space using its unique ID. Optional parameters allow customizing the response by specifying fields and expansions. Unlike `find_spaces_by_ids`, which fetches multiple spaces, this function targets only one specific space.
-        
+
         Args:
             id (string): id
             space_fields (array): A comma separated list of Space fields to display. Example: "['created_at', 'creator_id', 'ended_at', 'host_ids', 'id', 'invited_user_ids', 'is_ticketed', 'lang', 'participant_count', 'scheduled_start', 'speaker_ids', 'started_at', 'state', 'subscriber_count', 'title', 'topic_ids', 'updated_at']".
             expansions (array): A comma separated list of fields to expand. Example: "['creator_id', 'host_ids', 'invited_user_ids', 'speaker_ids', 'topic_ids']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             topic_fields (array): A comma separated list of Topic fields to display. Example: "['description', 'id', 'name']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Spaces
         """
@@ -201,7 +201,7 @@ class SpacesApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves a list of users who have purchased tickets for a specific ticketed Space, identified by its ID. This function supports pagination and allows for the customization of user and tweet fields in the API response.
-        
+
         Args:
             id (string): id
             pagination_token (string): Optional token used for pagination to retrieve the next set of results in a sequence.
@@ -209,14 +209,14 @@ class SpacesApi(APISegmentBase):
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             expansions (array): A comma separated list of fields to expand. Example: "['affiliation.user_id', 'most_recent_tweet_id', 'pinned_tweet_id']".
             tweet_fields (array): A comma separated list of Tweet fields to display. Example: "['article', 'attachments', 'author_id', 'card_uri', 'context_annotations', 'conversation_id', 'created_at', 'edit_controls', 'edit_history_tweet_ids', 'entities', 'geo', 'id', 'in_reply_to_user_id', 'lang', 'non_public_metrics', 'note_tweet', 'organic_metrics', 'possibly_sensitive', 'promoted_metrics', 'public_metrics', 'referenced_tweets', 'reply_settings', 'scopes', 'source', 'text', 'username', 'withheld']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Spaces, Tweets
         """
@@ -251,7 +251,7 @@ class SpacesApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Fetches tweets from a specific Space using its ID. Allows extensive customization of returned data fields (e.g., media, user) and limits results. Unlike `space_buyers`, which retrieves users who purchased tickets, this function returns the actual tweets shared within the Space.
-        
+
         Args:
             id (string): id
             max_results (integer): The `max_results` parameter limits the number of tweets returned in the response for the GET operation at "/2/spaces/{id}/tweets", with a default of 100. Example: '25'.
@@ -261,14 +261,14 @@ class SpacesApi(APISegmentBase):
             poll_fields (array): A comma separated list of Poll fields to display. Example: "['duration_minutes', 'end_datetime', 'id', 'options', 'voting_status']".
             user_fields (array): A comma separated list of User fields to display. Example: "['affiliation', 'connection_status', 'created_at', 'description', 'entities', 'id', 'location', 'most_recent_tweet_id', 'name', 'pinned_tweet_id', 'profile_banner_url', 'profile_image_url', 'protected', 'public_metrics', 'receives_your_dm', 'subscription_type', 'url', 'username', 'verified', 'verified_type', 'withheld']".
             place_fields (array): A comma separated list of Place fields to display. Example: "['contained_within', 'country', 'country_code', 'full_name', 'geo', 'id', 'name', 'place_type']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Spaces, Tweets
         """

@@ -1,9 +1,10 @@
 from typing import Any
 
-import resend
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
+
+import resend
 
 
 class ResendApp(APIApplication):
@@ -40,19 +41,19 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Sends a single email with a specified subject and text body to a list of recipients via the Resend API. Unlike `send_batch_emails`, which processes multiple distinct emails at once, this function is designed for dispatching one individual email composition per API call.
-        
+
         Args:
             from_email: The email address to send the email from in this format:- Ankit <ankit@agentr.dev>
             to_emails: A list of email addresses to send the email to.
             subject: The subject of the email.
             text: The text content of the email.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If the email fails to send due to an API error.
-        
+
         Tags:
             send, email, api, communication, important
         """
@@ -75,16 +76,16 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Sends multiple emails (1-100) in a single API request. Unlike the `send_email` function which handles a single message, this accepts a list of email objects for efficient, high-volume delivery. It validates that the batch size is within the allowed limits before making the API call.
-        
+
         Args:
             emails: A list of dictionaries containing parameters for individual emails, such as `from`, `to`, `subject`, `html`, and `text`.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If the batch email sending fails or if the number of emails is not between 1 and 100.
-        
+
         Tags:
             batch, send, emails, resend-api
         """
@@ -103,16 +104,16 @@ class ResendApp(APIApplication):
     def retrieve_email_by_id(self, email_id: str) -> dict[str, Any]:
         """
         Retrieves the details and status of a single email from the Resend API using its unique identifier. This function allows for looking up a specific email that has already been sent or scheduled, distinct from functions that initiate sending.
-        
+
         Args:
             email_id: The unique identifier of the email to retrieve.
-        
+
         Returns:
             A dictionary containing the details of the retrieved email.
-        
+
         Raises:
             ToolError: Raised if the retrieval of the email fails due to an internal error.
-        
+
         Tags:
             retrieve, email, management
         """
@@ -123,22 +124,20 @@ class ResendApp(APIApplication):
         except Exception as e:
             raise ToolError(f"Failed to retrieve email: {e}")
 
-    def reschedule_email(
-        self, email_id: str, scheduled_at: str
-    ) -> dict[str, Any]:
+    def reschedule_email(self, email_id: str, scheduled_at: str) -> dict[str, Any]:
         """
         Modifies the delivery time for a specific, previously scheduled email using its ID. It updates the `scheduled_at` attribute to a new ISO 8601 formatted time, effectively rescheduling its dispatch. This differs from `cancel_scheduled_email`, which permanently stops the send.
-        
+
         Args:
             email_id: The ID of the email to update.
             scheduled_at: The new scheduled time in ISO 8601 format.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If updating the scheduled email fails.
-        
+
         Tags:
             update, email, async_job, management
         """
@@ -156,16 +155,16 @@ class ResendApp(APIApplication):
     def cancel_scheduled_email(self, email_id: str) -> dict[str, Any]:
         """
         Cancels a previously scheduled email using its unique ID, preventing it from being sent. This function calls the Resend API's cancellation endpoint, returning a confirmation response. It is distinct from `update_scheduled_email`, which reschedules the email instead of stopping its transmission.
-        
+
         Args:
             email_id: The ID of the scheduled email to cancel.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If canceling the scheduled email fails.
-        
+
         Tags:
             cancel, email, management
         """
@@ -179,16 +178,16 @@ class ResendApp(APIApplication):
     def create_domain(self, name: str) -> dict[str, Any]:
         """
         Registers a new sending domain with the Resend service using the provided name. This is a prerequisite for sending emails from your own domain and returns a dictionary containing details of the new domain object, which can then be verified and managed with other domain-related functions.
-        
+
         Args:
             name: The name of the domain to create (e.g., 'example.com')
-        
+
         Returns:
             A dictionary containing the created domain object and its details.
-        
+
         Raises:
             ToolError: If the domain creation fails due to API errors or invalid input.
-        
+
         Tags:
             create, domain, management, api, batch, important
         """
@@ -203,16 +202,16 @@ class ResendApp(APIApplication):
     def get_domain(self, domain_id: str) -> dict[str, Any]:
         """
         Retrieves the details of a specific domain from the Resend API using its unique ID. Unlike `list_domains`, which fetches all domains, this function targets a single record and returns a dictionary containing the domain's properties, like its verification status and tracking settings.
-        
+
         Args:
             domain_id: The ID of the domain to retrieve.
-        
+
         Returns:
             A dictionary containing the domain object.
-        
+
         Raises:
             ToolError: Raised if the domain retrieval fails.
-        
+
         Tags:
             retrieve, domain, management
         """
@@ -226,16 +225,16 @@ class ResendApp(APIApplication):
     def verify_domain(self, domain_id: str) -> dict[str, Any]:
         """
         Triggers the verification process for a registered domain using its unique ID. This action is crucial for authorizing the domain to send emails via Resend and returns an API response containing the verification status and necessary DNS records to complete the process.
-        
+
         Args:
             domain_id: The ID of the domain to verify.
-        
+
         Returns:
             A dictionary containing the response from the domain verification API.
-        
+
         Raises:
             ToolError: If the domain verification process fails.
-        
+
         Tags:
             verify, domain
         """
@@ -255,19 +254,19 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates settings for a specific domain identified by its ID. This function can modify configurations like open and click tracking, and TLS enforcement. It returns the updated domain object from the API, raising a ToolError if the update fails. Only the provided settings are modified.
-        
+
         Args:
             domain_id: The ID of the domain to update.
             open_tracking: Enable or disable open tracking.
             click_tracking: Enable or disable click tracking.
             tls: The TLS enforcement policy (enforced or opportunistic).
-        
+
         Returns:
             A dictionary containing the updated domain object.
-        
+
         Raises:
             ToolError: Raised if updating the domain fails.
-        
+
         Tags:
             update, domain, management
         """
@@ -288,13 +287,13 @@ class ResendApp(APIApplication):
     def list_domains(self) -> list[dict[str, Any]]:
         """
         Fetches a complete list of all domains registered with the Resend account. Unlike `get_domain`, which retrieves a single domain by ID, this provides a comprehensive overview of all configured domains for management and verification tasks.
-        
+
         Returns:
             A list of dictionaries, each representing a domain.
-        
+
         Raises:
             ToolError: If listing the domains fails.
-        
+
         Tags:
             list, domains, important, management
         """
@@ -308,16 +307,16 @@ class ResendApp(APIApplication):
     def remove_domain(self, domain_id: str) -> dict[str, Any]:
         """
         Permanently removes a specific domain from the Resend account using its unique ID. This function makes an authenticated API call to delete the domain, distinguishing it from retrieval (`get_domain`) or modification (`update_domain`) operations, and raises an error if the process fails.
-        
+
         Args:
             domain_id: The unique identifier of the domain to be removed.
-        
+
         Returns:
             A dictionary containing the response from the Resend API after attempting to remove the domain.
-        
+
         Raises:
             ToolError: Raised if the operation to remove the domain fails, including if the API call encounters an error.
-        
+
         Tags:
             remove, management, api, domain
         """
@@ -331,16 +330,16 @@ class ResendApp(APIApplication):
     def create_api_key(self, name: str) -> dict[str, Any]:
         """
         Creates a new API key for authenticating with the Resend service, identified by a specified name. It returns a dictionary containing the new key object, including the generated token required for subsequent API requests.
-        
+
         Args:
             name: The name of the API key (e.g., 'Production').
-        
+
         Returns:
             A dictionary containing the new API key object.
-        
+
         Raises:
             ToolError: Raised if API key creation fails.
-        
+
         Tags:
             create, api-key, authentication
         """
@@ -355,16 +354,16 @@ class ResendApp(APIApplication):
     def list_api_keys(self) -> list[dict[str, Any]]:
         """
         Retrieves a list of all API keys for the authenticated Resend account. This read-only operation allows for auditing and viewing existing credentials, contrasting with `create_api_key` and `remove_api_key` which are used to add or delete keys.
-        
+
         Args:
             None: This function takes no arguments.
-        
+
         Returns:
             List of dictionaries, each representing an API key with associated details.
-        
+
         Raises:
             ToolError: If there is a failure when attempting to list the API keys, typically due to an underlying exception from the resend API.
-        
+
         Tags:
             list, api, important
         """
@@ -378,16 +377,16 @@ class ResendApp(APIApplication):
     def remove_api_key(self, api_key_id: str) -> dict[str, Any]:
         """
         Deletes a specific Resend API key identified by its unique ID. This function, part of the key management suite alongside `create_api_key` and `list_api_keys`, returns an API confirmation response or raises a `ToolError` if the operation fails.
-        
+
         Args:
             api_key_id: The ID of the API key to remove.
-        
+
         Returns:
             A dictionary containing the response from the Resend API after removing the API key.
-        
+
         Raises:
             ToolError: Raised if removing the API key fails, including any underlying errors.
-        
+
         Tags:
             remove, api-key, management
         """
@@ -407,19 +406,19 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Registers a new email broadcast campaign for a specific audience using the Resend API. This function creates the broadcast object but does not send it; use the `send_broadcast` function to dispatch the created campaign to the audience.
-        
+
         Args:
             audience_id: The ID of the audience to send the broadcast to.
             from_email: The sender's email address.
             subject: The subject line of the broadcast.
             html: The HTML content of the broadcast. Use {{{...}}} for merge tags.
-        
+
         Returns:
             A dictionary containing the created broadcast object.
-        
+
         Raises:
             ToolError: Raised if creating the broadcast fails due to an underlying exception.
-        
+
         Tags:
             broadcast, email, important
         """
@@ -439,16 +438,16 @@ class ResendApp(APIApplication):
     def get_broadcast(self, broadcast_id: str) -> dict[str, Any]:
         """
         Retrieves a specific broadcast's complete details, including its status and content, by its unique ID. Unlike `list_broadcasts` which retrieves all broadcasts, this function targets a single entry for inspection.
-        
+
         Args:
             broadcast_id: The ID of the broadcast to retrieve.
-        
+
         Returns:
             A dictionary containing the broadcast object.
-        
+
         Raises:
             ToolError: Raised if retrieving the broadcast fails.
-        
+
         Tags:
             retrieve, broadcast
         """
@@ -467,18 +466,18 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates the HTML content and/or subject of an existing broadcast, identified by its ID. Requires that at least one modifiable field (html or subject) is provided. This function alters a broadcast's content, differing from `send_broadcast` which triggers its delivery.
-        
+
         Args:
             broadcast_id: The ID of the broadcast to update.
             html: The new HTML content for the broadcast.
             subject: The new subject line for the broadcast.
-        
+
         Returns:
             A dictionary containing the updated broadcast object.
-        
+
         Raises:
             ToolError: Raised if updating the broadcast fails or no update fields are provided.
-        
+
         Tags:
             update, management, broadcast, api
         """
@@ -503,17 +502,17 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Initiates the delivery of a pre-existing broadcast, identified by its ID, to its target audience. The broadcast can be sent immediately or scheduled for a future time via the optional `scheduled_at` parameter. It returns the API response upon execution.
-        
+
         Args:
             broadcast_id: The ID of the broadcast to send.
             scheduled_at: The time to send the broadcast, e.g., 'in 1 min' or an ISO 8601 datetime.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If sending the broadcast fails.
-        
+
         Tags:
             broadcast, send, api, management
         """
@@ -530,16 +529,16 @@ class ResendApp(APIApplication):
     def remove_draft_broadcast(self, broadcast_id: str) -> dict[str, Any]:
         """
         Deletes a broadcast from the Resend service using its unique ID. This action is restricted to broadcasts that have a 'draft' status and have not been sent, returning the API's response upon successful removal or raising an error if the operation fails.
-        
+
         Args:
             broadcast_id: The ID of the broadcast to remove.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If removing the broadcast fails.
-        
+
         Tags:
             remove, broadcast, api-management, draft-status
         """
@@ -553,13 +552,13 @@ class ResendApp(APIApplication):
     def list_broadcasts(self) -> list[dict[str, Any]]:
         """
         Retrieves a list of all broadcasts associated with the authenticated account. Unlike `get_broadcast` which fetches a single item by ID, this function returns a list of dictionaries, each containing the attributes of a specific broadcast. Raises a `ToolError` on API failure.
-        
+
         Returns:
             A list of dictionaries, each representing a broadcast with its attributes.
-        
+
         Raises:
             ToolError: If listing broadcasts fails due to a connection, API, or other retrieval error.
-        
+
         Tags:
             list, broadcast, api, management, important
         """
@@ -573,16 +572,16 @@ class ResendApp(APIApplication):
     def create_audience(self, name: str) -> dict[str, Any]:
         """
         Creates a new audience, a named list for contacts, within the Resend service. This function requires a name for the audience and returns a dictionary representing the newly created object, enabling subsequent management of contacts within that specific list.
-        
+
         Args:
             name: The name of the audience (e.g., "Registered Users").
-        
+
         Returns:
             A dictionary containing the created audience object.
-        
+
         Raises:
             ToolError: If creating the audience fails due to an underlying error.
-        
+
         Tags:
             create, audience, management, important
         """
@@ -597,16 +596,16 @@ class ResendApp(APIApplication):
     def get_audience(self, audience_id: str) -> dict[str, Any]:
         """
         Retrieves the details of a single audience using its unique ID. This provides a targeted lookup for one audience, distinct from `list_audiences` which fetches all available audiences in the account.
-        
+
         Args:
             audience_id: The unique identifier of the audience to retrieve.
-        
+
         Returns:
             A dictionary containing all data for the requested audience object.
-        
+
         Raises:
             ToolError: If retrieving the audience from the API fails, with a message describing the error.
-        
+
         Tags:
             fetch, audience, management, api
         """
@@ -620,16 +619,16 @@ class ResendApp(APIApplication):
     def remove_audience(self, audience_id: str) -> dict[str, Any]:
         """
         Deletes a specific audience from the Resend service using its unique identifier. This function wraps the Resend API's remove operation, returning the API's response. Unlike `remove_contact`, which targets individuals, this function removes the entire contact list defined by the audience ID.
-        
+
         Args:
             audience_id: The unique identifier of the audience to remove.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: Raised if removing the audience fails due to API error or other issues.
-        
+
         Tags:
             remove, audience, management, api
         """
@@ -643,13 +642,13 @@ class ResendApp(APIApplication):
     def list_audiences(self) -> list[dict[str, Any]]:
         """
         Retrieves a complete list of all audiences from the Resend account. It returns a list of dictionaries, with each containing the details of a specific audience. This function is distinct from `get_audience`, which fetches a single audience by its ID.
-        
+
         Returns:
             A list of dictionaries, each representing an audience.
-        
+
         Raises:
             ToolError: Raised if listing the audiences fails due to an internal error.
-        
+
         Tags:
             list, audiences, management, important
         """
@@ -670,20 +669,20 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a new contact with a given email, optional name, and subscription status, adding it to a specific audience. This function populates audience lists, differing from `update_contact` which modifies existing entries, and requires a valid `audience_id` to function.
-        
+
         Args:
             audience_id: The ID of the audience to add the contact to.
             email: The email address of the contact.
             first_name: The contact's first name.
             last_name: The contact's last name.
             unsubscribed: The contact's subscription status.
-        
+
         Returns:
             A dictionary containing the created contact's ID.
-        
+
         Raises:
             ToolError: Raised if creating the contact fails.
-        
+
         Tags:
             create, contact, management, important
         """
@@ -708,18 +707,18 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a single contact's details from a specified audience by its unique ID or email address. The function requires exactly one identifier for the lookup, raising an error if the identifier is missing, ambiguous, or if the API call fails.
-        
+
         Args:
             audience_id: The ID of the audience in which to search for the contact.
             contact_id: The unique ID of the contact, if available. Exactly one of 'contact_id' or 'email' must be provided.
             email: The email address of the contact, if available. Exactly one of 'contact_id' or 'email' must be provided.
-        
+
         Returns:
             A dictionary containing the retrieved contact object, with details such as ID, email, and other contact attributes.
-        
+
         Raises:
             ToolError: Raised if neither 'contact_id' nor 'email' is provided, if both are provided (ambiguous identifier), or if retrieval from the API fails.
-        
+
         Tags:
             retrieve, contact, audience, management, api
         """
@@ -748,7 +747,7 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Updates an existing contact's details (e.g., name, subscription status) within a specific audience. The contact is identified by its unique ID or email address. This function validates inputs and returns the Resend API response, raising a ToolError on failure or if arguments are invalid.
-        
+
         Args:
             audience_id: The ID of the audience containing the contact.
             contact_id: The ID of the contact to update.
@@ -756,13 +755,13 @@ class ResendApp(APIApplication):
             first_name: The new first name for the contact.
             last_name: The new last name for the contact.
             unsubscribed: The new subscription status for the contact.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: Raised if the update fails, if an identifier is missing, or if no update fields are provided.
-        
+
         Tags:
             update, contact, management
         """
@@ -797,18 +796,18 @@ class ResendApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Removes a contact from a specified audience. The contact must be identified by either its unique ID or email address, but not both. Raises an error if the identifier is missing, ambiguous, or if the API call to the Resend service fails.
-        
+
         Args:
             audience_id: The ID of the audience.
             contact_id: The ID of the contact to remove.
             email: The email of the contact to remove.
-        
+
         Returns:
             A dictionary containing the response from the Resend API.
-        
+
         Raises:
             ToolError: If contact removal fails, or if the contact identifier is missing or ambiguous.
-        
+
         Tags:
             remove, contact-management, api-call
         """
@@ -829,16 +828,16 @@ class ResendApp(APIApplication):
     def list_contacts(self, audience_id: str) -> list[dict[str, Any]]:
         """
         Retrieves a complete list of contacts belonging to a specific audience, identified by its unique ID. This function returns all contacts within the audience, unlike `get_contact` which retrieves only a single contact by its ID or email.
-        
+
         Args:
             audience_id: The ID of the audience whose contacts you want to list.
-        
+
         Returns:
             A list of dictionaries, each representing a contact in the audience.
-        
+
         Raises:
             ToolError: Raised if listing the contacts fails.
-        
+
         Tags:
             list, contacts, management, important
         """

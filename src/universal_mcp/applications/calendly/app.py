@@ -14,7 +14,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of invitees for a specific scheduled event, identified by its UUID. The results can be filtered by invitee status or email, sorted by creation date, and the list size can be controlled using pagination parameters.
-        
+
         Args:
             uuid (string): uuid
             status (string): Indicates if the invitee "canceled" or still "active" Example: 'active'.
@@ -22,10 +22,10 @@ class CalendlyApp(APIApplication):
             email (string): Indicates if the results should be filtered by email address Example: '<email>'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             count (string): The number of rows to return Example: '20'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             scheduled_events, {uuid}, invitees, important
         """
@@ -50,13 +50,13 @@ class CalendlyApp(APIApplication):
     def get_scheduled_event(self, uuid) -> dict[str, Any]:
         """
         Retrieves the details for a specific scheduled event using its unique identifier (UUID). This targets a single event instance, differentiating it from `list_events` which fetches a collection of events and `get_event_type` which retrieves an event template.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             scheduled_events, important
         """
@@ -71,14 +71,14 @@ class CalendlyApp(APIApplication):
     def get_event_invitee(self, event_uuid, invitee_uuid) -> dict[str, Any]:
         """
         Fetches detailed information for a single invitee associated with a specific scheduled event. It uses both the event's UUID and the invitee's UUID to uniquely identify and retrieve the correct record, distinguishing it from `list_event_invitees` which returns a collection.
-        
+
         Args:
             event_uuid (string): event_uuid
             invitee_uuid (string): invitee_uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             scheduled_events, {event_uuid}, invitees1, {invitee_uuid}
         """
@@ -107,7 +107,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a list of scheduled events, offering extensive filtering by user, organization, invitee email, status, and time range. Supports pagination and sorting, providing a flexible method to query specific event data from the Calendly API.
-        
+
         Args:
             user (string): Return events that are scheduled with the user associated with this URI Example: '<uri>'.
             organization (string): Return events that are scheduled with the organization associated with this URI Example: '<uri>'.
@@ -121,10 +121,10 @@ class CalendlyApp(APIApplication):
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             count (string): The number of rows to return Example: '20'.
             group (string): Return events that are scheduled with the group associated with this URI Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             scheduled_events, important
         """
@@ -152,13 +152,13 @@ class CalendlyApp(APIApplication):
     def get_event_type(self, uuid) -> dict[str, Any]:
         """
         Retrieves the full details of a specific event type, such as its name, duration, and scheduling rules, by providing its unique identifier (UUID). It fetches a single resource, unlike list_user_sevent_types which retrieves a collection.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             event_types, {uuid}1
         """
@@ -183,7 +183,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a collection of event types from the `/event_types` endpoint. Results can be filtered by user, organization, or status, and the list supports sorting and pagination for controlled data retrieval.
-        
+
         Args:
             active (string): Return only active event types if true, only inactive if false, or all event types if this parameter is omitted. Example: '<boolean>'.
             organization (string): View available personal, team, and organization event types associated with the organization's URI. Example: '<uri>'.
@@ -193,10 +193,10 @@ class CalendlyApp(APIApplication):
             admin_managed (string): Return only admin managed event types if true, exclude admin managed event types if false, or include all event types if this parameter is omitted. Example: '<boolean>'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             count (string): The number of rows to return Example: '20'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             event_types
         """
@@ -222,13 +222,13 @@ class CalendlyApp(APIApplication):
     def get_user(self, uuid) -> dict[str, Any]:
         """
         Retrieves the details of a specific user identified by their unique identifier (UUID). This differs from `get_current_user`, which fetches the profile of the currently authenticated user.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             users, {uuid}12
         """
@@ -243,10 +243,10 @@ class CalendlyApp(APIApplication):
     def get_current_user(self) -> dict[str, Any]:
         """
         Retrieves profile information for the currently authenticated user by querying the `/users/me` endpoint. This function requires no parameters, unlike `get_user` which fetches a specific user by their UUID.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             users, me, important
         """
@@ -261,7 +261,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of invitations for a specific organization, identified by its UUID. It allows optional filtering by email and status (e.g., pending, accepted) and sorting. This function fetches a collection of invitations, unlike `get_organization_invitation` which retrieves a single one.
-        
+
         Args:
             uuid (string): uuid
             count (string): The number of rows to return Example: '20'.
@@ -269,10 +269,10 @@ class CalendlyApp(APIApplication):
             sort (string): Order results by the field name and direction specified (ascending or descending). Returns multiple sets of results in a comma-separated list. Example: 'created_at:asc'.
             email (string): Indicates if the results should be filtered by email address Example: '<email>'.
             status (string): Indicates if the results should be filtered by status ("pending", "accepted", or "declined") Example: 'accepted'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             organizations, {uuid}123, invitations
         """
@@ -297,7 +297,7 @@ class CalendlyApp(APIApplication):
     def create_organization_invitation(self, uuid, email=None) -> dict[str, Any]:
         """
         Invites a user via email to join a specific organization, identified by the organization's UUID. This function creates a new pending invitation, distinguishing it from functions that list, retrieve, or revoke existing invitations.
-        
+
         Args:
             uuid (string): uuid
             email (string): email
@@ -307,10 +307,10 @@ class CalendlyApp(APIApplication):
                   "email": "<email>"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Created
-        
+
         Tags:
             organizations, {uuid}123, invitations
         """
@@ -329,14 +329,14 @@ class CalendlyApp(APIApplication):
     def get_organization_invitation(self, org_uuid, uuid) -> dict[str, Any]:
         """
         Retrieves the details of a single, specific invitation within an organization. It requires both the organization's unique identifier (`org_uuid`) and the invitation's unique identifier (`uuid`) for the lookup.
-        
+
         Args:
             org_uuid (string): org_uuid
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             organizations, {org_uuid}, invitations1, {uuid}1234
         """
@@ -353,14 +353,14 @@ class CalendlyApp(APIApplication):
     def revoke_user_organization_invitation(self, org_uuid, uuid) -> Any:
         """
         Revokes a specific user's invitation to an organization, identified by the organization and invitation UUIDs. This action permanently deletes the pending invitation, preventing it from being accepted.
-        
+
         Args:
             org_uuid (string): org_uuid
             uuid (string): uuid
-        
+
         Returns:
             Any: No Content
-        
+
         Tags:
             organizations, {org_uuid}, invitations1, {uuid}1234
         """
@@ -377,13 +377,13 @@ class CalendlyApp(APIApplication):
     def get_organization_membership(self, uuid) -> dict[str, Any]:
         """
         Fetches the details of a specific organization membership using its unique identifier (UUID). Unlike `list_organization_memberships`, this function retrieves a single membership record rather than a collection.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             organization_memberships, {uuid}12345
         """
@@ -398,13 +398,13 @@ class CalendlyApp(APIApplication):
     def delete_organization_membership(self, uuid) -> Any:
         """
         Deletes an organization membership by its unique UUID, effectively removing the associated user from the organization. This function is the destructive counterpart to `get_organization_membership` and acts on active members, not pending invitations.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             Any: No Content
-        
+
         Tags:
             organization_memberships, {uuid}12345
         """
@@ -421,17 +421,17 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of organization memberships. The results can be filtered by user, organization, or email address to narrow down the search for specific members within one or more organizations.
-        
+
         Args:
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             count (string): The number of rows to return Example: '20'.
             email (string): Indicates if the results should be filtered by email address Example: '<email>'.
             organization (string): Indicates if the results should be filtered by organization Example: '<uri>'.
             user (string): Indicates if the results should be filtered by user Example: '<uri>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             organization_memberships
         """
@@ -454,13 +454,13 @@ class CalendlyApp(APIApplication):
     def get_webhook_subscription(self, webhook_uuid) -> dict[str, Any]:
         """
         Fetches detailed information for a single webhook subscription using its unique identifier (UUID). Unlike `list_webhook_subscriptions`, which returns a collection, this function retrieves one specific subscription's configuration and status.
-        
+
         Args:
             webhook_uuid (string): webhook_uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             webhook_subscriptions, {webhook_uuid}
         """
@@ -475,13 +475,13 @@ class CalendlyApp(APIApplication):
     def delete_webhook_subscription(self, webhook_uuid) -> Any:
         """
         Deletes a specific webhook subscription using its unique `webhook_uuid`. This function sends a DELETE request to the Calendly API to permanently remove the subscription, stopping all future event notifications. It raises an error if the deletion fails.
-        
+
         Args:
             webhook_uuid (string): webhook_uuid
-        
+
         Returns:
             Any: No Content
-        
+
         Tags:
             webhook_subscriptions, {webhook_uuid}
         """
@@ -504,7 +504,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a collection of webhook subscriptions for a given scope (organization or user). Supports filtering, sorting, and pagination to browse multiple subscriptions, unlike functions like `get_webhook_subscription` which fetches a single subscription by its unique ID.
-        
+
         Args:
             organization (string): (Required) Indicates if the results should be filtered by organization Example: '<uri>'.
             user (string): Indicates if the results should be filtered by user. This parameter is only required if the `scope` parameter is set to `user`. Example: '<uri>'.
@@ -514,10 +514,10 @@ class CalendlyApp(APIApplication):
         Supported fields are: created_at.
         Sort direction is specified as: asc, desc. Example: '<string>'.
             scope (string): (Required) Filter the list by organization or user Example: 'user'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             webhook_subscriptions
         """
@@ -550,7 +550,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a Calendly webhook subscription for specified events. It requires a callback URL, the scope (e.g., organization, user), and the list of events to monitor, registering the webhook via a POST request to the API.
-        
+
         Args:
             events (array): events Example: "['invitee.canceled', 'routing_form_submission.created']".
             group (string): group Example: '<uri>'.
@@ -574,10 +574,10 @@ class CalendlyApp(APIApplication):
                   "user": "<uri>"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Created
-        
+
         Tags:
             webhook_subscriptions
         """
@@ -602,7 +602,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Generates a unique, limited-use scheduling link for a specific owner, such as an event type. The link is valid for a specified maximum number of bookings, after which it expires.
-        
+
         Args:
             max_event_count (number): max_event_count Example: '1'.
             owner (string): owner Example: '<uri>'.
@@ -615,10 +615,10 @@ class CalendlyApp(APIApplication):
                   "owner_type": "EventType"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Created
-        
+
         Tags:
             scheduling_links
         """
@@ -637,7 +637,7 @@ class CalendlyApp(APIApplication):
     def request_invitee_data_deletion(self, emails=None) -> dict[str, Any]:
         """
         Submits an asynchronous data deletion request for one or more invitees, identified by their email addresses, to comply with privacy regulations. This action permanently removes invitee information from the system.
-        
+
         Args:
             emails (array): emails
                 Example:
@@ -649,10 +649,10 @@ class CalendlyApp(APIApplication):
                   ]
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Accepted
-        
+
         Tags:
             data_compliance, deletion, invitees12
         """
@@ -671,7 +671,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         For data compliance, submits an asynchronous request to delete scheduled event data within a specified `start_time` and `end_time`. This targets events by time range, unlike `delete_invitee_data` which targets specific individuals.
-        
+
         Args:
             end_time (string): end_time Example: '<dateTime>'.
             start_time (string): start_time
@@ -682,10 +682,10 @@ class CalendlyApp(APIApplication):
                   "start_time": "<dateTime>"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Accepted
-        
+
         Tags:
             data_compliance, deletion, events
         """
@@ -703,13 +703,13 @@ class CalendlyApp(APIApplication):
     def get_invitee_no_show(self, uuid) -> dict[str, Any]:
         """
         Retrieves the details for a specific 'no-show' record associated with an invitee, identified by its unique ID (UUID). This function fetches a single record, unlike create_invitee_no_show which creates one.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             invitee_no_shows, {uuid}123456
         """
@@ -724,13 +724,13 @@ class CalendlyApp(APIApplication):
     def revoke_invitee_no_show(self, uuid) -> Any:
         """
         Deletes an invitee's 'no-show' record using its unique UUID. This operation revokes the no-show status previously assigned to an invitee, effectively undoing the action of `create_invitee_no_show`.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             Any: No Content
-        
+
         Tags:
             invitee_no_shows, {uuid}123456
         """
@@ -745,7 +745,7 @@ class CalendlyApp(APIApplication):
     def mark_invitee_as_no_show(self, invitee=None) -> dict[str, Any]:
         """
         Marks a specific invitee as a 'no-show' by creating a no-show record. It requires the invitee's URI and sends a POST request to the `/invitee_no_shows` endpoint, returning the details of the newly created entry.
-        
+
         Args:
             invitee (string): invitee
                 Example:
@@ -754,10 +754,10 @@ class CalendlyApp(APIApplication):
                   "invitee": "<uri>"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Created
-        
+
         Tags:
             invitee_no_shows
         """
@@ -774,13 +774,13 @@ class CalendlyApp(APIApplication):
     def get_group_by_id(self, uuid) -> dict[str, Any]:
         """
         Retrieves the details of a specific group by its unique identifier (UUID). Unlike `list_groups`, which returns multiple group records, this function fetches information for a single group.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             groups, {uuid}1234567
         """
@@ -797,15 +797,15 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of groups associated with a specific organization. The result set can be controlled using pagination parameters for the page token and the number of items to return per page.
-        
+
         Args:
             organization (string): (Required) Return groups that are associated with the organization associated with this URI Example: '<string>'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             count (string): The number of rows to return Example: '20'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             groups
         """
@@ -826,13 +826,13 @@ class CalendlyApp(APIApplication):
     def get_group_relationship(self, uuid) -> dict[str, Any]:
         """
         Retrieves the details of a specific group relationship, which connects an owner (like a user or invitation) to a group, by its unique identifier (UUID). This differs from `list_group_relationships` which fetches a list.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             group_relationships, {uuid}12345678
         """
@@ -849,7 +849,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of group relationships. The results can be filtered by organization, owner, or a specific group to refine the search and control the returned data set.
-        
+
         Args:
             count (string): The number of rows to return Example: '20'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
@@ -857,10 +857,10 @@ class CalendlyApp(APIApplication):
             owner (string): Indicates the results should be filtered by owner <br>
         One Of: - Organization Membership URI - ` - Organization Invitation URI - ` Example: '<uri>'.
             group (string): Indicates the results should be filtered by group Example: '<uri>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             group_relationships
         """
@@ -883,13 +883,13 @@ class CalendlyApp(APIApplication):
     def get_routing_form(self, uuid) -> dict[str, Any]:
         """
         Retrieves the details of a specific routing form using its unique identifier (UUID). This is distinct from `list_routing_forms`, which fetches a collection, and from functions that retrieve form submissions.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             routing_forms, {uuid}123456789
         """
@@ -906,16 +906,16 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a list of routing forms for a specified organization. This function supports pagination using a page token, sorting by creation date, and limiting the number of results returned per request, distinguishing it from `get_routing_form` which fetches a single item.
-        
+
         Args:
             organization (string): (Required) View organization routing forms associated with the organization's URI. Example: '<uri>'.
             count (string): The number of rows to return Example: '20'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             sort (string): Order results by the specified field and direction. Accepts comma-separated list of {field}:{direction} values. Supported fields are: created_at. Sort direction is specified as: asc, desc. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             routing_forms
         """
@@ -937,13 +937,13 @@ class CalendlyApp(APIApplication):
     def get_routing_form_submission(self, uuid) -> dict[str, Any]:
         """
         Fetches details for a single routing form submission using its unique identifier (UUID). It queries the `/routing_form_submissions/{uuid}` endpoint, distinct from `list_routing_form_submissions` which retrieves multiple submissions.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             routing_form_submissions, {uuid}12345678910
         """
@@ -960,16 +960,16 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of submissions associated with a specific routing form. The results can be sorted by creation date and navigated using count and page_token parameters.
-        
+
         Args:
             form (string): (Required) View routing form submissions associated with the routing form's URI. Example: '<uri>'.
             count (string): The number of rows to return Example: '20'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
             sort (string): Order results by the specified field and direction. Accepts comma-separated list of {field}:{direction} values. Supported fields are: created_at. Sort direction is specified as: asc, desc. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             routing_form_submissions
         """
@@ -993,15 +993,15 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a list of concrete, bookable time slots for a specific event type within a defined start and end time. It provides specific availability, distinct from functions that list a user's general busy times or configured schedules.
-        
+
         Args:
             event_type (string): (Required) The uri associated with the event type Example: '<uri>'.
             start_time (string): (Required) Start time of the requested availability range. Example: '<string>'.
             end_time (string): (Required) End time of the requested availability range. Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             event_type_available_times
         """
@@ -1034,7 +1034,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of activity log entries for an organization. Allows advanced filtering by actor, time range, search term, namespace, and action, with support for custom sorting and pagination to refine the results.
-        
+
         Args:
             organization (string): (Required) Return activity log entries from the organization associated with this URI Example: '<uri>'.
             search_term (string): Filters entries based on the search term. Supported operators: - `|` - to allow filtering by one term or another. Example: `this | that` - `+` - to allow filtering by one term and another. Example: `this + that` - `"` - to allow filtering by an exact search term. Example: `"email@website.com"` - `-` - to omit specific terms from results. Example: `Added -User` - `()` - to allow specifying precedence during a search. Example: `(this + that) OR (person + place)` - `*` - to allow prefix searching. Example `*@other-website.com` Example: '<string>'.
@@ -1046,10 +1046,10 @@ class CalendlyApp(APIApplication):
             count (string): The number of rows to return Example: '20'.
             namespace (string): The categories of the entries Example: '<string>,<string>'.
             action (string): The action(s) associated with the entries Example: '<string>,<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             activity_log_entries
         """
@@ -1089,7 +1089,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a custom, shareable scheduling link by defining properties like availability rules, event duration, and location. This generates a unique booking link tailored to specific settings, differing from standard event types or single-use links.
-        
+
         Args:
             availability_rule (object): availability_rule
             duration (string): duration Example: '<integer>'.
@@ -1165,10 +1165,10 @@ class CalendlyApp(APIApplication):
                   "start_date": "<date>"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Created
-        
+
         Tags:
             shares
         """
@@ -1196,15 +1196,15 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a user's busy time intervals within a specified date range, including all scheduled events. This helps determine actual unavailability, differing from `list_user_availability_schedules` which retrieves a user's general working hours.
-        
+
         Args:
             user (string): (Required) The uri associated with the user Example: '<uri>'.
             start_time (string): (Required) Start time of the requested availability range Example: '<string>'.
             end_time (string): (Required) End time of the requested availability range Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             user_busy_times
         """
@@ -1225,13 +1225,13 @@ class CalendlyApp(APIApplication):
     def get_user_availability_schedule(self, uuid) -> dict[str, Any]:
         """
         Retrieves a specific user availability schedule by its unique identifier (UUID). It fetches a single schedule resource, unlike `list_user_availability_schedules`, which returns all schedules associated with a user.
-        
+
         Args:
             uuid (string): uuid
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             user_availability_schedules, {uuid}1234567891011
         """
@@ -1246,13 +1246,13 @@ class CalendlyApp(APIApplication):
     def list_schedules_for_user(self, user=None) -> dict[str, Any]:
         """
         Retrieves all availability schedules for a specified user via their URI. Unlike `get_user_availability_schedule`, which fetches a single schedule by its UUID, this function returns a collection of all schedules defining a user's availability intervals.
-        
+
         Args:
             user (string): (Required) A URI reference to a user Example: '<uri>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             user_availability_schedules
         """
@@ -1267,15 +1267,15 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of all user memberships (hosts) for a specific event type. It requires the event type's URI and allows for navigating through results using `count` and `page_token` parameters, returning the membership objects.
-        
+
         Args:
             event_type (string): (Required) The uri associated with the event type Example: '<uri>'.
             count (string): The number of rows to return Example: '20'.
             page_token (string): The token to pass to get the next or previous portion of the collection Example: '<string>'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             event_type_memberships
         """
@@ -1305,7 +1305,7 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Creates a unique, non-reusable event type for a single, ad-hoc meeting. It defines event details like host, co-hosts, duration, and location, distinguishing it from standard, reusable event types.
-        
+
         Args:
             co_hosts (array): co_hosts Example: "['<uri>', '<uri>']".
             date_setting (object): date_setting
@@ -1333,10 +1333,10 @@ class CalendlyApp(APIApplication):
                   "timezone": "<string>"
                 }
                 ```
-        
+
         Returns:
             dict[str, Any]: Created
-        
+
         Tags:
             one_off_event_types
         """
@@ -1361,16 +1361,16 @@ class CalendlyApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Fetches a sample webhook data payload for a specified event, organization, and scope. This helps developers preview the JSON structure for a webhook notification, facilitating testing and integration without needing to trigger a live event.
-        
+
         Args:
             event (string): (Required) Example: 'invitee.created'.
             organization (string): (Required) Example: '<uri>'.
             user (string): Specifies the user identifier or name for filtering or retrieving specific data in the response. Example: '<uri>'.
             scope (string): (Required) Example: 'user'.
-        
+
         Returns:
             dict[str, Any]: OK
-        
+
         Tags:
             sample_webhook_data
         """

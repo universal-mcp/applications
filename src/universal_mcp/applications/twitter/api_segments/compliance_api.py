@@ -12,19 +12,19 @@ class ComplianceApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Retrieves a list of compliance jobs, requiring a job `type` ('tweets' or 'users') and allowing optional filtering by `status`. This function fetches multiple jobs, distinguishing it from `get_batch_compliance_job` which retrieves a single job by its unique ID.
-        
+
         Args:
             type (string): The type parameter specifies the compliance job type and must be either "tweets" or "users".
             status (string): Filters compliance jobs by their current status, which can be one of: created, in_progress, failed, or complete.
             compliance_job_fields (array): A comma separated list of ComplianceJob fields to display. Example: "['created_at', 'download_expires_at', 'download_url', 'id', 'name', 'resumable', 'status', 'type', 'upload_expires_at', 'upload_url']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Compliance
         """
@@ -47,19 +47,19 @@ class ComplianceApi(APISegmentBase):
     ) -> dict[str, Any]:
         """
         Creates a new batch compliance job for a specified type ('tweets' or 'users'). A custom name can be provided, and resumable uploads can be enabled. This initiates the job creation process, differing from functions that list or retrieve existing jobs.
-        
+
         Args:
             type (string): Type of compliance job to list.
             name (string): User-provided name for a compliance job. Example: 'my-job'.
             resumable (boolean): If true, this endpoint will return a pre-signed URL with resumable uploads enabled.
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Compliance
         """
@@ -79,23 +79,21 @@ class ComplianceApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_compliance_job(
-        self, id, compliance_job_fields=None
-    ) -> dict[str, Any]:
+    def get_compliance_job(self, id, compliance_job_fields=None) -> dict[str, Any]:
         """
         Retrieves a single batch compliance job by its unique ID. Unlike `list_batch_compliance_jobs`, which fetches a list, this function returns details for one specific job. Optional parameters can customize which data fields are returned in the response.
-        
+
         Args:
             id (string): id
             compliance_job_fields (array): A comma separated list of ComplianceJob fields to display. Example: "['created_at', 'download_expires_at', 'download_url', 'id', 'name', 'resumable', 'status', 'type', 'upload_expires_at', 'upload_url']".
-        
+
         Returns:
             dict[str, Any]: The request has succeeded.
-        
+
         Raises:
             HTTPError: Raised when the API request fails (e.g., non-2XX status code).
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
-        
+
         Tags:
             Compliance
         """

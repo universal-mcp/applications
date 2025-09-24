@@ -2,7 +2,6 @@ from collections.abc import Callable
 from typing import Any
 
 from loguru import logger
-
 from universal_mcp.applications.application import GraphQLApplication
 from universal_mcp.exceptions import NotAuthorizedError
 from universal_mcp.integrations import Integration
@@ -15,10 +14,10 @@ class ContentfulApp(GraphQLApplication):
         **kwargs: Any,
     ) -> None:
         self.space_id: str | None = None
-        self.environment_id: str = "master" 
+        self.environment_id: str = "master"
         self._access_token: str | None = None
-        self._is_eu_customer: bool = False 
-        self._credentials_loaded: bool = False 
+        self._is_eu_customer: bool = False
+        self._credentials_loaded: bool = False
         default_base_url = "https://graphql.contentful.com"
 
         super().__init__(
@@ -326,7 +325,7 @@ class ContentfulApp(GraphQLApplication):
 
         Returns:
             The result of the query, or an error dictionary.
-            
+
         Tags:
             important
         """
