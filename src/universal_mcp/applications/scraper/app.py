@@ -174,6 +174,223 @@ class ScraperApp(APIApplication):
             limit=limit,
         )
 
+    def linkedin_people_search(
+        self,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
+        keywords: Optional[str] = None,
+        last_viewed_at: Optional[int] = None,
+        saved_search_id: Optional[str] = None,
+        recent_search_id: Optional[str] = None,
+        location: Optional[dict[str, Any]] = None,
+        location_by_postal_code: Optional[dict[str, Any]] = None,
+        industry: Optional[dict[str, Any]] = None,
+        first_name: Optional[str] = None,
+        last_name: Optional[str] = None,
+        tenure: Optional[list[dict[str, Any]]] = None,
+        groups: Optional[list[str]] = None,
+        school: Optional[dict[str, Any]] = None,
+        profile_language: Optional[list[str]] = None,
+        company: Optional[dict[str, Any]] = None,
+        company_headcount: Optional[list[dict[str, Any]]] = None,
+        company_type: Optional[list[str]] = None,
+        company_location: Optional[dict[str, Any]] = None,
+        tenure_at_company: Optional[list[dict[str, Any]]] = None,
+        past_company: Optional[dict[str, Any]] = None,
+        function: Optional[dict[str, Any]] = None,
+        role: Optional[dict[str, Any]] = None,
+        tenure_at_role: Optional[list[dict[str, Any]]] = None,
+        seniority: Optional[dict[str, Any]] = None,
+        past_role: Optional[dict[str, Any]] = None,
+        following_your_company: Optional[bool] = None,
+        viewed_your_profile_recently: Optional[bool] = None,
+        network_distance: Optional[list[str]] = None,
+        connections_of: Optional[list[str]] = None,
+        past_colleague: Optional[bool] = None,
+        shared_experiences: Optional[bool] = None,
+        changed_jobs: Optional[bool] = None,
+        posted_on_linkedin: Optional[bool] = None,
+        mentionned_in_news: Optional[bool] = None,
+        persona: Optional[list[str]] = None,
+        account_lists: Optional[dict[str, Any]] = None,
+        lead_lists: Optional[dict[str, Any]] = None,
+        viewed_profile_recently: Optional[bool] = None,
+        messaged_recently: Optional[bool] = None,
+        include_saved_leads: Optional[bool] = None,
+        include_saved_accounts: Optional[bool] = None,
+    ) -> dict[str, Any]:
+        """
+        Performs a comprehensive LinkedIn Sales Navigator people search with advanced targeting options.
+        This function provides access to LinkedIn's Sales Navigator search capabilities for finding people
+        with precise filters including experience, company details, education, and relationship criteria.
+        
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return.
+            keywords: LinkedIn native filter: KEYWORDS.
+            last_viewed_at: Unix timestamp for saved search filtering.
+            saved_search_id: ID of saved search (overrides other parameters).
+            recent_search_id: ID of recent search (overrides other parameters).
+            location: LinkedIn native filter: GEOGRAPHY. Example: {"include": ["San Francisco Bay Area", "New York City Area"]}
+            location_by_postal_code: Location filter by postal code. Example: {"postal_code": "94105", "radius": "25"}
+            industry: LinkedIn native filter: INDUSTRY. Example: {"include": ["Information Technology and Services", "Financial Services"]}
+            first_name: LinkedIn native filter: FIRST NAME. Example: "John"
+            last_name: LinkedIn native filter: LAST NAME. Example: "Smith"
+            tenure: LinkedIn native filter: YEARS OF EXPERIENCE. Example: [{"min": 5, "max": 10}]
+            groups: LinkedIn native filter: GROUPS. Example: ["group_id_1", "group_id_2"]
+            school: LinkedIn native filter: SCHOOL. Example: {"include": ["Stanford University", "Harvard University"]}
+            profile_language: ISO 639-1 language codes, LinkedIn native filter: PROFILE LANGUAGE. Example: ["en", "es"]
+            company: LinkedIn native filter: CURRENT COMPANY. Example: {"include": ["Google", "Microsoft", "Apple"]}
+            company_headcount: LinkedIn native filter: COMPANY HEADCOUNT. Example: [{"min": 100, "max": 1000}]
+            company_type: LinkedIn native filter: COMPANY TYPE. Example: ["Public Company", "Privately Held"]
+            company_location: LinkedIn native filter: COMPANY HEADQUARTERS LOCATION. Example: {"include": ["San Francisco", "Seattle"]}
+            tenure_at_company: LinkedIn native filter: YEARS IN CURRENT COMPANY. Example: [{"min": 2, "max": 5}]
+            past_company: LinkedIn native filter: PAST COMPANY. Example: {"include": ["Facebook", "Amazon"]}
+            function: LinkedIn native filter: FUNCTION. Example: {"include": ["Engineering", "Sales", "Marketing"]}
+            role: LinkedIn native filter: CURRENT JOB TITLE. Example: {"include": ["Software Engineer", "Product Manager"]}
+            tenure_at_role: LinkedIn native filter: YEARS IN CURRENT POSITION. Example: [{"min": 1, "max": 3}]
+            seniority: LinkedIn native filter: SENIORITY LEVEL. Example: {"include": ["Senior", "Director", "VP"]}
+            past_role: LinkedIn native filter: PAST JOB TITLE. Example: {"include": ["Senior Developer", "Team Lead"]}
+            following_your_company: LinkedIn native filter: FOLLOWING YOUR COMPANY. Example: True
+            viewed_your_profile_recently: LinkedIn native filter: VIEWED YOUR PROFILE RECENTLY. Example: True
+            network_distance: First, second, third+ degree or GROUP, LinkedIn native filter: CONNECTION. Example: ["1st", "2nd"]
+            connections_of: LinkedIn native filter: CONNECTIONS OF. Example: ["person_id_1", "person_id_2"]
+            past_colleague: LinkedIn native filter: PAST COLLEAGUE. Example: True
+            shared_experiences: LinkedIn native filter: SHARED EXPERIENCES. Example: True
+            changed_jobs: LinkedIn native filter: CHANGED JOBS. Example: True
+            posted_on_linkedin: LinkedIn native filter: POSTED ON LINKEDIN. Example: True
+            mentionned_in_news: LinkedIn native filter: MENTIONNED IN NEWS. Example: True
+            persona: LinkedIn native filter: PERSONA. Example: ["persona_id_1", "persona_id_2"]
+            account_lists: LinkedIn native filter: ACCOUNT LISTS. Example: {"include": ["list_id_1"]}
+            lead_lists: LinkedIn native filter: LEAD LISTS. Example: {"include": ["lead_list_id_1"]}
+            viewed_profile_recently: LinkedIn native filter: PEOPLE YOU INTERACTED WITH / VIEWED PROFILE. Example: True
+            messaged_recently: LinkedIn native filter: PEOPLE YOU INTERACTED WITH / MESSAGED. Example: True
+            include_saved_leads: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED LEADS. Example: True
+            include_saved_accounts: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED ACCOUNTS. Example: True
+        
+        Returns:
+            A dictionary containing search results and pagination details.
+        
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        
+        Tags:
+            linkedin, sales_navigator, people, search, advanced, scraper, api, important
+        """
+        return self._unipile_app.people_search(
+            account_id=self.account_id,
+            cursor=cursor,
+            limit=limit,
+            keywords=keywords,
+            last_viewed_at=last_viewed_at,
+            saved_search_id=saved_search_id,
+            recent_search_id=recent_search_id,
+            location=location,
+            location_by_postal_code=location_by_postal_code,
+            industry=industry,
+            first_name=first_name,
+            last_name=last_name,
+            tenure=tenure,
+            groups=groups,
+            school=school,
+            profile_language=profile_language,
+            company=company,
+            company_headcount=company_headcount,
+            company_type=company_type,
+            company_location=company_location,
+            tenure_at_company=tenure_at_company,
+            past_company=past_company,
+            function=function,
+            role=role,
+            tenure_at_role=tenure_at_role,
+            seniority=seniority,
+            past_role=past_role,
+            following_your_company=following_your_company,
+            viewed_your_profile_recently=viewed_your_profile_recently,
+            network_distance=network_distance,
+            connections_of=connections_of,
+            past_colleague=past_colleague,
+            shared_experiences=shared_experiences,
+            changed_jobs=changed_jobs,
+            posted_on_linkedin=posted_on_linkedin,
+            mentionned_in_news=mentionned_in_news,
+            persona=persona,
+            account_lists=account_lists,
+            lead_lists=lead_lists,
+            viewed_profile_recently=viewed_profile_recently,
+            messaged_recently=messaged_recently,
+            include_saved_leads=include_saved_leads,
+            include_saved_accounts=include_saved_accounts,
+        )
+
+    def linkedin_company_search(
+        self,
+        cursor: Optional[str] = None,
+        limit: Optional[int] = None,
+        keywords: Optional[str] = None,
+        last_viewed_at: Optional[int] = None,
+        saved_search_id: Optional[str] = None,
+        recent_search_id: Optional[str] = None,
+        location: Optional[dict[str, Any]] = None,
+        location_by_postal_code: Optional[dict[str, Any]] = None,
+        industry: Optional[dict[str, Any]] = None,
+        company_headcount: Optional[list[dict[str, Any]]] = None,
+        company_type: Optional[list[str]] = None,
+        company_location: Optional[dict[str, Any]] = None,
+        following_your_company: Optional[bool] = None,
+        account_lists: Optional[dict[str, Any]] = None,
+        include_saved_accounts: Optional[bool] = None,
+    ) -> dict[str, Any]:
+        """
+        Performs a comprehensive LinkedIn Sales Navigator company search with advanced targeting options.
+        This function provides access to LinkedIn's Sales Navigator search capabilities for finding companies
+        with precise filters including size, location, industry, and relationship criteria.
+        
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return.
+            keywords: LinkedIn native filter: KEYWORDS. Example: "fintech startup"
+            last_viewed_at: Unix timestamp for saved search filtering.
+            saved_search_id: ID of saved search (overrides other parameters).
+            recent_search_id: ID of recent search (overrides other parameters).
+            location: LinkedIn native filter: GEOGRAPHY. Example: {"include": ["San Francisco Bay Area", "New York City Area"]}
+            location_by_postal_code: Location filter by postal code. Example: {"postal_code": "94105", "radius": "25"}
+            industry: LinkedIn native filter: INDUSTRY. Example: {"include": ["Information Technology and Services", "Financial Services"]}
+            company_headcount: LinkedIn native filter: COMPANY HEADCOUNT. Example: [{"min": 10, "max": 100}]
+            company_type: LinkedIn native filter: COMPANY TYPE. Example: ["Public Company", "Privately Held", "Startup"]
+            company_location: LinkedIn native filter: COMPANY HEADQUARTERS LOCATION. Example: {"include": ["San Francisco", "Seattle", "Austin"]}
+            following_your_company: LinkedIn native filter: FOLLOWING YOUR COMPANY. Example: True
+            account_lists: LinkedIn native filter: ACCOUNT LISTS. Example: {"include": ["account_list_id_1"]}
+            include_saved_accounts: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED ACCOUNTS. Example: True
+        
+        Returns:
+            A dictionary containing search results and pagination details.
+        
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        
+        Tags:
+            linkedin, sales_navigator, companies, search, advanced, scraper, api, important
+        """
+        return self._unipile_app.company_search(
+            account_id=self.account_id,
+            cursor=cursor,
+            limit=limit,
+            keywords=keywords,
+            last_viewed_at=last_viewed_at,
+            saved_search_id=saved_search_id,
+            recent_search_id=recent_search_id,
+            location=location,
+            location_by_postal_code=location_by_postal_code,
+            industry=industry,
+            company_headcount=company_headcount,
+            company_type=company_type,
+            company_location=company_location,
+            following_your_company=following_your_company,
+            account_lists=account_lists,
+            include_saved_accounts=include_saved_accounts,
+        )
+
     def list_tools(self):
         """
         Returns a list of available tools/functions in this application.
@@ -186,4 +403,6 @@ class ScraperApp(APIApplication):
             self.linkedin_list_profile_posts,
             self.linkedin_retrieve_profile,
             self.linkedin_list_post_comments,
+            self.linkedin_people_search,
+            self.linkedin_company_search,
         ]
