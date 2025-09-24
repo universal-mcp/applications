@@ -18,7 +18,7 @@ ALL_APPS = [
     "clickup",
     "coda",
     "confluence",  # not seeded
-    "contentful",
+    "contentful",  # not seeded
     "crustdata",
     "dialpad",     # not seeded
     "digitalocean",
