@@ -1,15 +1,15 @@
 from typing import Any
+import os
 
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.proxies import GenericProxyConfig
-
+from youtube_transcript_api.proxies import WebshareProxyConfig
 
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 
 class YoutubeApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
+    def __init__(self, integration: Integration | None = None, **kwargs) -> None:
         """
         Initializes an instance of a YouTube application integration.
 
@@ -298,10 +298,20 @@ class YoutubeApp(APIApplication):
             raise ValueError("Missing required parameter 'video_id'")
 
         try:
-            api = YouTubeTranscriptApi(
-                proxy_config=GenericProxyConfig(
-                    http_url="http://xgixgown:lp2wabq23752@142.111.48.253:7030/"
+            proxy_username = os.getenv("PROXY_USERNAME")
+            proxy_password = os.getenv("PROXY_PASSWORD")
+            proxy_port = int(os.getenv("PROXY_PORT", 80))
+            
+            if not proxy_username or not proxy_password:
+                raise ValueError(
+                    "PROXY_USERNAME and PROXY_PASSWORD must be set when using proxy"
                 )
+            api = YouTubeTranscriptApi(
+                proxy_config=WebshareProxyConfig(
+                    proxy_username=proxy_username,
+                    proxy_password=proxy_password,
+                    proxy_port=proxy_port,
+                ),
             )
             transcript = api.fetch(video_id)
 
