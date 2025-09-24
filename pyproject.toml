@@ -109,3 +109,9 @@ pythonpath = [
     "src",
 ]
 
+[dependency-groups]
+dev = [
+    "litellm>=1.77.3",
+    "universal-mcp-agents>=0.1.13",
+]
+
