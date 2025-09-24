@@ -41,25 +41,25 @@ class GoogleSheetApp(APIApplication):
         response = self._post(url, data=spreadsheet_data)
         return self._handle_response(response)
 
-    def get_spreadsheet_metadata(self, spreadsheet_id: str) -> dict[str, Any]:
+    def get_spreadsheet_metadata(self, spreadsheetId: str) -> dict[str, Any]:
         """
         Retrieves a spreadsheet's metadata and structural properties, such as sheet names, IDs, and named ranges, using its unique ID. This function intentionally excludes cell data, distinguishing it from `get_values` which fetches the actual content within cells.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to retrieve (found in the spreadsheet's URL)
+            spreadsheetId: The unique identifier of the Google Spreadsheet to retrieve (found in the spreadsheet's URL)
         
         Returns:
             A dictionary containing the full spreadsheet metadata and contents, including properties, sheets, named ranges, and other spreadsheet-specific information from the Google Sheets API
         
         Raises:
-            HTTPError: When the API request fails due to invalid spreadsheet_id or insufficient permissions
+            HTTPError: When the API request fails due to invalid spreadsheetId or insufficient permissions
             ConnectionError: When there's a network connectivity issue
             ValueError: When the response cannot be parsed as JSON
         
         Tags:
             get, retrieve, spreadsheet, api, metadata, read, important
         """
-        url = f"{self.base_url}/{spreadsheet_id}"
+        url = f"{self.base_url}/{spreadsheetId}"
         response = self._get(url)
         return self._handle_response(response)
 
@@ -85,8 +85,8 @@ class GoogleSheetApp(APIApplication):
             A dictionary containing the API response with the requested spreadsheet values and metadata
         
         Raises:
-            HTTPError: If the API request fails due to invalid spreadsheet_id, insufficient permissions, or invalid range format
-            ValueError: If the spreadsheet_id is empty or invalid
+            HTTPError: If the API request fails due to invalid spreadsheetId, insufficient permissions, or invalid range format
+            ValueError: If the spreadsheetId is empty or invalid
         
         Tags:
             get, read, spreadsheet, values, important
@@ -105,26 +105,26 @@ class GoogleSheetApp(APIApplication):
         return self._handle_response(response)
 
     def batch_get_values_by_range(
-        self, spreadsheet_id: str, ranges: list[str] | None = None
+        self, spreadsheetId: str, ranges: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Efficiently retrieves values from multiple predefined A1 notation ranges in a single API request. Unlike `get_values`, which fetches a single range, or `batch_get_values_by_data_filter`, which uses dynamic filtering criteria, this function operates on a simple list of range strings for bulk data retrieval.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to retrieve values from
+            spreadsheetId: The unique identifier of the Google Spreadsheet to retrieve values from
             ranges: Optional list of A1 notation or R1C1 notation range strings (e.g., ['Sheet1!A1:B2', 'Sheet2!C3:D4']). If None, returns values from the entire spreadsheet
         
         Returns:
             A dictionary containing the API response with the requested spreadsheet values and metadata
         
         Raises:
-            HTTPError: If the API request fails due to invalid spreadsheet_id, insufficient permissions, or invalid range format
-            ValueError: If the spreadsheet_id is empty or invalid
+            HTTPError: If the API request fails due to invalid spreadsheetId, insufficient permissions, or invalid range format
+            ValueError: If the spreadsheetId is empty or invalid
         
         Tags:
             get, batch, read, spreadsheet, values
         """
-        url = f"{self.base_url}/{spreadsheet_id}/values:batchGet"
+        url = f"{self.base_url}/{spreadsheetId}/values:batchGet"
         params = {}
         if ranges:
             params["ranges"] = ranges
@@ -133,7 +133,7 @@ class GoogleSheetApp(APIApplication):
 
     def insert_dimensions(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
         dimension: str,
         start_index: int,
@@ -150,7 +150,7 @@ class GoogleSheetApp(APIApplication):
         Use this when you need to add rows/columns in the middle of your data.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet to update. Example: "abc123spreadsheetId"
+            spreadsheetId: The ID of the spreadsheet to update. Example: "abc123spreadsheetId"
             sheet_id: The ID of the sheet where the dimensions will be inserted. Example: 0
             dimension: The dimension to insert. Valid values are "ROWS" or "COLUMNS". Example: "ROWS"
             start_index: The start index (0-based) of the dimension range to insert. The inserted dimensions will be placed before this index. Example: 1
@@ -165,13 +165,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or dimension is not "ROWS" or "COLUMNS"
+            ValueError: When spreadsheetId is empty or dimension is not "ROWS" or "COLUMNS"
         
         Tags:
             insert, modify, spreadsheet, rows, columns, dimensions, important
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('dimension must be either "ROWS" or "COLUMNS"')
@@ -182,7 +182,7 @@ class GoogleSheetApp(APIApplication):
         if start_index >= end_index:
             raise ValueError("end_index must be greater than start_index")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         request_body: dict[str, Any] = {
             "requests": [
@@ -217,7 +217,7 @@ class GoogleSheetApp(APIApplication):
 
     def append_dimensions(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
         dimension: str,
         length: int,
@@ -229,7 +229,7 @@ class GoogleSheetApp(APIApplication):
         Use this when you need to extend the sheet with additional space at the bottom or right.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
+            spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             sheet_id: The ID of the sheet within the spreadsheet (0 for first sheet)
             dimension: The type of dimension to append - "ROWS" or "COLUMNS"
             length: The number of rows or columns to append to the end
@@ -239,13 +239,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty, dimension is not "ROWS" or "COLUMNS", or length is not positive
+            ValueError: When spreadsheetId is empty, dimension is not "ROWS" or "COLUMNS", or length is not positive
         
         Tags:
             append, modify, spreadsheet, rows, columns, dimensions, important
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('dimension must be either "ROWS" or "COLUMNS"')
@@ -253,7 +253,7 @@ class GoogleSheetApp(APIApplication):
         if length <= 0:
             raise ValueError("length must be a positive integer")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         request_body = {
             "requests": [
@@ -272,7 +272,7 @@ class GoogleSheetApp(APIApplication):
 
     def delete_dimensions(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
         dimension: str,
         start_index: int,
@@ -285,7 +285,7 @@ class GoogleSheetApp(APIApplication):
         Deletes a specified range of rows or columns, permanently removing them and shifting subsequent cells. This alters the sheet's structure, unlike `clear_values` which only removes cell content. It is the direct counterpart to `insert_dimensions`, which adds space within the data grid.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet. Example: "abc123xyz789"
+            spreadsheetId: The ID of the spreadsheet. Example: "abc123xyz789"
             sheet_id: The ID of the sheet from which to delete the dimension. Example: 0 for first sheet
             dimension: The dimension to delete. Example: "ROWS"
             start_index: The zero-based start index of the range to delete, inclusive. The start index must be less than the end index. Example: 0
@@ -299,13 +299,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty, dimension is not "ROWS" or "COLUMNS", or indices are invalid
+            ValueError: When spreadsheetId is empty, dimension is not "ROWS" or "COLUMNS", or indices are invalid
         
         Tags:
             delete, modify, spreadsheet, rows, columns, dimensions, important
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if dimension not in ["ROWS", "COLUMNS"]:
             raise ValueError('dimension must be either "ROWS" or "COLUMNS"')
@@ -316,7 +316,7 @@ class GoogleSheetApp(APIApplication):
         if start_index >= end_index:
             raise ValueError("end_index must be greater than start_index")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         request_body: dict[str, Any] = {
             "requests": [
@@ -397,7 +397,7 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or invalid parameters are provided
+            ValueError: When spreadsheetId is empty or invalid parameters are provided
         
         Tags:
             add, sheet, spreadsheet, create
@@ -479,7 +479,7 @@ class GoogleSheetApp(APIApplication):
 
     def add_basic_chart(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         source_sheet_id: int,
         chart_title: str,
         chart_type: str,
@@ -497,7 +497,7 @@ class GoogleSheetApp(APIApplication):
         Use this when you need to visualize data in different chart formats.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
+            spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             source_sheet_id: The ID of the sheet containing the source data
             chart_title: The title for the chart
             chart_type: The type of chart to create. Supported types: "COLUMN", "BAR", "LINE", "AREA", "STEPPED_AREA", "SCATTER", "COMBO"
@@ -513,18 +513,18 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or invalid parameters are provided
+            ValueError: When spreadsheetId is empty or invalid parameters are provided
         
         Tags:
             add, chart, basic-chart, visualization
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not chart_title:
             raise ValueError("chart_title cannot be empty")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         # Build the chart specification
         chart_spec = {
@@ -628,7 +628,7 @@ class GoogleSheetApp(APIApplication):
 
     def add_pie_chart(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         source_sheet_id: int,
         chart_title: str,
         data_range: dict,
@@ -644,7 +644,7 @@ class GoogleSheetApp(APIApplication):
         Use this when you need to visualize data as proportions of a whole.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
+            spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             source_sheet_id: The ID of the sheet containing the source data
             chart_title: The title for the chart
             data_range: Dictionary containing data range info (e.g., {"startRowIndex": 0, "endRowIndex": 7, "startColumnIndex": 0, "endColumnIndex": 2})
@@ -658,13 +658,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or invalid parameters are provided
+            ValueError: When spreadsheetId is empty or invalid parameters are provided
         
         Tags:
             add, chart, pie, visualization
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not chart_title:
             raise ValueError("chart_title cannot be empty")
@@ -672,7 +672,7 @@ class GoogleSheetApp(APIApplication):
         if pie_hole is not None and not 0 <= pie_hole <= 1:
             raise ValueError("pie_hole must be between 0.0 and 1.0")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         # Build the pie chart specification
         pie_chart_spec = {
@@ -747,7 +747,7 @@ class GoogleSheetApp(APIApplication):
 
     def add_table(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
         table_name: str,
         table_id: str,
@@ -764,7 +764,7 @@ class GoogleSheetApp(APIApplication):
         Use this when you need to create structured data with headers, footers, and column types.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
+            spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             sheet_id: The ID of the sheet where the table will be created
             table_name: The name of the table
             table_id: The unique identifier for the table
@@ -778,13 +778,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or invalid parameters are provided
+            ValueError: When spreadsheetId is empty or invalid parameters are provided
         
         Tags:
             add, table, structured-data
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not table_name:
             raise ValueError("table_name cannot be empty")
@@ -827,7 +827,7 @@ class GoogleSheetApp(APIApplication):
                         f"Invalid column type '{prop['columnType']}' at index {i}. Valid types are: {', '.join(valid_column_types)}"
                     )
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         # Build the table specification
         table_spec = {
@@ -854,7 +854,7 @@ class GoogleSheetApp(APIApplication):
 
     def update_table(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         table_id: str,
         table_name: str | None = None,
         start_row_index: int | None = None,
@@ -870,7 +870,7 @@ class GoogleSheetApp(APIApplication):
         Use this when you need to modify an existing table's structure or properties.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
+            spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             table_id: The unique identifier of the table to update
             table_name: Optional new name for the table
             start_row_index: Optional new starting row index (0-based)
@@ -884,13 +884,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id or table_id is empty or invalid parameters are provided
+            ValueError: When spreadsheetId or table_id is empty or invalid parameters are provided
         
         Tags:
             update, table, modify, structured-data
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not table_id:
             raise ValueError("table_id cannot be empty")
@@ -943,7 +943,7 @@ class GoogleSheetApp(APIApplication):
                         f"Invalid column type '{prop['columnType']}' at index {i}. Valid types are: {', '.join(valid_column_types)}"
                     )
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         # Build the table specification and track fields to update
         table_spec: dict[str, Any] = {"tableId": table_id}
@@ -995,31 +995,31 @@ class GoogleSheetApp(APIApplication):
         response = self._post(url, data=request_body)
         return self._handle_response(response)
 
-    def clear_values(self, spreadsheet_id: str, range: str) -> dict[str, Any]:
+    def clear_values(self, spreadsheetId: str, range: str) -> dict[str, Any]:
         """
         Clears data from a single, specified cell range while preserving all formatting. Unlike `delete_dimensions`, it only removes content, not the cells themselves. For clearing multiple ranges simultaneously, use the `batch_clear_values` function.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Spreadsheet to modify
+            spreadsheetId: The unique identifier of the Google Spreadsheet to modify
             range: The A1 or R1C1 notation range of cells to clear (e.g., 'Sheet1!A1:B2')
         
         Returns:
             A dictionary containing the Google Sheets API response
         
         Raises:
-            HttpError: When the API request fails due to invalid spreadsheet_id, invalid range format, or insufficient permissions
-            ValueError: When spreadsheet_id is empty or range is in invalid format
+            HttpError: When the API request fails due to invalid spreadsheetId, invalid range format, or insufficient permissions
+            ValueError: When spreadsheetId is empty or range is in invalid format
         
         Tags:
             clear, modify, spreadsheet, api, sheets, data-management, important
         """
-        url = f"{self.base_url}/{spreadsheet_id}/values/{range}:clear"
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}:clear"
         response = self._post(url, data={})
         return self._handle_response(response)
 
     def update_values(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         range: str,
         values: list[list[Any]],
         value_input_option: str = "RAW",
@@ -1028,7 +1028,7 @@ class GoogleSheetApp(APIApplication):
         Overwrites cell values within a specific A1 notation range using a provided 2D list. This function replaces existing data in a predefined area, distinguishing it from `append_values`, which adds new rows after a table instead of overwriting a specific block of cells.
         
         Args:
-            spreadsheet_id: The unique identifier of the target Google Spreadsheet
+            spreadsheetId: The unique identifier of the target Google Spreadsheet
             range: The A1 notation range where values will be updated (e.g., 'Sheet1!A1:B2')
             values: A list of lists containing the data to write, where each inner list represents a row of values
             value_input_option: Determines how input data should be interpreted: 'RAW' (as-is) or 'USER_ENTERED' (parsed as UI input). Defaults to 'RAW'
@@ -1043,7 +1043,7 @@ class GoogleSheetApp(APIApplication):
         Tags:
             update, write, sheets, api, important, data-modification, google-sheets
         """
-        url = f"{self.base_url}/{spreadsheet_id}/values/{range}"
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}"
         params = {"valueInputOption": value_input_option}
         data = {"range": range, "values": values}
         response = self._put(url, data=data, params=params)
@@ -1051,14 +1051,14 @@ class GoogleSheetApp(APIApplication):
 
     def batch_clear_values(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         ranges: list[str],
     ) -> dict[str, Any]:
         """
         Clears cell values from multiple specified ranges in a single batch operation, preserving existing formatting. Unlike `clear_values`, which handles a single range, this method efficiently processes a list of ranges at once, removing only the content and not the cells themselves.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet to update. Example: "1q2w3e4r5t6y7u8i9o0p"
+            spreadsheetId: The ID of the spreadsheet to update. Example: "1q2w3e4r5t6y7u8i9o0p"
             ranges: The ranges to clear, in A1 notation or R1C1 notation. Example: ["Sheet1!A1:B2", "Sheet1!C3:D4"]
         
         Returns:
@@ -1066,18 +1066,18 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or ranges is empty
+            ValueError: When spreadsheetId is empty or ranges is empty
         
         Tags:
             clear, batch, values, spreadsheet
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not ranges or not isinstance(ranges, list) or len(ranges) == 0:
             raise ValueError("ranges must be a non-empty list")
 
-        url = f"{self.base_url}/{spreadsheet_id}/values:batchClear"
+        url = f"{self.base_url}/{spreadsheetId}/values:batchClear"
 
         request_body = {"ranges": ranges}
 
@@ -1086,7 +1086,7 @@ class GoogleSheetApp(APIApplication):
 
     def batch_get_values_by_data_filter(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         data_filters: list[dict],
         major_dimension: str | None = None,
         value_render_option: str | None = None,
@@ -1096,7 +1096,7 @@ class GoogleSheetApp(APIApplication):
         Retrieves values from spreadsheet ranges matching a list of data filters. This method provides dynamic, criteria-based selection using A1 notation or grid coordinates, unlike `batch_get_values_by_range` which uses a simple list of range strings. It is ideal for fetching multiple, specific datasets in one request.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet to retrieve data from. Example: "1q2w3e4r5t6y7u8i9o0p"
+            spreadsheetId: The ID of the spreadsheet to retrieve data from. Example: "1q2w3e4r5t6y7u8i9o0p"
             data_filters: The data filters used to match the ranges of values to retrieve. Ranges that match any of the specified data filters are included in the response. Each filter can contain:
                 - a1Range: Selects data that matches the specified A1 range. Example: "Sheet1!A1:B5"
                 - gridRange: Selects data that matches the specified grid range. Example: {"sheetId": 0, "startRowIndex": 0, "endRowIndex": 5, "startColumnIndex": 0, "endColumnIndex": 2}
@@ -1109,13 +1109,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or data_filters is empty
+            ValueError: When spreadsheetId is empty or data_filters is empty
         
         Tags:
             get, batch, data-filter, values, spreadsheet
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if (
             not data_filters
@@ -1144,7 +1144,7 @@ class GoogleSheetApp(APIApplication):
                 'date_time_render_option must be either "SERIAL_NUMBER" or "FORMATTED_STRING"'
             )
 
-        url = f"{self.base_url}/{spreadsheet_id}/values:batchGetByDataFilter"
+        url = f"{self.base_url}/{spreadsheetId}/values:batchGetByDataFilter"
 
         request_body: dict[str, Any] = {"dataFilters": data_filters}
 
@@ -1163,18 +1163,18 @@ class GoogleSheetApp(APIApplication):
 
     def copy_sheet_to_spreadsheet(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
-        destination_spreadsheet_id: str,
+        destination_spreadsheetId: str,
     ) -> dict[str, Any]:
         """
         Copies a specific sheet, including all its data and formatting, from a source spreadsheet to a different destination spreadsheet. This action duplicates an entire worksheet into another workbook, returning properties of the newly created sheet.
         
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet containing the sheet to copy. Example: "1qZ_..."
+            spreadsheetId: The ID of the spreadsheet containing the sheet to copy. Example: "1qZ_..."
             sheet_id: The ID of the sheet to copy. Example: 0
-            destination_spreadsheet_id: The ID of the spreadsheet to copy the sheet to. Example: "2rY_..."
+            destination_spreadsheetId: The ID of the spreadsheet to copy the sheet to. Example: "2rY_..."
         
         Returns:
             A dictionary containing the Google Sheets API response with copy details
@@ -1186,25 +1186,25 @@ class GoogleSheetApp(APIApplication):
         Tags:
             copy, sheet, spreadsheet, duplicate
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if sheet_id is None:
             raise ValueError("sheet_id cannot be empty")
 
-        if not destination_spreadsheet_id:
-            raise ValueError("destination_spreadsheet_id cannot be empty")
+        if not destination_spreadsheetId:
+            raise ValueError("destination_spreadsheetId cannot be empty")
 
-        url = f"{self.base_url}/{spreadsheet_id}/sheets/{sheet_id}:copyTo"
+        url = f"{self.base_url}/{spreadsheetId}/sheets/{sheet_id}:copyTo"
 
-        request_body = {"destinationSpreadsheetId": destination_spreadsheet_id}
+        request_body = {"destinationSpreadsheetId": destination_spreadsheetId}
 
         response = self._post(url, data=request_body)
         return self._handle_response(response)
 
     def write_values_to_sheet(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_name: str,
         values: list[list[Any]],
         first_cell_location: str | None = None,
@@ -1215,7 +1215,7 @@ class GoogleSheetApp(APIApplication):
         Writes a 2D list of values to a sheet, overwriting existing data. Data is written starting from a specified cell, or defaults to cell A1 if no location is provided. This differs from `append_values`, which adds new rows after existing data without replacing content.
         
         Args:
-            spreadsheet_id: The unique identifier of the Google Sheets spreadsheet to be updated. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+            spreadsheetId: The unique identifier of the Google Sheets spreadsheet to be updated. Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             sheet_name: The name of the specific sheet within the spreadsheet to update. Example: "Sheet1"
             values: A 2D list of cell values. Each inner list represents a row. Values can be strings, numbers, or booleans. Ensure columns are properly aligned across rows. Example: [['Item', 'Cost', 'Stocked', 'Ship Date'], ['Wheel', 20.5, True, '2020-06-01'], ['Screw', 0.5, True, '2020-06-03'], ['Nut', 0.25, False, '2020-06-02']]
             first_cell_location: The starting cell for the update range, specified in A1 notation (e.g., 'A1', 'B2'). The update will extend from this cell to the right and down, based on the provided values. If omitted, values are appended to the end of the sheet. Example: "A1"
@@ -1227,13 +1227,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty, sheet_name is empty, or values is empty
+            ValueError: When spreadsheetId is empty, sheet_name is empty, or values is empty
         
         Tags:
             batch, update, write, sheets, api, important, data-modification, google-sheets
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not sheet_name:
             raise ValueError("sheet_name cannot be empty")
@@ -1254,7 +1254,7 @@ class GoogleSheetApp(APIApplication):
             # Append to the sheet (no specific range)
             range_str = f"{sheet_name}"
 
-        url = f"{self.base_url}/{spreadsheet_id}/values/{range_str}"
+        url = f"{self.base_url}/{spreadsheetId}/values/{range_str}"
 
         params = {
             "valueInputOption": value_input_option,
@@ -1268,7 +1268,7 @@ class GoogleSheetApp(APIApplication):
 
     def append_values(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         range: str,
         value_input_option: str,
         values: list[list[Any]],
@@ -1281,7 +1281,7 @@ class GoogleSheetApp(APIApplication):
         Appends rows of data after a specified table in a Google Sheet. Distinct from `update_values` which overwrites data, this function adds new rows at the end of the table. It can also insert rows, shifting existing cells down, offering finer control over data addition.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet to update. Example: "1q0gLhLdGXYZblahblahblah"
+            spreadsheetId: The ID of the spreadsheet to update. Example: "1q0gLhLdGXYZblahblahblah"
             range: The A1 notation of a range to search for a logical table of data. Values are appended after the last row of the table. Example: "Sheet1!A1:B2"
             value_input_option: How the input data should be interpreted. Required. Options: "RAW" or "USER_ENTERED". Example: "USER_ENTERED"
             values: The data to be written. This is an array of arrays, the outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds with one cell. Example: [["A1_val1", "A1_val2"], ["A2_val1", "A2_val2"]]
@@ -1300,8 +1300,8 @@ class GoogleSheetApp(APIApplication):
         Tags:
             append, values, spreadsheet, data, important
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not range:
             raise ValueError("range cannot be empty")
@@ -1343,7 +1343,7 @@ class GoogleSheetApp(APIApplication):
                 'response_date_time_render_option must be either "SERIAL_NUMBER" or "FORMATTED_STRING"'
             )
 
-        url = f"{self.base_url}/{spreadsheet_id}/values/{range}:append"
+        url = f"{self.base_url}/{spreadsheetId}/values/{range}:append"
 
         params: dict[str, Any] = {"valueInputOption": value_input_option}
 
@@ -1367,14 +1367,14 @@ class GoogleSheetApp(APIApplication):
 
     def clear_basic_filter(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
     ) -> dict[str, Any]:
         """
         Removes the basic filter from a specified sheet, clearing active sorting and filtering criteria to restore the default data view. As the direct counterpart to `set_basic_filter`, this function removes the entire filter object, not just the cell content.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet. Example: "abc123xyz789"
+            spreadsheetId: The ID of the spreadsheet. Example: "abc123xyz789"
             sheet_id: The ID of the sheet on which the basic filter should be cleared. Example: 0
         
         Returns:
@@ -1382,18 +1382,18 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or sheet_id is negative
+            ValueError: When spreadsheetId is empty or sheet_id is negative
         
         Tags:
             clear, filter, basic-filter, spreadsheet
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if sheet_id < 0:
             raise ValueError("sheet_id must be non-negative")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         request_body = {"requests": [{"clearBasicFilter": {"sheetId": sheet_id}}]}
 
@@ -1402,14 +1402,14 @@ class GoogleSheetApp(APIApplication):
 
     def delete_sheet(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         sheet_id: int,
     ) -> dict[str, Any]:
         """
         Permanently deletes a specific sheet (worksheet) from a Google Spreadsheet using its sheet ID. This operation removes the target sheet and all its contents, acting as the direct counterpart to the `add_sheet` function which creates new sheets within a spreadsheet.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet from which to delete the sheet. Example: "abc123xyz789"
+            spreadsheetId: The ID of the spreadsheet from which to delete the sheet. Example: "abc123xyz789"
             sheet_id: The ID of the sheet to delete. If the sheet is of DATA_SOURCE type, the associated DataSource is also deleted. Example: 123456789
         
         Returns:
@@ -1417,18 +1417,18 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or sheet_id is negative
+            ValueError: When spreadsheetId is empty or sheet_id is negative
         
         Tags:
             delete, sheet, spreadsheet, worksheet
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if sheet_id < 0:
             raise ValueError("sheet_id must be non-negative")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         request_body = {"requests": [{"deleteSheet": {"sheetId": sheet_id}}]}
 
@@ -1437,7 +1437,7 @@ class GoogleSheetApp(APIApplication):
 
     def discover_tables(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         min_rows: int = 2,
         min_columns: int = 1,
         min_confidence: float = 0.5,
@@ -1446,7 +1446,7 @@ class GoogleSheetApp(APIApplication):
         Heuristically analyzes a spreadsheet to discover and list all table-like data structures, identifying headers and data boundaries. It returns informal data blocks meeting specified size criteria, distinguishing it from functions like `add_table` that manage formally defined tables.
         
         Args:
-            spreadsheet_id: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'). Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
+            spreadsheetId: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'). Example: "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
             min_rows: Minimum number of data rows to consider a valid table. Example: 2
             min_columns: Minimum number of columns to consider a valid table. Example: 1
             min_confidence: Minimum confidence score (0.0-1.0) to consider a valid table. Example: 0.5
@@ -1456,13 +1456,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or parameters are invalid
+            ValueError: When spreadsheetId is empty or parameters are invalid
         
         Tags:
             list, tables, discover, analyze, spreadsheet, important
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if min_rows < 1:
             raise ValueError("min_rows must be at least 1")
@@ -1474,7 +1474,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("min_confidence must be between 0.0 and 1.0")
 
         # Get spreadsheet structure
-        spreadsheet = self.get_spreadsheet_metadata(spreadsheet_id)
+        spreadsheet = self.get_spreadsheet_metadata(spreadsheetId)
 
         tables = []
 
@@ -1486,7 +1486,7 @@ class GoogleSheetApp(APIApplication):
             # Analyze sheet for tables using helper function
             sheet_tables = analyze_sheet_for_tables(
                 self.get_values,  # Pass the get_values method as a function
-                spreadsheet_id,
+                spreadsheetId,
                 sheet_id,
                 sheet_title,
                 min_rows,
@@ -1497,7 +1497,7 @@ class GoogleSheetApp(APIApplication):
             tables.extend(sheet_tables)
 
         return {
-            "spreadsheet_id": spreadsheet_id,
+            "spreadsheetId": spreadsheetId,
             "total_tables": len(tables),
             "tables": tables,
             "analysis_parameters": {
@@ -1508,7 +1508,7 @@ class GoogleSheetApp(APIApplication):
 
     def analyze_table_schema(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         table_name: str,
         sheet_name: str | None = None,
         sample_size: int = 50,
@@ -1517,7 +1517,7 @@ class GoogleSheetApp(APIApplication):
         Infers a specified table's schema by analyzing a data sample. After locating the table by name (a value discovered via `discover_tables`), this function determines the most likely data type and properties for each column, providing a detailed structural breakdown of its content.
         
         Args:
-            spreadsheet_id: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms')
+            spreadsheetId: Google Sheets ID from the URL (e.g., '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms')
             table_name: Specific table name from LIST_TABLES response (e.g., 'Sales_Data', 'Employee_List'). Use 'auto' to analyze the largest/most prominent table
             sheet_name: Sheet/tab name if table_name is ambiguous across multiple sheets
             sample_size: Number of rows to sample for type inference (1-1000, default 50)
@@ -1527,13 +1527,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty, table_name is empty, or sample_size is invalid
+            ValueError: When spreadsheetId is empty, table_name is empty, or sample_size is invalid
         
         Tags:
             schema, analyze, table, structure, types, columns
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not table_name:
             raise ValueError("table_name cannot be empty")
@@ -1542,7 +1542,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("sample_size must be between 1 and 1000")
 
         # Get spreadsheet structure
-        spreadsheet = self.get_spreadsheet_metadata(spreadsheet_id)
+        spreadsheet = self.get_spreadsheet_metadata(spreadsheetId)
 
         # Find the target table
         target_table = None
@@ -1558,7 +1558,7 @@ class GoogleSheetApp(APIApplication):
             # Get tables in this sheet
             sheet_tables = analyze_sheet_for_tables(
                 self.get_values,
-                spreadsheet_id,
+                spreadsheetId,
                 sheet_properties.get("sheetId", 0),
                 sheet_title,
                 min_rows=2,
@@ -1586,19 +1586,19 @@ class GoogleSheetApp(APIApplication):
 
         # Use the helper function to analyze the table schema
         return analyze_table_schema(
-            self.get_values, spreadsheet_id, target_table, sample_size
+            self.get_values, spreadsheetId, target_table, sample_size
         )
 
     def set_basic_filter(
         self,
-        spreadsheet_id: str,
+        spreadsheetId: str,
         filter: dict,
     ) -> dict[str, Any]:
         """
         Sets or updates a basic filter on a specified range within a sheet, enabling data sorting and filtering. The filter's target range and optional sort specifications are defined in a dictionary argument. It is the counterpart to `clear_basic_filter`, which removes an existing filter.
         
         Args:
-            spreadsheet_id: The ID of the spreadsheet. Example: "abc123xyz789"
+            spreadsheetId: The ID of the spreadsheet. Example: "abc123xyz789"
             filter: The filter to set. This parameter is required. Contains:
                 - range: The range the filter covers (required)
                     - sheetId: The sheet this range is on (required)
@@ -1615,13 +1615,13 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty or filter is missing required fields
+            ValueError: When spreadsheetId is empty or filter is missing required fields
         
         Tags:
             filter, basic-filter, spreadsheet, sort, important
         """
-        if not spreadsheet_id:
-            raise ValueError("spreadsheet_id cannot be empty")
+        if not spreadsheetId:
+            raise ValueError("spreadsheetId cannot be empty")
 
         if not filter:
             raise ValueError("filter cannot be empty")
@@ -1635,7 +1635,7 @@ class GoogleSheetApp(APIApplication):
         if "sheetId" not in range_data:
             raise ValueError("filter range must contain 'sheetId' field")
 
-        url = f"{self.base_url}/{spreadsheet_id}:batchUpdate"
+        url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
 
         request_body = {"requests": [{"setBasicFilter": {"filter": filter}}]}
 
@@ -1726,7 +1726,7 @@ class GoogleSheetApp(APIApplication):
         
         Raises:
             HTTPError: When the API request fails due to invalid parameters or insufficient permissions
-            ValueError: When spreadsheet_id is empty, indices are invalid, or color values are out of range
+            ValueError: When spreadsheetId is empty, indices are invalid, or color values are out of range
         
         Tags:
             format, cells, styling, text-formatting, background-color, borders, alignment, merge
