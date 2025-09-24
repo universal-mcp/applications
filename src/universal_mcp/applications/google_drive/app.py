@@ -67,23 +67,35 @@ class GoogleDriveApp(APIApplication):
         return response.json()
 
     def search_files(
-        self, page_size: int = 10, query: str | None = None, order_by: str | None = None
+        self, page_size: int = 10, q: str | None = None, order_by: str | None = None
     ) -> dict[str, Any]:
         """
-        Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination. This streamlined function offers a more user-friendly alternative to the comprehensive `search_files_advanced` method, making it ideal for targeted queries like finding files by name, type, or parent folder.
-        
+        Searches for files in Google Drive, allowing for powerful filtering, sorting, and pagination.
+        This streamlined function offers a more user-friendly alternative to the comprehensive search_files_advanced method, making it ideal for targeted queries like finding files by name, type, or parent folder.
+
         Args:
             page_size: Maximum number of files to return per page (default: 10)
-            query: Optional search query string using Google Drive query syntax (e.g., "mimeType='image/jpeg'")
-            order_by: Optional field name to sort results by, with optional direction (e.g., "modifiedTime desc")
-        
+            q: Optional search query string using **Google Drive query syntax**.
+                - You must specify a field (e.g., `name`, `fullText`, `mimeType`, `modifiedTime`, `parents`)
+                - Supported operators: `=`, `!=`, `<`, `<=`, `>`, `>=`, `contains`, `in`
+                - Combine conditions with `and` / `or`
+                - String values must be in single quotes `'...'`
+                
+                Examples:
+                    - "mimeType='application/pdf'"
+                    - "name contains 'contract' or name contains 'agreement'"
+                    - "fullText contains 'service' and mimeType!='application/vnd.google-apps.folder'"
+
+            order_by: Optional field name to sort results by, with optional direction
+                - e.g., "modifiedTime desc", "name asc"
+
         Returns:
             Dictionary containing a list of files and metadata, including 'files' array and optional 'nextPageToken' for pagination
-        
+
         Raises:
             HTTPError: Raised when the API request fails or returns an error status code
             RequestException: Raised when network connectivity issues occur during the API request
-        
+
         Tags:
             list, files, search, google-drive, pagination, important
         """
@@ -91,8 +103,8 @@ class GoogleDriveApp(APIApplication):
         params = {
             "pageSize": page_size,
         }
-        if query:
-            params["q"] = query
+        if q:
+            params["q"] = q
         if order_by:
             params["orderBy"] = order_by
         response = self._get(url, params=params)
