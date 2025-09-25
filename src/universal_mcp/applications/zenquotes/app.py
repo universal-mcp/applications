@@ -24,8 +24,8 @@ class ZenquotesApp(APIApplication):
         url = "https://zenquotes.io/api/random"
         response = self._get(url)
         data = response.json()
-        quote_data = data[0]
-        return f"{quote_data['q']} - {quote_data['a']}"
+        quote = data[0]
+        return {"quote" : quote["q"], "author" : quote["a"]}
 
     def list_tools(self):
         return [self.get_random_quote]
