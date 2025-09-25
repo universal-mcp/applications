@@ -51,7 +51,7 @@ class YahooFinanceApp(APIApplication):
         interval: str = "1d",
         start_date: str | None = None,
         end_date: str | None = None,
-    ) -> Any:
+    ) -> dict:
         """
         Gets historical price data for a stock with OHLCV data, dividends, and stock splits.
 
@@ -63,7 +63,7 @@ class YahooFinanceApp(APIApplication):
             end_date: End date in 'YYYY-MM-DD' format (used with start_date)
 
         Returns:
-            Complete DataFrame with Open, High, Low, Close, Volume, Dividends, Stock Splits columns
+            Dictionary with historical stock data, dates as string keys
 
         Tags:
             stock, history, ohlcv, price-data, time-series, important
@@ -74,9 +74,24 @@ class YahooFinanceApp(APIApplication):
         symbol = symbol.upper().strip()
         ticker = yf.Ticker(symbol)
 
-        return ticker.history(
+        df = ticker.history(
             period=period, interval=interval, start=start_date, end=end_date
         )
+        
+        try:
+            data = df.to_dict("index")  # type: ignore
+            if data:
+                converted_data = {}
+                for key, value in data.items():
+                    if hasattr(key, 'strftime'):
+                        converted_key = key.strftime('%Y-%m-%d')
+                    else:
+                        converted_key = str(key)
+                    converted_data[converted_key] = value
+                return converted_data
+            return data
+        except:
+            return {}
 
     def get_stock_news(self, symbol: str, limit: int = 10) -> list[Any]:
         """
@@ -135,7 +150,17 @@ class YahooFinanceApp(APIApplication):
             df = ticker.income_stmt
 
         try:
-            return df.to_dict("dict")  # type: ignore
+            data = df.to_dict("dict")  # type: ignore
+            if data:
+                converted_data = {}
+                for key, value in data.items():
+                    if hasattr(key, 'strftime'):
+                        converted_key = key.strftime('%Y-%m-%d')
+                    else:
+                        converted_key = str(key)
+                    converted_data[converted_key] = value
+                return converted_data
+            return data
         except:
             return {}
 
