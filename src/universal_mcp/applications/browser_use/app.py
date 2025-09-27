@@ -3,18 +3,20 @@ from typing import Annotated
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from browser_use import BrowserUseClient
+from browser_use_sdk import BrowserUse
 
 
 class BrowserUseApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
+    def __init__(self, integration: Integration | None = None, **kwargs) -> None:
         super().__init__(name="browser_use", integration=integration, **kwargs)
-        self._client = None
+        self._browser_client = None
 
     @property
-    def client(self) -> BrowserUseClient:
-        if self._client is not None:
-            return self._client
+    def browser_client(self) -> BrowserUse:
+        if self._browser_client is not None:
+            return self._browser_client
+        if not self.integration:
+            raise ValueError("Integration is required but not provided")
         credentials = self.integration.get_credentials()
         api_key = (
             credentials.get("api_key")
@@ -23,8 +25,8 @@ class BrowserUseApp(APIApplication):
         )
         if not api_key:
             raise ValueError("API key not found in integration credentials")
-        self._client = BrowserUseClient(api_key=api_key)
-        return self._client
+        self._browser_client = BrowserUse(api_key=api_key)
+        return self._browser_client
 
     async def browser_task(
         self,
@@ -43,7 +45,7 @@ class BrowserUseApp(APIApplication):
         Returns:
             dict: The result of the completed task, including output and other metadata.
         """
-        created_task = self.client.tasks.create_task(
+        created_task = self.browser_client.tasks.create_task(
             llm=llm, task=task, max_steps=max_steps
         )
         result = created_task.complete()
@@ -52,25 +54,18 @@ class BrowserUseApp(APIApplication):
     async def get_browser_task_status(
         self,
         task_id: Annotated[str, "Task ID to check"],
-        enable_polling: Annotated[bool, "Auto-poll for 28s (default: true)"] = True,
     ) -> dict:
         """
         Checks task progress with smart polling.
 
         Args:
             task_id (str): The ID of the task to check.
-            enable_polling (bool, optional): If true, polls for the task status for up to 28 seconds. Defaults to True.
 
         Returns:
             dict: The current status and details of the task.
         """
-        if enable_polling:
-            task = self.client.tasks.get(task_id)
-            result = task.poll()
-            return result.to_dict()
-        else:
-            task = self.client.tasks.get(task_id)
-            return task.to_dict()
+        task = self.browser_client.tasks.get_task(task_id)
+        return task.to_dict()
 
     def list_tools(self):
         return [self.browser_task, self.get_browser_task_status]
