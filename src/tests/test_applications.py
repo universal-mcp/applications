@@ -73,7 +73,7 @@ ALL_APPS = [
     "shopify",
     "shortcut",
     "slack",  # not seeded
-    "spotify",
+    "spotify",  # not seeded
     "supabase",
     "tavily",
     "trello",
