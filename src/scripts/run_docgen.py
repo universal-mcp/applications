@@ -2,15 +2,7 @@ import os
 import subprocess
 
 APPS = [
-    "google_mail",
-    "google_calendar",
-    "google_docs",
-    "google_drive",
-    "google_searchconsole",
-    "google_sheet",
-    "linkedin",
-    "ms_teams",
-    "outlook",
+    "google_docs"
 ]
 
 

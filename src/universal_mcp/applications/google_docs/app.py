@@ -11,18 +11,18 @@ class GoogleDocsApp(APIApplication):
 
     def create_document(self, title: str) -> dict[str, Any]:
         """
-        Creates a blank Google Document with a specified title using a POST request to the Google Docs API. This is the primary creation method, returning the document's metadata, including the ID required by functions like `get_document` or `insert_text` to perform subsequent operations on the new file.
-
+        Creates a blank Google Document with a specified title by sending a POST request to the Google Docs API. The function returns a dictionary containing the new document's metadata, including the unique document ID required by other functions for subsequent modifications or retrieval.
+        
         Args:
-            title: The title for the new Google Document to be created
-
+            title: The title for the new Google Document to be created.
+        
         Returns:
-            A dictionary containing the Google Docs API response with document details and metadata
-
+            A dictionary containing the response from the Google Docs API with document details and metadata.
+        
         Raises:
-            HTTPError: If the API request fails due to network issues, authentication errors, or invalid parameters
-            RequestException: If there are connection errors or timeout issues during the API request
-
+            HTTPError: If the API request fails due to network issues, authentication errors, or invalid parameters.
+            RequestException: If there are connection errors or timeout issues during the API request.
+        
         Tags:
             create, document, api, important, google-docs, http
         """
@@ -34,18 +34,18 @@ class GoogleDocsApp(APIApplication):
 
     def get_document(self, document_id: str) -> dict[str, Any]:
         """
-        Retrieves the complete content and metadata for a specific Google Document using its unique ID. This function performs a GET request to the API, returning the full JSON response. It's the primary read operation, contrasting with `create_document` which creates new documents.
-
+        Retrieves the complete, raw JSON object for a Google Document by its ID. This function returns the full, unprocessed API response with all metadata and structural elements, distinguishing it from `get_document_content`, which parses this data to extract only the title and plain text.
+        
         Args:
-            document_id: The unique identifier of the document to retrieve
-
+            document_id: The unique identifier of the Google Document to retrieve.
+        
         Returns:
-            A dictionary containing the document data from the Google Docs API response
-
+            A dictionary containing the complete document data as returned by the Google Docs API.
+        
         Raises:
-            HTTPError: If the API request fails or the document is not found
-            JSONDecodeError: If the API response cannot be parsed as JSON
-
+            HTTPError: If the API request fails or the specified document cannot be found.
+            JSONDecodeError: If the API response is not valid JSON and cannot be parsed.
+        
         Tags:
             retrieve, read, api, document, google-docs, important
         """
@@ -53,24 +53,57 @@ class GoogleDocsApp(APIApplication):
         response = self._get(url)
         return response.json()
 
+    def get_document_content(self, document_id: str) -> dict[str, Any]:
+        """
+        Retrieves a document's raw data via `get_document`, then parses the complex JSON to extract and concatenate all plain text from its body. This function returns a simplified dictionary containing only the title and the clean, concatenated text content, distinct from `get_document`'s full metadata response.
+        
+        Args:
+            document_id: The unique identifier of the Google Document to retrieve.
+        
+        Returns:
+            A dictionary containing the document's title under the key 'title' and the concatenated plain text content under the key 'content'.
+        
+        Raises:
+            KeyError: If the response structure from get_document is missing expected keys such as 'body' or 'content', a KeyError may be raised during extraction.
+            Exception: Any exception raised by the underlying get_document call, such as network errors or API issues, will propagate.
+        
+        Tags:
+            retrieve, document, text-processing, parsing, important
+        """
+        response = self.get_document(document_id)
+        title = response.get("title", "")
+        text_chunks: list[str] = []
+        body_content = response.get("body", {}).get("content", [])
+        for element in body_content:
+            if "paragraph" in element:
+                for para_elem in element["paragraph"].get("elements", []):
+                    text_run = para_elem.get("textRun")
+                    if text_run and "content" in text_run:
+                        text_chunks.append(text_run["content"])
+        content = "".join(text_chunks).strip()
+        return {
+            "title": title,
+            "content": content,
+        }
+
     def insert_text(
         self, document_id: str, content: str, index: int = 1
     ) -> dict[str, Any]:
         """
-        Inserts a text string at a specified index within an existing Google Document using the `batchUpdate` API. This function adds new textual content, distinguishing it from functions that insert non-text elements like tables or apply formatting (`apply_text_style`) to existing content.
-
+        Inserts a text string at a specified index within a Google Document using the batchUpdate API. Unlike functions that format existing text or delete content ranges, this method specifically adds new textual content to the document body.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            content: The text content to be inserted into the document
-            index: The zero-based position in the document where the text should be inserted (default: 1)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            content: The text content to be inserted into the document.
+            index: The zero-based position in the document where the text should be inserted (default is 1).
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the batch update operation
-
+            A dictionary containing the Google Docs API response after performing the batch update operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: If the API request fails, for example due to invalid document_id or insufficient permissions.
+            RequestException: If there are network connectivity issues or problems contacting the API endpoint.
+        
         Tags:
             update, insert, document, api, google-docs, batch, content-management, important
         """
@@ -98,56 +131,48 @@ class GoogleDocsApp(APIApplication):
         background_color: dict[str, float] | None = None,
     ) -> dict[str, Any]:
         """
-        Applies character-level formatting such as bold, italic, font size, color, and hyperlinks to a specified text range in a document. This function modifies text appearance, distinguishing it from `update_paragraph_style`, which handles block-level formatting like alignment and headings.
-
+        Applies character-level formatting (e.g., bold, italic, color, links) to a specified text range. This function modifies text attributes directly, distinguishing it from `update_paragraph_style` which handles block-level properties like alignment.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            start_index: The zero-based start index of the text range to style
-            end_index: The zero-based end index of the text range to style (exclusive)
-            bold: Whether the text should be bold
-            italic: Whether the text should be italicized
-            underline: Whether the text should be underlined
-            font_size: The font size in points (e.g., 12.0 for 12pt)
-            link_url: URL to make the text a hyperlink
-            foreground_color: RGB color dict with 'red', 'green', 'blue' values (0.0 to 1.0)
-            background_color: RGB color dict with 'red', 'green', 'blue' values (0.0 to 1.0)
-
+            document_id: The unique identifier of the Google Document to update.
+            start_index: The zero-based start index of the text range to apply the style.
+            end_index: The zero-based end index (exclusive) of the text range to apply the style.
+            bold: Whether to apply bold formatting to the text.
+            italic: Whether to apply italic formatting to the text.
+            underline: Whether to apply underline formatting to the text.
+            font_size: Font size in points (e.g., 12.0 for 12pt) to apply to the text.
+            link_url: URL to apply as a hyperlink to the text.
+            foreground_color: RGB color dictionary with 'red', 'green', and 'blue' floats (0.0 to 1.0) for the text color.
+            background_color: RGB color dictionary with 'red', 'green', and 'blue' floats (0.0 to 1.0) for the text background color.
+        
         Returns:
-            A dictionary containing the Google Docs API response
-
+            A dictionary containing the Google Docs API response, or a message if no styling was applied.
+        
         Raises:
-            HTTPError: When the API request fails
-            RequestException: When there are network connectivity issues
-
+            HTTPError: If the Google Docs API request fails.
+            RequestException: If there are network connectivity issues during the API request.
+        
         Tags:
-            style, format, text, document, api, google-docs, simple
+            style, format, text, document, api, google-docs, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the text style object with only common properties
         text_style = {}
         fields_to_update = []
-
         if bold:
             text_style["bold"] = True
             fields_to_update.append("bold")
-
         if italic:
             text_style["italic"] = True
             fields_to_update.append("italic")
-
         if underline:
             text_style["underline"] = True
             fields_to_update.append("underline")
-
         if font_size is not None:
             text_style["fontSize"] = {"magnitude": font_size, "unit": "PT"}
             fields_to_update.append("fontSize")
-
         if link_url is not None:
             text_style["link"] = {"url": link_url}
             fields_to_update.append("link")
-
         if foreground_color is not None:
             text_style["foregroundColor"] = {
                 "color": {
@@ -159,7 +184,6 @@ class GoogleDocsApp(APIApplication):
                 }
             }
             fields_to_update.append("foregroundColor")
-
         if background_color is not None:
             text_style["backgroundColor"] = {
                 "color": {
@@ -171,11 +195,8 @@ class GoogleDocsApp(APIApplication):
                 }
             }
             fields_to_update.append("backgroundColor")
-
-        # If no styling requested, return early
         if not text_style:
             return {"message": "No styling applied"}
-
         batch_update_data = {
             "requests": [
                 {
@@ -187,7 +208,6 @@ class GoogleDocsApp(APIApplication):
                 }
             ]
         }
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -204,64 +224,51 @@ class GoogleDocsApp(APIApplication):
         tab_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Applies paragraph-level formatting, such as named styles (e.g., 'HEADING_1'), alignment, or text direction, to a specified text range. This function handles block-level styles, distinguishing it from `apply_text_style`, which formats individual characters with attributes like bold or italic.
-
+        Applies paragraph-level formatting like alignment, named styles (e.g., 'HEADING_1'), and text direction to a text range in a Google Doc. Distinct from `apply_text_style`, which handles character formatting, this method modifies properties for entire paragraphs using the batchUpdate API.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            start_index: The zero-based start index of the paragraph range to style
-            end_index: The zero-based end index of the paragraph range to style (exclusive)
-            named_style_type: The named style type (e.g., 'NORMAL_TEXT', 'TITLE', 'HEADING_1', etc.)
-            alignment: The paragraph alignment ('START', 'CENTER', 'END', 'JUSTIFIED')
-            direction: The content direction ('LEFT_TO_RIGHT', 'RIGHT_TO_LEFT')
-            spacing_mode: The spacing mode ('NEVER_COLLAPSE', 'COLLAPSE_LISTS')
-            segment_id: The segment ID for the range (optional)
-            tab_id: The tab ID for the range (optional)
-
+            document_id: The unique identifier of the Google Document to update.
+            start_index: The zero-based start index of the paragraph range to style.
+            end_index: The zero-based end index of the paragraph range to style (exclusive).
+            named_style_type: The named style type to apply (e.g., 'NORMAL_TEXT', 'TITLE', 'HEADING_1').
+            alignment: Paragraph alignment option ('START', 'CENTER', 'END', 'JUSTIFIED').
+            direction: Content direction of the paragraph ('LEFT_TO_RIGHT', 'RIGHT_TO_LEFT').
+            spacing_mode: Spacing mode for the paragraph ('NEVER_COLLAPSE', 'COLLAPSE_LISTS').
+            segment_id: Optional segment ID for the text range.
+            tab_id: Optional tab ID for the text range.
+        
         Returns:
-            A dictionary containing the Google Docs API response
-
+            A dictionary containing the API response from the Google Docs batchUpdate request.
+        
         Raises:
-            HTTPError: When the API request fails
-            RequestException: When there are network connectivity issues
-
+            HTTPError: If the API request to update the document fails due to an HTTP error.
+            RequestException: If there are network connectivity issues during the API request.
+        
         Tags:
-            style, format, paragraph, document, api, google-docs, batch, content-management
+            style, format, paragraph, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the paragraph style object with only specified properties
         paragraph_style = {}
         fields_to_update = []
-
         if named_style_type is not None:
             paragraph_style["namedStyleType"] = named_style_type
             fields_to_update.append("namedStyleType")
-
         if alignment is not None:
             paragraph_style["alignment"] = alignment
             fields_to_update.append("alignment")
-
         if direction is not None:
             paragraph_style["direction"] = direction
             fields_to_update.append("direction")
-
         if spacing_mode is not None:
             paragraph_style["spacingMode"] = spacing_mode
             fields_to_update.append("spacingMode")
-
-        # If no styling requested, return early
         if not paragraph_style:
             return {"message": "No paragraph styling applied"}
-
-        # Build the range object
         range_obj: dict[str, Any] = {"startIndex": start_index, "endIndex": end_index}
-
-        # Add optional parameters if provided
         if segment_id is not None:
             range_obj["segmentId"] = segment_id
         if tab_id is not None:
             range_obj["tabId"] = tab_id
-
         batch_update_data = {
             "requests": [
                 {
@@ -273,7 +280,6 @@ class GoogleDocsApp(APIApplication):
                 }
             ]
         }
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -286,40 +292,34 @@ class GoogleDocsApp(APIApplication):
         tab_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Deletes content within a specified index range in a Google Document via the batchUpdate API. It removes any content based on location, distinguishing it from functions like `delete_header` or `delete_paragraph_bullets`, which remove specific structures or styles instead.
-
+        Removes content from a specified index range in a Google Document via the batchUpdate API. Unlike functions that delete entire elements (e.g., `delete_header`), this provides granular control by targeting content based on its precise start and end location, optionally within a specific segment or tab.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            start_index: The zero-based start index of the content range to delete
-            end_index: The zero-based end index of the content range to delete (exclusive)
-            segment_id: The ID of the header, footer, or footnote segment (optional)
-            tab_id: The ID of the tab containing the content to delete (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            start_index: The zero-based start index of the content range to delete.
+            end_index: The zero-based end index of the content range to delete (exclusive).
+            segment_id: Optional; the ID of the header, footer, or footnote segment containing the content.
+            tab_id: Optional; the ID of the tab containing the content to delete.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the delete operation
-
+            A dictionary representing the Google Docs API response after performing the delete operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails due to issues such as invalid document ID or insufficient permissions.
+            RequestException: Raised when there are network connectivity issues or problems with the API endpoint.
+        
         Tags:
             delete, remove, content, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the delete content range request
         delete_request: dict[str, Any] = {
             "range": {"startIndex": start_index, "endIndex": end_index}
         }
-
-        # Add optional parameters if provided
         if segment_id is not None:
             delete_request["range"]["segmentId"] = segment_id
         if tab_id is not None:
             delete_request["tabId"] = tab_id
-
         batch_update_data = {"requests": [{"deleteContentRange": delete_request}]}
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -333,39 +333,32 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Inserts a table with specified row and column dimensions at a given index in a Google Document. This function uses the `batchUpdate` API for precise placement, allowing the table to be added to the document's body, a header, or a footer, returning the API's response.
-
+        Inserts a table with specified rows and columns at a given index in a Google Document using the batchUpdate API. It can optionally place the table within specific document segments, such as headers or footers, handling structural additions rather than text or style modifications.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            location_index: The zero-based index where the table should be inserted
-            rows: The number of rows in the table
-            columns: The number of columns in the table
-            segment_id: The ID of the header, footer or footnote segment (optional)
-            tab_id: The ID of the tab containing the location (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            location_index: The zero-based index within the document body or segment where the table should be inserted.
+            rows: The number of rows the inserted table should have.
+            columns: The number of columns the inserted table should have.
+            segment_id: Optional ID of the header, footer, or footnote segment where the table will be inserted (if applicable).
+            tab_id: Optional ID of the tab containing the insertion location.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the insert table operation
-
+            A dictionary containing the response from the Google Docs API after performing the table insertion.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails due to reasons such as invalid document ID or insufficient permissions.
+            RequestException: Raised when there are network connectivity issues or problems reaching the API endpoint.
+        
         Tags:
-            table, insert, document, api, google-docs, batch, content-management
+            table, insert, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the location object according to Google Docs API specification
         location = {"index": location_index}
-
-        # Add segment_id if provided (empty string for document body, specific ID for header/footer/footnote)
         if segment_id is not None:
             location["segmentId"] = segment_id
-
-        # Add tab_id if provided
         if tab_id is not None:
             location["tabId"] = tab_id
-
         batch_update_data = {
             "requests": [
                 {
@@ -377,7 +370,6 @@ class GoogleDocsApp(APIApplication):
                 }
             ]
         }
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -390,31 +382,27 @@ class GoogleDocsApp(APIApplication):
         section_break_tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Creates a footer of a specified type in a Google Document via the batch update API. The footer can optionally be associated with a specific section break, enabling distinct footers for different document sections, distinguishing it from the `create_header` and `create_footnote` functions.
-
+        Creates a footer of a specified type in a Google Document using the batch update API. This function, distinct from `create_header`, can optionally associate the new footer with a specific section break, enabling section-specific footers within the document.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            footer_type: The type of footer to create (DEFAULT, HEADER_FOOTER_TYPE_UNSPECIFIED)
-            section_break_location_index: The index of the SectionBreak location (optional)
-            section_break_segment_id: The segment ID of the SectionBreak location (optional)
-            section_break_tab_id: The tab ID of the SectionBreak location (optional)
-
+            document_id: The unique identifier of the Google Document to update.
+            footer_type: The type of footer to create, such as 'DEFAULT' or 'HEADER_FOOTER_TYPE_UNSPECIFIED'.
+            section_break_location_index: Optional index of the SectionBreak location to associate with the footer.
+            section_break_segment_id: Optional segment ID of the SectionBreak location.
+            section_break_tab_id: Optional tab ID of the SectionBreak location.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the create footer operation
-
+            A dictionary containing the Google Docs API response from the create footer operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails due to reasons like invalid document_id or insufficient permissions.
+            RequestException: Raised when there are network connectivity issues or problems with the API endpoint.
+        
         Tags:
-            footer, create, document, api, google-docs, batch, content-management
+            footer, create, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the create footer request
         create_footer_request = {"type": footer_type}
-
-        # Add section break location if provided
         if section_break_location_index is not None:
             section_break_location = {"index": section_break_location_index}
 
@@ -425,9 +413,7 @@ class GoogleDocsApp(APIApplication):
                 section_break_location["tabId"] = section_break_tab_id
 
             create_footer_request["sectionBreakLocation"] = section_break_location
-
         batch_update_data = {"requests": [{"createFooter": create_footer_request}]}
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -442,32 +428,29 @@ class GoogleDocsApp(APIApplication):
         end_of_segment_tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Creates a footnote via the batch update API, inserting a numbered reference at a specified index or a segment's end. This function adds an in-body citation, distinguishing it from `create_footer` which creates a content block at the bottom of the page.
-
+        Inserts a numbered footnote reference into a Google Document using the batchUpdate API. The footnote can be placed at a precise index or at the end of a document segment, distinct from the `create_footer` function which adds standard page footers.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            location_index: The index where to insert the footnote reference (optional)
-            location_segment_id: The segment ID for the location (optional, must be empty for body)
-            location_tab_id: The tab ID for the location (optional)
-            end_of_segment_location: Whether to insert at end of segment (optional)
-            end_of_segment_segment_id: The segment ID for end of segment location (optional)
-            end_of_segment_tab_id: The tab ID for end of segment location (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            location_index: The zero-based index within the document where the footnote reference will be inserted (optional if inserting at end of segment).
+            location_segment_id: The segment ID where the footnote reference should be inserted (optional, usually empty for the document body).
+            location_tab_id: The tab ID for the location within the segment (optional).
+            end_of_segment_location: If True, inserts the footnote reference at the end of a segment instead of a specific index (default is False).
+            end_of_segment_segment_id: The segment ID indicating where to insert the footnote at the end of a segment (optional).
+            end_of_segment_tab_id: The tab ID for the end-of-segment location (optional).
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the create footnote operation
-
+            A dictionary containing the response from the Google Docs API after performing the footnote creation operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails, such as due to an invalid document ID or insufficient permissions.
+            RequestException: Raised when there are network connectivity issues or problems reaching the API endpoint.
+        
         Tags:
-            footnote, create, document, api, google-docs, batch, content-management
+            footnote, create, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the create footnote request
         create_footnote_request = {}
-
         if end_of_segment_location:
             # Use endOfSegmentLocation
             end_of_segment_location_obj = {}
@@ -492,9 +475,7 @@ class GoogleDocsApp(APIApplication):
                 location["tabId"] = location_tab_id
 
             create_footnote_request["location"] = location
-
         batch_update_data = {"requests": [{"createFootnote": create_footnote_request}]}
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -505,34 +486,28 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Deletes a specific footer from a Google Document using its unique ID via a `batchUpdate` request. This operation, the counterpart to `create_footer`, removes an entire footer section, unlike `delete_content_range` which targets text within a specified index range.
-
+        Deletes a specific footer from a Google Document using its unique ID via a batchUpdate API request. This operation removes the entire footer object, optionally within a specific tab, distinguishing it from functions that delete headers (`delete_header`) or general content (`delete_content_range`).
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            footer_id: The ID of the footer to delete
-            tab_id: The tab that contains the footer to delete (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            footer_id: The identifier of the footer to delete.
+            tab_id: Optional identifier of the tab containing the footer to delete.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the delete footer operation
-
+            A dictionary containing the response from the Google Docs API after performing the delete footer operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails due to reasons such as an invalid document ID or insufficient permissions.
+            RequestException: Raised for network-related issues or problems reaching the API endpoint.
+        
         Tags:
-            footer, delete, remove, document, api, google-docs, batch, content-management
+            footer, delete, remove, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the delete footer request
         delete_footer_request = {"footerId": footer_id}
-
-        # Add tab_id if provided
         if tab_id is not None:
             delete_footer_request["tabId"] = tab_id
-
         batch_update_data = {"requests": [{"deleteFooter": delete_footer_request}]}
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -545,31 +520,27 @@ class GoogleDocsApp(APIApplication):
         section_break_tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Creates a header in a specified Google Document via the batchUpdate API endpoint. This function allows defining the header type and can optionally associate it with a specific section break location. It complements the `delete_header` and `create_footer` functions for managing document structure.
-
+        Creates a header of a specified type in a Google Document using the batchUpdate API. This function can optionally associate the new header with a specific section break, distinguishing it from the `create_footer` method, which performs the equivalent action for footers.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            header_type: The type of header to create (DEFAULT, HEADER_FOOTER_TYPE_UNSPECIFIED)
-            section_break_location_index: The index of the SectionBreak location (optional)
-            section_break_segment_id: The segment ID of the SectionBreak location (optional)
-            section_break_tab_id: The tab ID of the SectionBreak location (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            header_type: The type of header to create, e.g., 'DEFAULT' or 'HEADER_FOOTER_TYPE_UNSPECIFIED'.
+            section_break_location_index: The index position of the section break location within the document, if applicable.
+            section_break_segment_id: The segment ID associated with the section break location, if applicable.
+            section_break_tab_id: The tab ID associated with the section break location, if applicable.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the create header operation
-
+            A dictionary containing the response from the Google Docs API after the header creation request.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: If the API request fails due to issues such as an invalid document ID or insufficient permissions.
+            RequestException: If there are network problems or issues reaching the API endpoint.
+        
         Tags:
             header, create, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the create header request
         create_header_request = {"type": header_type}
-
-        # Add section break location if provided
         if section_break_location_index is not None:
             section_break_location = {"index": section_break_location_index}
 
@@ -580,9 +551,7 @@ class GoogleDocsApp(APIApplication):
                 section_break_location["tabId"] = section_break_tab_id
 
             create_header_request["sectionBreakLocation"] = section_break_location
-
         batch_update_data = {"requests": [{"createHeader": create_header_request}]}
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -593,34 +562,28 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Removes a specific header from a Google Document using its unique ID. This function sends a `deleteHeader` request to the batch update API, acting as the direct counterpart to `create_header` and distinguishing it from `delete_footer` which removes footers.
-
+        Deletes a specific header from a Google Document using its unique ID via a batchUpdate API request. This function, the counterpart to `create_header`, removes headers and can optionally target a header within a specific tab. It requires both the document and header IDs for the operation.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            header_id: The ID of the header to delete
-            tab_id: The tab containing the header to delete (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            header_id: The ID of the header to delete.
+            tab_id: Optional ID of the tab containing the header to delete.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the delete header operation
-
+            A dictionary containing the response from the Google Docs API after performing the delete header operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails due to invalid document_id, insufficient permissions, or other HTTP errors.
+            RequestException: Raised when network connectivity issues or API endpoint problems occur during the request.
+        
         Tags:
-            header, delete, remove, document, api, google-docs, batch, content-management
+            header, delete, remove, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the delete header request
         delete_header_request = {"headerId": header_id}
-
-        # Add tab_id if provided
         if tab_id is not None:
             delete_header_request["tabId"] = tab_id
-
         batch_update_data = {"requests": [{"deleteHeader": delete_header_request}]}
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -634,53 +597,32 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Applies a predefined bulleted or numbered list format to paragraphs within a specified range using a `bullet_preset`. This function adds list formatting, distinguishing it from its counterpart, `delete_paragraph_bullets`, and other styling functions like `update_paragraph_style`, which handles alignment and headings.
-
+        Applies a predefined list style (bulleted or numbered) to paragraphs within a specified range using a chosen preset. Unlike `delete_paragraph_bullets`, which removes list formatting, this function creates it, distinguishing it from other text and paragraph styling methods in the class.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            start_index: The zero-based start index of the range to apply bullets to
-            end_index: The zero-based end index of the range to apply bullets to (exclusive)
-            bullet_preset: The kind of bullet glyphs to use. Available options:
-                - BULLET_GLYPH_PRESET_UNSPECIFIED: The bullet glyph preset is unspecified
-                - BULLET_DISC_CIRCLE_SQUARE: DISC, CIRCLE and SQUARE for first 3 nesting levels
-                - BULLET_DIAMONDX_ARROW3D_SQUARE: DIAMONDX, ARROW3D and SQUARE for first 3 nesting levels
-                - BULLET_CHECKBOX: CHECKBOX bullet glyphs for all nesting levels
-                - BULLET_ARROW_DIAMOND_DISC: ARROW, DIAMOND and DISC for first 3 nesting levels
-                - BULLET_STAR_CIRCLE_SQUARE: STAR, CIRCLE and SQUARE for first 3 nesting levels
-                - BULLET_ARROW3D_CIRCLE_SQUARE: ARROW3D, CIRCLE and SQUARE for first 3 nesting levels
-                - BULLET_LEFTTRIANGLE_DIAMOND_DISC: LEFTTRIANGLE, DIAMOND and DISC for first 3 nesting levels
-                - BULLET_DIAMONDX_HOLLOWDIAMOND_SQUARE: DIAMONDX, HOLLOWDIAMOND and SQUARE for first 3 nesting levels
-                - BULLET_DIAMOND_CIRCLE_SQUARE: DIAMOND, CIRCLE and SQUARE for first 3 nesting levels
-                - NUMBERED_DECIMAL_ALPHA_ROMAN: DECIMAL, ALPHA and ROMAN with periods
-                - NUMBERED_DECIMAL_ALPHA_ROMAN_PARENS: DECIMAL, ALPHA and ROMAN with parenthesis
-                - NUMBERED_DECIMAL_NESTED: DECIMAL with nested numbering (1., 1.1., 2., 2.2.)
-                - NUMBERED_UPPERALPHA_ALPHA_ROMAN: UPPERALPHA, ALPHA and ROMAN with periods
-                - NUMBERED_UPPERROMAN_UPPERALPHA_DECIMAL: UPPERROMAN, UPPERALPHA and DECIMAL with periods
-                - NUMBERED_ZERODECIMAL_ALPHA_ROMAN: ZERODECIMAL, ALPHA and ROMAN with periods
-            segment_id: The segment ID for the range (optional)
-            tab_id: The tab ID for the range (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            start_index: The zero-based start index of the text range to which the list style should be applied.
+            end_index: The zero-based end index (exclusive) of the text range to apply the list style.
+            bullet_preset: Specifies the bullet or numbering style preset to use (e.g., bulleted or numbered formats with specific glyphs).
+            segment_id: Optional segment ID within the document where the updates apply.
+            tab_id: Optional tab ID within the segment to narrow the update scope.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the create bullets operation
-
+            A dictionary representing the Google Docs API response confirming the application of the bullet list style.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request to update the document fails (e.g., invalid document ID or insufficient permissions).
+            RequestException: Raised on network issues or problems reaching the API endpoint.
+        
         Tags:
-            bullets, list, paragraph, document, api, google-docs, batch, content-management
+            bullets, list, paragraph, document, api, google-docs, batch, content-management, important
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the range object
         range_obj = {"startIndex": start_index, "endIndex": end_index}
-
-        # Add optional parameters if provided
         if segment_id is not None:
             range_obj["segmentId"] = segment_id
         if tab_id is not None:
             range_obj["tabId"] = tab_id
-
         batch_update_data = {
             "requests": [
                 {
@@ -691,7 +633,6 @@ class GoogleDocsApp(APIApplication):
                 }
             ]
         }
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
@@ -704,47 +645,42 @@ class GoogleDocsApp(APIApplication):
         tab_id: str = None,
     ) -> dict[str, Any]:
         """
-        Removes bullet points or numbering from paragraphs within a specified range in a Google Document. This function reverts list formatting via the batch update API, acting as the direct counterpart to `apply_list_style` and preserving the underlying text content, unlike `delete_content_range`.
-
+        Removes bullet points or numbering from paragraphs within a specified index range in a Google Document. This reverts list formatting to normal text while preserving content, acting as the inverse operation to the `apply_list_style` function.
+        
         Args:
-            document_id: The unique identifier of the Google Document to be updated
-            start_index: The zero-based start index of the range to remove bullets from
-            end_index: The zero-based end index of the range to remove bullets from (exclusive)
-            segment_id: The segment ID for the range (optional)
-            tab_id: The tab ID for the range (optional)
-
+            document_id: The unique identifier of the Google Document to be updated.
+            start_index: The zero-based start index of the range to remove bullets from.
+            end_index: The zero-based end index of the range to remove bullets from (exclusive).
+            segment_id: Optional segment ID specifying a subset of the document where the range applies.
+            tab_id: Optional tab ID specifying a particular tab within the document where the range applies.
+        
         Returns:
-            A dictionary containing the Google Docs API response after performing the delete bullets operation
-
+            A dictionary containing the Google Docs API response after performing the delete bullets operation.
+        
         Raises:
-            HTTPError: When the API request fails, such as invalid document_id or insufficient permissions
-            RequestException: When there are network connectivity issues or API endpoint problems
-
+            HTTPError: Raised when the API request fails due to invalid document ID, insufficient permissions, or other server-side errors.
+            RequestException: Raised when there are network connectivity issues or problems accessing the API endpoint.
+        
         Tags:
             bullets, delete, remove, list, paragraph, document, api, google-docs, batch, content-management
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
-
-        # Build the range object
         range_obj = {"startIndex": start_index, "endIndex": end_index}
-
-        # Add optional parameters if provided
         if segment_id is not None:
             range_obj["segmentId"] = segment_id
         if tab_id is not None:
             range_obj["tabId"] = tab_id
-
         batch_update_data = {
             "requests": [{"deleteParagraphBullets": {"range": range_obj}}]
         }
-
         response = self._post(url, data=batch_update_data)
         return self._handle_response(response)
 
     def list_tools(self):
         return [
             self.create_document,
-            self.get_document,
+            # self.get_document,
+            self.get_document_content,
             self.insert_text,
             self.apply_text_style,
             self.delete_content_range,
