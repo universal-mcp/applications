@@ -49,7 +49,7 @@ class BrowserUseApp(APIApplication):
             llm=llm, task=task, max_steps=max_steps
         )
         result = created_task.complete()
-        return result.to_dict()
+        return result.model_dump()
 
     async def get_browser_task_status(
         self,
@@ -65,7 +65,7 @@ class BrowserUseApp(APIApplication):
             dict: The current status and details of the task.
         """
         task = self.browser_client.tasks.get_task(task_id)
-        return task.to_dict()
+        return task.model_dump()
 
     def list_tools(self):
         return [self.browser_task, self.get_browser_task_status]
