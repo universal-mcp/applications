@@ -55,36 +55,170 @@ class GoogleDocsApp(APIApplication):
 
     def get_document_content(self, document_id: str) -> dict[str, Any]:
         """
-        Retrieves a document's raw data via `get_document`, then parses the complex JSON to extract and concatenate all plain text from its body. This function returns a simplified dictionary containing only the title and the clean, concatenated text content, distinct from `get_document`'s full metadata response.
-        
+        Retrieves and converts a Google Docs document into Markdown-formatted content.
+
+        This method calls the Google Docs API via `get_document`, then parses the document structure
+        to extract paragraphs, headings, lists, tables, images, equations, footnotes, and horizontal rules.
+        The final result is a clean Markdown string that closely mirrors the layout and content of
+        the original document, including support for nested lists and multi-row tables.
+
         Args:
-            document_id: The unique identifier of the Google Document to retrieve.
-        
+            document_id (str): The unique ID of the Google Document to retrieve.
+
         Returns:
-            A dictionary containing the document's title under the key 'title' and the concatenated plain text content under the key 'content'.
-        
-        Raises:
-            KeyError: If the response structure from get_document is missing expected keys such as 'body' or 'content', a KeyError may be raised during extraction.
-            Exception: Any exception raised by the underlying get_document call, such as network errors or API issues, will propagate.
-        
+            dict[str, Any]: A dictionary with the following keys:
+                - 'title' (str): The document's title.
+                - 'content' (str): The document content converted to Markdown.
+        Markdown Output Supports:
+            - Paragraphs and line breaks
+            - Headings (Heading 1-6)
+            - Bulleted and numbered lists (with nesting)
+            - Tables (converted to Markdown tables)
+            - Inline images (`![](URL)` format)
+            - Equations (LaTeX-style `$...$`)
+            - Footnotes (`[^1]` references and notes at the end)
+            - Horizontal rules (`---`)
+
         Tags:
-            retrieve, document, text-processing, parsing, important
+            google-docs, markdown, document-parsing, text-extraction, conversion, structured-data
         """
+        import re
+
         response = self.get_document(document_id)
         title = response.get("title", "")
-        text_chunks: list[str] = []
         body_content = response.get("body", {}).get("content", [])
+        inline_objects = response.get("inlineObjects", {})
+        lists = response.get("lists", {})
+        footnotes_data = response.get("footnotes", {})
+
+        text_chunks: list[str] = []
+        footnotes: dict[str, str] = {}
+        footnote_index: dict[str, int] = {}
+        current_list_counters: dict[str, int] = {}
+
+        def extract_text_from_paragraph(paragraph: dict) -> str:
+            """Extracts paragraph text with inline formatting."""
+            text = ""
+            for elem in paragraph.get("elements", []):
+                if "textRun" in elem:
+                    content = elem["textRun"].get("content", "")
+                    text += content
+                elif "inlineObjectElement" in elem:
+                    obj_id = elem["inlineObjectElement"]["inlineObjectId"]
+                    obj = inline_objects.get(obj_id, {})
+                    embed = obj.get("inlineObjectProperties", {}).get("embeddedObject", {})
+                    image_source = embed.get("imageProperties", {}).get("contentUri", "")
+                    if image_source:
+                        text += f"\n\n![]({image_source})\n\n"
+            return text
+
+        def extract_table(table: dict) -> str:
+            rows = []
+            for i, row in enumerate(table.get("tableRows", [])):
+                cells = []
+                for cell in row.get("tableCells", []):
+                    cell_text = ""
+                    for content in cell.get("content", []):
+                        if "paragraph" in content:
+                            cell_text += extract_text_from_paragraph(content["paragraph"]).strip()
+                    cells.append(cell_text)
+                row_line = "| " + " | ".join(cells) + " |"
+                rows.append(row_line)
+                if i == 0:
+                    rows.insert(1, "| " + " | ".join(["---"] * len(cells)) + " |")
+            return "\n".join(rows)
+
+        def extract_heading_style(paragraph: dict) -> str:
+            """Returns appropriate Markdown heading level."""
+            style = paragraph.get("paragraphStyle", {})
+            heading = style.get("namedStyleType", "")
+            match = re.match(r"HEADING_(\d)", heading)
+            if match:
+                level = int(match.group(1))
+                return "#" * level
+            return ""
+
+        def extract_list_prefix(paragraph: dict) -> str:
+            """Generates proper list prefix (numbered or bullet)."""
+            list_id = paragraph.get("bullet", {}).get("listId")
+            if not list_id:
+                return ""
+            glyph = paragraph["bullet"].get("glyph", None)
+            nesting = paragraph["bullet"].get("nestingLevel", 0)
+            list_info = lists.get(list_id, {})
+            list_type = list_info.get("listProperties", {}).get("nestingLevels", [{}])[nesting].get("glyphType")
+
+            indent = "  " * nesting
+            if list_type and "DECIMAL" in list_type:
+                current_list_counters[list_id] = current_list_counters.get(list_id, 1)
+                prefix = f"{current_list_counters[list_id]}. "
+                current_list_counters[list_id] += 1
+            else:
+                prefix = "- "
+            return indent + prefix
+
+        def extract_equation(paragraph: dict) -> str:
+            return "\n\n$" + paragraph.get("equation", {}).get("equation", "") + "$\n\n"
+
+        def extract_footnote_ref(footnote_id: str) -> str:
+            if footnote_id not in footnote_index:
+                footnote_index[footnote_id] = len(footnotes) + 1
+                fn_content = footnotes_data.get(footnote_id, {}).get("content", [])
+                fn_text = ""
+                for item in fn_content:
+                    if "paragraph" in item:
+                        fn_text += extract_text_from_paragraph(item["paragraph"]).strip()
+                footnotes[footnote_id] = fn_text
+            return f"[^{footnote_index[footnote_id]}]"
+
         for element in body_content:
             if "paragraph" in element:
-                for para_elem in element["paragraph"].get("elements", []):
-                    text_run = para_elem.get("textRun")
-                    if text_run and "content" in text_run:
-                        text_chunks.append(text_run["content"])
-        content = "".join(text_chunks).strip()
+                para = element["paragraph"]
+                if "equation" in para:
+                    text_chunks.append(extract_equation(para))
+                    continue
+
+                heading_md = extract_heading_style(para)
+                list_prefix = extract_list_prefix(para)
+
+                para_text = extract_text_from_paragraph(para).strip()
+                if para_text:
+                    if heading_md:
+                        text_chunks.append(f"{heading_md} {para_text}")
+                    elif list_prefix:
+                        text_chunks.append(f"{list_prefix}{para_text}")
+                    else:
+                        text_chunks.append(para_text)
+
+            elif "table" in element:
+                table_md = extract_table(element["table"])
+                text_chunks.append(table_md)
+
+            elif "horizontalRule" in element:
+                text_chunks.append("\n---\n")
+
+            elif "tableOfContents" in element:
+                text_chunks.append("<!-- Table of Contents -->")
+
+            # Handle footnote references (inline elements)
+            elif "footnoteReference" in element:
+                footnote_id = element["footnoteReference"]["footnoteId"]
+                ref = extract_footnote_ref(footnote_id)
+                text_chunks.append(ref)
+
+        # Append footnotes at the end
+        if footnotes:
+            text_chunks.append("\n## Footnotes\n")
+            for fid, index in sorted(footnote_index.items(), key=lambda x: x[1]):
+                text_chunks.append(f"[^{index}]: {footnotes[fid]}")
+
+        content = "\n\n".join(chunk.strip() for chunk in text_chunks if chunk.strip())
+
         return {
             "title": title,
-            "content": content,
+            "content": content
         }
+
 
     def insert_text(
         self, document_id: str, content: str, index: int = 1
