@@ -17,6 +17,4 @@ Tools for interacting with PostgreSQL databases with built-in safety features an
 | `list_indexes` | List all indexes for a specific table including index definitions, uniqueness, primary key status, and validity. |
 | `explain_query` | Get the PostgreSQL query execution plan in various formats (TEXT, JSON, XML, YAML). Useful for query optimization and performance analysis. |
 | `check_health` | Check database connection health including version, connection count, database size, and overall status. |
-| `get_slow_queries` | Retrieve slowest queries from pg_stat_statements extension (if installed). Returns queries ordered by average execution time with performance metrics. |
-| `analyze_table_performance` | Analyze table performance including total size, table size, index size, row count, and detailed index information. |
 | `get_database_size_info` | Get overall database size information and list the largest tables by size including their table and index sizes. |
