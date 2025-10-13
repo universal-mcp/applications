@@ -181,9 +181,10 @@ class OutlookApp(APIApplication):
         """
         Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `get_user_message`, which fetches a single email by its ID.
         
-        **IMPORTANT LIMITATIONS:**
-        - `search` and `filter` cannot be used together (Microsoft Graph API restriction)
-        - `search` and `skip` cannot be used together (use pagination via @odata.nextLink and get_next_page instead)
+        IMPORTANT LIMITATIONS (Microsoft Graph API restrictions):
+        - `search` cannot be used with `filter`
+        - `search` cannot be used with `orderby`
+        - `search` cannot be used with `skip` (use pagination via @odata.nextLink and get_next_page instead)
         - When using `search`, pagination uses $skiptoken instead of $skip
 
         Args:
@@ -199,21 +200,39 @@ class OutlookApp(APIApplication):
             includeHiddenMessages (boolean): Include Hidden Messages
             top (integer): Specify the number of items to be included in the result Example: '50'.
             skip (integer): Specify the number of items to skip in the result. Cannot be used with 'search'. Example: '10'.
-            search (string): Search items by search phrases. Cannot be used with 'filter' or 'skip'.
+            search (string): Search items by search phrases. Cannot be used with 'filter', 'orderby', or 'skip'.
             filter (string): Filter items by property values. Cannot be used with 'search'.
             count (boolean): Include count of items
-            orderby (array): Order items by property values
+            orderby (array): Order items by property values. Cannot be used with 'search'.
             expand (array): Expand related entities
 
         Returns:
             dict[str, Any]: Retrieved collection
 
         Raises:
+            ValueError: If incompatible parameters are used together (search with filter/orderby/skip).
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
             users.message, important
         """
+        if search:
+            if filter:
+                raise ValueError(
+                    "The 'search' parameter cannot be used together with 'filter'. "
+                    "This is a Microsoft Graph API restriction. Please use either search or filter, not both."
+                )
+            if orderby:
+                raise ValueError(
+                    "The 'search' parameter cannot be used together with 'orderby'. "
+                    "This is a Microsoft Graph API restriction. When using search, results are sorted by relevance."
+                )
+            if skip:
+                raise ValueError(
+                    "The 'search' parameter cannot be used together with 'skip'. "
+                    "When using search, use pagination via @odata.nextLink and the get_next_page function instead."
+                )
+
         # If user_id is not provided, get it automatically
         if user_id is None:
             user_info = self.get_current_user_profile()
@@ -350,19 +369,20 @@ class OutlookApp(APIApplication):
         """
         Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set, focusing only on attachments rather than the full message content.
         
-        **IMPORTANT LIMITATIONS:**
-        - `search` and `filter` cannot be used together (Microsoft Graph API restriction)
-        - `search` and `skip` cannot be used together (use pagination via @odata.nextLink and get_next_page instead)
+        IMPORTANT LIMITATIONS (Microsoft Graph API restrictions):
+        - `search` cannot be used with `filter`
+        - `search` cannot be used with `orderby`
+        - `search` cannot be used with `skip` (use pagination via @odata.nextLink and get_next_page instead)
 
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
             top (integer): Show only the first n items Example: '50'.
             skip (integer): Skip the first n items. Cannot be used with 'search'.
-            search (string): Search items by search phrases. Cannot be used with 'filter' or 'skip'.
+            search (string): Search items by search phrases. Cannot be used with 'filter', 'orderby', or 'skip'.
             filter (string): Filter items by property values. Cannot be used with 'search'.
             count (boolean): Include count of items
-            orderby (array): Order items by property values
+            orderby (array): Order items by property values. Cannot be used with 'search'.
             select (array): Select properties to be returned
             expand (array): Expand related entities
 
@@ -370,11 +390,29 @@ class OutlookApp(APIApplication):
             dict[str, Any]: Retrieved collection
 
         Raises:
+            ValueError: If incompatible parameters are used together (search with filter/orderby/skip).
             HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
 
         Tags:
             users.message, important
         """
+        if search:
+            if filter:
+                raise ValueError(
+                    "The 'search' parameter cannot be used together with 'filter'. "
+                    "This is a Microsoft Graph API restriction. Please use either search or filter, not both."
+                )
+            if orderby:
+                raise ValueError(
+                    "The 'search' parameter cannot be used together with 'orderby'. "
+                    "This is a Microsoft Graph API restriction. When using search, results are sorted by relevance."
+                )
+            if skip:
+                raise ValueError(
+                    "The 'search' parameter cannot be used together with 'skip'. "
+                    "When using search, use pagination via @odata.nextLink and the get_next_page function instead."
+                )
+
         # If user_id is not provided, get it automatically
         if user_id is None:
             user_info = self.get_current_user_profile()
@@ -385,6 +423,7 @@ class OutlookApp(APIApplication):
                 )
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
+        
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
         orderby_str = ",".join(orderby) if orderby else None
         select_str = ",".join(select) if select else None
