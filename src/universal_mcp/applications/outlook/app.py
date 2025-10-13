@@ -21,8 +21,8 @@ class OutlookApp(APIApplication):
         Replies to an email using its message ID, with either a simple comment or a full message object including attachments. Unlike `send_mail`, which creates a new email, this function targets an existing message. It defaults to the current user if no user ID is specified.
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
+            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             comment (string): A comment to include in the reply. Example: 'Thank you for your email. Here is my reply.'.
             message (object): A message object to specify additional properties for the reply, such as attachments. Example: {'subject': 'RE: Project Update', 'body': {'contentType': 'Text', 'content': 'Thank you for the update. Looking forward to the next steps.'}, 'toRecipients': [{'emailAddress': {'address': 'alice@contoso.com'}}], 'attachments': [{'@odata.type': '#microsoft.graph.fileAttachment', 'name': 'agenda.pdf', 'contentType': 'application/pdf', 'contentBytes': 'SGVsbG8gV29ybGQh'}]}.
 
@@ -40,9 +40,7 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
         request_body_data = None
@@ -50,9 +48,7 @@ class OutlookApp(APIApplication):
             "comment": comment,
             "message": message,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/reply"
         query_params = {}
         response = self._post(
@@ -73,8 +69,8 @@ class OutlookApp(APIApplication):
         Sends a new email on behalf of a specified or current user, using a dictionary for content like recipients and subject. Unlike `reply_to_message`, which replies to an existing message, this function composes and sends an entirely new email from scratch.
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message (object): message Example: {'subject': 'Meet for lunch?', 'body': {'contentType': 'Text', 'content': 'The new cafeteria is open.'}, 'toRecipients': [{'emailAddress': {'address': 'frannis@contoso.com'}}], 'ccRecipients': [{'emailAddress': {'address': 'danas@contoso.com'}}], 'bccRecipients': [{'emailAddress': {'address': 'bccuser@contoso.com'}}], 'attachments': [{'@odata.type': '#microsoft.graph.fileAttachment', 'name': 'attachment.txt', 'contentType': 'text/plain', 'contentBytes': 'SGVsbG8gV29ybGQh'}]}.
+            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             saveToSentItems (boolean): saveToSentItems Example: 'False'.
 
         Returns:
@@ -91,17 +87,13 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
         request_body_data = None
         request_body_data = {
             "message": message,
             "saveToSentItems": saveToSentItems,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{user_id}/sendMail"
         query_params = {}
         response = self._post(
@@ -124,8 +116,8 @@ class OutlookApp(APIApplication):
         Retrieves a specific mail folder's metadata by its ID for a given user. The response can be customized to include hidden folders or select specific properties. Unlike `list_user_messages`, this function fetches folder details, not the emails contained within it.
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             mailFolder_id (string): mailFolder-id
+            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             includeHiddenFolders (boolean): Include Hidden Folders
             select (array): Select properties to be returned
             expand (array): Expand related entities
@@ -144,9 +136,7 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
         if mailFolder_id is None:
             raise ValueError("Missing required parameter 'mailFolder-id'.")
         url = f"{self.base_url}/users/{user_id}/mailFolders/{mailFolder_id}"
@@ -180,7 +170,7 @@ class OutlookApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `get_user_message`, which fetches a single email by its ID.
-        
+
         IMPORTANT LIMITATIONS (Microsoft Graph API restrictions):
         - `search` cannot be used with `filter`
         - `search` cannot be used with `orderby`
@@ -238,9 +228,7 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
 
         url = f"{self.base_url}/users/{user_id}/messages"
 
@@ -280,8 +268,8 @@ class OutlookApp(APIApplication):
         Retrieves a specific email message by its ID for a given user, with options to select specific fields or expand related data. Unlike `list_user_messages`, which fetches a collection of emails with advanced filtering, this function is designed to retrieve a single, known message.
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
+            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             includeHiddenMessages (boolean): Include Hidden Messages
             select (array): Select properties to be returned
             expand (array): Expand related entities
@@ -300,9 +288,7 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
@@ -326,8 +312,8 @@ class OutlookApp(APIApplication):
         Permanently deletes a specific email, identified by `message_id`, from a user's mailbox. If `user_id` is not provided, it defaults to the current authenticated user. Unlike retrieval functions such as `get_user_message`, this performs a destructive action to remove the specified email from Outlook.
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
+            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
 
         Returns:
             Any: Success
@@ -343,9 +329,7 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
@@ -368,15 +352,15 @@ class OutlookApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set, focusing only on attachments rather than the full message content.
-        
+
         IMPORTANT LIMITATIONS (Microsoft Graph API restrictions):
         - `search` cannot be used with `filter`
         - `search` cannot be used with `orderby`
         - `search` cannot be used with `skip` (use pagination via @odata.nextLink and get_next_page instead)
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
+            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             top (integer): Show only the first n items Example: '50'.
             skip (integer): Skip the first n items. Cannot be used with 'search'.
             search (string): Search items by search phrases. Cannot be used with 'filter', 'orderby', or 'skip'.
@@ -418,12 +402,10 @@ class OutlookApp(APIApplication):
             user_info = self.get_current_user_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError(
-                    "Could not retrieve user ID from get_current_user_profile response."
-                )
+                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
-        
+
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
         orderby_str = ",".join(orderby) if orderby else None
         select_str = ",".join(select) if select else None
@@ -437,9 +419,9 @@ class OutlookApp(APIApplication):
                 ("$search", search),
                 ("$filter", filter),
                 ("$count", count),
-                ("$orderby", orderby_str),  
-                ("$select", select_str),    
-                ("$expand", expand_str),    
+                ("$orderby", orderby_str),
+                ("$select", select_str),
+                ("$expand", expand_str),
             ]
             if v is not None
         }
@@ -476,9 +458,7 @@ class OutlookApp(APIApplication):
         if not url:
             raise ValueError("Missing required parameter 'url'.")
         if not url.startswith(self.base_url):
-            raise ValueError(
-                f"The provided URL '{url}' does not start with the expected base URL '{self.base_url}'."
-            )
+            raise ValueError(f"The provided URL '{url}' does not start with the expected base URL '{self.base_url}'.")
         relative_part = url[len(self.base_url) :]
         parsed_relative = urlparse(relative_part)
         path_only = parsed_relative.path
