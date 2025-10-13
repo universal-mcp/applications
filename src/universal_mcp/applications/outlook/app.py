@@ -116,7 +116,7 @@ class OutlookApp(APIApplication):
         self,
         mailFolder_id: str,
         user_id: str | None = None,
-        includeHiddenFolders: str | None = None,
+        includeHiddenFolders: bool | None = None,
         select: list[str] | None = None,
         expand: list[str] | None = None,
     ) -> Any:
@@ -126,7 +126,7 @@ class OutlookApp(APIApplication):
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             mailFolder_id (string): mailFolder-id
-            includeHiddenFolders (string): Include Hidden Folders
+            includeHiddenFolders (boolean): Include Hidden Folders
             select (array): Select properties to be returned
             expand (array): Expand related entities
 
@@ -150,12 +150,15 @@ class OutlookApp(APIApplication):
         if mailFolder_id is None:
             raise ValueError("Missing required parameter 'mailFolder-id'.")
         url = f"{self.base_url}/users/{user_id}/mailFolders/{mailFolder_id}"
+        select_str = ",".join(select) if select else None
+        expand_str = ",".join(expand) if expand else None
+
         query_params = {
             k: v
             for k, v in [
                 ("includeHiddenFolders", includeHiddenFolders),
-                ("$select", select),
-                ("$expand", expand),
+                ("$select", select_str),
+                ("$expand", expand_str),
             ]
             if v is not None
         }
@@ -177,6 +180,11 @@ class OutlookApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `get_user_message`, which fetches a single email by its ID.
+        
+        **IMPORTANT LIMITATIONS:**
+        - `search` and `filter` cannot be used together (Microsoft Graph API restriction)
+        - `search` and `skip` cannot be used together (use pagination via @odata.nextLink and get_next_page instead)
+        - When using `search`, pagination uses $skiptoken instead of $skip
 
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
@@ -190,9 +198,9 @@ class OutlookApp(APIApplication):
                 ]
             includeHiddenMessages (boolean): Include Hidden Messages
             top (integer): Specify the number of items to be included in the result Example: '50'.
-            skip (integer): Specify the number of items to skip in the result Example: '10'.
-            search (string): Search items by search phrases
-            filter (string): Filter items by property values
+            skip (integer): Specify the number of items to skip in the result. Cannot be used with 'search'. Example: '10'.
+            search (string): Search items by search phrases. Cannot be used with 'filter' or 'skip'.
+            filter (string): Filter items by property values. Cannot be used with 'search'.
             count (boolean): Include count of items
             orderby (array): Order items by property values
             expand (array): Expand related entities
@@ -245,7 +253,7 @@ class OutlookApp(APIApplication):
         self,
         message_id: str,
         user_id: str | None = None,
-        includeHiddenMessages: str | None = None,
+        includeHiddenMessages: bool | None = None,
         select: list[str] | None = None,
         expand: list[str] | None = None,
     ) -> Any:
@@ -255,7 +263,7 @@ class OutlookApp(APIApplication):
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
-            includeHiddenMessages (string): Include Hidden Messages
+            includeHiddenMessages (boolean): Include Hidden Messages
             select (array): Select properties to be returned
             expand (array): Expand related entities
 
@@ -279,12 +287,15 @@ class OutlookApp(APIApplication):
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
+        select_str = ",".join(select) if select else None
+        expand_str = ",".join(expand) if expand else None
+
         query_params = {
             k: v
             for k, v in [
                 ("includeHiddenMessages", includeHiddenMessages),
-                ("$select", select),
-                ("$expand", expand),
+                ("$select", select_str),
+                ("$expand", expand_str),
             ]
             if v is not None
         }
@@ -338,14 +349,18 @@ class OutlookApp(APIApplication):
     ) -> dict[str, Any]:
         """
         Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set, focusing only on attachments rather than the full message content.
+        
+        **IMPORTANT LIMITATIONS:**
+        - `search` and `filter` cannot be used together (Microsoft Graph API restriction)
+        - `search` and `skip` cannot be used together (use pagination via @odata.nextLink and get_next_page instead)
 
         Args:
             user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
             message_id (string): message-id
             top (integer): Show only the first n items Example: '50'.
-            skip (integer): Skip the first n items
-            search (string): Search items by search phrases
-            filter (string): Filter items by property values
+            skip (integer): Skip the first n items. Cannot be used with 'search'.
+            search (string): Search items by search phrases. Cannot be used with 'filter' or 'skip'.
+            filter (string): Filter items by property values. Cannot be used with 'search'.
             count (boolean): Include count of items
             orderby (array): Order items by property values
             select (array): Select properties to be returned
@@ -371,6 +386,10 @@ class OutlookApp(APIApplication):
         if message_id is None:
             raise ValueError("Missing required parameter 'message-id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
+        orderby_str = ",".join(orderby) if orderby else None
+        select_str = ",".join(select) if select else None
+        expand_str = ",".join(expand) if expand else None
+
         query_params = {
             k: v
             for k, v in [
@@ -379,9 +398,9 @@ class OutlookApp(APIApplication):
                 ("$search", search),
                 ("$filter", filter),
                 ("$count", count),
-                ("$orderby", orderby),
-                ("$select", select),
-                ("$expand", expand),
+                ("$orderby", orderby_str),  
+                ("$select", select_str),    
+                ("$expand", expand_str),    
             ]
             if v is not None
         }
