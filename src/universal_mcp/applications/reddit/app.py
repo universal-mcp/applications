@@ -44,9 +44,7 @@ class RedditApp(APIApplication):
             "User-Agent": "agentr-reddit-app/0.1 by AgentR",
         }
 
-    def get_subreddit_posts(
-        self, subreddit: str, limit: int = 5, timeframe: str = "day"
-    ) -> dict[str, Any]:
+    def get_subreddit_posts(self, subreddit: str, limit: int = 5, timeframe: str = "day") -> dict[str, Any]:
         """
         Fetches a specified number of top-rated posts from a particular subreddit, allowing results to be filtered by a specific timeframe (e.g., 'day', 'week'). This is a simplified version compared to `get_subreddit_top_posts`, which uses more complex pagination parameters instead of a direct time filter.
 
@@ -56,7 +54,7 @@ class RedditApp(APIApplication):
             timeframe: The time period for top posts. Valid options: 'hour', 'day', 'week', 'month', 'year', 'all' (default: 'day')
 
         Returns:
-            A formatted string containing a numbered list of top posts, including titles, authors, scores, and URLs, or an error message if the request fails
+            A dictionary containing a list of top posts with their details, or an error message if the request fails.
 
         Raises:
             RequestException: When the HTTP request to the Reddit API fails
@@ -69,34 +67,29 @@ class RedditApp(APIApplication):
         if timeframe not in valid_timeframes:
             return f"Error: Invalid timeframe '{timeframe}'. Please use one of: {', '.join(valid_timeframes)}"
         if not 1 <= limit <= 100:
-            return (
-                f"Error: Invalid limit '{limit}'. Please use a value between 1 and 100."
-            )
+            return f"Error: Invalid limit '{limit}'. Please use a value between 1 and 100."
         url = f"{self.base_api_url}/r/{subreddit}/top"
         params = {"limit": limit, "t": timeframe}
-        logger.info(
-            f"Requesting top {limit} posts from r/{subreddit} for timeframe '{timeframe}'"
-        )
+        logger.info(f"Requesting top {limit} posts from r/{subreddit} for timeframe '{timeframe}'")
         response = self._get(url, params=params)
         return self._handle_response(response)
 
-    def search_subreddits(
-        self, query: str, limit: int = 5, sort: str = "relevance"
-    ) -> str:
+    def search_subreddits(self, query: str, limit: int = 5, sort: str = "relevance") -> dict[str, Any]:
         """
-        Searches for subreddits by name and description using a query string, with results sortable by relevance or activity. Unlike the broader `search_reddit` function, this method exclusively discovers subreddits, not posts, comments, or users.
+        Finds subreddits based on a query string, searching their names and descriptions.
+        Results can be sorted by relevance or activity. This function is for discovering communities and does not search for posts or users, unlike the more general `search_reddit` function.
 
         Args:
-            query: The text to search for in subreddit names and descriptions
-            limit: The maximum number of subreddits to return, between 1 and 100 (default: 5)
-            sort: The order of results, either 'relevance' or 'activity' (default: 'relevance')
+            query: The search query for subreddit names and descriptions.
+            limit: The maximum number of subreddits to return (1-100, default is 5).
+            sort: The sorting order for results. Can be 'relevance' or 'activity' (default is 'relevance').
 
         Returns:
-            A formatted string containing a list of matching subreddits with their names, subscriber counts, and descriptions, or an error message if the search fails or parameters are invalid
+            A dictionary containing a list of matching subreddits, including their names, subscriber counts, and descriptions. Returns an error message on failure.
 
         Raises:
-            RequestException: When the HTTP request to Reddit's API fails
-            JSONDecodeError: When the API response contains invalid JSON
+            RequestException: If the API request to Reddit fails.
+            JSONDecodeError: If the API response is not valid JSON.
 
         Tags:
             search, important, reddit, api, query, format, list, validation
@@ -105,18 +98,14 @@ class RedditApp(APIApplication):
         if sort not in valid_sorts:
             return f"Error: Invalid sort option '{sort}'. Please use one of: {', '.join(valid_sorts)}"
         if not 1 <= limit <= 100:
-            return (
-                f"Error: Invalid limit '{limit}'. Please use a value between 1 and 100."
-            )
+            return f"Error: Invalid limit '{limit}'. Please use a value between 1 and 100."
         url = f"{self.base_api_url}/subreddits/search"
         params = {
             "q": query,
             "limit": limit,
             "sort": sort,
         }
-        logger.info(
-            f"Searching for subreddits matching '{query}' (limit: {limit}, sort: {sort})"
-        )
+        logger.info(f"Searching for subreddits matching '{query}' (limit: {limit}, sort: {sort})")
         response = self._get(url, params=params)
         return self._handle_response(response)
 
@@ -193,16 +182,10 @@ class RedditApp(APIApplication):
         logger.info(f"Submitting a new post to r/{subreddit}")
         response = self._post(url_api, data=data)
         response_json = response.json()
-        if (
-            response_json
-            and "json" in response_json
-            and "errors" in response_json["json"]
-        ):
+        if response_json and "json" in response_json and "errors" in response_json["json"]:
             errors = response_json["json"]["errors"]
             if errors:
-                error_message = ", ".join(
-                    [f"{code}: {message}" for code, message in errors]
-                )
+                error_message = ", ".join([f"{code}: {message}" for code, message in errors])
                 return f"Reddit API error: {error_message}"
         return response_json
 
@@ -317,7 +300,7 @@ class RedditApp(APIApplication):
         Retrieves the full profile information for the currently authenticated user by making a GET request to the `/api/v1/me` Reddit API endpoint. This differs from `get_user_profile`, which requires a username, and `get_current_user_karma`, which specifically fetches karma data.
 
         Returns:
-            Any: API response data.
+            A dictionary containing the authenticated user's profile information.
 
         Tags:
             users
@@ -333,7 +316,7 @@ class RedditApp(APIApplication):
         Fetches the karma breakdown for the authenticated user from the Reddit API. This function specifically targets the `/api/v1/me/karma` endpoint, returning karma statistics per subreddit, which is more specific than `get_current_user_info` that retrieves general profile information.
 
         Returns:
-            Any: API response data.
+            A dictionary containing the authenticated user's karma breakdown by subreddit.
 
         Tags:
             account
@@ -349,10 +332,10 @@ class RedditApp(APIApplication):
         Fetches a specific Reddit post's details and its complete comment tree using the post's unique ID. This function returns the entire discussion, including the original post and all associated comments, providing broader context than `get_comment_by_id` which only retrieves a single comment.
 
         Args:
-            post_id (string): The Reddit post ID ( e.g. '1m734tx' for https://www.reddit.com/r/mcp/comments/1m734tx/comment/n4occ77/)
+            post_id (str): The Reddit post ID ( e.g. '1m734tx' for https://www.reddit.com/r/mcp/comments/1m734tx/comment/n4occ77/)
 
         Returns:
-            Any: API response data containing post details and comments.
+            A dictionary containing the post details and its comment tree.
 
         Tags:
             listings, comments, posts, important
@@ -384,7 +367,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of controversial posts.
+            A dictionary containing a listing of controversial posts.
 
         Tags:
             listings, posts, controversial, read-only
@@ -429,7 +412,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of hot posts.
+            A dictionary containing a listing of hot posts.
 
         Tags:
             listings, posts, hot, read-only
@@ -473,7 +456,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of new posts.
+            A dictionary containing a listing of new posts.
 
         Tags:
             listings, posts, new, read-only
@@ -520,7 +503,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of hot posts from the subreddit.
+            A dictionary containing a listing of hot posts from the specified subreddit.
 
         Tags:
             listings, posts, subreddit, hot, read-only
@@ -568,7 +551,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of new posts from the subreddit.
+            A dictionary containing a listing of new posts from the specified subreddit.
 
         Tags:
             listings, posts, subreddit, new, read-only
@@ -615,7 +598,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of top posts from the subreddit.
+            A dictionary containing a listing of top posts from the specified subreddit.
 
         Tags:
             listings, posts, subreddit, top, read-only
@@ -660,7 +643,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of rising posts.
+            A dictionary containing a listing of rising posts.
 
         Tags:
             listings, posts, rising, read-only
@@ -703,7 +686,7 @@ class RedditApp(APIApplication):
             sr_detail: Optional. Expand subreddit details.
 
         Returns:
-            Any: API response data containing a list of top posts.
+            A dictionary containing a listing of top posts.
 
         Tags:
             listings, posts, top, read-only
@@ -760,7 +743,7 @@ class RedditApp(APIApplication):
             type: Optional. A comma-separated list of result types ('sr', 'link', 'user').
 
         Returns:
-            Any: API response data containing search results.
+            A dictionary containing the search results.
 
         Tags:
             search, reddit, posts, comments, users, read-only
