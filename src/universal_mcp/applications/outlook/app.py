@@ -10,143 +10,168 @@ class OutlookApp(APIApplication):
         super().__init__(name="outlook", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
-    def reply_to_message(
+    def reply_to_email(
         self,
         message_id: str,
+        comment: str,
         user_id: str | None = None,
-        comment: str | None = None,
-        message: dict[str, Any] | None = None,
-    ) -> Any:
+        attachments: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
         """
-        Replies to an email using its message ID, with either a simple comment or a full message object including attachments. Unlike `send_mail`, which creates a new email, this function targets an existing message. It defaults to the current user if no user ID is specified.
+        Replies to a specific email message.
 
         Args:
-            message_id (string): message-id
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
-            comment (string): A comment to include in the reply. Example: 'Thank you for your email. Here is my reply.'.
-            message (object): A message object to specify additional properties for the reply, such as attachments. Example: {'subject': 'RE: Project Update', 'body': {'contentType': 'Text', 'content': 'Thank you for the update. Looking forward to the next steps.'}, 'toRecipients': [{'emailAddress': {'address': 'alice@contoso.com'}}], 'attachments': [{'@odata.type': '#microsoft.graph.fileAttachment', 'name': 'agenda.pdf', 'contentType': 'application/pdf', 'contentBytes': 'SGVsbG8gV29ybGQh'}]}.
+            message_id (str): The ID of the email message to reply to.
+            comment (str): The body of the reply.
+            user_id (str, optional): The ID of the user to send the reply from. Defaults to the authenticated user.
+            attachments (list[dict[str, Any]], optional): A list of attachment objects to include in the reply.
+                Each attachment dictionary should conform to the Microsoft Graph API specification.
+                Example:
+                [
+                    {
+                        "@odata.type": "#microsoft.graph.fileAttachment",
+                        "name": "attachment.txt",
+                        "contentType": "text/plain",
+                        "contentBytes": "SGVsbG8gV29ybGQh"
+                    }
+                ]
 
         Returns:
-            Any: Success
+            dict[str, Any]: A dictionary confirming the reply action.
 
         Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.message, important
+            HTTPStatusError: If the API request fails.
+            ValueError: If the user_id cannot be retrieved or message_id is missing.
         """
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
-        if message_id is None:
-            raise ValueError("Missing required parameter 'message-id'.")
-        request_body_data = None
-        request_body_data = {
-            "comment": comment,
-            "message": message,
-        }
-        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if not message_id:
+            raise ValueError("Missing required parameter 'message_id'.")
+
+        request_body_data = {"comment": comment}
+        if attachments:
+            request_body_data["message"] = {"attachments": attachments}
+
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/reply"
-        query_params = {}
+
         response = self._post(
             url,
             data=request_body_data,
-            params=query_params,
+            params={},
             content_type="application/json",
         )
         return self._handle_response(response)
 
-    def send_mail(
+    def send_email(
         self,
-        message: dict[str, Any],
+        subject: str,
+        body: str,
+        to_recipients: list[str],
         user_id: str | None = None,
-        saveToSentItems: bool | None = None,
-    ) -> Any:
+        cc_recipients: list[str] | None = None,
+        bcc_recipients: list[str] | None = None,
+        attachments: list[dict[str, Any]] | None = None,
+        body_content_type: str = "Text",
+        save_to_sent_items: bool = True,
+    ) -> dict[str, Any]:
         """
-        Sends a new email on behalf of a specified or current user, using a dictionary for content like recipients and subject. Unlike `reply_to_message`, which replies to an existing message, this function composes and sends an entirely new email from scratch.
+        Sends a new email.
 
         Args:
-            message (object): message Example: {'subject': 'Meet for lunch?', 'body': {'contentType': 'Text', 'content': 'The new cafeteria is open.'}, 'toRecipients': [{'emailAddress': {'address': 'frannis@contoso.com'}}], 'ccRecipients': [{'emailAddress': {'address': 'danas@contoso.com'}}], 'bccRecipients': [{'emailAddress': {'address': 'bccuser@contoso.com'}}], 'attachments': [{'@odata.type': '#microsoft.graph.fileAttachment', 'name': 'attachment.txt', 'contentType': 'text/plain', 'contentBytes': 'SGVsbG8gV29ybGQh'}]}.
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
-            saveToSentItems (boolean): saveToSentItems Example: 'False'.
+            subject (str): The subject of the email.
+            body (str): The body of the email.
+            to_recipients (list[str]): A list of email addresses for the 'To' recipients.
+            user_id (str, optional): The ID of the user to send the email from. Defaults to the authenticated user.
+            cc_recipients (list[str], optional): A list of email addresses for the 'Cc' recipients.
+            bcc_recipients (list[str], optional): A list of email addresses for the 'Bcc' recipients.
+            attachments (list[dict[str, Any]], optional): A list of attachment objects. See `reply_to_email` for an example.
+            body_content_type (str, optional): The content type of the email body, e.g., "Text" or "HTML". Defaults to "Text".
+            save_to_sent_items (bool, optional): Whether to save the email to the 'Sent Items' folder. Defaults to True.
 
         Returns:
-            Any: Success
+            dict[str, Any]: A dictionary confirming the send action.
 
         Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.user.Actions, important
+            HTTPStatusError: If the API request fails.
+            ValueError: If the user_id cannot be retrieved.
         """
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
-        request_body_data = None
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+
+        message = {
+            "subject": subject,
+            "body": {"contentType": body_content_type, "content": body},
+            "toRecipients": [{"emailAddress": {"address": email}} for email in to_recipients],
+        }
+        if cc_recipients:
+            message["ccRecipients"] = [{"emailAddress": {"address": email}} for email in cc_recipients]
+        if bcc_recipients:
+            message["bccRecipients"] = [{"emailAddress": {"address": email}} for email in bcc_recipients]
+        if attachments:
+            message["attachments"] = attachments
+
         request_body_data = {
             "message": message,
-            "saveToSentItems": saveToSentItems,
+            "saveToSentItems": save_to_sent_items,
         }
-        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+
         url = f"{self.base_url}/users/{user_id}/sendMail"
-        query_params = {}
+
         response = self._post(
             url,
             data=request_body_data,
-            params=query_params,
+            params={},
             content_type="application/json",
         )
         return self._handle_response(response)
 
-    def get_mail_folder(
+    def get_email_folder(
         self,
-        mailFolder_id: str,
+        folder_id: str,
         user_id: str | None = None,
-        includeHiddenFolders: bool | None = None,
+        include_hidden: bool | None = None,
         select: list[str] | None = None,
         expand: list[str] | None = None,
-    ) -> Any:
+    ) -> dict[str, Any]:
         """
-        Retrieves a specific mail folder's metadata by its ID for a given user. The response can be customized to include hidden folders or select specific properties. Unlike `list_user_messages`, this function fetches folder details, not the emails contained within it.
+        Retrieves a specific email folder's metadata by its ID.
 
         Args:
-            mailFolder_id (string): mailFolder-id
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
-            includeHiddenFolders (boolean): Include Hidden Folders
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
+            folder_id (str): The unique identifier for the mail folder.
+            user_id (str, optional): The ID of the user who owns the folder. Defaults to the authenticated user.
+            include_hidden (bool, optional): If true, includes hidden folders in the results.
+            select (list[str], optional): A list of properties to return.
+            expand (list[str], optional): A list of related entities to expand.
 
         Returns:
-            Any: Retrieved navigation property
+            dict[str, Any]: A dictionary containing the mail folder's metadata.
 
         Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.mailFolder, important
+            HTTPStatusError: If the API request fails.
+            ValueError: If user_id cannot be retrieved or folder_id is missing.
         """
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
-        if mailFolder_id is None:
-            raise ValueError("Missing required parameter 'mailFolder-id'.")
-        url = f"{self.base_url}/users/{user_id}/mailFolders/{mailFolder_id}"
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if not folder_id:
+            raise ValueError("Missing required parameter 'folder_id'.")
+
+        url = f"{self.base_url}/users/{user_id}/mailFolders/{folder_id}"
         select_str = ",".join(select) if select else None
         expand_str = ",".join(expand) if expand else None
 
         query_params = {
             k: v
             for k, v in [
-                ("includeHiddenFolders", includeHiddenFolders),
+                ("includeHiddenFolders", include_hidden),
                 ("$select", select_str),
                 ("$expand", expand_str),
             ]
@@ -155,11 +180,11 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_user_messages(
+    def list_emails(
         self,
         user_id: str | None = None,
         select: list[str] = ["bodyPreview"],
-        includeHiddenMessages: bool | None = None,
+        include_hidden: bool | None = None,
         top: int | None = None,
         skip: int | None = None,
         search: str | None = None,
@@ -169,70 +194,42 @@ class OutlookApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a list of messages from a user's mailbox. This function supports powerful querying using optional parameters for filtering, searching, sorting, and pagination, unlike `get_user_message`, which fetches a single email by its ID.
-
-        IMPORTANT LIMITATIONS (Microsoft Graph API restrictions):
-        - `search` cannot be used with `filter`
-        - `search` cannot be used with `orderby`
-        - `search` cannot be used with `skip` (use pagination via @odata.nextLink and get_next_page instead)
-        - When using `search`, pagination uses $skiptoken instead of $skip
+        Retrieves a list of emails from a user's mailbox.
 
         Args:
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
-            select (list): Select properties to be returned. Defaults to ['bodyPreview'].
-                Example: [
-                    'id', 'categories', 'receivedDateTime', 'sentDateTime', 'hasAttachments', 'internetMessageId',
-                    'subject', 'body', 'bodyPreview', 'importance', 'parentFolderId', 'conversationId',
-                    'conversationIndex', 'isDeliveryReceiptRequested', 'isReadReceiptRequested', 'isRead', 'isDraft',
-                    'webLink', 'inferenceClassification', 'sender', 'from', 'toRecipients', 'ccRecipients',
-                    'bccRecipients', 'replyTo', 'flag', 'attachments', 'extensions', 'mentions', 'uniqueBody'
-                ]
-            includeHiddenMessages (boolean): Include Hidden Messages
-            top (integer): Specify the number of items to be included in the result Example: '50'.
-            skip (integer): Specify the number of items to skip in the result. Cannot be used with 'search'. Example: '10'.
-            search (string): Search items by search phrases. Cannot be used with 'filter', 'orderby', or 'skip'.
-            filter (string): Filter items by property values. Cannot be used with 'search'.
-            count (boolean): Include count of items
-            orderby (array): Order items by property values. Cannot be used with 'search'.
-            expand (array): Expand related entities
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
+            select (list[str], optional): A list of properties to return for each email. Defaults to ['bodyPreview'].
+            include_hidden (bool, optional): If true, includes hidden messages.
+            top (int, optional): The maximum number of emails to return.
+            skip (int, optional): The number of emails to skip. Cannot be used with 'search'.
+            search (str, optional): A search query. Cannot be used with 'filter', 'orderby', or 'skip'.
+            filter (str, optional): A filter query. Cannot be used with 'search'.
+            count (bool, optional): If true, includes the total count of emails in the response.
+            orderby (list[str], optional): A list of properties to sort the results by. Cannot be used with 'search'.
+            expand (list[str], optional): A list of related entities to expand.
 
         Returns:
-            dict[str, Any]: Retrieved collection
+            dict[str, Any]: A dictionary containing a list of emails and pagination information.
 
         Raises:
-            ValueError: If incompatible parameters are used together (search with filter/orderby/skip).
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.message, important
+            ValueError: If incompatible parameters are used together (e.g., 'search' with 'filter').
+            HTTPStatusError: If the API request fails.
         """
         if search:
             if filter:
-                raise ValueError(
-                    "The 'search' parameter cannot be used together with 'filter'. "
-                    "This is a Microsoft Graph API restriction. Please use either search or filter, not both."
-                )
+                raise ValueError("The 'search' parameter cannot be used with 'filter'.")
             if orderby:
-                raise ValueError(
-                    "The 'search' parameter cannot be used together with 'orderby'. "
-                    "This is a Microsoft Graph API restriction. When using search, results are sorted by relevance."
-                )
+                raise ValueError("The 'search' parameter cannot be used with 'orderby'.")
             if skip:
-                raise ValueError(
-                    "The 'search' parameter cannot be used together with 'skip'. "
-                    "When using search, use pagination via @odata.nextLink and the get_next_page function instead."
-                )
+                raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
 
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
 
         url = f"{self.base_url}/users/{user_id}/messages"
-
-        # Handle list parameters by joining with commas
         select_str = ",".join(select) if select else None
         orderby_str = ",".join(orderby) if orderby else None
         expand_str = ",".join(expand) if expand else None
@@ -240,7 +237,7 @@ class OutlookApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                ("includeHiddenMessages", includeHiddenMessages),
+                ("includeHiddenMessages", include_hidden),
                 ("$top", top),
                 ("$skip", skip),
                 ("$search", search),
@@ -256,41 +253,39 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_user_message(
+    def get_email(
         self,
         message_id: str,
         user_id: str | None = None,
-        includeHiddenMessages: bool | None = None,
+        include_hidden: bool | None = None,
         select: list[str] | None = None,
         expand: list[str] | None = None,
-    ) -> Any:
+    ) -> dict[str, Any]:
         """
-        Retrieves a specific email message by its ID for a given user, with options to select specific fields or expand related data. Unlike `list_user_messages`, which fetches a collection of emails with advanced filtering, this function is designed to retrieve a single, known message.
+        Retrieves a specific email by its ID.
 
         Args:
-            message_id (string): message-id
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
-            includeHiddenMessages (boolean): Include Hidden Messages
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
+            message_id (str): The unique identifier for the email.
+            user_id (str, optional): The ID of the user who owns the email. Defaults to the authenticated user.
+            include_hidden (bool, optional): If true, includes hidden messages.
+            select (list[str], optional): A list of properties to return.
+            expand (list[str], optional): A list of related entities to expand.
 
         Returns:
-            Any: Retrieved navigation property
+            dict[str, Any]: A dictionary containing the email's details.
 
         Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.message, important
+            HTTPStatusError: If the API request fails.
+            ValueError: If user_id cannot be retrieved or message_id is missing.
         """
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
-        if message_id is None:
-            raise ValueError("Missing required parameter 'message-id'.")
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if not message_id:
+            raise ValueError("Missing required parameter 'message_id'.")
+
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
         select_str = ",".join(select) if select else None
         expand_str = ",".join(expand) if expand else None
@@ -298,7 +293,7 @@ class OutlookApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                ("includeHiddenMessages", includeHiddenMessages),
+                ("includeHiddenMessages", include_hidden),
                 ("$select", select_str),
                 ("$expand", expand_str),
             ]
@@ -307,37 +302,34 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def user_delete_message(self, message_id: str, user_id: str | None = None) -> Any:
+    def delete_email(self, message_id: str, user_id: str | None = None) -> dict[str, Any]:
         """
-        Permanently deletes a specific email, identified by `message_id`, from a user's mailbox. If `user_id` is not provided, it defaults to the current authenticated user. Unlike retrieval functions such as `get_user_message`, this performs a destructive action to remove the specified email from Outlook.
+        Permanently deletes a specific email by its ID.
 
         Args:
-            message_id (string): message-id
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
+            message_id (str): The unique identifier for the email to be deleted.
+            user_id (str, optional): The ID of the user who owns the email. Defaults to the authenticated user.
 
         Returns:
-            Any: Success
+            dict[str, Any]: A dictionary confirming the deletion.
 
         Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.message, important
+            HTTPStatusError: If the API request fails.
+            ValueError: If user_id cannot be retrieved or message_id is missing.
         """
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
-        if message_id is None:
-            raise ValueError("Missing required parameter 'message-id'.")
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if not message_id:
+            raise ValueError("Missing required parameter 'message_id'.")
+
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
-        query_params = {}
-        response = self._delete(url, params=query_params)
+        response = self._delete(url, params={})
         return self._handle_response(response)
 
-    def list_message_attachments(
+    def list_email_attachments(
         self,
         message_id: str,
         user_id: str | None = None,
@@ -351,60 +343,42 @@ class OutlookApp(APIApplication):
         expand: list[str] | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves attachments for a specific email message, identified by its ID. Supports advanced querying for filtering, sorting, and pagination, allowing users to select specific fields to return in the result set, focusing only on attachments rather than the full message content.
-
-        IMPORTANT LIMITATIONS (Microsoft Graph API restrictions):
-        - `search` cannot be used with `filter`
-        - `search` cannot be used with `orderby`
-        - `search` cannot be used with `skip` (use pagination via @odata.nextLink and get_next_page instead)
+        Retrieves attachments for a specific email.
 
         Args:
-            message_id (string): message-id
-            user_id (string, optional): user-id. If not provided, will automatically get the current user's ID.
-            top (integer): Show only the first n items Example: '50'.
-            skip (integer): Skip the first n items. Cannot be used with 'search'.
-            search (string): Search items by search phrases. Cannot be used with 'filter', 'orderby', or 'skip'.
-            filter (string): Filter items by property values. Cannot be used with 'search'.
-            count (boolean): Include count of items
-            orderby (array): Order items by property values. Cannot be used with 'search'.
-            select (array): Select properties to be returned
-            expand (array): Expand related entities
+            message_id (str): The unique identifier for the email.
+            user_id (str, optional): The ID of the user who owns the email. Defaults to the authenticated user.
+            top (int, optional): The maximum number of attachments to return.
+            skip (int, optional): The number of attachments to skip. Cannot be used with 'search'.
+            search (str, optional): A search query. Cannot be used with 'filter', 'orderby', or 'skip'.
+            filter (str, optional): A filter query. Cannot be used with 'search'.
+            count (bool, optional): If true, includes the total count of attachments.
+            orderby (list[str], optional): A list of properties to sort by. Cannot be used with 'search'.
+            select (list[str], optional): A list of properties to return.
+            expand (list[str], optional): A list of related entities to expand.
 
         Returns:
-            dict[str, Any]: Retrieved collection
+            dict[str, Any]: A dictionary containing a list of attachments.
 
         Raises:
-            ValueError: If incompatible parameters are used together (search with filter/orderby/skip).
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            users.message, important
+            ValueError: If incompatible parameters are used together.
+            HTTPStatusError: If the API request fails.
         """
         if search:
             if filter:
-                raise ValueError(
-                    "The 'search' parameter cannot be used together with 'filter'. "
-                    "This is a Microsoft Graph API restriction. Please use either search or filter, not both."
-                )
+                raise ValueError("The 'search' parameter cannot be used with 'filter'.")
             if orderby:
-                raise ValueError(
-                    "The 'search' parameter cannot be used together with 'orderby'. "
-                    "This is a Microsoft Graph API restriction. When using search, results are sorted by relevance."
-                )
+                raise ValueError("The 'search' parameter cannot be used with 'orderby'.")
             if skip:
-                raise ValueError(
-                    "The 'search' parameter cannot be used together with 'skip'. "
-                    "When using search, use pagination via @odata.nextLink and the get_next_page function instead."
-                )
+                raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
 
-        # If user_id is not provided, get it automatically
         if user_id is None:
-            user_info = self.get_current_user_profile()
+            user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_current_user_profile response.")
-        if message_id is None:
-            raise ValueError("Missing required parameter 'message-id'.")
+                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+        if not message_id:
+            raise ValueError("Missing required parameter 'message_id'.")
 
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
         orderby_str = ",".join(orderby) if orderby else None
@@ -428,53 +402,103 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_current_user_profile(
+    def get_attachment(
         self,
+        message_id: str,
+        attachment_id: str,
+        user_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches the `userPrincipalName` for the currently authenticated user from the `/me` endpoint. This internal helper is used by other methods to automatically obtain the user's ID for API calls when a `user_id` is not explicitly provided.
+        Retrieves a specific attachment from an email message and formats it as a dictionary.
 
+        Args:
+            message_id (str): The ID of the email message.
+            attachment_id (str): The ID of the attachment.
+            user_id (str, optional): The ID of the user. Defaults to the authenticated user.
 
         Returns:
-            dict[str, Any]: Current user information
+            dict[str, Any]: A dictionary containing the attachment details:
+                - 'type' (str): The general type of the attachment (e.g., "image", "audio", "video", "file").
+                - 'data' (str): The base64 encoded content of the attachment.
+                - 'mime_type' (str): The MIME type of the attachment.
+                - 'file_name' (str): The name of the attachment file.
+        """
+        if user_id is None:
+            user_info = self.get_my_profile()
+            user_id = user_info.get("userPrincipalName")
+            if not user_id:
+                raise ValueError("Could not retrieve user ID.")
+        if not message_id or not attachment_id:
+            raise ValueError("Missing required parameter 'message_id' or 'attachment_id'.")
+
+        url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments/{attachment_id}"
+
+        response = self._get(url, params={})
+        attachment_data = self._handle_response(response)
+
+        content_type = attachment_data.get("contentType", "application/octet-stream")
+        attachment_type = content_type.split("/")[0] if "/" in content_type else "file"
+        if attachment_type not in ["image", "audio", "video", "text"]:
+            attachment_type = "file"
+
+        return {
+            "type": attachment_type,
+            "data": attachment_data.get("contentBytes"),
+            "mime_type": content_type,
+            "file_name": attachment_data.get("name"),
+        }
+
+    def get_my_profile(self) -> dict[str, Any]:
+        """
+        Fetches the userPrincipalName for the currently authenticated user.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the user's principal name.
 
         Raises:
-            HTTPStatusError: Raised when the API request fails with detailed error information including status code and response body.
-
-        Tags:
-            me, important
+            HTTPStatusError: If the API request fails.
         """
         url = f"{self.base_url}/me"
-        query_params = {
-            "$select": "userPrincipalName",
-        }
+        query_params = {"$select": "userPrincipalName"}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_next_page(self, url: str) -> dict[str, Any]:
+    def get_next_page_results(self, url: str) -> dict[str, Any]:
         """
-        Executes a GET request for a full URL, typically the `@odata.nextLink` from a previous paginated API response. It simplifies retrieving subsequent pages of data from list functions by handling URL validation and parsing before fetching the results for the next page.
+        Retrieves the next page of results from a paginated API response.
+
+        Args:
+            url (str): The full URL for the next page of results (@odata.nextLink).
+
+        Returns:
+            dict[str, Any]: A dictionary containing the next page of results.
+
+        Raises:
+            ValueError: If the URL is missing or invalid.
         """
         if not url:
             raise ValueError("Missing required parameter 'url'.")
         if not url.startswith(self.base_url):
-            raise ValueError(f"The provided URL '{url}' does not start with the expected base URL '{self.base_url}'.")
+            raise ValueError(f"The provided URL must start with '{self.base_url}'.")
+
         relative_part = url[len(self.base_url) :]
         parsed_relative = urlparse(relative_part)
         path_only = parsed_relative.path
         params = {k: v[0] for k, v in parse_qs(parsed_relative.query).items()}
+
         response = self._get(path_only, params=params)
         return self._handle_response(response)
 
     def list_tools(self):
         return [
-            self.reply_to_message,
-            self.send_mail,
-            self.get_mail_folder,
-            self.list_user_messages,
-            self.get_user_message,
-            self.user_delete_message,
-            self.list_message_attachments,
-            self.get_current_user_profile,
-            self.get_next_page,
+            self.reply_to_email,
+            self.send_email,
+            self.get_email_folder,
+            self.list_emails,
+            self.get_email,
+            self.delete_email,
+            self.list_email_attachments,
+            self.get_attachment,
+            self.get_my_profile,
+            self.get_next_page_results,
         ]
