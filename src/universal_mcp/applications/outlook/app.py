@@ -42,6 +42,9 @@ class OutlookApp(APIApplication):
         Raises:
             HTTPStatusError: If the API request fails.
             ValueError: If the user_id cannot be retrieved or message_id is missing.
+
+        Tags:
+            important
         """
         if user_id is None:
             user_info = self.get_my_profile()
@@ -97,6 +100,9 @@ class OutlookApp(APIApplication):
         Raises:
             HTTPStatusError: If the API request fails.
             ValueError: If the user_id cannot be retrieved.
+
+        Tags:
+            important
         """
         if user_id is None:
             user_info = self.get_my_profile()
@@ -155,6 +161,8 @@ class OutlookApp(APIApplication):
         Raises:
             HTTPStatusError: If the API request fails.
             ValueError: If user_id cannot be retrieved or folder_id is missing.
+        Tags:
+            important
         """
         if user_id is None:
             user_info = self.get_my_profile()
@@ -214,6 +222,8 @@ class OutlookApp(APIApplication):
         Raises:
             ValueError: If incompatible parameters are used together (e.g., 'search' with 'filter').
             HTTPStatusError: If the API request fails.
+        Tags:
+            important
         """
         if search:
             if filter:
@@ -277,6 +287,8 @@ class OutlookApp(APIApplication):
         Raises:
             HTTPStatusError: If the API request fails.
             ValueError: If user_id cannot be retrieved or message_id is missing.
+        Tags:
+            important
         """
         if user_id is None:
             user_info = self.get_my_profile()
@@ -316,6 +328,8 @@ class OutlookApp(APIApplication):
         Raises:
             HTTPStatusError: If the API request fails.
             ValueError: If user_id cannot be retrieved or message_id is missing.
+        Tags:
+            important
         """
         if user_id is None:
             user_info = self.get_my_profile()
@@ -363,6 +377,8 @@ class OutlookApp(APIApplication):
         Raises:
             ValueError: If incompatible parameters are used together.
             HTTPStatusError: If the API request fails.
+        Tags:
+            important
         """
         if search:
             if filter:
@@ -422,6 +438,8 @@ class OutlookApp(APIApplication):
                 - 'data' (str): The base64 encoded content of the attachment.
                 - 'mime_type' (str): The MIME type of the attachment.
                 - 'file_name' (str): The name of the attachment file.
+        Tags:
+            important
         """
         if user_id is None:
             user_info = self.get_my_profile()
@@ -475,6 +493,8 @@ class OutlookApp(APIApplication):
 
         Raises:
             ValueError: If the URL is missing or invalid.
+        Tags:
+            important
         """
         if not url:
             raise ValueError("Missing required parameter 'url'.")
