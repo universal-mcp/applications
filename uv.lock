@@ -5126,7 +5126,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.25"
+version = "0.1.26"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
@@ -5201,7 +5201,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.24rc21" },
+    { name = "universal-mcp", specifier = ">=0.1.24rc26" },
     { name = "yfinance", specifier = ">=0.2.66" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },
 ]
