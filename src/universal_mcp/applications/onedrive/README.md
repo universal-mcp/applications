@@ -1,10 +1,10 @@
-# OneDriveApp MCP Server
+# OnedriveApp MCP Server
 
-An MCP Server for the OneDriveApp API.
+An MCP Server for the OnedriveApp API.
 
 ## 🛠️ Tool List
 
-This is automatically generated from OpenAPI schema for the OneDriveApp API.
+This is automatically generated from OpenAPI schema for the OnedriveApp API.
 
 
 | Tool | Description |
@@ -21,4 +21,4 @@ This is automatically generated from OpenAPI schema for the OneDriveApp API.
 | `list_files` | Retrieves a list of files within a specified OneDrive folder, defaulting to the root. Unlike `_list_drive_items` which fetches all items, this function filters the results to exclusively return items identified as files, excluding any subdirectories. |
 | `create_folder_and_list` | Performs a composite action: creates a new folder, then lists all items (files and folders) within that parent directory. This confirms creation by returning the parent's updated contents, distinct from `create_folder` which only returns the new folder's metadata. |
 | `upload_text_file` | Creates and uploads a new file to OneDrive directly from a string of text content. Unlike `upload_file`, which requires a local file path, this function is specifically for creating a text file from in-memory string data, with a customizable name and destination folder. |
-| `get_document_content` | Retrieves the content of a file specified by its ID. It automatically detects if the file is text or binary; text content is returned as a string, while binary content is returned base64-encoded. This differs from `download_file`, which only provides a URL. |
+| `get_document_content` | Retrieves the content of a specific file by its item ID and returns it directly as base64-encoded data. This function is distinct from `download_file`, which only provides a temporary URL for the content, and from `get_item_metadata`, which returns file attributes without the content itself. The function fetches the content by following the file's pre-authenticated download URL. |

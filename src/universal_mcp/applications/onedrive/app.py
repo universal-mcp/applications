@@ -272,7 +272,7 @@ class OnedriveApp(APIApplication):
 
     def get_document_content(self, item_id: str) -> dict[str, Any]:
         """
-        Retrieves the content of a file from OneDrive and formats it as a dictionary, similar to an email attachment.
+        Retrieves the content of a specific file by its item ID and returns it directly as base64-encoded data. This function is distinct from `download_file`, which only provides a temporary URL for the content, and from `get_item_metadata`, which returns file attributes without the content itself. The function fetches the content by following the file's pre-authenticated download URL.
 
         Args:
             item_id (str): The ID of the file.
