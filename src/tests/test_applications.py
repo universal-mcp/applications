@@ -54,6 +54,7 @@ ALL_APPS = [
     "ms_teams",
     "neon",
     "notion",
+    "onedrive",
     "openai",
     "outlook",
     "perplexity",
