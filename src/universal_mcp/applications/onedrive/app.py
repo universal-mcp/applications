@@ -6,7 +6,7 @@ from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 
-class OneDriveApp(APIApplication):
+class OnedriveApp(APIApplication):
     """
     Application for interacting with Microsoft OneDrive API (via Microsoft Graph).
     Provides tools to manage files, folders, and access Drive information.

@@ -1,1 +1,1 @@
-from .app import OneDriveApp
+from .app import OnedriveApp
