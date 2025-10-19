@@ -18,11 +18,11 @@ class OneDriveApp(APIApplication):
 
     def get_my_profile(self) -> dict[str, Any]:
         """
-        Fetches the profile for the currently authenticated user.
-
+        Fetches the profile for the currently authenticated user, specifically retrieving their ID and user principal name. This function confirms user identity, distinguishing it from `get_drive_info`, which returns details about the OneDrive storage space (e.g., quota) rather than the user's personal profile.
+        
         Returns:
             dict[str, Any]: A dictionary containing the user's id and userPrincipalName.
-
+        
         Raises:
             HTTPStatusError: If the API request fails.
         
@@ -36,8 +36,8 @@ class OneDriveApp(APIApplication):
 
     def get_drive_info(self) -> dict[str, Any]:
         """
-        Retrieves information about the current user's OneDrive, including owner and quota.
-
+        Fetches high-level information about the user's entire OneDrive. It returns drive-wide details like the owner and storage quota, differing from `get_item_metadata` which describes a specific item, and `get_my_profile` which retrieves general user account information.
+        
         Returns:
             A dictionary containing drive information.
             
@@ -64,11 +64,11 @@ class OneDriveApp(APIApplication):
 
     def search_files(self, query: str) -> dict[str, Any]:
         """
-        Searches for files and folders in the current user's OneDrive.
-
+        Searches the user's entire OneDrive for files and folders matching a specified text query. This function performs a comprehensive search from the drive's root, distinguishing it from `list_files` or `list_folders` which only browse the contents of a single directory.
+        
         Args:
             query (str): The search query.
-
+        
         Returns:
             A dictionary containing the search results.
             
@@ -84,11 +84,11 @@ class OneDriveApp(APIApplication):
 
     def get_item_metadata(self, item_id: str) -> dict[str, Any]:
         """
-        Retrieves the metadata for a file or folder.
-
+        Fetches detailed metadata for a specific file or folder using its unique ID. It returns properties like name, size, and type. Unlike `get_document_content`, it doesn't retrieve the file's actual content, focusing solely on the item's attributes for quick inspection without a full download.
+        
         Args:
             item_id (str): The ID of the file or folder.
-
+        
         Returns:
             A dictionary containing the item's metadata.
             
@@ -104,12 +104,12 @@ class OneDriveApp(APIApplication):
 
     def create_folder(self, name: str, parent_id: str = "root") -> dict[str, Any]:
         """
-        Creates a new folder.
-
+        Creates a new folder with a specified name within a parent directory, which defaults to the root. Returns metadata for the new folder. Unlike `create_folder_and_list`, this function only creates the folder and returns its specific metadata, not the parent directory's contents.
+        
         Args:
             name (str): The name of the new folder.
             parent_id (str, optional): The ID of the parent folder. Defaults to 'root'.
-
+        
         Returns:
             A dictionary containing the new folder's metadata.
             
@@ -130,11 +130,11 @@ class OneDriveApp(APIApplication):
 
     def delete_item(self, item_id: str) -> dict[str, Any]:
         """
-        Deletes a file or folder.
-
+        Permanently deletes a specified file or folder from OneDrive using its unique item ID. This versatile function can remove any type of drive item, distinguished from functions that only list or create specific types. A successful deletion returns an empty response, confirming the item's removal.
+        
         Args:
             item_id (str): The ID of the item to delete.
-
+        
         Returns:
             An empty dictionary if successful.
             
@@ -150,11 +150,11 @@ class OneDriveApp(APIApplication):
 
     def download_file(self, item_id: str) -> dict[str, Any]:
         """
-        Gets the download URL for a file.
-
+        Retrieves a temporary, pre-authenticated download URL for a specific file using its item ID. This function provides a link for subsequent download, differing from `get_document_content` which directly fetches the file's raw content. The URL is returned within a dictionary.
+        
         Args:
             item_id (str): The ID of the file to download.
-
+        
         Returns:
             A dictionary containing the download URL for the file under the key '@microsoft.graph.downloadUrl'.
             
@@ -177,13 +177,13 @@ class OneDriveApp(APIApplication):
         self, file_path: str, parent_id: str = "root", file_name: str | None = None
     ) -> dict[str, Any]:
         """
-        Uploads a file to OneDrive (for files smaller than 4MB).
-
+        Uploads a local binary file (under 4MB) from a given path to a specified OneDrive folder. Unlike `upload_text_file`, which uploads string content, this function reads from the filesystem. The destination filename can be customized, and it returns the new file's metadata upon completion.
+        
         Args:
             file_path (str): The local path to the file to upload.
             parent_id (str, optional): The ID of the folder to upload the file to. Defaults to 'root'.
             file_name (str, optional): The name to give the uploaded file. If not provided, the local filename is used.
-
+        
         Returns:
             A dictionary containing the uploaded file's metadata.
             
@@ -204,11 +204,11 @@ class OneDriveApp(APIApplication):
 
     def list_folders(self, item_id: str = "root") -> dict[str, Any]:
         """
-        Lists the folders in the current user's OneDrive.
-
+        Retrieves a list of only the folders within a specified parent directory in OneDrive. Unlike `_list_drive_items` which returns all items, this function filters the results to exclude files. Defaults to the root directory if no parent `item_id` is provided.
+        
         Args:
             item_id (str, optional): The ID of the folder to list from. Defaults to 'root'.
-
+        
         Returns:
             A dictionary containing the list of folders.
             
@@ -221,11 +221,11 @@ class OneDriveApp(APIApplication):
 
     def list_files(self, item_id: str = "root") -> dict[str, Any]:
         """
-        Lists the files in the current user's OneDrive.
-
+        Retrieves a list of files within a specified OneDrive folder, defaulting to the root. Unlike `_list_drive_items` which fetches all items, this function filters the results to exclusively return items identified as files, excluding any subdirectories.
+        
         Args:
             item_id (str, optional): The ID of the folder to list files from. Defaults to 'root'.
-
+        
         Returns:
             A dictionary containing the list of files.
             
@@ -238,12 +238,12 @@ class OneDriveApp(APIApplication):
 
     def create_folder_and_list(self, name: str, parent_id: str = "root") -> dict[str, Any]:
         """
-        Creates a new folder and then lists all items in the parent folder.
-
+        Performs a composite action: creates a new folder, then lists all items (files and folders) within that parent directory. This confirms creation by returning the parent's updated contents, distinct from `create_folder` which only returns the new folder's metadata.
+        
         Args:
             name (str): The name of the new folder.
             parent_id (str, optional): The ID of the parent folder. Defaults to 'root'.
-
+        
         Returns:
             A dictionary containing the list of items in the parent folder after creation.
             
@@ -257,13 +257,13 @@ class OneDriveApp(APIApplication):
         self, content: str, parent_id: str = "root", file_name: str = "new_file.txt"
     ) -> dict[str, Any]:
         """
-        Uploads text content as a file to OneDrive.
-
+        Creates and uploads a new file to OneDrive directly from a string of text content. Unlike `upload_file`, which requires a local file path, this function is specifically for creating a text file from in-memory string data, with a customizable name and destination folder.
+        
         Args:
             content (str): The text content to upload.
             parent_id (str, optional): The ID of the folder to upload the file to. Defaults to 'root'.
             file_name (str, optional): The name to give the uploaded file. Defaults to 'new_file.txt'.
-
+        
         Returns:
             A dictionary containing the uploaded file's metadata.
             
@@ -280,11 +280,11 @@ class OneDriveApp(APIApplication):
 
     def get_document_content(self, item_id: str) -> dict[str, Any]:
         """
-        Retrieves the content of a file from OneDrive.
-
+        Retrieves the content of a file specified by its ID. It automatically detects if the file is text or binary; text content is returned as a string, while binary content is returned base64-encoded. This differs from `download_file`, which only provides a URL.
+        
         Args:
             item_id (str): The ID of the file.
-
+        
         Returns:
             A dictionary containing the file content. For text files, content is string. For binary, it's base64 encoded.
             
