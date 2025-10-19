@@ -2,6 +2,7 @@ import base64
 import os
 from typing import Any
 
+from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -271,13 +272,17 @@ class OnedriveApp(APIApplication):
 
     def get_document_content(self, item_id: str) -> dict[str, Any]:
         """
-        Retrieves the content of a file specified by its ID. It automatically detects if the file is text or binary; text content is returned as a string, while binary content is returned base64-encoded. This differs from `download_file`, which only provides a URL.
+        Retrieves the content of a file from OneDrive and formats it as a dictionary, similar to an email attachment.
 
         Args:
             item_id (str): The ID of the file.
 
         Returns:
-            A dictionary containing the file content. For text files, content is string. For binary, it's base64 encoded.
+            dict[str, Any]: A dictionary containing the file details:
+                - 'type' (str): The general type of the file (e.g., "image", "audio", "video", "file").
+                - 'data' (str): The base64 encoded content of the file.
+                - 'mime_type' (str): The MIME type of the file.
+                - 'file_name' (str): The name of the file.
 
         Tags:
             get, content, read, file, important
@@ -290,34 +295,29 @@ class OnedriveApp(APIApplication):
         if not file_metadata:
             raise ValueError(f"Item with ID '{item_id}' is not a file.")
 
-        file_mime_type = file_metadata.get("mimeType", "")
+        file_mime_type = file_metadata.get("mimeType", "application/octet-stream")
+        file_name = metadata.get("name")
 
-        url = f"{self.base_url}/me/drive/items/{item_id}/content"
-        response = self._get(url)
+        download_url = metadata.get("@microsoft.graph.downloadUrl")
+        if not download_url:
+            logger.error(f"Could not find @microsoft.graph.downloadUrl in metadata for item {item_id}")
+            raise ValueError("Could not retrieve download URL for the item.")
 
-        if response.status_code >= 400:
-            # Try to handle as JSON error response from Graph API
-            return self._handle_response(response)
+        response = self._get(download_url)
+
+        response.raise_for_status()
 
         content = response.content
 
-        is_text = file_mime_type.startswith("text/") or any(t in file_mime_type for t in ["json", "xml", "csv", "javascript", "html"])
-
-        content_dict = {}
-        if is_text:
-            try:
-                content_dict["content"] = content.decode("utf-8")
-            except UnicodeDecodeError:
-                is_text = False
-
-        if not is_text:
-            content_dict["content_base64"] = base64.b64encode(content).decode("ascii")
+        attachment_type = file_mime_type.split("/")[0] if "/" in file_mime_type else "file"
+        if attachment_type not in ["image", "audio", "video", "text"]:
+            attachment_type = "file"
 
         return {
-            "name": metadata.get("name"),
-            "content_type": "text" if is_text else "binary",
-            **content_dict,
-            "size": len(content),
+            "type": attachment_type,
+            "data": content,
+            "mime_type": file_mime_type,
+            "file_name": file_name,
         }
 
     def list_tools(self):
