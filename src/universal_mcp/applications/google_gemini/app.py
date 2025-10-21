@@ -62,9 +62,9 @@ class GoogleGeminiApp(APIApplication):
     async def generate_image(
         self,
         prompt: Annotated[str, "The prompt to generate image from"],
-        images: Annotated[list[str], "The reference images path"] | None = None,
+        images: Annotated[list[str], "The reference image URLs"] | None = None, 
         model: str = "gemini-2.5-flash-image-preview",
-    ) -> list:
+    ) -> dict:
         """
         Generates an image based on a text prompt and an optional reference image using the Google Gemini model.
         This tool is ideal for creating visual content or modifying existing images based on natural language descriptions.
@@ -72,7 +72,7 @@ class GoogleGeminiApp(APIApplication):
 
         Args:
             prompt (str): The descriptive text prompt to guide the image generation. For example: "A futuristic city at sunset with flying cars."
-            images (list[str], optional): An optional list of URL to a reference image. These images will be used as a basis for the generation.
+            images (list[str], optional): An optional list of URLs to reference images. These images will be used as a basis for the generation.
             model (str, optional): The Gemini model to use for image generation. Defaults to "gemini-2.5-flash-image-preview".
 
         Returns:
