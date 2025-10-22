@@ -2,7 +2,7 @@ import os
 import subprocess
 
 APPS = [
-    "onedrive"
+    "scraper",
 ]
 
 

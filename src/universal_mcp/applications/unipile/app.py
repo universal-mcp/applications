@@ -657,6 +657,9 @@ class UnipileApp(APIApplication):
         cursor: str | None = None,
         limit: int | None = None,
         keywords: str | None = None,
+        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+        minimum_salary_value: int = 40,
     ) -> dict[str, Any]:
         """
         Performs a comprehensive LinkedIn search for people, companies, posts, or jobs using keywords.
@@ -669,18 +672,23 @@ class UnipileApp(APIApplication):
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-            content_type: Filter by the type of content in the post (posts only).
-            search_url: Direct LinkedIn search URL to use instead of building parameters.
+            date_posted: Filter by when the post was posted (posts only).
+            sort_by: How to sort the results (for posts and jobs).
+            minimum_salary_value: The minimum salary to filter for (jobs only).
 
         Returns:
             A dictionary containing search results and pagination details.
 
         Raises:
             httpx.HTTPError: If the API request fails.
+            ValueError: If the category is empty.
 
         Tags:
             linkedin, search, people, companies, posts, jobs, api, important
         """
+        if not category:
+            raise ValueError("Category cannot be empty.")
+
         url = f"{self.base_url}/api/v1/linkedin/search"
 
         params: dict[str, Any] = {"account_id": account_id}
@@ -695,11 +703,18 @@ class UnipileApp(APIApplication):
             payload["keywords"] = keywords
 
         if category == "posts":
-            payload["date_posted"] = "past_day"  # can be "past_week" and "past_month"
-            payload["sort_by"] = "relevance"    # can be "date"
+            if date_posted:
+                payload["date_posted"] = date_posted
+            if sort_by:
+                payload["sort_by"] = sort_by
 
         elif category == "jobs":
-            payload["minimum_salary"] = {"currency": "USD", "value": 40}
+            payload["minimum_salary"] = {
+                "currency": "USD",
+                "value": minimum_salary_value,
+            }
+            if sort_by:
+                payload["sort_by"] = sort_by
 
         response = self._post(url, params=params, data=payload)
         return self._handle_response(response)
