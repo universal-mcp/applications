@@ -653,71 +653,42 @@ class UnipileApp(APIApplication):
     def search(
         self,
         account_id: str,
-        category: Literal["people", "companies", "posts", "jobs"] = "posts",
-        api: Literal["classic", "sales_navigator"] = "classic",
+        category: Literal["people", "companies", "posts", "jobs"],
         cursor: str | None = None,
         limit: int | None = None,
         keywords: str | None = None,
-        sort_by: Literal["relevance", "date"] | None = None,
         date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
-        content_type: Literal[
-            "videos", "images", "live_videos", "collaborative_articles", "documents"
-        ]
-        | None = None,
-        posted_by: dict[str, Any] | None = None,
-        mentioning: dict[str, Any] | None = None,
-        author: dict[str, Any] | None = None,
-        # People search specific parameters
-        location: list[str] | None = None,
-        industry: list[str] | None = None,
-        company: list[str] | None = None,
-        past_company: list[str] | None = None,
-        school: list[str] | None = None,
-        # Company search specific parameters
-        headcount: list[dict[str, int]] | None = None,
-        # Job search specific parameters
-        job_type: list[str] | None = None,
-        minimum_salary: dict[str, Any] | None = None,
-        # URL search
-        search_url: str | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+        minimum_salary_value: int = 40,
     ) -> dict[str, Any]:
         """
-        Performs a comprehensive LinkedIn search for people, companies, posts, or jobs using granular filters like keywords and location. Alternatively, it can execute a search from a direct LinkedIn URL. Supports pagination and targets either the classic or Sales Navigator API.
+        Performs a comprehensive LinkedIn search for people, companies, posts, or jobs using keywords.
+        Supports pagination and targets either the classic or Sales Navigator API for posts.
+        For people, companies, and jobs, it uses the classic API.
 
         Args:
             account_id: The ID of the Unipile account to perform the search from (REQUIRED).
             category: Type of search to perform - "people", "companies", "posts", or "jobs".
-            api: Which LinkedIn API to use - "classic" or "sales_navigator".
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-            sort_by: How to sort the results, e.g., "relevance" or "date".
-            date_posted: Filter posts by when they were posted (posts only).
-            content_type: Filter by the type of content in the post (posts only).
-            posted_by: Dictionary to filter by who posted (posts only).
-            location: Location filter for people/company search (array of strings).
-            industry: Industry filter for people/company search (array of strings).
-            company: Company filter for people search (array of strings).
-            past_company: Past company filter for people search (array of strings).
-            school: School filter for people search (array of strings).
-            headcount: Company size filter for company search (array of objects with min/max numbers).
-            job_type: Job type filter for job search (array of strings).
-            minimum_salary: Minimum salary filter for job search (object with currency and value). Example:
-                minimum_salary = {
-                    "currency": "USD",
-                    "value": 80
-                }
-            search_url: Direct LinkedIn search URL to use instead of building parameters.
+            date_posted: Filter by when the post was posted (posts only).
+            sort_by: How to sort the results (for posts and jobs).
+            minimum_salary_value: The minimum salary to filter for (jobs only).
 
         Returns:
             A dictionary containing search results and pagination details.
 
         Raises:
             httpx.HTTPError: If the API request fails.
+            ValueError: If the category is empty.
 
         Tags:
             linkedin, search, people, companies, posts, jobs, api, important
         """
+        if not category:
+            raise ValueError("Category cannot be empty.")
+
         url = f"{self.base_url}/api/v1/linkedin/search"
 
         params: dict[str, Any] = {"account_id": account_id}
@@ -726,302 +697,24 @@ class UnipileApp(APIApplication):
         if limit is not None:
             params["limit"] = limit
 
-        payload: dict[str, Any] = {"api": api, "category": category}
+        payload: dict[str, Any] = {"api": "classic", "category": category}
 
-        # Add search URL if provided (takes precedence over other parameters)
-        if search_url:
-            payload["search_url"] = search_url
-        else:
-            # Add common parameters
-            common_params = {
-                "keywords": keywords,
-                "sort_by": sort_by,
+        if keywords:
+            payload["keywords"] = keywords
+
+        if category == "posts":
+            if date_posted:
+                payload["date_posted"] = date_posted
+            if sort_by:
+                payload["sort_by"] = sort_by
+
+        elif category == "jobs":
+            payload["minimum_salary"] = {
+                "currency": "USD",
+                "value": minimum_salary_value,
             }
-            payload.update({k: v for k, v in common_params.items() if v is not None})
-
-            # Category-specific parameters
-            category_params = {
-                "posts": {
-                    "date_posted": date_posted,
-                    "content_type": content_type,
-                    "posted_by": posted_by,
-                },
-                "people": {
-                    "location": location,
-                    "industry": industry,
-                    "company": company,
-                    "past_company": past_company,
-                    "school": school,
-                },
-                "companies": {
-                    "location": location,
-                    "industry": industry,
-                    "headcount": headcount,
-                },
-                "jobs": {
-                    "location": location,
-                    "job_type": job_type,
-                    "minimum_salary": minimum_salary,
-                },
-            }
-
-            if category in category_params:
-                payload.update(
-                    {
-                        k: v
-                        for k, v in category_params[category].items()
-                        if v is not None
-                    }
-                )
-
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
-
-    def people_search(
-        self,
-        account_id: str,
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        last_viewed_at: int | None = None,
-        saved_search_id: str | None = None,
-        recent_search_id: str | None = None,
-        location: dict[str, Any] | None = None,
-        location_by_postal_code: dict[str, Any] | None = None,
-        industry: dict[str, Any] | None = None,
-        first_name: str | None = None,
-        last_name: str | None = None,
-        tenure: list[dict[str, Any]] | None = None,
-        groups: list[str] | None = None,
-        school: dict[str, Any] | None = None,
-        profile_language: list[str] | None = None,
-        company: dict[str, Any] | None = None,
-        company_headcount: list[dict[str, Any]] | None = None,
-        company_type: list[str] | None = None,
-        company_location: dict[str, Any] | None = None,
-        tenure_at_company: list[dict[str, Any]] | None = None,
-        past_company: dict[str, Any] | None = None,
-        function: dict[str, Any] | None = None,
-        role: dict[str, Any] | None = None,
-        tenure_at_role: list[dict[str, Any]] | None = None,
-        seniority: dict[str, Any] | None = None,
-        past_role: dict[str, Any] | None = None,
-        following_your_company: bool | None = None,
-        viewed_your_profile_recently: bool | None = None,
-        network_distance: list[str] | None = None,
-        connections_of: list[str] | None = None,
-        past_colleague: bool | None = None,
-        shared_experiences: bool | None = None,
-        changed_jobs: bool | None = None,
-        posted_on_linkedin: bool | None = None,
-        mentionned_in_news: bool | None = None,
-        persona: list[str] | None = None,
-        account_lists: dict[str, Any] | None = None,
-        lead_lists: dict[str, Any] | None = None,
-        viewed_profile_recently: bool | None = None,
-        messaged_recently: bool | None = None,
-        include_saved_leads: bool | None = None,
-        include_saved_accounts: bool | None = None,
-    ) -> dict[str, Any]:
-        """
-        Performs a comprehensive LinkedIn Sales Navigator people search with all available parameters.
-        This function provides access to LinkedIn's advanced Sales Navigator search capabilities
-        for finding people with precise targeting options.
-
-        Args:
-            account_id: The ID of the Unipile account to perform the search from (REQUIRED).
-            cursor: Pagination cursor for the next page of entries.
-            limit: Number of items to return.
-            keywords: LinkedIn native filter: KEYWORDS.
-            last_viewed_at: Unix timestamp for saved search filtering.
-            saved_search_id: ID of saved search (overrides other parameters).
-            recent_search_id: ID of recent search (overrides other parameters).
-            location: LinkedIn native filter: GEOGRAPHY.
-            location_by_postal_code: Location filter by postal code.
-            industry: LinkedIn native filter: INDUSTRY.
-            first_name: LinkedIn native filter: FIRST NAME.
-            last_name: LinkedIn native filter: LAST NAME.
-            tenure: LinkedIn native filter: YEARS OF EXPERIENCE.
-            groups: LinkedIn native filter: GROUPS.
-            school: LinkedIn native filter: SCHOOL.
-            profile_language: ISO 639-1 language codes, LinkedIn native filter: PROFILE LANGUAGE.
-            company: LinkedIn native filter: CURRENT COMPANY.
-            company_headcount: LinkedIn native filter: COMPANY HEADCOUNT.
-            company_type: LinkedIn native filter: COMPANY TYPE.
-            company_location: LinkedIn native filter: COMPANY HEADQUARTERS LOCATION.
-            tenure_at_company: LinkedIn native filter: YEARS IN CURRENT COMPANY.
-            past_company: LinkedIn native filter: PAST COMPANY.
-            function: LinkedIn native filter: FUNCTION.
-            role: LinkedIn native filter: CURRENT JOB TITLE.
-            tenure_at_role: LinkedIn native filter: YEARS IN CURRENT POSITION.
-            seniority: LinkedIn native filter: SENIORITY LEVEL.
-            past_role: LinkedIn native filter: PAST JOB TITLE.
-            following_your_company: LinkedIn native filter: FOLLOWING YOUR COMPANY.
-            viewed_your_profile_recently: LinkedIn native filter: VIEWED YOUR PROFILE RECENTLY.
-            network_distance: First, second, third+ degree or GROUP, LinkedIn native filter: CONNECTION.
-            connections_of: LinkedIn native filter: CONNECTIONS OF.
-            past_colleague: LinkedIn native filter: PAST COLLEAGUE.
-            shared_experiences: LinkedIn native filter: SHARED EXPERIENCES.
-            changed_jobs: LinkedIn native filter: CHANGED JOBS.
-            posted_on_linkedin: LinkedIn native filter: POSTED ON LINKEDIN.
-            mentionned_in_news: LinkedIn native filter: MENTIONNED IN NEWS.
-            persona: LinkedIn native filter: PERSONA.
-            account_lists: LinkedIn native filter: ACCOUNT LISTS.
-            lead_lists: LinkedIn native filter: LEAD LISTS.
-            viewed_profile_recently: LinkedIn native filter: PEOPLE YOU INTERACTED WITH / VIEWED PROFILE.
-            messaged_recently: LinkedIn native filter: PEOPLE YOU INTERACTED WITH / MESSAGED.
-            include_saved_leads: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED LEADS.
-            include_saved_accounts: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED ACCOUNTS.
-
-        Returns:
-            A dictionary containing search results and pagination details.
-
-        Raises:
-            httpx.HTTPError: If the API request fails.
-
-        Tags:
-            linkedin, sales_navigator, people, search, advanced, api, important
-        """
-        url = f"{self.base_url}/api/v1/linkedin/search"
-
-        params: dict[str, Any] = {"account_id": account_id}
-        if cursor:
-            params["cursor"] = cursor
-        if limit is not None:
-            params["limit"] = limit
-
-        payload: dict[str, Any] = {"api": "sales_navigator", "category": "people"}
-
-        # Add all the Sales Navigator specific parameters
-        sn_params = {
-            "keywords": keywords,
-            "last_viewed_at": last_viewed_at,
-            "saved_search_id": saved_search_id,
-            "recent_search_id": recent_search_id,
-            "location": location,
-            "location_by_postal_code": location_by_postal_code,
-            "industry": industry,
-            "first_name": first_name,
-            "last_name": last_name,
-            "tenure": tenure,
-            "groups": groups,
-            "school": school,
-            "profile_language": profile_language,
-            "company": company,
-            "company_headcount": company_headcount,
-            "company_type": company_type,
-            "company_location": company_location,
-            "tenure_at_company": tenure_at_company,
-            "past_company": past_company,
-            "function": function,
-            "role": role,
-            "tenure_at_role": tenure_at_role,
-            "seniority": seniority,
-            "past_role": past_role,
-            "following_your_company": following_your_company,
-            "viewed_your_profile_recently": viewed_your_profile_recently,
-            "network_distance": network_distance,
-            "connections_of": connections_of,
-            "past_colleague": past_colleague,
-            "shared_experiences": shared_experiences,
-            "changed_jobs": changed_jobs,
-            "posted_on_linkedin": posted_on_linkedin,
-            "mentionned_in_news": mentionned_in_news,
-            "persona": persona,
-            "account_lists": account_lists,
-            "lead_lists": lead_lists,
-            "viewed_profile_recently": viewed_profile_recently,
-            "messaged_recently": messaged_recently,
-            "include_saved_leads": include_saved_leads,
-            "include_saved_accounts": include_saved_accounts,
-        }
-
-        # Only add parameters that are not None
-        payload.update({k: v for k, v in sn_params.items() if v is not None})
-
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
-
-    def company_search(
-        self,
-        account_id: str,
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        last_viewed_at: int | None = None,
-        saved_search_id: str | None = None,
-        recent_search_id: str | None = None,
-        location: dict[str, Any] | None = None,
-        location_by_postal_code: dict[str, Any] | None = None,
-        industry: dict[str, Any] | None = None,
-        company_headcount: list[dict[str, Any]] | None = None,
-        company_type: list[str] | None = None,
-        company_location: dict[str, Any] | None = None,
-        following_your_company: bool | None = None,
-        account_lists: dict[str, Any] | None = None,
-        include_saved_accounts: bool | None = None,
-    ) -> dict[str, Any]:
-        """
-        Performs a comprehensive LinkedIn Sales Navigator company search with relevant parameters.
-        This function provides access to LinkedIn's advanced Sales Navigator search capabilities
-        for finding companies with precise targeting options.
-
-        Args:
-            account_id: The ID of the Unipile account to perform the search from (REQUIRED).
-            cursor: Pagination cursor for the next page of entries.
-            limit: Number of items to return.
-            keywords: LinkedIn native filter: KEYWORDS.
-            last_viewed_at: Unix timestamp for saved search filtering.
-            saved_search_id: ID of saved search (overrides other parameters).
-            recent_search_id: ID of recent search (overrides other parameters).
-            location: LinkedIn native filter: GEOGRAPHY.
-            location_by_postal_code: Location filter by postal code.
-            industry: LinkedIn native filter: INDUSTRY.
-            company_headcount: LinkedIn native filter: COMPANY HEADCOUNT. Example {"min": 10, "max": 100}
-            company_type: LinkedIn native filter: COMPANY TYPE.
-            company_location: LinkedIn native filter: COMPANY HEADQUARTERS LOCATION.
-            following_your_company: LinkedIn native filter: FOLLOWING YOUR COMPANY.
-            account_lists: LinkedIn native filter: ACCOUNT LISTS.
-            include_saved_accounts: LinkedIn native filter: SAVED LEADS AND ACCOUNTS / ALL MY SAVED ACCOUNTS.
-
-        Returns:
-            A dictionary containing search results and pagination details.
-
-        Raises:
-            httpx.HTTPError: If the API request fails.
-
-        Tags:
-            linkedin, sales_navigator, companies, search, advanced, api, important
-        """
-        url = f"{self.base_url}/api/v1/linkedin/search"
-
-        params: dict[str, Any] = {"account_id": account_id}
-        if cursor:
-            params["cursor"] = cursor
-        if limit is not None:
-            params["limit"] = limit
-
-        payload: dict[str, Any] = {"api": "sales_navigator", "category": "companies"}
-
-        # Add all the Sales Navigator company-specific parameters
-        sn_params = {
-            "keywords": keywords,
-            "last_viewed_at": last_viewed_at,
-            "saved_search_id": saved_search_id,
-            "recent_search_id": recent_search_id,
-            "location": location,
-            "location_by_postal_code": location_by_postal_code,
-            "industry": industry,
-            "company_headcount": company_headcount,
-            "company_type": company_type,
-            "company_location": company_location,
-            "following_your_company": following_your_company,
-            "account_lists": account_lists,
-            "include_saved_accounts": include_saved_accounts,
-        }
-
-        # Only add parameters that are not None
-        payload.update({k: v for k, v in sn_params.items() if v is not None})
+            if sort_by:
+                payload["sort_by"] = sort_by
 
         response = self._post(url, params=params, data=payload)
         return self._handle_response(response)
@@ -1072,6 +765,4 @@ class UnipileApp(APIApplication):
             self.create_post_comment,
             self.create_reaction,
             self.search,
-            self.people_search,
-            self.company_search,
         ]
