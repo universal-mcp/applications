@@ -70,10 +70,10 @@ ALL_APPS = [
     "sendgrid",
     "sentry",
     "serpapi",
-    "sharepoint",  # not seeded
+    "sharepoint",
     "shopify",
     "shortcut",
-    "slack",  # not seeded
+    "slack",
     "spotify",  # not seeded
     "supabase",
     "tavily",

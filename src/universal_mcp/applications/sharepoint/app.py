@@ -1,225 +1,338 @@
 import base64
-import io
-from datetime import datetime
-from io import BytesIO
+import os
 from typing import Any
 
 from loguru import logger
-from office365.graph_client import GraphClient
-from universal_mcp.applications.application import BaseApplication
+from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
 
-def _to_iso_optional(dt_obj: datetime | None) -> str | None:
-    """Converts a datetime object to ISO format string, or returns None if the object is None."""
-    if dt_obj is not None:
-        return dt_obj.isoformat()
-    return None
-
-
-class SharepointApp(BaseApplication):
+class SharepointApp(APIApplication):
     """
-    Base class for Universal MCP Applications.
+    Application for interacting with Microsoft SharePoint API (via Microsoft Graph).
+    Provides tools to manage files, folders, and access Drive information.
     """
 
-    def __init__(self, integration: Integration = None, client=None, **kwargs) -> None:
-        """Initializes the SharepointApp.
-        Args:
-            client (GraphClient | None, optional): An existing GraphClient instance. If None, a new client will be created on first use.
-        """
+    def __init__(self, integration: Integration | None = None, **kwargs) -> None:
         super().__init__(name="sharepoint", integration=integration, **kwargs)
-        self._client = client
-        self.integration = integration
-        self._site_url = None
+        self.base_url = "https://graph.microsoft.com/v1.0"
 
-    @property
-    def client(self):
+    def get_my_profile(self) -> dict[str, Any]:
         """
-        A lazy-loaded property that gets or creates an authenticated GraphClient instance. On first access, it uses integration credentials to initialize the client, fetches initial user and site data, and caches the instance for subsequent use, ensuring efficient connection management for all SharePoint operations.
+        Fetches the profile for the currently authenticated user, specifically retrieving their ID and user principal name. This function confirms user identity, distinguishing it from `get_drive_info`, which returns details about the SharePoint storage space (e.g., quota) rather than the user's personal profile.
 
         Returns:
-            GraphClient: The authenticated GraphClient instance.
-        """
-        if not self.integration:
-            raise ValueError("Integration is required")
-        credentials = self.integration.get_credentials()
-        if not credentials:
-            raise ValueError("No credentials found")
+            dict[str, Any]: A dictionary containing the user's id and userPrincipalName.
 
-        if not credentials.get("access_token"):
-            raise ValueError("No access token found")
-
-        def _acquire_token():
-            """
-            Formats stored credentials for the `GraphClient` authentication callback. It packages existing access and refresh tokens from the integration into the specific dictionary structure required by the client library for authentication, including a hardcoded 'Bearer' token type.
-            """
-            access_token = credentials.get("access_token")
-            refresh_token = credentials.get("refresh_token")
-            return {
-                "access_token": access_token,
-                "refresh_token": refresh_token,
-                "token_type": "Bearer",
-            }
-
-        if self._client is None:
-            self._client = GraphClient(token_callback=_acquire_token)
-            # Get me
-            me = self._client.me.get().execute_query()
-            logger.debug(me.properties)
-            # Get sites
-            sites = self._client.sites.root.get().execute_query()
-            self._site_url = sites.properties.get("id")
-        return self._client
-
-    def list_folders(self, folder_path: str | None = None) -> list[dict[str, Any]]:
-        """
-        Retrieves a list of immediate subfolder names within a specified SharePoint directory. If no path is provided, it defaults to the root drive. This function is distinct from `list_files`, as it exclusively lists directories, not files.
-
-        Args:
-            folder_path (Optional[str], optional): The path to the parent folder. If None, lists folders in the root.
-
-        Returns:
-            List[Dict[str, Any]]: A list of folder names in the specified directory.
+        Raises:
+            HTTPStatusError: If the API request fails.
 
         Tags:
-            important
+            profile, user, account
         """
-        if folder_path:
-            folder = self.client.me.drive.root.get_by_path(folder_path)
-            folders = folder.get_folders(False).execute_query()
-        else:
-            folders = self.client.me.drive.root.get_folders(False).execute_query()
+        url = f"{self.base_url}/me"
+        query_params = {"$select": "id,userPrincipalName"}
+        response = self._get(url, params=query_params)
+        return self._handle_response(response)
 
-        return [folder.properties.get("name") for folder in folders]
-
-    def create_folder_and_list(
-        self, folder_name: str, folder_path: str | None = None
-    ) -> dict[str, Any]:
+    def get_drive_info(self) -> dict[str, Any]:
         """
-        Creates a new folder with a given name inside a specified parent directory (or the root). It then returns an updated list of all folder names within that same directory, effectively confirming that the creation operation was successful.
-
-        Args:
-            folder_name (str): The name of the folder to create.
-            folder_path (str | None, optional): The path to the parent folder. If None, creates in the root.
+        Fetches high-level information about the user's entire SharePoint. It returns drive-wide details like the owner and storage quota, differing from `get_item_metadata` which describes a specific item, and `get_my_profile` which retrieves general user account information.
 
         Returns:
-            Dict[str, Any]: The updated list of folders in the target directory.
+            A dictionary containing drive information.
 
         Tags:
-            important
+            drive, storage, quota, info
         """
-        if folder_path:
-            folder = self.client.me.drive.root.get_by_path(folder_path)
-        else:
-            folder = self.client.me.drive.root
-        folder.create_folder(folder_name).execute_query()
-        return self.list_folders(folder_path)
+        url = f"{self.base_url}/me/drive"
+        response = self._get(url)
+        return self._handle_response(response)
 
-    def list_files(self, folder_path: str) -> list[dict[str, Any]]:
+    def _list_drive_items(self, item_id: str = "root") -> dict[str, Any]:
         """
-        Retrieves metadata for all files in a specified folder. For each file, it returns key details like name, URL, size, and timestamps. This function exclusively lists file properties, distinguishing it from `list_folders` (which lists directories) and `get_document_content` (which retrieves file content).
+        Lists the files and folders in the current user's SharePoint.
 
         Args:
-            folder_path (str): The path to the folder whose documents are to be listed.
+            item_id (str, optional): The ID of the folder to list. Defaults to 'root'.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries containing document metadata.
+            A dictionary containing the list of files and folders.
+        """
+        url = f"{self.base_url}/me/drive/items/{item_id}/children"
+        response = self._get(url)
+        return self._handle_response(response)
+
+    def search_files(self, query: str) -> dict[str, Any]:
+        """
+        Searches the user's entire SharePoint for files and folders matching a specified text query. This function performs a comprehensive search from the drive's root, distinguishing it from `list_files` or `list_folders` which only browse the contents of a single directory.
+
+        Args:
+            query (str): The search query.
+
+        Returns:
+            A dictionary containing the search results.
 
         Tags:
-            important
+            search, find, query, files, important
         """
-        folder = self.client.me.drive.root.get_by_path(folder_path)
-        files = folder.get_files(False).execute_query()
+        if not query:
+            raise ValueError("Search query cannot be empty.")
 
-        return [
-            {
-                "name": f.name,
-                "url": f.properties.get("ServerRelativeUrl"),
-                "size": f.properties.get("Length"),
-                "created": _to_iso_optional(f.properties.get("TimeCreated")),
-                "modified": _to_iso_optional(f.properties.get("TimeLastModified")),
-            }
-            for f in files
-        ]
+        url = f"{self.base_url}/me/drive/root/search(q='{query}')"
+        response = self._get(url)
+        return self._handle_response(response)
 
-    def upload_text_file(
-        self, file_path: str, file_name: str, content: str
-    ) -> dict[str, Any]:
+    def get_item_metadata(self, item_id: str) -> dict[str, Any]:
         """
-        Uploads string content to create a new file in a specified SharePoint folder. To confirm the operation, it returns an updated list of all files and their metadata from that directory, including the newly created file.
+        Fetches detailed metadata for a specific file or folder using its unique ID. It returns properties like name, size, and type. Unlike `get_document_content`, it doesn't retrieve the file's actual content, focusing solely on the item's attributes for quick inspection without a full download.
 
         Args:
-            file_path (str): The path to the folder where the document will be created.
-            file_name (str): The name of the document to create.
-            content (str): The content to write into the document.
+            item_id (str): The ID of the file or folder.
 
         Returns:
-            Dict[str, Any]: The updated list of documents in the folder.
+            A dictionary containing the item's metadata.
 
-        Tags: important
+        Tags:
+            metadata, info, file, folder
         """
-        file = self.client.me.drive.root.get_by_path(file_path)
-        file_io = io.StringIO(content)
-        file_io.name = file_name
-        file.upload_file(file_io).execute_query()
-        return self.list_documents(file_path)
+        if not item_id:
+            raise ValueError("Missing required parameter 'item_id'.")
 
-    def get_document_content(self, file_path: str) -> dict[str, Any]:
+        url = f"{self.base_url}/me/drive/items/{item_id}"
+        response = self._get(url)
+        return self._handle_response(response)
+
+    def create_folder(self, name: str, parent_id: str = "root") -> dict[str, Any]:
         """
-        Retrieves a file's content from a specified SharePoint path. It returns a dictionary containing the file's name and size, decoding text files as a string and Base64-encoding binary files. Unlike `list_files`, which only fetches metadata, this function provides the actual file content.
+        Creates a new folder with a specified name within a parent directory, which defaults to the root. Returns metadata for the new folder. Unlike `create_folder_and_list`, this function only creates the folder and returns its specific metadata, not the parent directory's contents.
 
         Args:
-            file_path (str): The path to the document.
+            name (str): The name of the new folder.
+            parent_id (str, optional): The ID of the parent folder. Defaults to 'root'.
 
         Returns:
-            Dict[str, Any]: A dictionary containing the document's name, content type, content (as text or base64), and size.
+            A dictionary containing the new folder's metadata.
 
-        Tags: important
+        Tags:
+            create, folder, directory, important
         """
-        file = self.client.me.drive.root.get_by_path(file_path).get().execute_query()
-        content_stream = BytesIO()
-        file.download(content_stream).execute_query()
-        content_stream.seek(0)
-        content = content_stream.read()
+        if not name:
+            raise ValueError("Folder name cannot be empty.")
 
-        is_text_file = file_path.lower().endswith(
-            (".txt", ".csv", ".json", ".xml", ".html", ".md", ".js", ".css", ".py")
-        )
-        content_dict = (
-            {"content": content.decode("utf-8")}
-            if is_text_file
-            else {"content_base64": base64.b64encode(content).decode("ascii")}
-        )
+        url = f"{self.base_url}/me/drive/items/{parent_id}/children"
+        data = {"name": name, "folder": {}, "@microsoft.graph.conflictBehavior": "rename"}
+        response = self._post(url, data=data)
+        return self._handle_response(response)
+
+    def delete_item(self, item_id: str) -> dict[str, Any]:
+        """
+        Permanently deletes a specified file or folder from SharePoint using its unique item ID. This versatile function can remove any type of drive item, distinguished from functions that only list or create specific types. A successful deletion returns an empty response, confirming the item's removal.
+
+        Args:
+            item_id (str): The ID of the item to delete.
+
+        Returns:
+            An empty dictionary if successful.
+
+        Tags:
+            delete, remove, file, folder, important
+        """
+        if not item_id:
+            raise ValueError("Missing required parameter 'item_id'.")
+
+        url = f"{self.base_url}/me/drive/items/{item_id}"
+        response = self._delete(url)
+        return self._handle_response(response)
+
+    def download_file(self, item_id: str) -> dict[str, Any]:
+        """
+        Retrieves a temporary, pre-authenticated download URL for a specific file using its item ID. This function provides a link for subsequent download, differing from `get_document_content` which directly fetches the file's raw content. The URL is returned within a dictionary.
+
+        Args:
+            item_id (str): The ID of the file to download.
+
+        Returns:
+            A dictionary containing the download URL for the file under the key '@microsoft.graph.downloadUrl'.
+
+        Tags:
+            download, file, get, important
+        """
+        if not item_id:
+            raise ValueError("Missing required parameter 'item_id'.")
+
+        url = f"{self.base_url}/me/drive/items/{item_id}"
+        response = self._get(url)
+        metadata = self._handle_response(response)
+        download_url = metadata.get("@microsoft.graph.downloadUrl")
+        if not download_url:
+            raise ValueError("Could not retrieve download URL for the item.")
+        return {"download_url": download_url}
+
+    def upload_file(self, file_path: str, parent_id: str = "root", file_name: str | None = None) -> dict[str, Any]:
+        """
+        Uploads a local binary file (under 4MB) from a given path to a specified SharePoint folder. Unlike `upload_text_file`, which uploads string content, this function reads from the filesystem. The destination filename can be customized, and it returns the new file's metadata upon completion.
+
+        Args:
+            file_path (str): The local path to the file to upload.
+            parent_id (str, optional): The ID of the folder to upload the file to. Defaults to 'root'.
+            file_name (str, optional): The name to give the uploaded file. If not provided, the local filename is used.
+
+        Returns:
+            A dictionary containing the uploaded file's metadata.
+
+        Tags:
+            upload, file, put, important
+        """
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"The file was not found at path: {file_path}")
+
+        if not file_name:
+            file_name = os.path.basename(file_path)
+
+        url = f"{self.base_url}/me/drive/items/{parent_id}:/{file_name}:/content"
+        with open(file_path, "rb") as f:
+            data = f.read()
+        response = self._put(url, data=data, content_type="application/octet-stream")
+        return self._handle_response(response)
+
+    def list_folders(self, item_id: str = "root") -> dict[str, Any]:
+        """
+        Retrieves a list of only the folders within a specified parent directory in SharePoint. Unlike `_list_drive_items` which returns all items, this function filters the results to exclude files. Defaults to the root directory if no parent `item_id` is provided.
+
+        Args:
+            item_id (str, optional): The ID of the folder to list from. Defaults to 'root'.
+
+        Returns:
+            A dictionary containing the list of folders.
+
+        Tags:
+            list, folders, directories, important
+        """
+        all_items = self._list_drive_items(item_id=item_id)
+        folders = [item for item in all_items.get("value", []) if "folder" in item]
+        return {"value": folders}
+
+    def list_files(self, item_id: str = "root") -> dict[str, Any]:
+        """
+        Retrieves a list of files within a specified SharePoint folder, defaulting to the root. Unlike `_list_drive_items` which fetches all items, this function filters the results to exclusively return items identified as files, excluding any subdirectories.
+
+        Args:
+            item_id (str, optional): The ID of the folder to list files from. Defaults to 'root'.
+
+        Returns:
+            A dictionary containing the list of files.
+
+        Tags:
+            list, files, documents, important
+        """
+        all_items = self._list_drive_items(item_id=item_id)
+        files = [item for item in all_items.get("value", []) if "file" in item]
+        return {"value": files}
+
+    def create_folder_and_list(self, name: str, parent_id: str = "root") -> dict[str, Any]:
+        """
+        Performs a composite action: creates a new folder, then lists all items (files and folders) within that parent directory. This confirms creation by returning the parent's updated contents, distinct from `create_folder` which only returns the new folder's metadata.
+
+        Args:
+            name (str): The name of the new folder.
+            parent_id (str, optional): The ID of the parent folder. Defaults to 'root'.
+
+        Returns:
+            A dictionary containing the list of items in the parent folder after creation.
+
+        Tags:
+            create, folder, list, important
+        """
+        self.create_folder(name=name, parent_id=parent_id)
+        return self._list_drive_items(item_id=parent_id)
+
+    def upload_text_file(self, content: str, parent_id: str = "root", file_name: str = "new_file.txt") -> dict[str, Any]:
+        """
+        Creates and uploads a new file to SharePoint directly from a string of text content. Unlike `upload_file`, which requires a local file path, this function is specifically for creating a text file from in-memory string data, with a customizable name and destination folder.
+
+        Args:
+            content (str): The text content to upload.
+            parent_id (str, optional): The ID of the folder to upload the file to. Defaults to 'root'.
+            file_name (str, optional): The name to give the uploaded file. Defaults to 'new_file.txt'.
+
+        Returns:
+            A dictionary containing the uploaded file's metadata.
+
+        Tags:
+            upload, text, file, create, important
+        """
+        if not file_name:
+            raise ValueError("File name cannot be empty.")
+
+        url = f"{self.base_url}/me/drive/items/{parent_id}:/{file_name}:/content"
+        data = content.encode("utf-8")
+        response = self._put(url, data=data, content_type="text/plain")
+        return self._handle_response(response)
+
+    def get_document_content(self, item_id: str) -> dict[str, Any]:
+        """
+        Retrieves the content of a specific file by its item ID and returns it directly as base64-encoded data. This function is distinct from `download_file`, which only provides a temporary URL for the content, and from `get_item_metadata`, which returns file attributes without the content itself. The function fetches the content by following the file's pre-authenticated download URL.
+
+        Args:
+            item_id (str): The ID of the file.
+
+        Returns:
+            dict[str, Any]: A dictionary containing the file details:
+                - 'type' (str): The general type of the file (e.g., "image", "audio", "video", "file").
+                - 'data' (str): The base64 encoded content of the file.
+                - 'mime_type' (str): The MIME type of the file.
+                - 'file_name' (str): The name of the file.
+
+        Tags:
+            get, content, read, file, important
+        """
+        if not item_id:
+            raise ValueError("Missing required parameter 'item_id'.")
+
+        metadata = self.get_item_metadata(item_id=item_id)
+        file_metadata = metadata.get("file")
+        if not file_metadata:
+            raise ValueError(f"Item with ID '{item_id}' is not a file.")
+
+        file_mime_type = file_metadata.get("mimeType", "application/octet-stream")
+        file_name = metadata.get("name")
+
+        download_url = metadata.get("@microsoft.graph.downloadUrl")
+        if not download_url:
+            logger.error(f"Could not find @microsoft.graph.downloadUrl in metadata for item {item_id}")
+            raise ValueError("Could not retrieve download URL for the item.")
+
+        response = self._get(download_url)
+
+        response.raise_for_status()
+
+        content = response.content
+
+        attachment_type = file_mime_type.split("/")[0] if "/" in file_mime_type else "file"
+        if attachment_type not in ["image", "audio", "video", "text"]:
+            attachment_type = "file"
+
         return {
-            "name": file_path.split("/")[-1],
-            "content_type": "text" if is_text_file else "binary",
-            **content_dict,
-            "size": len(content),
+            "type": attachment_type,
+            "data": content,
+            "mime_type": file_mime_type,
+            "file_name": file_name,
         }
-
-    def delete_document(self, file_path: str):
-        """
-        Permanently deletes a specified file from a SharePoint drive using its full path. This is the sole destructive file operation, contrasting with functions that read or create files. It returns `True` on successful deletion and raises an exception on failure, such as if the file is not found.
-
-        Args:
-            file_path (str): The path to the file to delete.
-
-        Returns:
-            bool: True if the file was deleted successfully.
-
-        Tags:
-            important
-        """
-        file = self.client.me.drive.root.get_by_path(file_path)
-        file.delete_object().execute_query()
-        return True
 
     def list_tools(self):
         return [
+            self.get_drive_info,
+            self.search_files,
+            self.get_item_metadata,
+            self.create_folder,
+            self.delete_item,
+            self.download_file,
+            self.upload_file,
+            self.get_my_profile,
             self.list_folders,
-            self.create_folder_and_list,
             self.list_files,
+            self.create_folder_and_list,
             self.upload_text_file,
             self.get_document_content,
-            self.delete_document,
         ]

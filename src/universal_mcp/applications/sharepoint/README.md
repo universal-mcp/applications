@@ -1,17 +1,19 @@
-# SharepointApp MCP Server
+# SharePoint Application
 
-An MCP Server for the SharepointApp API.
+This application provides tools for interacting with the Microsoft SharePoint API via Microsoft Graph. It allows you to manage files, folders, and retrieve information about your SharePoint drive.
 
-## 🛠️ Tool List
+## Available Tools
 
-This is automatically generated from OpenAPI schema for the SharepointApp API.
-
-
-| Tool | Description |
-|------|-------------|
-| `list_folders` | Retrieves a list of immediate subfolder names within a specified SharePoint directory. If no path is provided, it defaults to the root drive. This function is distinct from `list_files`, as it exclusively lists directories, not files. |
-| `create_folder_and_list` | Creates a new folder with a given name inside a specified parent directory (or the root). It then returns an updated list of all folder names within that same directory, effectively confirming that the creation operation was successful. |
-| `list_files` | Retrieves metadata for all files in a specified folder. For each file, it returns key details like name, URL, size, and timestamps. This function exclusively lists file properties, distinguishing it from `list_folders` (which lists directories) and `get_document_content` (which retrieves file content). |
-| `upload_text_file` | Uploads string content to create a new file in a specified SharePoint folder. To confirm the operation, it returns an updated list of all files and their metadata from that directory, including the newly created file. |
-| `get_document_content` | Retrieves a file's content from a specified SharePoint path. It returns a dictionary containing the file's name and size, decoding text files as a string and Base64-encoding binary files. Unlike `list_files`, which only fetches metadata, this function provides the actual file content. |
-| `delete_document` | Permanently deletes a specified file from a SharePoint drive using its full path. This is the sole destructive file operation, contrasting with functions that read or create files. It returns `True` on successful deletion and raises an exception on failure, such as if the file is not found. |
+-   `get_my_profile`: Fetches the profile for the currently authenticated user.
+-   `get_drive_info`: Fetches high-level information about the user's SharePoint drive.
+-   `search_files`: Searches for files and folders in the user's SharePoint.
+-   `get_item_metadata`: Fetches metadata for a specific file or folder.
+-   `create_folder`: Creates a new folder.
+-   `delete_item`: Deletes a file or folder.
+-   `download_file`: Retrieves a download URL for a file.
+-   `upload_file`: Uploads a local file.
+-   `list_folders`: Lists all folders in a specified directory.
+-   `list_files`: Lists all files in a specified directory.
+-   `create_folder_and_list`: Creates a folder and then lists the contents of the parent directory.
+-   `upload_text_file`: Uploads content from a string to a new text file.
+-   `get_document_content`: Retrieves the content of a file.
