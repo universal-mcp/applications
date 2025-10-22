@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from typing import Any
+from typing import Any, Literal
 
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
@@ -30,7 +30,7 @@ class ScraperApp(APIApplication):
 
     def linkedin_search(
         self,
-        category: str,
+        category: Literal["people", "companies", "posts", "jobs"],
         cursor: str | None = None,
         limit: int | None = None,
         keywords: str | None = None,
