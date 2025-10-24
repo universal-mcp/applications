@@ -616,7 +616,7 @@ class UnipileApp(APIApplication):
 
         Args:
             post_social_id: The social ID of the post or comment to react to.
-            reaction_type: The type of reaction .
+            reaction_type: The type of reaction. Valid values are "like", "celebrate", "love", "insightful", "funny", or "support".
             account_id: Account ID of the Unipile account performing the reaction.
             comment_id: Optional ID of a specific comment to react to instead of the post.
 
@@ -668,12 +668,12 @@ class UnipileApp(APIApplication):
 
         Args:
             account_id: The ID of the Unipile account to perform the search from (REQUIRED).
-            category: Type of search to perform - "people", "companies", "posts", or "jobs".
+            category: Type of search to perform. Valid values are "people", "companies", "posts", or "jobs".
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-            date_posted: Filter by when the post was posted (posts only).
-            sort_by: How to sort the results (for posts and jobs).
+            date_posted: Filter by when the post was posted (posts only). Valid values are "past_day", "past_week", or "past_month".
+            sort_by: How to sort the results (for posts and jobs). Valid values are "relevance" or "date".
             minimum_salary_value: The minimum salary to filter for (jobs only).
 
         Returns:

@@ -35,19 +35,19 @@ class ScraperApp(APIApplication):
         limit: int | None = None,
         keywords: str | None = None,
         date_posted: str | None = None,
-        sort_by: str | None = None,
-        minimum_salary_value: int | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+        minimum_salary_value: int = 40,
     ) -> dict[str, Any]:
         """
         Performs a general LinkedIn search for posts, people, companies, or jobs using keywords and various filters. This function provides broad, keyword-based discovery across the platform, distinct from other methods that retrieve content from a specific user or company profile. It supports pagination and filtering criteria.
         
         Args:
-            category: Type of search to perform - "people", "companies", "posts", or "jobs".
+            category: Type of search to perform. Valid values are "people", "companies", "posts", or "jobs".
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-            date_posted: Filter by when the post was posted (posts only).
-            sort_by: How to sort the results (for posts and jobs).
+            date_posted: Filter by when the post was posted (posts only). Valid values are "past_day", "past_week", or "past_month".
+            sort_by: How to sort the results (for posts and jobs). Valid values are "relevance" or "date".
             minimum_salary_value: The minimum salary to filter for (jobs only).
         
         Returns:
