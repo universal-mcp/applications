@@ -9,9 +9,6 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from universal_mcp.applications.linkedin import LinkedinApp
-
-
 class ScraperApp(APIApplication):
     """
     Application for interacting with LinkedIn API.
