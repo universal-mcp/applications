@@ -8,7 +8,7 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-from universal_mcp.applications.unipile import UnipileApp
+from universal_mcp.applications.linkedin import LinkedinApp
 
 
 class ScraperApp(APIApplication):
@@ -22,7 +22,7 @@ class ScraperApp(APIApplication):
         if self.integration:
             credentials = self.integration.get_credentials()
             self.account_id = credentials.get("account_id")
-            self._unipile_app = UnipileApp(integration=self.integration)
+            self._unipile_app = LinkedinApp(integration=self.integration)
         else:
             logger.warning("Integration not found")
             self.account_id = None

@@ -85,7 +85,7 @@ class LinkedinApp(APIApplication):
         account_type: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of all chat conversations across linked accounts. Supports filtering by unread status, date range, account provider, and specific account IDs, distinguishing it from functions listing messages within a single chat.
+        Retrieves a paginated list of all chat conversations across linked accounts. Supports filtering by unread status, date range, and account provider, distinguishing it from functions listing messages within a single chat.
 
         Args:
             unread: Filter for unread chats only or read chats only.
@@ -94,7 +94,6 @@ class LinkedinApp(APIApplication):
             after: Filter for items created after this ISO 8601 UTC datetime (exclusive).
             limit: Number of items to return (1-250).
             account_type: Filter by provider (e.g., "linkedin").
-            account_id: Filter by specific account IDs (comma-separated).
 
         Returns:
             A dictionary containing a list of chat objects and a pagination cursor.
@@ -200,15 +199,12 @@ class LinkedinApp(APIApplication):
         response = self._post(url, data=payload)
         return response.json()
 
-    def retrieve_chat(
-        self, chat_id: str, account_id: str | None = None
-    ) -> dict[str, Any]:
+    def retrieve_chat(self, chat_id: str) -> dict[str, Any]:
         """
-        Retrieves a single chat's details using its Unipile or provider-specific ID. Requires an `account_id` when using a provider ID for context. This function is distinct from `list_all_chats`, which returns a collection, by targeting one specific conversation.
+        Retrieves a single chat's details using its Unipile or provider-specific ID. This function is distinct from `list_all_chats`, which returns a collection, by targeting one specific conversation.
 
         Args:
             chat_id: The Unipile or provider ID of the chat.
-            account_id: Mandatory if the chat_id is a provider ID. Specifies the account context.
 
         Returns:
             A dictionary containing the chat object details.
@@ -221,8 +217,8 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/chats/{chat_id}"
         params: dict[str, Any] = {}
-        if account_id:
-            params["account_id"] = account_id
+        if self.account_id:
+            params["account_id"] = self.account_id
 
         response = self._get(url, params=params)
         return response.json()
@@ -234,10 +230,9 @@ class LinkedinApp(APIApplication):
         after: str | None = None,  # ISO 8601 UTC datetime
         limit: int | None = None,  # 1-250
         sender_id: str | None = None,
-        account_id: str | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of messages from all chats associated with the account(s). Unlike `list_chat_messages` which targets a specific conversation, this function provides a global message view, filterable by sender, account, and date range.
+        Retrieves a paginated list of messages from all chats associated with the account. Unlike `list_chat_messages` which targets a specific conversation, this function provides a global message view, filterable by sender and date range.
 
         Args:
             cursor: Pagination cursor.
@@ -245,7 +240,6 @@ class LinkedinApp(APIApplication):
             after: Filter for items created after this ISO 8601 UTC datetime.
             limit: Number of items to return (1-250).
             sender_id: Filter messages from a specific sender.
-            account_id: Filter messages from a specific linked account.
 
         Returns:
             A dictionary containing a list of message objects and a pagination cursor.
@@ -268,8 +262,8 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if sender_id:
             params["sender_id"] = sender_id
-        if account_id:
-            params["account_id"] = account_id
+        if self.account_id:
+            params["account_id"] = self.account_id
 
         response = self._get(url, params=params)
         return response.json()
@@ -305,33 +299,26 @@ class LinkedinApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    def retrieve_linked_account(
-        self,
-        account_id: str,
-    ) -> dict[str, Any]:
-        """
-        Retrieves details for a specific account linked to Unipile using its ID. It fetches metadata about the connection itself (e.g., a linked LinkedIn account), differentiating it from `retrieve_user_profile` which fetches a user's profile from the external platform.
+    # def retrieve_linked_account(self) -> dict[str, Any]:
+    #     """
+    #     Retrieves details for the account linked to Unipile. It fetches metadata about the connection itself (e.g., a linked LinkedIn account), differentiating it from `retrieve_user_profile` which fetches a user's profile from the external platform.
 
-        Args:
-            account_id: The ID of the account to retrieve.
+    #     Returns:
+    #         A dictionary containing the account object details.
 
-        Returns:
-            A dictionary containing the account object details.
+    #     Raises:
+    #         httpx.HTTPError: If the API request fails.
 
-        Raises:
-            httpx.HTTPError: If the API request fails.
-
-        Tags:
-            linkedin, account, retrieve, get, unipile, api, important
-        """
-        url = f"{self.base_url}/api/v1/accounts/{account_id}"
-        response = self._get(url)
-        return response.json()
+    #     Tags:
+    #         linkedin, account, retrieve, get, unipile, api, important
+    #     """
+    #     url = f"{self.base_url}/api/v1/accounts/{self.account_id}"
+    #     response = self._get(url)
+    #     return response.json()
 
     def list_profile_posts(
         self,
         identifier: str,  # User or Company provider internal ID
-        account_id: str,  # Account to perform the request from (REQUIRED)
         cursor: str | None = None,
         limit: int | None = None,  # 1-100 (spec says max 250)
         is_company: bool | None = None,
@@ -341,7 +328,6 @@ class LinkedinApp(APIApplication):
 
         Args:
             identifier: The entity's provider internal ID (LinkedIn ID).
-            account_id: The ID of the Unipile account to perform the request from (REQUIRED).
             cursor: Pagination cursor.
             limit: Number of items to return (1-100, as per Unipile example, though spec allows up to 250).
             is_company: Boolean indicating if the identifier is for a company.
@@ -356,7 +342,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
         url = f"{self.base_url}/api/v1/users/{identifier}/posts"
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
             params["cursor"] = cursor
         if limit:
@@ -367,15 +353,9 @@ class LinkedinApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    def retrieve_own_profile(
-        self,
-        account_id: str,
-    ) -> dict[str, Any]:
+    def retrieve_own_profile(self) -> dict[str, Any]:
         """
-        Retrieves the profile details for the user associated with the specified Unipile account ID. This function targets the API's 'me' endpoint to fetch the authenticated user's profile, distinct from `retrieve_user_profile` which fetches profiles of other users by their public identifier.
-
-        Args:
-            account_id: The ID of the Unipile account to use for retrieving the profile (REQUIRED).
+        Retrieves the profile details for the user associated with the Unipile account. This function targets the API's 'me' endpoint to fetch the authenticated user's profile, distinct from `retrieve_user_profile` which fetches profiles of other users by their public identifier.
 
         Returns:
             A dictionary containing the user's profile details.
@@ -387,21 +367,16 @@ class LinkedinApp(APIApplication):
             linkedin, user, profile, me, retrieve, get, api
         """
         url = f"{self.base_url}/api/v1/users/me"
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         response = self._get(url, params=params)
         return response.json()
 
-    def retrieve_post(
-        self,
-        post_id: str,
-        account_id: str,
-    ) -> dict[str, Any]:
+    def retrieve_post(self, post_id: str) -> dict[str, Any]:
         """
-        Fetches a specific post's details by its unique ID, requiring an `account_id` for authorization. Unlike `list_profile_posts`, which retrieves a collection of posts from a user or company profile, this function targets one specific post and returns its full object.
+        Fetches a specific post's details by its unique ID. Unlike `list_profile_posts`, which retrieves a collection of posts from a user or company profile, this function targets one specific post and returns its full object.
 
         Args:
             post_id: The ID of the post to retrieve.
-            account_id: The ID of the Unipile account to perform the request from (REQUIRED).
 
         Returns:
             A dictionary containing the post details.
@@ -413,24 +388,22 @@ class LinkedinApp(APIApplication):
             linkedin, post, retrieve, get, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}"
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         response = self._get(url, params=params)
         return response.json()
 
     def list_post_comments(
         self,
         post_id: str,
-        account_id: str,
         comment_id: str | None = None,
         cursor: str | None = None,
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches comments for a specific post using an `account_id` for authorization. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which publishes new comments, and `list_content_reactions`, which retrieves 'likes'.
+        Fetches comments for a specific post. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which publishes new comments, and `list_content_reactions`, which retrieves 'likes'.
 
         Args:
             post_id: The social ID of the post.
-            account_id: The ID of the Unipile account to perform the request from (REQUIRED).
             comment_id: If provided, retrieves replies to this comment ID instead of top-level comments.
             cursor: Pagination cursor.
             limit: Number of comments to return. (OpenAPI spec shows type string, passed as string if provided).
@@ -445,7 +418,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, comment, list, content, api, important
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}/comments"
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -458,16 +431,14 @@ class LinkedinApp(APIApplication):
 
     def create_post(
         self,
-        account_id: str,
         text: str,
         mentions: list[dict[str, Any]] | None = None,
         external_link: str | None = None,
     ) -> dict[str, Any]:
         """
-        Publishes a new top-level post from a specified account, including text, user mentions, and an external link. This function creates original content, distinguishing it from `create_post_comment` which adds replies to existing posts.
+        Publishes a new top-level post from the account, including text, user mentions, and an external link. This function creates original content, distinguishing it from `create_post_comment` which adds replies to existing posts.
 
         Args:
-            account_id: The ID of the Unipile account that will author the post (added as query parameter).
             text: The main text content of the post.
             mentions: Optional list of dictionaries, each representing a mention.
                       Example: `[{"entity_urn": "urn:li:person:...", "start_index": 0, "end_index": 5}]`
@@ -485,7 +456,7 @@ class LinkedinApp(APIApplication):
         url = f"{self.base_url}/api/v1/posts"
 
         params: dict[str, str] = {
-            "account_id": account_id,
+            "account_id": self.account_id,
             "text": text,
         }
 
@@ -500,17 +471,15 @@ class LinkedinApp(APIApplication):
     def list_content_reactions(
         self,
         post_id: str,
-        account_id: str,
         comment_id: str | None = None,
         cursor: str | None = None,
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of reactions for a given post or, optionally, a specific comment. This read-only operation uses the provided `account_id` for the request, distinguishing it from the `create_reaction` function which adds new reactions.
+        Retrieves a paginated list of reactions for a given post or, optionally, a specific comment. This read-only operation uses the account for the request, distinguishing it from the `create_reaction` function which adds new reactions.
 
         Args:
             post_id: The social ID of the post.
-            account_id: The ID of the Unipile account to perform the request from .
             comment_id: If provided, retrieves reactions for this comment ID.
             cursor: Pagination cursor.
             limit: Number of reactions to return (1-100, spec max 250).
@@ -525,7 +494,7 @@ class LinkedinApp(APIApplication):
             linkedin, post, reaction, list, like, content, api
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}/reactions"
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
             params["cursor"] = cursor
         if limit:
@@ -539,7 +508,6 @@ class LinkedinApp(APIApplication):
     def create_post_comment(
         self,
         post_social_id: str,
-        account_id: str,
         text: str,
         comment_id: str | None = None,  # If provided, replies to a specific comment
         mentions_body: list[dict[str, Any]] | None = None,
@@ -549,7 +517,6 @@ class LinkedinApp(APIApplication):
 
         Args:
             post_social_id: The social ID of the post to comment on.
-            account_id: The ID of the Unipile account performing the comment.
             text: The text content of the comment (passed as a query parameter).
                   Supports Unipile's mention syntax like "Hey {{0}}".
             comment_id: Optional ID of a specific comment to reply to instead of commenting on the post.
@@ -566,7 +533,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/posts/{post_social_id}/comments"
         params: dict[str, Any] = {
-            "account_id": account_id,
+            "account_id": self.account_id,
             "text": text,
         }
 
@@ -592,7 +559,6 @@ class LinkedinApp(APIApplication):
         reaction_type: Literal[
             "like", "celebrate", "love", "insightful", "funny", "support"
         ],
-        account_id: str,
         comment_id: str | None = None,
     ) -> dict[str, Any]:
         """
@@ -601,7 +567,6 @@ class LinkedinApp(APIApplication):
         Args:
             post_social_id: The social ID of the post or comment to react to.
             reaction_type: The type of reaction. Valid values are "like", "celebrate", "love", "insightful", "funny", or "support".
-            account_id: Account ID of the Unipile account performing the reaction.
             comment_id: Optional ID of a specific comment to react to instead of the post.
 
         Returns:
@@ -616,7 +581,7 @@ class LinkedinApp(APIApplication):
         url = f"{self.base_url}/api/v1/posts/reaction"
 
         params: dict[str, str] = {
-            "account_id": account_id,
+            "account_id": self.account_id,
             "post_id": post_social_id,
             "reaction_type": reaction_type,
         }
@@ -636,7 +601,6 @@ class LinkedinApp(APIApplication):
 
     def search(
         self,
-        account_id: str,
         category: Literal["people", "companies", "posts", "jobs"],
         cursor: str | None = None,
         limit: int | None = None,
@@ -651,7 +615,6 @@ class LinkedinApp(APIApplication):
         For people, companies, and jobs, it uses the classic API.
 
         Args:
-            account_id: The ID of the Unipile account to perform the search from (REQUIRED).
             category: Type of search to perform. Valid values are "people", "companies", "posts", or "jobs".
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
@@ -675,7 +638,7 @@ class LinkedinApp(APIApplication):
 
         url = f"{self.base_url}/api/v1/linkedin/search"
 
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         if cursor:
             params["cursor"] = cursor
         if limit is not None:
@@ -703,18 +666,12 @@ class LinkedinApp(APIApplication):
         response = self._post(url, params=params, data=payload)
         return self._handle_response(response)
 
-    def retrieve_user_profile(
-        self,
-        identifier: str,
-        account_id: str,
-    ) -> dict[str, Any]:
+    def retrieve_user_profile(self, identifier: str) -> dict[str, Any]:
         """
-        Retrieves a specific LinkedIn user's profile using their public or internal ID, authorized via the provided `account_id`. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
+        Retrieves a specific LinkedIn user's profile using their public or internal ID. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
 
         Args:
             identifier: Can be the provider's internal id OR the provider's public id of the requested user.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".
-
-            account_id: The ID of the Unipile account to perform the request from (REQUIRED).
 
         Returns:
             A dictionary containing the user's profile details.
@@ -726,7 +683,7 @@ class LinkedinApp(APIApplication):
             linkedin, user, profile, retrieve, get, api, important
         """
         url = f"{self.base_url}/api/v1/users/{identifier}"
-        params: dict[str, Any] = {"account_id": account_id}
+        params: dict[str, Any] = {"account_id": self.account_id}
         response = self._get(url, params=params)
         return self._handle_response(response)
 
@@ -738,7 +695,7 @@ class LinkedinApp(APIApplication):
             self.retrieve_chat,
             self.list_all_messages,
             self.list_all_accounts,
-            self.retrieve_linked_account,
+            # self.retrieve_linked_account,
             self.list_profile_posts,
             self.retrieve_own_profile,
             self.retrieve_user_profile,
