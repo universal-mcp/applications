@@ -80,7 +80,6 @@ ALL_APPS = [
     "trello",
     "twilio",
     "twitter",
-    "unipile",
     "whatsapp",
     "whatsapp_business",
     "wrike",  # not seeded
