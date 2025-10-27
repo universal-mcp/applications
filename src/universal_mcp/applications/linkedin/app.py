@@ -22,11 +22,14 @@ class LinkedinApp(APIApplication):
                          via headers in `integration.get_credentials()`, e.g.,
                          `{"headers": {"x-api-key": "YOUR_API_KEY"}}`.
         """
-        super().__init__(name="unipile", integration=integration)
+        super().__init__(name="linkedin", integration=integration)
 
         self._base_url = None
-        credntials = self.integration.get_credentials()
-        self.account_id = credntials.get("account_id")
+        self.account_id = None
+        if self.integration:
+            credentials = self.integration.get_credentials()
+            if credentials:
+                self.account_id = credentials.get("account_id")
 
     @property
     def base_url(self) -> str:
