@@ -11,7 +11,7 @@ class GoogleDocsApp(APIApplication):
 
     def create_document(self, title: str) -> dict[str, Any]:
         """
-        Creates a blank Google Document with a specified title by sending a POST request to the Google Docs API. The function returns a dictionary containing the new document's metadata, including the unique document ID required by other functions for subsequent modifications or retrieval.
+        Creates a blank Google Document with a specified title by sending a POST request to the Google Docs API. The function returns a dictionary containing the new document's metadata, including the unique document ID required by other functions for subsequent modifications or retrieval. Note that you need to call other google_docs functions (e.g. `google_docs__insert_text`) to actually add content after creating the document.
         
         Args:
             title: The title for the new Google Document to be created.
@@ -30,7 +30,11 @@ class GoogleDocsApp(APIApplication):
         document_data = {"title": title}
         response = self._post(url, data=document_data)
         response.raise_for_status()
-        return response.json()
+        payload = response.json()
+        payload["Note"] = (
+            "You must load and call other google docs content functions (like google_docs__insert_text)"
+        )
+        return payload
 
     def get_document(self, document_id: str) -> dict[str, Any]:
         """
