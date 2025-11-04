@@ -9,6 +9,37 @@ class SlackApp(APIApplication):
         super().__init__(name="slack", integration=integration, **kwargs)
         self.base_url = "https://slack.com/api"
 
+    def _get_headers(self) -> dict[str, str]:
+        """
+        Get headers for Slack API requests.
+        Prioritizes user-scoped access token from raw.authed_user.access_token
+        over the bot token at the root level.
+        """
+        if not self.integration:
+            raise ValueError("Integration not configured for SlackApp")
+        
+        credentials = self.integration.get_credentials()
+        if not credentials:
+            raise ValueError("No credentials found for Slack integration")
+        
+        access_token = None
+        raw = credentials.get('raw', {})
+        if isinstance(raw, dict) and 'authed_user' in raw:
+            authed_user = raw.get('authed_user', {})
+            if isinstance(authed_user, dict):
+                access_token = authed_user.get('access_token')
+        
+        if not access_token:
+            access_token = credentials.get('access_token')
+        
+        if not access_token:
+            raise ValueError("Access token not found in Slack credentials")
+        
+        return {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        }
+
     def chat_delete(
         self,
         as_user: bool | None = None,
