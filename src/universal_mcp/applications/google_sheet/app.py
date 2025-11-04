@@ -21,7 +21,7 @@ class GoogleSheetApp(APIApplication):
 
     def create_spreadsheet(self, title: str) -> dict[str, Any]:
         """
-        Creates a new, blank Google Spreadsheet file with a specified title. This function generates a completely new document, unlike `add_sheet` which adds a worksheet (tab) to an existing spreadsheet. It returns the API response containing the new spreadsheet's metadata.
+        Creates a new, blank Google Spreadsheet file with a specified title. This function generates a completely new document, unlike `add_sheet` which adds a worksheet (tab) to an existing spreadsheet. It returns the API response containing the new spreadsheet's metadata. Note that you need to call other google_sheet functions (e.g. `google_sheet__write_values_to_sheet`) to actually add content after creating the spreadsheet.
 
         Args:
             title: String representing the desired title for the new spreadsheet
@@ -39,7 +39,11 @@ class GoogleSheetApp(APIApplication):
         url = self.base_url
         spreadsheet_data = {"properties": {"title": title}}
         response = self._post(url, data=spreadsheet_data)
-        return self._handle_response(response)
+        payload = self._handle_response(response)
+        payload["Note"] = (
+            "You must load and call other google_sheet content functions (like `google_sheet__write_values_to_sheet`)"
+        )
+        return payload
 
     def get_spreadsheet_metadata(self, spreadsheetId: str) -> dict[str, Any]:
         """
