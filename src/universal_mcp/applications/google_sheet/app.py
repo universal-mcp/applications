@@ -41,7 +41,7 @@ class GoogleSheetApp(APIApplication):
         response = self._post(url, data=spreadsheet_data)
         payload = self._handle_response(response)
         payload["Note"] = (
-            "You must load and call other google docs content functions (like google_docs__insert_text)"
+            "You must load and call other google_sheet content functions (like `google_sheet__write_values_to_sheet`)"
         )
         return payload
 
