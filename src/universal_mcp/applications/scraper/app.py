@@ -71,72 +71,38 @@ class ScraperApp(APIApplication):
             "Cache-Control": "no-cache",  # Often good practice for APIs
         }
 
-    def linkedin_search(
-        self,
-        category: Literal["people", "companies", "posts", "jobs"],
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
-        sort_by: Literal["relevance", "date"] = "relevance",
-        minimum_salary_value: int = 40,
-    ) -> dict[str, Any]:
+    def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
-        Performs a comprehensive LinkedIn search for people, companies, posts, or jobs using keywords.
-        Supports pagination and targets either the classic or Sales Navigator API for posts.
-        For people, companies, and jobs, it uses the classic API.
+        Retrieves the ID for a given LinkedIn search parameter by its name.
 
         Args:
-            category: Type of search to perform. Valid values are "people", "companies", "posts", or "jobs".
-            cursor: Pagination cursor for the next page of entries.
-            limit: Number of items to return (up to 50 for Classic search).
-            keywords: Keywords to search for.
-            date_posted: Filter by when the post was posted (posts only). Valid values are "past_day", "past_week", or "past_month".
-            sort_by: How to sort the results (for posts and jobs). Valid values are "relevance" or "date".
-            minimum_salary_value: The minimum salary to filter for (jobs only).
+            param_type: The type of parameter to search for (e.g., "LOCATION", "COMPANY").
+            keywords: The name of the parameter to find (e.g., "United States").
 
         Returns:
-            A dictionary containing search results and pagination details.
+            The corresponding ID for the search parameter.
 
         Raises:
+            ValueError: If no exact match for the keywords is found.
             httpx.HTTPError: If the API request fails.
-            ValueError: If the category is empty.
-
-        Tags:
-            linkedin, search, people, companies, posts, jobs, api, important
         """
-        if not category:
-            raise ValueError("Category cannot be empty.")
+        url = f"{self.base_url}/api/v1/linkedin/search/parameters"
+        params = {
+            "account_id": self.account_id,
+            "keywords": keywords,
+            "type": param_type,
+        }
 
-        url = f"{self.base_url}/api/v1/linkedin/search"
+        response = self._get(url, params=params)
+        results = self._handle_response(response)
 
-        params: dict[str, Any] = {"account_id": self.account_id}
-        if cursor:
-            params["cursor"] = cursor
-        if limit is not None:
-            params["limit"] = limit
+        items = results.get("items", [])
+        if items:
+            # Return the ID of the first result, assuming it's the most relevant
+            return items[0]["id"]
 
-        payload: dict[str, Any] = {"api": "classic", "category": category}
+        raise ValueError(f'Could not find a matching ID for {param_type}: "{keywords}"')
 
-        if keywords:
-            payload["keywords"] = keywords
-
-        if category == "posts":
-            if date_posted:
-                payload["date_posted"] = date_posted
-            if sort_by:
-                payload["sort_by"] = sort_by
-
-        elif category == "jobs":
-            payload["minimum_salary"] = {
-                "currency": "USD",
-                "value": minimum_salary_value,
-            }
-            if sort_by:
-                payload["sort_by"] = sort_by
-
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
 
     def linkedin_list_profile_posts(
         self,
@@ -146,20 +112,20 @@ class ScraperApp(APIApplication):
         is_company: bool | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of posts from a specific user or company profile using their provider ID. An authorizing `account_id` is required, and the `is_company` flag must specify the entity type, distinguishing this from `retrieve_post` which fetches a single post by its own ID.
-
+        Fetches a paginated list of posts from a specific user or company profile using its provider ID. The `is_company` flag must specify the entity type. Unlike `linkedin_search_posts`, this function directly retrieves content from a known profile's feed instead of performing a global keyword search.
+        
         Args:
             identifier: The entity's provider internal ID (LinkedIn ID).
             cursor: Pagination cursor.
             limit: Number of items to return (1-100, as per Unipile example, though spec allows up to 250).
             is_company: Boolean indicating if the identifier is for a company.
-
+        
         Returns:
             A dictionary containing a list of post objects and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
-
+        
         Tags:
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
@@ -177,17 +143,17 @@ class ScraperApp(APIApplication):
 
     def linkedin_retrieve_profile(self, identifier: str) -> dict[str, Any]:
         """
-        Retrieves a specific LinkedIn user's profile using their public or internal ID. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
-
+        Fetches a specific LinkedIn user's profile using their public or internal ID. Unlike `linkedin_search_people`, which discovers multiple users via keywords, this function targets and retrieves detailed data for a single, known individual based on a direct identifier.
+        
         Args:
             identifier: Can be the provider's internal id OR the provider's public id of the requested user.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".
-
+        
         Returns:
             A dictionary containing the user's profile details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
-
+        
         Tags:
             linkedin, user, profile, retrieve, get, api, important
         """
@@ -204,20 +170,20 @@ class ScraperApp(APIApplication):
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches comments for a specific post. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which publishes new comments, and `list_content_reactions`, which retrieves 'likes'.
-
+        Fetches a paginated list of comments for a specified LinkedIn post. It can retrieve either top-level comments or threaded replies if an optional `comment_id` is provided. This is a read-only operation, distinct from functions that search for posts or list user-specific content.
+        
         Args:
             post_id: The social ID of the post.
             comment_id: If provided, retrieves replies to this comment ID instead of top-level comments.
             cursor: Pagination cursor.
             limit: Number of comments to return. (OpenAPI spec shows type string, passed as string if provided).
-
+        
         Returns:
             A dictionary containing a list of comment objects and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
-
+        
         Tags:
             linkedin, post, comment, list, content, api, important
         """
@@ -233,6 +199,210 @@ class ScraperApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
+    def linkedin_search_people(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        location: str | None = None,
+        industry: str | None = None,
+        company: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Performs a paginated search for people on LinkedIn, distinct from searches for companies or jobs. It filters results using keywords, location, industry, and company, internally converting filter names like 'United States' into their required API IDs before making the request.
+        
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+        
+        Returns:
+            A dictionary containing search results and pagination details.
+        
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {"api": "classic", "category": "people"}
+
+        if keywords:
+            payload["keywords"] = keywords
+            
+        if location:
+            location_id = self._get_search_parameter_id("LOCATION", location)
+            payload["location"] = [location_id]
+
+        if industry:
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
+        
+        if company:
+            company_id = self._get_search_parameter_id("COMPANY", company)
+            payload["company"] = [company_id]
+        
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+    def linkedin_search_companies(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        location: str | None = None,
+        industry: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Executes a paginated LinkedIn search for companies, filtering by optional keywords, location, and industry. Unlike `linkedin_search_people` or `linkedin_search_jobs`, this function specifically sets the API search category to 'companies' to ensure that only company profiles are returned in the search results.
+        
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+        
+        Returns:
+            A dictionary containing search results and pagination details.
+        
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {"api": "classic", "category": "companies"}
+
+        if keywords:
+            payload["keywords"] = keywords
+
+        if location:
+            location_id = self._get_search_parameter_id("LOCATION", location)
+            payload["location"] = [location_id]
+            
+        if industry:
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
+
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+    def linkedin_search_posts(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+    ) -> dict[str, Any]:
+        """
+        Performs a keyword-based search for LinkedIn posts, allowing results to be filtered by date and sorted by relevance. This function specifically queries the 'posts' category, distinguishing it from other search methods in the class that target people, companies, or jobs, and returns relevant content.
+        
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+            date_posted: Filter by when the post was posted.
+            sort_by: How to sort the results.
+        
+        Returns:
+            A dictionary containing search results and pagination details.
+        
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {"api": "classic", "category": "posts"}
+
+        if keywords:
+            payload["keywords"] = keywords
+        if date_posted:
+            payload["date_posted"] = date_posted
+        if sort_by:
+            payload["sort_by"] = sort_by
+
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+    def linkedin_search_jobs(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        region: str | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+        minimum_salary_value: int = 40,
+        industry: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Executes a LinkedIn search specifically for job listings using keywords and filters like region, industry, and minimum salary. Unlike other search functions targeting people or companies, this is specialized for job listings and converts friendly filter names (e.g., "United States") into their required API IDs.
+        
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+            location: The geographical location to filter jobs by (e.g., "United States").
+            sort_by: How to sort the results.
+            minimum_salary_value: The minimum salary to filter for.
+        
+        Returns:
+            A dictionary containing search results and pagination details.
+        
+        Raises:
+            httpx.HTTPError: If the API request fails.
+            ValueError: If the specified location is not found.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {
+            "api": "classic",
+            "category": "jobs",
+            "minimum_salary": {
+                "currency": "USD",
+                "value": minimum_salary_value,
+            },
+        }
+
+        if keywords:
+            payload["keywords"] = keywords
+        if sort_by:
+            payload["sort_by"] = sort_by
+
+        # If location is provided, get its ID and add it to the payload
+        if region:
+            location_id = self._get_search_parameter_id("LOCATION", region)
+            payload["region"] = location_id
+            
+        if industry:
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
+
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+
     def list_tools(self):
         """
         Returns a list of available tools/functions in this application.
@@ -241,8 +411,11 @@ class ScraperApp(APIApplication):
             A list of functions that can be used as tools.
         """
         return [
-            self.linkedin_search,
             self.linkedin_list_profile_posts,
             self.linkedin_retrieve_profile,
             self.linkedin_list_post_comments,
+            self.linkedin_search_people,
+            self.linkedin_search_companies,
+            self.linkedin_search_posts,
+            self.linkedin_search_jobs,
         ]
