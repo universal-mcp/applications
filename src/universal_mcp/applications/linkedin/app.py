@@ -617,16 +617,16 @@ class LinkedinApp(APIApplication):
         company: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a LinkedIn search for people using keywords.
-
+        Searches for LinkedIn user profiles using keywords, with optional filters for location, industry, and company. This function specifically targets the 'people' category, distinguishing it from other search methods like `search_companies` or `search_jobs` that query different entity types through the same API endpoint.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
         """
@@ -667,16 +667,16 @@ class LinkedinApp(APIApplication):
         industry: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a LinkedIn search for companies using keywords.
-
+        Performs a paginated search for companies on LinkedIn using keywords, with optional location and industry filters. Its specific 'companies' search category distinguishes it from other methods like `search_people` or `search_posts`, ensuring that only company profiles are returned.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
         """
@@ -713,19 +713,18 @@ class LinkedinApp(APIApplication):
         sort_by: Literal["relevance", "date"] = "relevance",
     ) -> dict[str, Any]:
         """
-        Performs a comprehensive LinkedIn search for posts using keywords.
-        Supports pagination and targets either the classic or Sales Navigator API.
-
+        Performs a keyword-based search for LinkedIn posts, allowing filters for date and sorting by relevance. This function executes a general, platform-wide content search, distinguishing it from other search functions that target people, companies, or jobs, and from `list_profile_posts` which retrieves from a specific profile.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
             date_posted: Filter by when the post was posted.
             sort_by: How to sort the results.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
         """
@@ -760,8 +759,8 @@ class LinkedinApp(APIApplication):
         industry: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a LinkedIn search for jobs using keywords and optional location.
-
+        Performs a LinkedIn search for jobs, filtering results by keywords, region, industry, and minimum salary. Unlike other search functions (`search_people`, `search_companies`), this method is specifically configured to query the 'jobs' category, providing a paginated list of relevant employment opportunities.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
@@ -769,10 +768,10 @@ class LinkedinApp(APIApplication):
             location: The geographical location to filter jobs by (e.g., "United States").
             sort_by: How to sort the results.
             minimum_salary_value: The minimum salary to filter for.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
             ValueError: If the specified location is not found.

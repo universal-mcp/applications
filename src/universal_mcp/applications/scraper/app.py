@@ -112,20 +112,20 @@ class ScraperApp(APIApplication):
         is_company: bool | None = None,
     ) -> dict[str, Any]:
         """
-        Retrieves a paginated list of posts from a specific user or company profile using their provider ID. An authorizing `account_id` is required, and the `is_company` flag must specify the entity type, distinguishing this from `retrieve_post` which fetches a single post by its own ID.
-
+        Fetches a paginated list of posts from a specific user or company profile using its provider ID. The `is_company` flag must specify the entity type. Unlike `linkedin_search_posts`, this function directly retrieves content from a known profile's feed instead of performing a global keyword search.
+        
         Args:
             identifier: The entity's provider internal ID (LinkedIn ID).
             cursor: Pagination cursor.
             limit: Number of items to return (1-100, as per Unipile example, though spec allows up to 250).
             is_company: Boolean indicating if the identifier is for a company.
-
+        
         Returns:
             A dictionary containing a list of post objects and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
-
+        
         Tags:
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
@@ -143,17 +143,17 @@ class ScraperApp(APIApplication):
 
     def linkedin_retrieve_profile(self, identifier: str) -> dict[str, Any]:
         """
-        Retrieves a specific LinkedIn user's profile using their public or internal ID. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
-
+        Fetches a specific LinkedIn user's profile using their public or internal ID. Unlike `linkedin_search_people`, which discovers multiple users via keywords, this function targets and retrieves detailed data for a single, known individual based on a direct identifier.
+        
         Args:
             identifier: Can be the provider's internal id OR the provider's public id of the requested user.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".
-
+        
         Returns:
             A dictionary containing the user's profile details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
-
+        
         Tags:
             linkedin, user, profile, retrieve, get, api, important
         """
@@ -170,20 +170,20 @@ class ScraperApp(APIApplication):
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches comments for a specific post. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which publishes new comments, and `list_content_reactions`, which retrieves 'likes'.
-
+        Fetches a paginated list of comments for a specified LinkedIn post. It can retrieve either top-level comments or threaded replies if an optional `comment_id` is provided. This is a read-only operation, distinct from functions that search for posts or list user-specific content.
+        
         Args:
             post_id: The social ID of the post.
             comment_id: If provided, retrieves replies to this comment ID instead of top-level comments.
             cursor: Pagination cursor.
             limit: Number of comments to return. (OpenAPI spec shows type string, passed as string if provided).
-
+        
         Returns:
             A dictionary containing a list of comment objects and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
-
+        
         Tags:
             linkedin, post, comment, list, content, api, important
         """
@@ -209,16 +209,16 @@ class ScraperApp(APIApplication):
         company: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a LinkedIn search for people using keywords.
-
+        Performs a paginated search for people on LinkedIn, distinct from searches for companies or jobs. It filters results using keywords, location, industry, and company, internally converting filter names like 'United States' into their required API IDs before making the request.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
         """
@@ -259,16 +259,16 @@ class ScraperApp(APIApplication):
         industry: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a LinkedIn search for companies using keywords.
-
+        Executes a paginated LinkedIn search for companies, filtering by optional keywords, location, and industry. Unlike `linkedin_search_people` or `linkedin_search_jobs`, this function specifically sets the API search category to 'companies' to ensure that only company profiles are returned in the search results.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
         """
@@ -305,19 +305,18 @@ class ScraperApp(APIApplication):
         sort_by: Literal["relevance", "date"] = "relevance",
     ) -> dict[str, Any]:
         """
-        Performs a comprehensive LinkedIn search for posts using keywords.
-        Supports pagination and targets either the classic or Sales Navigator API.
-
+        Performs a keyword-based search for LinkedIn posts, allowing results to be filtered by date and sorted by relevance. This function specifically queries the 'posts' category, distinguishing it from other search methods in the class that target people, companies, or jobs, and returns relevant content.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
             date_posted: Filter by when the post was posted.
             sort_by: How to sort the results.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
         """
@@ -352,8 +351,8 @@ class ScraperApp(APIApplication):
         industry: str | None = None,
     ) -> dict[str, Any]:
         """
-        Performs a LinkedIn search for jobs using keywords and optional location.
-
+        Executes a LinkedIn search specifically for job listings using keywords and filters like region, industry, and minimum salary. Unlike other search functions targeting people or companies, this is specialized for job listings and converts friendly filter names (e.g., "United States") into their required API IDs.
+        
         Args:
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
@@ -361,10 +360,10 @@ class ScraperApp(APIApplication):
             location: The geographical location to filter jobs by (e.g., "United States").
             sort_by: How to sort the results.
             minimum_salary_value: The minimum salary to filter for.
-
+        
         Returns:
             A dictionary containing search results and pagination details.
-
+        
         Raises:
             httpx.HTTPError: If the API request fails.
             ValueError: If the specified location is not found.
@@ -415,7 +414,7 @@ class ScraperApp(APIApplication):
             self.linkedin_list_profile_posts,
             self.linkedin_retrieve_profile,
             self.linkedin_list_post_comments,
-            self.search_people,
+            self.linkedin_search_people,
             self.linkedin_search_companies,
             self.linkedin_search_posts,
             self.linkedin_search_jobs,
