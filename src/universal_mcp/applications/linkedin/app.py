@@ -78,6 +78,38 @@ class LinkedinApp(APIApplication):
             "Cache-Control": "no-cache",  # Often good practice for APIs
         }
 
+    def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
+        """
+        Retrieves the ID for a given LinkedIn search parameter by its name.
+
+        Args:
+            param_type: The type of parameter to search for (e.g., "LOCATION", "COMPANY").
+            keywords: The name of the parameter to find (e.g., "United States").
+
+        Returns:
+            The corresponding ID for the search parameter.
+
+        Raises:
+            ValueError: If no exact match for the keywords is found.
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search/parameters"
+        params = {
+            "account_id": self.account_id,
+            "keywords": keywords,
+            "type": param_type,
+        }
+
+        response = self._get(url, params=params)
+        results = self._handle_response(response)
+
+        items = results.get("items", [])
+        if items:
+            # Return the ID of the first result, assuming it's the most relevant
+            return items[0]["id"]
+
+        raise ValueError(f'Could not find a matching ID for {param_type}: "{keywords}"')
+
     def list_all_chats(
         self,
         unread: bool | None = None,
@@ -270,54 +302,6 @@ class LinkedinApp(APIApplication):
 
         response = self._get(url, params=params)
         return response.json()
-
-    def list_all_accounts(
-        self,
-        cursor: str | None = None,
-        limit: int | None = None,  # 1-259 according to spec
-    ) -> dict[str, Any]:
-        """
-        Retrieves a paginated list of all social media accounts linked to the Unipile service. This is crucial for obtaining the `account_id` required by other methods to specify which user account should perform an action, like sending a message or retrieving user-specific posts.
-
-        Args:
-            cursor: Pagination cursor.
-            limit: Number of items to return (1-259).
-
-        Returns:
-            A dictionary containing a list of account objects and a pagination cursor.
-
-        Raises:
-            httpx.HTTPError: If the API request fails.
-
-        Tags:
-            linkedin, account, list, unipile, api, important
-        """
-        url = f"{self.base_url}/api/v1/accounts"
-        params: dict[str, Any] = {}
-        if cursor:
-            params["cursor"] = cursor
-        if limit:
-            params["limit"] = limit
-
-        response = self._get(url, params=params)
-        return response.json()
-
-    # def retrieve_linked_account(self) -> dict[str, Any]:
-    #     """
-    #     Retrieves details for the account linked to Unipile. It fetches metadata about the connection itself (e.g., a linked LinkedIn account), differentiating it from `retrieve_user_profile` which fetches a user's profile from the external platform.
-
-    #     Returns:
-    #         A dictionary containing the account object details.
-
-    #     Raises:
-    #         httpx.HTTPError: If the API request fails.
-
-    #     Tags:
-    #         linkedin, account, retrieve, get, unipile, api, important
-    #     """
-    #     url = f"{self.base_url}/api/v1/accounts/{self.account_id}"
-    #     response = self._get(url)
-    #     return response.json()
 
     def list_profile_posts(
         self,
@@ -602,73 +586,6 @@ class LinkedinApp(APIApplication):
                 "message": "Reaction action processed.",
             }
 
-    def search(
-        self,
-        category: Literal["people", "companies", "posts", "jobs"],
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
-        sort_by: Literal["relevance", "date"] = "relevance",
-        minimum_salary_value: int = 40,
-    ) -> dict[str, Any]:
-        """
-        Performs a comprehensive LinkedIn search for people, companies, posts, or jobs using keywords.
-        Supports pagination and targets either the classic or Sales Navigator API for posts.
-        For people, companies, and jobs, it uses the classic API.
-
-        Args:
-            category: Type of search to perform. Valid values are "people", "companies", "posts", or "jobs".
-            cursor: Pagination cursor for the next page of entries.
-            limit: Number of items to return (up to 50 for Classic search).
-            keywords: Keywords to search for.
-            date_posted: Filter by when the post was posted (posts only). Valid values are "past_day", "past_week", or "past_month".
-            sort_by: How to sort the results (for posts and jobs). Valid values are "relevance" or "date".
-            minimum_salary_value: The minimum salary to filter for (jobs only).
-
-        Returns:
-            A dictionary containing search results and pagination details.
-
-        Raises:
-            httpx.HTTPError: If the API request fails.
-            ValueError: If the category is empty.
-
-        Tags:
-            linkedin, search, people, companies, posts, jobs, api, important
-        """
-        if not category:
-            raise ValueError("Category cannot be empty.")
-
-        url = f"{self.base_url}/api/v1/linkedin/search"
-
-        params: dict[str, Any] = {"account_id": self.account_id}
-        if cursor:
-            params["cursor"] = cursor
-        if limit is not None:
-            params["limit"] = limit
-
-        payload: dict[str, Any] = {"api": "classic", "category": category}
-
-        if keywords:
-            payload["keywords"] = keywords
-
-        if category == "posts":
-            if date_posted:
-                payload["date_posted"] = date_posted
-            if sort_by:
-                payload["sort_by"] = sort_by
-
-        elif category == "jobs":
-            payload["minimum_salary"] = {
-                "currency": "USD",
-                "value": minimum_salary_value,
-            }
-            if sort_by:
-                payload["sort_by"] = sort_by
-
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
-
     def retrieve_user_profile(self, identifier: str) -> dict[str, Any]:
         """
         Retrieves a specific LinkedIn user's profile using their public or internal ID. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
@@ -690,6 +607,210 @@ class LinkedinApp(APIApplication):
         response = self._get(url, params=params)
         return self._handle_response(response)
 
+    def search_people(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        location: str | None = None,
+        industry: str | None = None,
+        company: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Performs a LinkedIn search for people using keywords.
+
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+
+        Returns:
+            A dictionary containing search results and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {"api": "classic", "category": "people"}
+
+        if keywords:
+            payload["keywords"] = keywords
+            
+        if location:
+            location_id = self._get_search_parameter_id("LOCATION", location)
+            payload["location"] = [location_id]
+
+        if industry:
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
+        
+        if company:
+            company_id = self._get_search_parameter_id("COMPANY", company)
+            payload["company"] = [company_id]
+        
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+    def search_companies(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        location: str | None = None,
+        industry: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Performs a LinkedIn search for companies using keywords.
+
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+
+        Returns:
+            A dictionary containing search results and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {"api": "classic", "category": "companies"}
+
+        if keywords:
+            payload["keywords"] = keywords
+
+        if location:
+            location_id = self._get_search_parameter_id("LOCATION", location)
+            payload["location"] = [location_id]
+            
+        if industry:
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
+
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+    def search_posts(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+    ) -> dict[str, Any]:
+        """
+        Performs a comprehensive LinkedIn search for posts using keywords.
+        Supports pagination and targets either the classic or Sales Navigator API.
+
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+            date_posted: Filter by when the post was posted.
+            sort_by: How to sort the results.
+
+        Returns:
+            A dictionary containing search results and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {"api": "classic", "category": "posts"}
+
+        if keywords:
+            payload["keywords"] = keywords
+        if date_posted:
+            payload["date_posted"] = date_posted
+        if sort_by:
+            payload["sort_by"] = sort_by
+
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
+    def search_jobs(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+        keywords: str | None = None,
+        region: str | None = None,
+        sort_by: Literal["relevance", "date"] = "relevance",
+        minimum_salary_value: int = 40,
+        industry: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Performs a LinkedIn search for jobs using keywords and optional location.
+
+        Args:
+            cursor: Pagination cursor for the next page of entries.
+            limit: Number of items to return (up to 50 for Classic search).
+            keywords: Keywords to search for.
+            location: The geographical location to filter jobs by (e.g., "United States").
+            sort_by: How to sort the results.
+            minimum_salary_value: The minimum salary to filter for.
+
+        Returns:
+            A dictionary containing search results and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+            ValueError: If the specified location is not found.
+        """
+        url = f"{self.base_url}/api/v1/linkedin/search"
+
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        payload: dict[str, Any] = {
+            "api": "classic",
+            "category": "jobs",
+            "minimum_salary": {
+                "currency": "USD",
+                "value": minimum_salary_value,
+            },
+        }
+
+        if keywords:
+            payload["keywords"] = keywords
+        if sort_by:
+            payload["sort_by"] = sort_by
+
+        # If location is provided, get its ID and add it to the payload
+        if region:
+            location_id = self._get_search_parameter_id("LOCATION", region)
+            payload["region"] = location_id
+            
+        if industry:
+            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
+            payload["industry"] = [industry_id]
+
+        response = self._post(url, params=params, data=payload)
+        return self._handle_response(response)
+
     def list_tools(self) -> list[Callable]:
         return [
             self.list_all_chats,
@@ -697,8 +818,6 @@ class LinkedinApp(APIApplication):
             self.send_chat_message,
             self.retrieve_chat,
             self.list_all_messages,
-            self.list_all_accounts,
-            # self.retrieve_linked_account,
             self.list_profile_posts,
             self.retrieve_own_profile,
             self.retrieve_user_profile,
@@ -708,5 +827,8 @@ class LinkedinApp(APIApplication):
             self.list_content_reactions,
             self.create_post_comment,
             self.create_reaction,
-            self.search,
+            self.search_companies,
+            self.search_jobs,
+            self.search_people,
+            self.search_posts,
         ]
