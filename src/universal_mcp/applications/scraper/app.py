@@ -215,6 +215,9 @@ class ScraperApp(APIApplication):
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
+            location: The geographical location to filter people by (e.g., "United States").
+            industry: The industry to filter people by.(e.g., "Software Development".)
+            company: The company to filter people by.(e.g., "Google".)
         
         Returns:
             A dictionary containing search results and pagination details.
@@ -265,6 +268,8 @@ class ScraperApp(APIApplication):
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
+            location: The geographical location to filter companies by (e.g., "United States").
+            industry: The industry to filter companies by.(e.g., "Software Development".)
         
         Returns:
             A dictionary containing search results and pagination details.
@@ -357,9 +362,10 @@ class ScraperApp(APIApplication):
             cursor: Pagination cursor for the next page of entries.
             limit: Number of items to return (up to 50 for Classic search).
             keywords: Keywords to search for.
-            location: The geographical location to filter jobs by (e.g., "United States").
-            sort_by: How to sort the results.
+            region: The geographical region to filter jobs by (e.g., "United States").
+            sort_by: How to sort the results.(e.g., "relevance" or "date".)
             minimum_salary_value: The minimum salary to filter for.
+            industry: The industry to filter jobs by. (e.g., "Software Development".)
         
         Returns:
             A dictionary containing search results and pagination details.
