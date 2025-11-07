@@ -387,10 +387,10 @@ class LinkedinApp(APIApplication):
         limit: int | None = None,
     ) -> dict[str, Any]:
         """
-        Fetches comments for a specific post. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. This read-only operation contrasts with `create_post_comment`, which publishes new comments, and `list_content_reactions`, which retrieves 'likes'.
+        Fetches comments for a specific post. Providing an optional `comment_id` retrieves threaded replies instead of top-level comments. `retrieve_post` or `list_profile_posts` can be used to obtain the `post_id` which is the social_id in their response.
 
         Args:
-            post_id: The social ID of the post.
+            post_id: The social ID of the post which you get from using `retrieve_post` or `list_profile_posts` tools.
             comment_id: If provided, retrieves replies to this comment ID instead of top-level comments.
             cursor: Pagination cursor.
             limit: Number of comments to return. (OpenAPI spec shows type string, passed as string if provided).
