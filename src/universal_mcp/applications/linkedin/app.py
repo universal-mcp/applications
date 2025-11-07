@@ -586,12 +586,12 @@ class LinkedinApp(APIApplication):
                 "message": "Reaction action processed.",
             }
 
-    def retrieve_user_profile(self, identifier: str) -> dict[str, Any]:
+    def retrieve_user_profile(self, public_identifier: str) -> dict[str, Any]:
         """
         Retrieves a specific LinkedIn user's profile using their public or internal ID. Unlike `retrieve_own_profile`, which fetches the authenticated user's details, this function targets and returns data for any specified third-party user profile on the platform.
 
         Args:
-            identifier: Can be the provider's internal id OR the provider's public id of the requested user.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".
+            public_identifier: Extract this value from the response of `search_people` tool. The response contains a public_identifier field.For example, for https://www.linkedin.com/in/manojbajaj95/, the identifier is "manojbajaj95".
 
         Returns:
             A dictionary containing the user's profile details.
@@ -602,7 +602,7 @@ class LinkedinApp(APIApplication):
         Tags:
             linkedin, user, profile, retrieve, get, api, important
         """
-        url = f"{self.base_url}/api/v1/users/{identifier}"
+        url = f"{self.base_url}/api/v1/users/{public_identifier}"
         params: dict[str, Any] = {"account_id": self.account_id}
         response = self._get(url, params=params)
         return self._handle_response(response)
@@ -816,6 +816,219 @@ class LinkedinApp(APIApplication):
         response = self._post(url, params=params, data=payload)
         return self._handle_response(response)
 
+    def send_invitation(
+            self,
+            provider_id: str,
+            user_email: str | None = None,
+            message: str | None = None,
+        ) -> dict[str, Any]:
+            """
+            Sends a connection invitation to a LinkedIn user specified by their provider ID. An optional message and the user's email can be included.
+
+            Args:
+                provider_id: The LinkedIn provider ID of the user to invite. This is available in response of `retrieve_user_profile` tool.
+                user_email: Optional. The email address of the user, which may be required by LinkedIn.
+                message: Optional. A personalized message to include with the invitation (max 300 characters).
+
+            Returns:
+                A dictionary confirming the invitation was sent.
+
+            Raises:
+                httpx.HTTPError: If the API request fails.
+                ValueError: If the message exceeds 300 characters.
+
+            Tags:
+                linkedin, user, invite, connect, contact, api, important
+            """
+            url = f"{self.base_url}/api/v1/users/invite"
+            payload: dict[str, Any] = {
+                "account_id": self.account_id,
+                "provider_id": provider_id,
+            }
+
+            if user_email:
+                payload["user_email"] = user_email
+            if message:
+                if len(message) > 300:
+                    raise ValueError("Message cannot exceed 300 characters.")
+                payload["message"] = message
+
+            response = self._post(url, data=payload)
+
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return {
+                    "status": response.status_code,
+                    "message": "Invitation action processed.",
+                }
+
+    def list_sent_invitations(
+            self,
+            cursor: str | None = None,
+            limit: int | None = None,
+        ) -> dict[str, Any]:
+            """
+            Retrieves a paginated list of all sent connection invitations that are currently pending. This function allows for iterating through the history of outstanding connection requests made from the specified account.
+
+            Args:
+                cursor: A pagination cursor for retrieving the next page of entries.
+                limit: The number of items to return, ranging from 1 to 100. Defaults to 10 if not specified.
+
+            Returns:
+                A dictionary containing a list of sent invitation objects and pagination details.
+
+            Raises:
+                httpx.HTTPError: If the API request fails.
+
+            Tags:
+                linkedin, user, invite, sent, list, contacts, api
+            """
+            url = f"{self.base_url}/api/v1/users/invite/sent"
+            params: dict[str, Any] = {"account_id": self.account_id}
+            if cursor:
+                params["cursor"] = cursor
+            if limit is not None:
+                params["limit"] = limit
+
+            response = self._get(url, params=params)
+            return response.json()
+
+    def list_received_invitations(
+            self,
+            cursor: str | None = None,
+            limit: int | None = None,
+        ) -> dict[str, Any]:
+            """
+            Retrieves a paginated list of all received connection invitations. This function allows for reviewing and processing incoming connection requests to the specified account.
+
+            Args:
+                cursor: A pagination cursor for retrieving the next page of entries.
+                limit: The number of items to return, ranging from 1 to 100. Defaults to 10 if not specified.
+
+            Returns:
+                A dictionary containing a list of received invitation objects and pagination details.
+
+            Raises:
+                httpx.HTTPError: If the API request fails.
+
+            Tags:
+                linkedin, user, invite, received, list, contacts, api
+            """
+            url = f"{self.base_url}/api/v1/users/invite/received"
+            params: dict[str, Any] = {"account_id": self.account_id}
+            if cursor:
+                params["cursor"] = cursor
+            if limit is not None:
+                params["limit"] = limit
+
+            response = self._get(url, params=params)
+            return response.json()
+
+    def handle_received_invitation(
+            self,
+            invitation_id: str,
+            action: Literal["accept", "decline"],
+            shared_secret: str,
+        ) -> dict[str, Any]:
+            """
+            Accepts or declines a received LinkedIn connection invitation using its ID and a required shared secret. This function performs a POST request to update the invitation's status, distinguishing it from read-only functions like `list_received_invitations`.
+
+            Args:
+                invitation_id: The ID of the invitation to handle.Get this ID from the 'list_received_invitations' tool.
+                action: The action to perform, either "accept" or "decline".
+                shared_secret: The token provided by LinkedIn, retrieved from the 'list_received_invitations' tool, which is mandatory for this action.
+
+            Returns:
+                A dictionary confirming the action was processed.
+
+            Raises:
+                httpx.HTTPError: If the API request fails.
+
+            Tags:
+                linkedin, user, invite, received, handle, accept, decline, api
+            """
+            url = f"{self.base_url}/api/v1/users/invite/received/{invitation_id}"
+            payload: dict[str, Any] = {
+                "provider": "LINKEDIN",
+                "action": action,
+                "shared_secret": shared_secret,
+                "account_id": self.account_id,
+            }
+
+            response = self._post(url, data=payload)
+
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return {
+                    "status": response.status_code,
+                    "message": f"Invitation action '{action}' processed.",
+                }
+
+    def list_followers(
+            self,
+            cursor: str | None = None,
+            limit: int | None = None,
+        ) -> dict[str, Any]:
+            """
+            Retrieves a paginated list of all followers for the current user's account. This function is distinct from `list_following` as it shows who follows the user, not who the user follows.
+
+            Args:
+                cursor: A pagination cursor for retrieving the next page of entries.
+                limit: The number of items to return, ranging from 1 to 1000.
+
+            Returns:
+                A dictionary containing a list of follower objects and pagination details.
+
+            Raises:
+                httpx.HTTPError: If the API request fails.
+
+            Tags:
+                linkedin, user, followers, list, contacts, api
+            """
+            url = f"{self.base_url}/api/v1/users/followers"
+            params: dict[str, Any] = {"account_id": self.account_id}
+            if cursor:
+                params["cursor"] = cursor
+            if limit is not None:
+                params["limit"] = limit
+
+            response = self._get(url, params=params)
+            return response.json()
+
+    def list_following(
+        self,
+        cursor: str | None = None,
+        limit: int | None = None,
+    ) -> dict[str, Any]:
+        """
+        Retrieves a paginated list of all accounts that the current user is following. This function is the counterpart to `list_followers`, focusing on the user's outgoing connections rather than incoming ones.
+
+        Args:
+            cursor: A pagination cursor for retrieving the next page of entries.
+            limit: The number of items to return, ranging from 1 to 1000.
+
+        Returns:
+            A dictionary containing a list of followed account objects and pagination details.
+
+        Raises:
+            httpx.HTTPError: If the API request fails.
+
+        Tags:
+            linkedin, user, following, list, contacts, api
+        """
+        url = f"{self.base_url}/api/v1/users/following"
+        params: dict[str, Any] = {"account_id": self.account_id}
+        if cursor:
+            params["cursor"] = cursor
+        if limit is not None:
+            params["limit"] = limit
+
+        response = self._get(url, params=params)
+        return response.json()
+    
+    
     def list_tools(self) -> list[Callable]:
         return [
             self.list_all_chats,
@@ -836,4 +1049,10 @@ class LinkedinApp(APIApplication):
             self.search_jobs,
             self.search_people,
             self.search_posts,
+            self.send_invitation,
+            self.list_sent_invitations,
+            self.list_received_invitations,
+            self.handle_received_invitation,
+            self.list_followers,
+            # self.list_following,    this endpoint is not implemented in unipile as of now
         ]
