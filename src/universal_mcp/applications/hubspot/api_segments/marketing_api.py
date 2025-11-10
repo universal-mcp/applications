@@ -1,5 +1,4 @@
 from typing import Any
-
 from .api_segment_base import APISegmentBase
 
 
@@ -7,7 +6,7 @@ class MarketingApi(APISegmentBase):
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
-    def get_marketing_campaigns(
+    async def get_marketing_campaigns(
         self,
         sort: str | None = None,
         after: str | None = None,
@@ -38,19 +37,13 @@ class MarketingApi(APISegmentBase):
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns"
         query_params = {
             k: v
-            for k, v in [
-                ("sort", sort),
-                ("after", after),
-                ("limit", limit),
-                ("name", name),
-                ("properties", properties),
-            ]
+            for k, v in [("sort", sort), ("after", after), ("limit", limit), ("name", name), ("properties", properties)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_marketing_campaigns(self, properties: dict[str, str]) -> dict[str, Any]:
+    async def create_marketing_campaigns(self, properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new marketing campaign using the provided JSON data and returns a status message upon successful creation.
@@ -72,20 +65,11 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def batch_read_campaigns_post(
-        self,
-        inputs: list[dict[str, Any]],
-        startDate: str | None = None,
-        endDate: str | None = None,
-        properties: list[str] | None = None,
+    async def batch_read_campaigns_post(
+        self, inputs: list[dict[str, Any]], startDate: str | None = None, endDate: str | None = None, properties: list[str] | None = None
     ) -> dict[str, Any]:
         """
 
@@ -110,24 +94,11 @@ class MarketingApi(APISegmentBase):
         request_body_data = {"inputs": inputs}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/read"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startDate", startDate),
-                ("endDate", endDate),
-                ("properties", properties),
-            ]
-            if v is not None
-        }
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        query_params = {k: v for k, v in [("startDate", startDate), ("endDate", endDate), ("properties", properties)] if v is not None}
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def update_campaigns_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
+    async def update_campaigns_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple marketing campaigns in a batch using the POST method, requiring a JSON body and authentication via OAuth2 or private apps with "marketing.campaigns.read" permissions.
@@ -149,20 +120,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_campaign_metrics(
-        self,
-        campaignGuid: str,
-        startDate: str | None = None,
-        endDate: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_campaign_metrics(self, campaignGuid: str, startDate: str | None = None, endDate: str | None = None) -> dict[str, Any]:
         """
 
         Retrieves campaign metrics for a specified campaign GUID, optionally filtering by start and end dates.
@@ -188,7 +149,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_campaign_asset_by_type(
+    async def get_campaign_asset_by_type(
         self,
         campaignGuid: str,
         assetType: str,
@@ -224,19 +185,12 @@ class MarketingApi(APISegmentBase):
             raise ValueError("Missing required parameter 'assetType'.")
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}/assets/{assetType}"
         query_params = {
-            k: v
-            for k, v in [
-                ("after", after),
-                ("limit", limit),
-                ("startDate", startDate),
-                ("endDate", endDate),
-            ]
-            if v is not None
+            k: v for k, v in [("after", after), ("limit", limit), ("startDate", startDate), ("endDate", endDate)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def archive_campaigns_batch(self, inputs: list[dict[str, Any]]) -> Any:
+    async def archive_campaigns_batch(self, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of marketing campaigns using the HubSpot API, requiring a JSON request body and returning a 204 status upon successful completion.
@@ -258,15 +212,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def update_campaign_asset(self, campaignGuid: str, assetType: str, assetId: str) -> Any:
+    async def update_campaign_asset(self, campaignGuid: str, assetType: str, assetId: str) -> Any:
         """
 
         Updates a specific asset of a given type within a marketing campaign identified by campaignGuid.
@@ -294,15 +243,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = None
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}/assets/{assetType}/{assetId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def delete_campaign_asset_by_id(self, campaignGuid: str, assetType: str, assetId: str) -> Any:
+    async def delete_campaign_asset_by_id(self, campaignGuid: str, assetType: str, assetId: str) -> Any:
         """
 
         Deletes a specific asset from a marketing campaign using the provided campaign GUID, asset type, and asset ID.
@@ -332,12 +276,8 @@ class MarketingApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def get_campaign_revenue_report(
-        self,
-        campaignGuid: str,
-        attributionModel: str | None = None,
-        startDate: str | None = None,
-        endDate: str | None = None,
+    async def get_campaign_revenue_report(
+        self, campaignGuid: str, attributionModel: str | None = None, startDate: str | None = None, endDate: str | None = None
     ) -> dict[str, Any]:
         """
 
@@ -362,18 +302,12 @@ class MarketingApi(APISegmentBase):
             raise ValueError("Missing required parameter 'campaignGuid'.")
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}/reports/revenue"
         query_params = {
-            k: v
-            for k, v in [
-                ("attributionModel", attributionModel),
-                ("startDate", startDate),
-                ("endDate", endDate),
-            ]
-            if v is not None
+            k: v for k, v in [("attributionModel", attributionModel), ("startDate", startDate), ("endDate", endDate)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_campaigns_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
+    async def create_campaigns_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple marketing campaigns in a single operation using the "POST" method, accepting a JSON body with campaign details and returning a status message upon successful creation.
@@ -395,15 +329,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_campaign_budget_totals(self, campaignGuid: str) -> dict[str, Any]:
+    async def get_campaign_budget_totals(self, campaignGuid: str) -> dict[str, Any]:
         """
 
         Retrieves the total budget details for a marketing campaign using the campaign's GUID.
@@ -427,12 +356,8 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_campaign_by_guid(
-        self,
-        campaignGuid: str,
-        startDate: str | None = None,
-        endDate: str | None = None,
-        properties: list[str] | None = None,
+    async def get_campaign_by_guid(
+        self, campaignGuid: str, startDate: str | None = None, endDate: str | None = None, properties: list[str] | None = None
     ) -> dict[str, Any]:
         """
 
@@ -456,19 +381,11 @@ class MarketingApi(APISegmentBase):
         if campaignGuid is None:
             raise ValueError("Missing required parameter 'campaignGuid'.")
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startDate", startDate),
-                ("endDate", endDate),
-                ("properties", properties),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("startDate", startDate), ("endDate", endDate), ("properties", properties)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_campaign_by_guid(self, campaignGuid: str) -> Any:
+    async def delete_campaign_by_guid(self, campaignGuid: str) -> Any:
         """
 
         Deletes a marketing campaign using the provided campaign GUID and returns a 204 No Content response.
@@ -492,7 +409,7 @@ class MarketingApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def patch_campaign_by_guid(self, campaignGuid: str, properties: dict[str, str]) -> dict[str, Any]:
+    async def patch_campaign_by_guid(self, campaignGuid: str, properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Updates specified properties of a marketing campaign identified by the campaignGuid using a JSON patch document.
@@ -520,7 +437,7 @@ class MarketingApi(APISegmentBase):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def get_campaign_contacts_report_by_type(
+    async def get_campaign_contacts_report_by_type(
         self,
         campaignGuid: str,
         contactType: str,
@@ -556,19 +473,12 @@ class MarketingApi(APISegmentBase):
             raise ValueError("Missing required parameter 'contactType'.")
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}/reports/contacts/{contactType}"
         query_params = {
-            k: v
-            for k, v in [
-                ("startDate", startDate),
-                ("endDate", endDate),
-                ("limit", limit),
-                ("after", after),
-            ]
-            if v is not None
+            k: v for k, v in [("startDate", startDate), ("endDate", endDate), ("limit", limit), ("after", after)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_email_statistics(
+    async def list_email_statistics(
         self,
         startTimestamp: str | None = None,
         endTimestamp: str | None = None,
@@ -597,18 +507,13 @@ class MarketingApi(APISegmentBase):
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/statistics/list"
         query_params = {
             k: v
-            for k, v in [
-                ("startTimestamp", startTimestamp),
-                ("endTimestamp", endTimestamp),
-                ("emailIds", emailIds),
-                ("property", property),
-            ]
+            for k, v in [("startTimestamp", startTimestamp), ("endTimestamp", endTimestamp), ("emailIds", emailIds), ("property", property)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_ab_test_email_variation(self, variationName: str, contentId: str) -> dict[str, Any]:
+    async def create_ab_test_email_variation(self, variationName: str, contentId: str) -> dict[str, Any]:
         """
 
         Creates a variation for an A/B test email using the POST method and returns a successful creation status.
@@ -631,15 +536,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/ab-test/create-variation"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_email_statistics_histogram(
+    async def get_email_statistics_histogram(
         self,
         interval: str | None = None,
         startTimestamp: str | None = None,
@@ -668,18 +568,13 @@ class MarketingApi(APISegmentBase):
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/statistics/histogram"
         query_params = {
             k: v
-            for k, v in [
-                ("interval", interval),
-                ("startTimestamp", startTimestamp),
-                ("endTimestamp", endTimestamp),
-                ("emailIds", emailIds),
-            ]
+            for k, v in [("interval", interval), ("startTimestamp", startTimestamp), ("endTimestamp", endTimestamp), ("emailIds", emailIds)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_email_ab_test_variation(self, emailId: str) -> dict[str, Any]:
+    async def get_email_ab_test_variation(self, emailId: str) -> dict[str, Any]:
         """
 
         Retrieves the variation for an A/B test associated with a specific email by its ID using the GET method.
@@ -703,7 +598,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def reset_email_draft_by_id(self, emailId: str) -> Any:
+    async def reset_email_draft_by_id(self, emailId: str) -> Any:
         """
 
         Resets the draft status of an email using the specified email ID.
@@ -725,15 +620,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = None
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/draft/reset"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_email_revision_to_draft(self, emailId: str, revisionId: str) -> dict[str, Any]:
+    async def restore_email_revision_to_draft(self, emailId: str, revisionId: str) -> dict[str, Any]:
         """
 
         Restores a specified email revision to draft status by email ID and revision ID.
@@ -758,15 +648,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = None
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/revisions/{revisionId}/restore-to-draft"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_email_draft_by_id(self, emailId: str) -> dict[str, Any]:
+    async def get_email_draft_by_id(self, emailId: str) -> dict[str, Any]:
         """
 
         Retrieves the draft of an email with the specified `{emailId}` using the marketing API.
@@ -790,7 +675,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_email_draft_by_id(
+    async def update_email_draft_by_id(
         self,
         emailId: str,
         rssData: dict[str, Any] | None = None,
@@ -899,12 +784,8 @@ class MarketingApi(APISegmentBase):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def get_email_revisions(
-        self,
-        emailId: str,
-        after: str | None = None,
-        before: str | None = None,
-        limit: int | None = None,
+    async def get_email_revisions(
+        self, emailId: str, after: str | None = None, before: str | None = None, limit: int | None = None
     ) -> dict[str, Any]:
         """
 
@@ -932,7 +813,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_email_revision_by_id(self, emailId: str, revisionId: str) -> dict[str, Any]:
+    async def get_email_revision_by_id(self, emailId: str, revisionId: str) -> dict[str, Any]:
         """
 
         Retrieves a specific revision of an email identified by the provided email ID and revision ID using the GET method.
@@ -959,7 +840,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def clone_email(self, id: str, cloneName: str | None = None) -> dict[str, Any]:
+    async def clone_email(self, id: str, cloneName: str | None = None) -> dict[str, Any]:
         """
 
         Clones a marketing email using the POST method at the "/marketing/v3/emails/clone" endpoint, creating a duplicate email with the same properties as the original but with a unique ID.
@@ -982,15 +863,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/clone"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_marketing_emails(
+    async def list_marketing_emails(
         self,
         createdAt: str | None = None,
         createdAfter: str | None = None,
@@ -1060,7 +936,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_email_marketing_campaign(
+    async def create_email_marketing_campaign(
         self,
         name: str,
         feedbackSurveyId: str | None = None,
@@ -1165,15 +1041,10 @@ class MarketingApi(APISegmentBase):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_email_revision(self, emailId: str, revisionId: str) -> Any:
+    async def restore_email_revision(self, emailId: str, revisionId: str) -> Any:
         """
 
         Restores a specific email revision using the provided email ID and revision ID via the POST method.
@@ -1198,20 +1069,11 @@ class MarketingApi(APISegmentBase):
         request_body_data = None
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/revisions/{revisionId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_email_by_id_marketing(
-        self,
-        emailId: str,
-        includeStats: bool | None = None,
-        includedProperties: list[str] | None = None,
-        archived: bool | None = None,
+    async def get_email_by_id_marketing(
+        self, emailId: str, includeStats: bool | None = None, includedProperties: list[str] | None = None, archived: bool | None = None
     ) -> dict[str, Any]:
         """
 
@@ -1237,17 +1099,13 @@ class MarketingApi(APISegmentBase):
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}"
         query_params = {
             k: v
-            for k, v in [
-                ("includeStats", includeStats),
-                ("includedProperties", includedProperties),
-                ("archived", archived),
-            ]
+            for k, v in [("includeStats", includeStats), ("includedProperties", includedProperties), ("archived", archived)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_email_by_id_marketing(self, emailId: str, archived: bool | None = None) -> Any:
+    async def delete_email_by_id_marketing(self, emailId: str, archived: bool | None = None) -> Any:
         """
 
         Deletes the specified marketing email by its emailId, optionally archiving it, and returns a 204 No Content status on success.
@@ -1272,7 +1130,7 @@ class MarketingApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def patch_email_by_id(
+    async def patch_email_by_id(
         self,
         emailId: str,
         archived: bool | None = None,
