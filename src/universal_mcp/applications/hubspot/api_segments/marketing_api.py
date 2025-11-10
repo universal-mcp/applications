@@ -69,9 +69,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns"
         query_params = {}
         response = self._post(
@@ -110,9 +108,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/read"
         query_params = {
             k: v
@@ -150,9 +146,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/update"
         query_params = {}
         response = self._post(
@@ -190,11 +184,7 @@ class MarketingApi(APISegmentBase):
         if campaignGuid is None:
             raise ValueError("Missing required parameter 'campaignGuid'.")
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}/reports/metrics"
-        query_params = {
-            k: v
-            for k, v in [("startDate", startDate), ("endDate", endDate)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("startDate", startDate), ("endDate", endDate)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -265,9 +255,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/archive"
         query_params = {}
         response = self._post(
@@ -278,9 +266,7 @@ class MarketingApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_campaign_asset(
-        self, campaignGuid: str, assetType: str, assetId: str
-    ) -> Any:
+    def update_campaign_asset(self, campaignGuid: str, assetType: str, assetId: str) -> Any:
         """
 
         Updates a specific asset of a given type within a marketing campaign identified by campaignGuid.
@@ -316,9 +302,7 @@ class MarketingApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_campaign_asset_by_id(
-        self, campaignGuid: str, assetType: str, assetId: str
-    ) -> Any:
+    def delete_campaign_asset_by_id(self, campaignGuid: str, assetType: str, assetId: str) -> Any:
         """
 
         Deletes a specific asset from a marketing campaign using the provided campaign GUID, asset type, and asset ID.
@@ -408,9 +392,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/batch/create"
         query_params = {}
         response = self._post(
@@ -510,9 +492,7 @@ class MarketingApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def patch_campaign_by_guid(
-        self, campaignGuid: str, properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def patch_campaign_by_guid(self, campaignGuid: str, properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Updates specified properties of a marketing campaign identified by the campaignGuid using a JSON patch document.
@@ -534,9 +514,7 @@ class MarketingApi(APISegmentBase):
             raise ValueError("Missing required parameter 'campaignGuid'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/campaigns/{campaignGuid}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -630,9 +608,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_ab_test_email_variation(
-        self, variationName: str, contentId: str
-    ) -> dict[str, Any]:
+    def create_ab_test_email_variation(self, variationName: str, contentId: str) -> dict[str, Any]:
         """
 
         Creates a variation for an A/B test email using the POST method and returns a successful creation status.
@@ -652,9 +628,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"variationName": variationName, "contentId": contentId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/ab-test/create-variation"
         query_params = {}
         response = self._post(
@@ -691,9 +665,7 @@ class MarketingApi(APISegmentBase):
         Tags:
             Statistics
         """
-        url = (
-            f"{self.main_app_client.base_url}/marketing/v3/emails/statistics/histogram"
-        )
+        url = f"{self.main_app_client.base_url}/marketing/v3/emails/statistics/histogram"
         query_params = {
             k: v
             for k, v in [
@@ -751,9 +723,7 @@ class MarketingApi(APISegmentBase):
         if emailId is None:
             raise ValueError("Missing required parameter 'emailId'.")
         request_body_data = None
-        url = (
-            f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/draft/reset"
-        )
+        url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/draft/reset"
         query_params = {}
         response = self._post(
             url,
@@ -763,9 +733,7 @@ class MarketingApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def restore_email_revision_to_draft(
-        self, emailId: str, revisionId: str
-    ) -> dict[str, Any]:
+    def restore_email_revision_to_draft(self, emailId: str, revisionId: str) -> dict[str, Any]:
         """
 
         Restores a specified email revision to draft status by email ID and revision ID.
@@ -925,9 +893,7 @@ class MarketingApi(APISegmentBase):
             "subcategory": subcategory,
             "sendOnPublish": sendOnPublish,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/draft"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -962,11 +928,7 @@ class MarketingApi(APISegmentBase):
         if emailId is None:
             raise ValueError("Missing required parameter 'emailId'.")
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}/revisions"
-        query_params = {
-            k: v
-            for k, v in [("after", after), ("before", before), ("limit", limit)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("after", after), ("before", before), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -1017,9 +979,7 @@ class MarketingApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"cloneName": cloneName, "id": id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/clone"
         query_params = {}
         response = self._post(
@@ -1202,9 +1162,7 @@ class MarketingApi(APISegmentBase):
             "subcategory": subcategory,
             "sendOnPublish": sendOnPublish,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/"
         query_params = {}
         response = self._post(
@@ -1289,9 +1247,7 @@ class MarketingApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_email_by_id_marketing(
-        self, emailId: str, archived: bool | None = None
-    ) -> Any:
+    def delete_email_by_id_marketing(self, emailId: str, archived: bool | None = None) -> Any:
         """
 
         Deletes the specified marketing email by its emailId, optionally archiving it, and returns a 204 No Content status on success.
@@ -1421,9 +1377,7 @@ class MarketingApi(APISegmentBase):
             "subcategory": subcategory,
             "sendOnPublish": sendOnPublish,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/marketing/v3/emails/{emailId}"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)

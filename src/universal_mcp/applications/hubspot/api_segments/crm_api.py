@@ -42,9 +42,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -126,9 +124,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_email_by_id(
-        self, emailId: str, properties: dict[str, str], idProperty: str | None = None
-    ) -> dict[str, Any]:
+    def update_email_by_id(self, emailId: str, properties: dict[str, str], idProperty: str | None = None) -> dict[str, Any]:
         """
 
         Updates specific properties of an existing email record in the CRM by its emailId using a PATCH request with JSON data.
@@ -151,17 +147,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'emailId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/{emailId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_emails_post(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_emails_post(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges email records using the provided JSON payload, utilizing OAuth2 or private app authentication to manage contact data in the CRM system.
@@ -184,9 +176,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/merge"
         query_params = {}
         response = self._post(
@@ -216,9 +206,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/batch/archive"
         query_params = {}
         response = self._post(
@@ -248,9 +236,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/batch/create"
         query_params = {}
         response = self._post(
@@ -280,9 +266,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/batch/update"
         query_params = {}
         response = self._post(
@@ -293,9 +277,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_email_gdpr_data(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def delete_email_gdpr_data(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Deletes a contact and associated data from the CRM in compliance with GDPR guidelines using the provided JSON payload, requiring the "crm.objects.contacts.write" permission.
@@ -315,9 +297,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -374,9 +354,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_email(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_email(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates an email object in the CRM using the POST method, allowing for the association of metadata with the email and requiring authentication via OAuth2 or private apps to access the necessary permissions.
@@ -396,9 +374,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails"
         query_params = {}
         response = self._post(
@@ -448,9 +424,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/emails/search"
         query_params = {}
         response = self._post(
@@ -496,9 +470,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -608,17 +580,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'productId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/{productId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_products(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_products(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges two or more product records in a CRM system using the POST method, allowing for the consolidation of data into a single, unified record.
@@ -641,9 +609,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/merge"
         query_params = {}
         response = self._post(
@@ -673,9 +639,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/batch/archive"
         query_params = {}
         response = self._post(
@@ -705,9 +669,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/batch/create"
         query_params = {}
         response = self._post(
@@ -737,9 +699,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/batch/update"
         query_params = {}
         response = self._post(
@@ -750,9 +710,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_product_gdpr_data(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def delete_product_gdpr_data(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Performs a GDPR-compliant deletion of product records in the CRM using the POST method, requiring a JSON request body and authentication.
@@ -772,9 +730,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -831,9 +787,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_product(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_product(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new product in the CRM product library to manage the collection of goods and services offered by the company.
@@ -853,9 +807,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products"
         query_params = {}
         response = self._post(
@@ -905,9 +857,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/products/search"
         query_params = {}
         response = self._post(
@@ -918,9 +868,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def get_pipeline_by_id_for_type(
-        self, objectType: str, pipelineId: str
-    ) -> dict[str, Any]:
+    def get_pipeline_by_id_for_type(self, objectType: str, pipelineId: str) -> dict[str, Any]:
         """
 
         Retrieves details about a specific CRM pipeline by its ID and object type, providing information about the stages and records within that pipeline.
@@ -989,9 +937,7 @@ class CrmApi(APISegmentBase):
             "stages": stages,
             "label": label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/pipelines/{objectType}/{pipelineId}"
         query_params = {
             k: v
@@ -1099,9 +1045,7 @@ class CrmApi(APISegmentBase):
             "displayOrder": displayOrder,
             "label": label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/pipelines/{objectType}/{pipelineId}"
         query_params = {
             k: v
@@ -1117,9 +1061,7 @@ class CrmApi(APISegmentBase):
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def get_pipeline_audit_by_object_type(
-        self, objectType: str, pipelineId: str
-    ) -> dict[str, Any]:
+    def get_pipeline_audit_by_object_type(self, objectType: str, pipelineId: str) -> dict[str, Any]:
         """
 
         Retrieves an audit of all changes to a specific pipeline in HubSpot CRM, based on the provided object type and pipeline ID.
@@ -1146,9 +1088,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_pipeline_stages_by_object_type(
-        self, objectType: str, pipelineId: str
-    ) -> dict[str, Any]:
+    def get_pipeline_stages_by_object_type(self, objectType: str, pipelineId: str) -> dict[str, Any]:
         """
 
         Retrieves the list of stages within a specified pipeline for a given object type in the CRM system.
@@ -1217,9 +1157,7 @@ class CrmApi(APISegmentBase):
             "displayOrder": displayOrder,
             "label": label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/pipelines/{objectType}/{pipelineId}/stages"
         query_params = {}
         response = self._post(
@@ -1288,9 +1226,7 @@ class CrmApi(APISegmentBase):
             "stages": stages,
             "label": label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/pipelines/{objectType}"
         query_params = {}
         response = self._post(
@@ -1301,9 +1237,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def get_pipeline_stage_by_id(
-        self, objectType: str, pipelineId: str, stageId: str
-    ) -> dict[str, Any]:
+    def get_pipeline_stage_by_id(self, objectType: str, pipelineId: str, stageId: str) -> dict[str, Any]:
         """
 
         Retrieves detailed information about a specific stage within a given pipeline and object type in the CRM system.
@@ -1379,9 +1313,7 @@ class CrmApi(APISegmentBase):
             "displayOrder": displayOrder,
             "label": label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/pipelines/{objectType}/{pipelineId}/stages/{stageId}"
         query_params = {}
         response = self._put(
@@ -1392,9 +1324,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_pipeline_stage_by_id(
-        self, objectType: str, pipelineId: str, stageId: str
-    ) -> Any:
+    def delete_pipeline_stage_by_id(self, objectType: str, pipelineId: str, stageId: str) -> Any:
         """
 
         Deletes a specific stage from a pipeline for the given object type in the CRM system.
@@ -1473,9 +1403,7 @@ class CrmApi(APISegmentBase):
             "displayOrder": displayOrder,
             "label": label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/pipelines/{objectType}/{pipelineId}/stages/{stageId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -1516,9 +1444,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -1628,17 +1554,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'companyId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/{companyId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_companies_post(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_companies_post(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges two or more company records into a single unified record using the CRM API, requiring a JSON payload and appropriate write permissions.
@@ -1661,9 +1583,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/merge"
         query_params = {}
         response = self._post(
@@ -1693,9 +1613,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/batch/archive"
         query_params = {}
         response = self._post(
@@ -1725,9 +1643,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/batch/create"
         query_params = {}
         response = self._post(
@@ -1757,9 +1673,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/batch/update"
         query_params = {}
         response = self._post(
@@ -1770,9 +1684,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_company_gdpr_data(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def delete_company_gdpr_data(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Performs a GDPR-compliant deletion of a company record in the CRM, permanently removing the associated personal data.
@@ -1792,9 +1704,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -1851,9 +1761,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_company(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_company(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new company record in the CRM system using the provided JSON data and returns a 201 status code upon successful creation.
@@ -1873,9 +1781,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies"
         query_params = {}
         response = self._post(
@@ -1925,9 +1831,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/companies/search"
         query_params = {}
         response = self._post(
@@ -2005,9 +1909,7 @@ class CrmApi(APISegmentBase):
             "url": url,
             "height": height,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/extensions/calling/{appId}/settings"
         query_params = {}
         response = self._post(
@@ -2085,9 +1987,7 @@ class CrmApi(APISegmentBase):
             "url": url,
             "height": height,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/extensions/calling/{appId}/settings"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -2117,9 +2017,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def post_calling_app_recording_settings(
-        self, appId: str, urlToRetrieveAuthedRecording: str
-    ) -> dict[str, Any]:
+    def post_calling_app_recording_settings(self, appId: str, urlToRetrieveAuthedRecording: str) -> dict[str, Any]:
         """
 
         Configures call recording settings for a specific application ID in the CRM using a POST request to update the recording settings.
@@ -2140,12 +2038,8 @@ class CrmApi(APISegmentBase):
         if appId is None:
             raise ValueError("Missing required parameter 'appId'.")
         request_body_data = None
-        request_body_data = {
-            "urlToRetrieveAuthedRecording": urlToRetrieveAuthedRecording
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"urlToRetrieveAuthedRecording": urlToRetrieveAuthedRecording}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/extensions/calling/{appId}/settings/recording"
         query_params = {}
         response = self._post(
@@ -2156,9 +2050,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_recording_settings(
-        self, appId: str, urlToRetrieveAuthedRecording: str | None = None
-    ) -> dict[str, Any]:
+    def update_recording_settings(self, appId: str, urlToRetrieveAuthedRecording: str | None = None) -> dict[str, Any]:
         """
 
         Modifies the recording settings for a specific CRM application using the provided JSON body.
@@ -2179,12 +2071,8 @@ class CrmApi(APISegmentBase):
         if appId is None:
             raise ValueError("Missing required parameter 'appId'.")
         request_body_data = None
-        request_body_data = {
-            "urlToRetrieveAuthedRecording": urlToRetrieveAuthedRecording
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"urlToRetrieveAuthedRecording": urlToRetrieveAuthedRecording}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/extensions/calling/{appId}/settings/recording"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -2225,9 +2113,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -2309,9 +2195,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_quote(
-        self, quoteId: str, properties: dict[str, str], idProperty: str | None = None
-    ) -> dict[str, Any]:
+    def update_quote(self, quoteId: str, properties: dict[str, str], idProperty: str | None = None) -> dict[str, Any]:
         """
 
         Updates a quote object with the specified ID in the CRM system using partial modifications, requiring a JSON body with the changes and returning a status message upon success.
@@ -2334,17 +2218,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'quoteId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/{quoteId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_quotes(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_quotes(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges quote objects in a CRM system using the POST method, allowing for the integration of data from multiple quotes into a single unified quote.
@@ -2367,9 +2247,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/merge"
         query_params = {}
         response = self._post(
@@ -2399,9 +2277,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/batch/archive"
         query_params = {}
         response = self._post(
@@ -2431,9 +2307,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/batch/create"
         query_params = {}
         response = self._post(
@@ -2463,9 +2337,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/batch/update"
         query_params = {}
         response = self._post(
@@ -2476,9 +2348,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_quote_gdpr_data(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def delete_quote_gdpr_data(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Performs a GDPR-compliant deletion of a quote object in the CRM system, permanently removing the associated personal data.
@@ -2498,9 +2368,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -2557,9 +2425,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_quote(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_quote(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new quote in HubSpot using the CRM API and returns a status message upon successful creation.
@@ -2579,9 +2445,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes"
         query_params = {}
         response = self._post(
@@ -2631,9 +2495,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/quotes/search"
         query_params = {}
         response = self._post(
@@ -2679,9 +2541,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -2763,9 +2623,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_deal_by_id(
-        self, dealId: str, properties: dict[str, str], idProperty: str | None = None
-    ) -> dict[str, Any]:
+    def update_deal_by_id(self, dealId: str, properties: dict[str, str], idProperty: str | None = None) -> dict[str, Any]:
         """
 
         Updates an individual deal in the CRM by its record ID using the PATCH method.
@@ -2788,9 +2646,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'dealId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/{dealId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -2819,9 +2675,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/merge"
         query_params = {}
         response = self._post(
@@ -2851,9 +2705,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/batch/archive"
         query_params = {}
         response = self._post(
@@ -2883,9 +2735,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/batch/create"
         query_params = {}
         response = self._post(
@@ -2915,9 +2765,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/batch/update"
         query_params = {}
         response = self._post(
@@ -2928,9 +2776,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def post_deal_gdpr_delete(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def post_deal_gdpr_delete(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Deletes a deal record in compliance with GDPR requirements using the provided JSON payload, requiring a valid OAuth2 or private app authentication with the necessary write permissions.
@@ -2950,9 +2796,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -3009,9 +2853,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_deal(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_deal(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new deal object in the CRM using the HubSpot API, requiring a JSON payload and returning a status code indicating success.
@@ -3031,9 +2873,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals"
         query_params = {}
         response = self._post(
@@ -3083,9 +2923,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/deals/search"
         query_params = {}
         response = self._post(
@@ -3150,9 +2988,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_import_errors_by_id(
-        self, importId: str, after: str | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    def get_import_errors_by_id(self, importId: str, after: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
 
         Retrieves a list of errors associated with a specific CRM import operation, using the import ID, and allows filtering by optional parameters such as "after" and "limit".
@@ -3174,9 +3010,7 @@ class CrmApi(APISegmentBase):
         if importId is None:
             raise ValueError("Missing required parameter 'importId'.")
         url = f"{self.main_app_client.base_url}/crm/v3/imports/{importId}/errors"
-        query_params = {
-            k: v for k, v in [("after", after), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("after", after), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -3204,9 +3038,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_schema_by_type(
-        self, objectType: str, archived: bool | None = None
-    ) -> Any:
+    def delete_schema_by_type(self, objectType: str, archived: bool | None = None) -> Any:
         """
 
         Deletes the specified CRM object schema by its type, optionally including archived versions, to remove its definition from the system.
@@ -3277,9 +3109,7 @@ class CrmApi(APISegmentBase):
             "restorable": restorable,
             "labels": labels,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/schemas/{objectType}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -3319,12 +3149,8 @@ class CrmApi(APISegmentBase):
             "name": name,
             "toObjectTypeId": toObjectTypeId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.main_app_client.base_url}/crm/v3/schemas/{objectType}/associations"
-        )
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.main_app_client.base_url}/crm/v3/schemas/{objectType}/associations"
         query_params = {}
         response = self._post(
             url,
@@ -3358,9 +3184,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_association_by_object_type_id(
-        self, objectType: str, associationIdentifier: str
-    ) -> Any:
+    def delete_association_by_object_type_id(self, objectType: str, associationIdentifier: str) -> Any:
         """
 
         Removes an association identified by the associationIdentifier from a CRM object schema of the specified objectType using the HubSpot API.
@@ -3457,9 +3281,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "labels": labels,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/schemas"
         query_params = {}
         response = self._post(
@@ -3470,9 +3292,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_properties_batch_post(
-        self, objectType: str, inputs: list[dict[str, Any]]
-    ) -> Any:
+    def archive_properties_batch_post(self, objectType: str, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of properties for a specified object type in CRM using a POST request.
@@ -3494,9 +3314,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/batch/archive"
         query_params = {}
         response = self._post(
@@ -3593,9 +3411,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'groupName'.")
         request_body_data = None
         request_body_data = {"displayOrder": displayOrder, "label": label}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/groups/{groupName}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
@@ -3632,11 +3448,7 @@ class CrmApi(APISegmentBase):
         if propertyName is None:
             raise ValueError("Missing required parameter 'propertyName'.")
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/{propertyName}"
-        query_params = {
-            k: v
-            for k, v in [("archived", archived), ("properties", properties)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("archived", archived), ("properties", properties)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -3726,17 +3538,13 @@ class CrmApi(APISegmentBase):
             "fieldType": fieldType,
             "formField": formField,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/{propertyName}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def batch_read_properties_by_object_type(
-        self, objectType: str, archived: bool, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def batch_read_properties_by_object_type(self, objectType: str, archived: bool, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Performs a batch read operation on CRM properties for a specified object type using a POST request, returning the results in a batch format.
@@ -3759,12 +3567,8 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"archived": archived, "inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/batch/read"
-        )
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/batch/read"
         query_params = {}
         response = self._post(
             url,
@@ -3774,9 +3578,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_batch_properties(
-        self, objectType: str, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def create_batch_properties(self, objectType: str, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple properties in batches for a specified object type in the CRM using a POST request to the "/crm/v3/properties/{objectType}/batch/create" endpoint.
@@ -3798,9 +3600,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/batch/create"
         query_params = {}
         response = self._post(
@@ -3838,11 +3638,7 @@ class CrmApi(APISegmentBase):
         if objectType is None:
             raise ValueError("Missing required parameter 'objectType'.")
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}"
-        query_params = {
-            k: v
-            for k, v in [("archived", archived), ("properties", properties)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("archived", archived), ("properties", properties)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -3913,9 +3709,7 @@ class CrmApi(APISegmentBase):
             "fieldType": fieldType,
             "externalOptions": externalOptions,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}"
         query_params = {}
         response = self._post(
@@ -3950,9 +3744,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_property_group(
-        self, objectType: str, name: str, label: str, displayOrder: int | None = None
-    ) -> dict[str, Any]:
+    def create_property_group(self, objectType: str, name: str, label: str, displayOrder: int | None = None) -> dict[str, Any]:
         """
 
         Creates a new property group for the specified CRM object type to organize related properties within HubSpot records.
@@ -3976,9 +3768,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"name": name, "displayOrder": displayOrder, "label": label}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/properties/{objectType}/groups"
         query_params = {}
         response = self._post(
@@ -4016,17 +3806,11 @@ class CrmApi(APISegmentBase):
         if ownerId is None:
             raise ValueError("Missing required parameter 'ownerId'.")
         url = f"{self.main_app_client.base_url}/crm/v3/owners/{ownerId}"
-        query_params = {
-            k: v
-            for k, v in [("idProperty", idProperty), ("archived", archived)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("idProperty", idProperty), ("archived", archived)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def batch_create_timeline_events(
-        self, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def batch_create_timeline_events(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple timeline events in a batch using the provided event templates and returns a response with the created events.
@@ -4045,9 +3829,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/timeline/events/batch/create"
         query_params = {}
         response = self._post(
@@ -4058,9 +3840,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def get_timeline_event_template_by_id(
-        self, appId: str, eventTemplateId: str
-    ) -> dict[str, Any]:
+    def get_timeline_event_template_by_id(self, appId: str, eventTemplateId: str) -> dict[str, Any]:
         """
 
         Retrieves a specific event template by its ID for an application in HubSpot CRM, using the provided app ID and event template ID.
@@ -4138,9 +3918,7 @@ class CrmApi(APISegmentBase):
             "id": id,
             "headerTemplate": headerTemplate,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/timeline/{appId}/event-templates/{eventTemplateId}"
         query_params = {}
         response = self._put(
@@ -4229,9 +4007,7 @@ class CrmApi(APISegmentBase):
             "objectId": objectId,
             "timestamp": timestamp,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/timeline/events"
         query_params = {}
         response = self._post(
@@ -4292,9 +4068,7 @@ class CrmApi(APISegmentBase):
             "type": type,
             "updatedAt": updatedAt,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/timeline/{appId}/event-templates/{eventTemplateId}/tokens"
         query_params = {}
         response = self._post(
@@ -4347,9 +4121,7 @@ class CrmApi(APISegmentBase):
             "label": label,
             "objectPropertyName": objectPropertyName,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/timeline/{appId}/event-templates/{eventTemplateId}/tokens/{tokenName}"
         query_params = {}
         response = self._put(
@@ -4360,9 +4132,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_timeline_event_template_token(
-        self, appId: str, eventTemplateId: str, tokenName: str
-    ) -> Any:
+    def delete_timeline_event_template_token(self, appId: str, eventTemplateId: str, tokenName: str) -> Any:
         """
 
         Deletes a token by the specified name from an event template in the CRM timeline for a given application ID.
@@ -4392,9 +4162,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def get_timeline_event_detail_by_id(
-        self, eventTemplateId: str, eventId: str
-    ) -> dict[str, Any]:
+    def get_timeline_event_detail_by_id(self, eventTemplateId: str, eventId: str) -> dict[str, Any]:
         """
 
         Retrieves detailed information for a specific timeline event identified by its event template ID and event ID in the CRM.
@@ -4421,9 +4189,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_timeline_event_by_id(
-        self, eventTemplateId: str, eventId: str
-    ) -> dict[str, Any]:
+    def get_timeline_event_by_id(self, eventTemplateId: str, eventId: str) -> dict[str, Any]:
         """
 
         Retrieves a specific timeline event by its event template ID and event ID, returning detailed information about that event in the CRM.
@@ -4519,9 +4285,7 @@ class CrmApi(APISegmentBase):
             "headerTemplate": headerTemplate,
             "objectType": objectType,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/timeline/{appId}/event-templates"
         query_params = {}
         response = self._post(
@@ -4532,9 +4296,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def get_timeline_event_render(
-        self, eventTemplateId: str, eventId: str, detail: bool | None = None
-    ) -> Any:
+    def get_timeline_event_render(self, eventTemplateId: str, eventId: str, detail: bool | None = None) -> Any:
         """
 
         Retrieves and renders a specific timeline event from a CRM object using an event template and event ID, allowing for optional detailed rendering.
@@ -4597,9 +4359,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -4678,9 +4438,7 @@ class CrmApi(APISegmentBase):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_contact_by_id(
-        self, contactId: str, properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def update_contact_by_id(self, contactId: str, properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Updates an individual contact by its record ID using a PATCH request to the "/crm/v3/objects/contacts/{contactId}" endpoint, requiring a JSON body with the fields to be updated.
@@ -4702,17 +4460,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'contactId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/{contactId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_contacts(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_contacts(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges two or more duplicate contact records into a single record in the CRM system, retaining the most relevant data while discarding redundant information.
@@ -4735,9 +4489,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/merge"
         query_params = {}
         response = self._post(
@@ -4767,9 +4519,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/batch/archive"
         query_params = {}
         response = self._post(
@@ -4799,9 +4549,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/batch/create"
         query_params = {}
         response = self._post(
@@ -4831,9 +4579,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/batch/update"
         query_params = {}
         response = self._post(
@@ -4844,9 +4590,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_contact_gdpr_data(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def delete_contact_gdpr_data(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Permanently deletes a contact and all associated data from the CRM to comply with GDPR requirements.
@@ -4866,9 +4610,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -4925,9 +4667,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_contact(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_contact(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new contact in the CRM system using the provided JSON data and returns a successful creation response.
@@ -4947,9 +4687,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts"
         query_params = {}
         response = self._post(
@@ -4999,9 +4737,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/contacts/search"
         query_params = {}
         response = self._post(
@@ -5047,9 +4783,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -5159,17 +4893,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'feedbackSubmissionId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/{feedbackSubmissionId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_feedback_submissions(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_feedback_submissions(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges feedback submission records using the POST method, requiring a JSON body and supporting OAuth2 and private apps for authentication.
@@ -5192,12 +4922,8 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/merge"
-        )
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/merge"
         query_params = {}
         response = self._post(
             url,
@@ -5226,9 +4952,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/batch/archive"
         query_params = {}
         response = self._post(
@@ -5239,9 +4963,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def create_feedback_submissions_batch(
-        self, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def create_feedback_submissions_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates a batch of feedback submissions using the HubSpot API, allowing for the simultaneous creation of multiple feedback submissions.
@@ -5260,9 +4982,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/batch/create"
         query_params = {}
         response = self._post(
@@ -5273,9 +4993,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_feedback_submissions_batch(
-        self, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def update_feedback_submissions_batch(self, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple feedback submissions in batches using the HubSpot CRM API.
@@ -5294,9 +5012,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/batch/update"
         query_params = {}
         response = self._post(
@@ -5307,9 +5023,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def post_feedback_submissions_gdpr_delete(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def post_feedback_submissions_gdpr_delete(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Permanently deletes feedback submissions and associated data to comply with GDPR regulations using the provided JSON body.
@@ -5329,9 +5043,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -5388,9 +5100,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_feedback_submission(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_feedback_submission(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Searches for feedback submissions using the HubSpot CRM API and returns relevant results.
@@ -5410,9 +5120,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions"
         query_params = {}
         response = self._post(
@@ -5462,9 +5170,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/feedback_submissions/search"
         query_params = {}
         response = self._post(
@@ -5514,9 +5220,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -5637,17 +5341,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/{objectId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_objects(
-        self, objectType: str, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_objects(self, objectType: str, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges duplicate records of a specified object type into a single record using the provided JSON body.
@@ -5673,9 +5373,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/merge"
         query_params = {}
         response = self._post(
@@ -5686,9 +5384,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def archive_batch_objects_by_type(
-        self, objectType: str, inputs: list[dict[str, Any]]
-    ) -> Any:
+    def archive_batch_objects_by_type(self, objectType: str, inputs: list[dict[str, Any]]) -> Any:
         """
 
         Archives a batch of objects of a specified type in CRM using the POST method, requiring a JSON body and returning a 204 status code upon successful archiving.
@@ -5710,12 +5406,8 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/archive"
-        )
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/archive"
         query_params = {}
         response = self._post(
             url,
@@ -5725,9 +5417,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def batch_create_object_records(
-        self, objectType: str, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def batch_create_object_records(self, objectType: str, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Creates multiple records of a specified object type in a CRM system using a single POST request, supporting batch creation and returning a status message based on the outcome.
@@ -5749,12 +5439,8 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/create"
-        )
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/create"
         query_params = {}
         response = self._post(
             url,
@@ -5764,9 +5450,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def update_batch_object(
-        self, objectType: str, inputs: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    def update_batch_object(self, objectType: str, inputs: list[dict[str, Any]]) -> dict[str, Any]:
         """
 
         Updates multiple records of a specified object type in a CRM system using a batch operation via the POST method.
@@ -5788,12 +5472,8 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/update"
-        )
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/batch/update"
         query_params = {}
         response = self._post(
             url,
@@ -5803,9 +5483,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def gdpr_delete_object(
-        self, objectType: str, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def gdpr_delete_object(self, objectType: str, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Permanently deletes an object of the specified type from the CRM, adhering to GDPR guidelines for data removal, using the "POST" method with the object type specified in the path and additional details in the request body.
@@ -5828,9 +5506,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -5919,9 +5595,7 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'objectType'.")
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}"
         query_params = {}
         response = self._post(
@@ -5975,9 +5649,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/{objectType}/search"
         query_params = {}
         response = self._post(
@@ -6052,9 +5724,7 @@ class CrmApi(APISegmentBase):
             "updateMeetingUrl": updateMeetingUrl,
             "deleteMeetingUrl": deleteMeetingUrl,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/extensions/videoconferencing/settings/{appId}"
         query_params = {}
         response = self._put(
@@ -6124,9 +5794,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -6236,17 +5904,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'ticketId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/{ticketId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_tickets(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_tickets(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges two or more tickets into a single ticket in the CRM system using the POST method, allowing for the consolidation of related customer service requests.
@@ -6269,9 +5933,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/merge"
         query_params = {}
         response = self._post(
@@ -6301,9 +5963,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/batch/archive"
         query_params = {}
         response = self._post(
@@ -6333,9 +5993,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/batch/create"
         query_params = {}
         response = self._post(
@@ -6365,9 +6023,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/batch/update"
         query_params = {}
         response = self._post(
@@ -6378,9 +6034,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def delete_ticket_gdpr(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def delete_ticket_gdpr(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Permanently deletes a ticket and associated data in compliance with GDPR guidelines using the POST method.
@@ -6400,9 +6054,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -6459,9 +6111,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_ticket(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_ticket(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new ticket object in the CRM using the HubSpot API, allowing for the management of customer service requests.
@@ -6481,9 +6131,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets"
         query_params = {}
         response = self._post(
@@ -6533,9 +6181,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/tickets/search"
         query_params = {}
         response = self._post(
@@ -6581,9 +6227,7 @@ class CrmApi(APISegmentBase):
             "inputs": inputs,
             "properties": properties,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/batch/read"
         query_params = {k: v for k, v in [("archived", archived)] if v is not None}
         response = self._post(
@@ -6693,17 +6337,13 @@ class CrmApi(APISegmentBase):
             raise ValueError("Missing required parameter 'lineItemId'.")
         request_body_data = None
         request_body_data = {"properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/{lineItemId}"
         query_params = {k: v for k, v in [("idProperty", idProperty)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def merge_line_items_post(
-        self, objectIdToMerge: str, primaryObjectId: str
-    ) -> dict[str, Any]:
+    def merge_line_items_post(self, objectIdToMerge: str, primaryObjectId: str) -> dict[str, Any]:
         """
 
         Merges duplicate line items into a single instance using the specified parameters via the POST method.
@@ -6726,9 +6366,7 @@ class CrmApi(APISegmentBase):
             "objectIdToMerge": objectIdToMerge,
             "primaryObjectId": primaryObjectId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/merge"
         query_params = {}
         response = self._post(
@@ -6758,9 +6396,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/batch/archive"
         query_params = {}
         response = self._post(
@@ -6790,9 +6426,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/batch/create"
         query_params = {}
         response = self._post(
@@ -6822,9 +6456,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"inputs": inputs}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/batch/update"
         query_params = {}
         response = self._post(
@@ -6835,9 +6467,7 @@ class CrmApi(APISegmentBase):
         )
         return self._handle_response(response)
 
-    def gdpr_delete_line_items(
-        self, objectId: str, idProperty: str | None = None
-    ) -> Any:
+    def gdpr_delete_line_items(self, objectId: str, idProperty: str | None = None) -> Any:
         """
 
         Deletes line item records from the CRM to comply with GDPR requirements, using the POST method with OAuth2 or private app authentication.
@@ -6857,9 +6487,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"idProperty": idProperty, "objectId": objectId}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/gdpr-delete"
         query_params = {}
         response = self._post(
@@ -6916,9 +6544,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_line_item(
-        self, associations: list[dict[str, Any]], properties: dict[str, str]
-    ) -> dict[str, Any]:
+    def create_line_item(self, associations: list[dict[str, Any]], properties: dict[str, str]) -> dict[str, Any]:
         """
 
         Creates a new line item in HubSpot CRM using the POST method, allowing you to add products or services to deals and quotes.
@@ -6938,9 +6564,7 @@ class CrmApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"associations": associations, "properties": properties}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items"
         query_params = {}
         response = self._post(
@@ -6990,9 +6614,7 @@ class CrmApi(APISegmentBase):
             "properties": properties,
             "filterGroups": filterGroups,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/crm/v3/objects/line_items/search"
         query_params = {}
         response = self._post(
@@ -7028,17 +6650,11 @@ class CrmApi(APISegmentBase):
             Core
         """
         url = f"{self.main_app_client.base_url}/crm/v3/imports"
-        query_params = {
-            k: v
-            for k, v in [("after", after), ("before", before), ("limit", limit)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("after", after), ("before", before), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_crm_import(
-        self, files: bytes | None = None, importRequest: str | None = None
-    ) -> dict[str, Any]:
+    def create_crm_import(self, files: bytes | None = None, importRequest: str | None = None) -> dict[str, Any]:
         """
 
         Imports data into a HubSpot CRM using a POST request with a multipart/form-data payload, allowing bulk creation or update of records via uploaded files such as CSV or Excel.
@@ -7118,9 +6734,7 @@ class CrmApi(APISegmentBase):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_association_types_by_object_types(
-        self, fromObjectType: str, toObjectType: str
-    ) -> dict[str, Any]:
+    def get_association_types_by_object_types(self, fromObjectType: str, toObjectType: str) -> dict[str, Any]:
         """
 
         Retrieves the association types between two specified object types in HubSpot CRM using the "GET" method.

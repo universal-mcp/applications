@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -17,13 +16,9 @@ class KlaviyoApp(APIApplication):
             return credentials["headers"]
         if "access_token" not in credentials:
             raise ValueError("Access token not found in KlaviyoApp credentials")
-        return {
-            "Authorization": f"Bearer {credentials['access_token']}",
-            "Accept": "application/json",
-            "revision": "2024-07-15",
-        }
+        return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/json", "revision": "2024-07-15"}
 
-    def create_client_review(self, company_id=None, data=None) -> Any:
+    async def create_client_review(self, company_id=None, data=None) -> Any:
         """
         Creates a new client review, requiring a company ID as a query parameter and a revision in the request header.
 
@@ -86,9 +81,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Beta APIs
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/reviews"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -96,7 +89,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_accounts(self, fields_account=None) -> dict[str, Any]:
+    async def get_accounts(self, fields_account=None) -> dict[str, Any]:
         """
         Retrieves account information using the GET method, allowing optional filtering by specific account fields and requiring a revision header, returning a successful response with the requested data if available.
 
@@ -110,14 +103,12 @@ class KlaviyoApp(APIApplication):
             Accounts, important
         """
         url = f"{self.base_url}/api/accounts"
-        query_params = {
-            k: v for k, v in [("fields[account]", fields_account)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[account]", fields_account)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_account(self, id, fields_account=None) -> dict[str, Any]:
+    async def get_account(self, id, fields_account=None) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific account identified by `{id}` with optional filtering by `fields[account]` and version control via the `revision` header.
 
@@ -134,22 +125,13 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/accounts/{id}"
-        query_params = {
-            k: v for k, v in [("fields[account]", fields_account)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[account]", fields_account)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_campaigns(
-        self,
-        fields_campaign_message=None,
-        fields_campaign=None,
-        fields_tag=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_campaigns(
+        self, fields_campaign_message=None, fields_campaign=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieve a list of campaigns using optional filtering, sorting, and inclusion parameters, with the option to specify fields for campaign messages, campaigns, and tags.
@@ -187,7 +169,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_campaign(self, data=None) -> dict[str, Any]:
+    async def create_campaign(self, data=None) -> dict[str, Any]:
         """
         Creates a new campaign using specified parameters, returning appropriate status codes for success (201), client errors (400), or server issues (500).
 
@@ -303,9 +285,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, important
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaigns"
         query_params = {}
@@ -313,14 +293,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign(
-        self,
-        id,
-        fields_campaign_message=None,
-        fields_campaign=None,
-        fields_tag=None,
-        include=None,
-    ) -> dict[str, Any]:
+    async def get_campaign(self, id, fields_campaign_message=None, fields_campaign=None, fields_tag=None, include=None) -> dict[str, Any]:
         """
         Retrieves detailed information about a campaign by its ID, allowing for selective field inclusion and revision specification through query parameters and headers.
 
@@ -354,7 +327,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_campaign(self, id) -> Any:
+    async def delete_campaign(self, id) -> Any:
         """
         Deletes a specific campaign by its ID, requiring a revision header and returning 204 No Content on success, with 400 and 500 for client and server errors, respectively.
 
@@ -375,7 +348,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_campaign(self, id, data=None) -> dict[str, Any]:
+    async def update_campaign(self, id, data=None) -> dict[str, Any]:
         """
         The **PATCH** operation at **"/api/campaigns/{id}"** partially updates a campaign resource identified by `{id}`, with the revision specified in the header, returning a successful response if the update is applied correctly.
 
@@ -439,9 +412,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaigns/{id}"
         query_params = {}
@@ -449,9 +420,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_recipient_estimation(
-        self, id, fields_campaign_recipient_estimation=None
-    ) -> dict[str, Any]:
+    async def get_campaign_recipient_estimation(self, id, fields_campaign_recipient_estimation=None) -> dict[str, Any]:
         """
         Retrieves a campaign recipient estimation by ID with optional fields filtering via query parameters and revision tracking through headers.
 
@@ -468,21 +437,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/campaign-recipient-estimations/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[campaign-recipient-estimation]",
-                    fields_campaign_recipient_estimation,
-                )
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[campaign-recipient-estimation]", fields_campaign_recipient_estimation)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_campaign_clone(self, data=None) -> dict[str, Any]:
+    async def create_campaign_clone(self, data=None) -> dict[str, Any]:
         """
         Clones a campaign, accepting a revision header and returning appropriate status codes (201 Created, 400 Bad Request, 500 Internal Server Error).
 
@@ -507,9 +467,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Campaigns1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-clone"
         query_params = {}
@@ -517,7 +475,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags_for_campaign(self, id, fields_tag=None) -> dict[str, Any]:
+    async def get_tags_for_campaign(self, id, fields_tag=None) -> dict[str, Any]:
         """
         This API operation retrieves tags for a campaign by ID using the GET method, allowing optional filtering by specific fields and versioning through a revision header.
 
@@ -539,7 +497,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_ids_for_campaign(self, id) -> dict[str, Any]:
+    async def get_tag_ids_for_campaign(self, id) -> dict[str, Any]:
         """
         This API operation retrieves the relationships between a campaign, identified by its ID, and associated tags, returning the relevant tag information.
 
@@ -560,14 +518,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_messages_for_campaign(
-        self,
-        id,
-        fields_campaign_message=None,
-        fields_campaign=None,
-        fields_image=None,
-        fields_template=None,
-        include=None,
+    async def get_messages_for_campaign(
+        self, id, fields_campaign_message=None, fields_campaign=None, fields_image=None, fields_template=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves campaign messages associated with a specific campaign ID, allowing optional field selection and resource inclusion via query parameters, with support for header-based versioning.
@@ -604,7 +556,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_message_ids_for_campaign(self, id) -> dict[str, Any]:
+    async def get_message_ids_for_campaign(self, id) -> dict[str, Any]:
         """
         Retrieves the relationships between the specified campaign and its associated messages using the "revision" header parameter for versioning.
 
@@ -625,14 +577,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_message(
-        self,
-        id,
-        fields_campaign_message=None,
-        fields_campaign=None,
-        fields_image=None,
-        fields_template=None,
-        include=None,
+    async def get_campaign_message(
+        self, id, fields_campaign_message=None, fields_campaign=None, fields_image=None, fields_template=None, include=None
     ) -> dict[str, Any]:
         """
         This API operation uses the "GET" method to retrieve a campaign message by its ID, allowing for customizable field selection via query parameters and revision specification in the header.
@@ -669,7 +615,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_campaign_message(self, id, data=None) -> dict[str, Any]:
+    async def update_campaign_message(self, id, data=None) -> dict[str, Any]:
         """
         The **PATCH** operation at "/api/campaign-messages/{id}" partially updates a campaign message by applying specified changes, using a revision header to ensure data consistency.
 
@@ -717,9 +663,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-messages/{id}"
         query_params = {}
@@ -727,7 +671,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def assign_template_to_campaign_message(self, data=None) -> dict[str, Any]:
+    async def assign_template_to_campaign_message(self, data=None) -> dict[str, Any]:
         """
         Creates a new campaign message template assignment, requiring a revision header parameter, returning HTTP 201 on success or 400/500 for client/server errors.
 
@@ -757,9 +701,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Messages
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-message-assign-template"
         query_params = {}
@@ -767,9 +709,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_for_campaign_message(
-        self, id, fields_campaign=None
-    ) -> dict[str, Any]:
+    async def get_campaign_for_campaign_message(self, id, fields_campaign=None) -> dict[str, Any]:
         """
         Retrieves the campaign associated with a specific campaign message ID, optionally filtering returned campaign fields via query parameter and supporting revision tracking via header.
 
@@ -786,14 +726,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/campaign-messages/{id}/campaign"
-        query_params = {
-            k: v for k, v in [("fields[campaign]", fields_campaign)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[campaign]", fields_campaign)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_id_for_campaign_message(self, id) -> dict[str, Any]:
+    async def get_campaign_id_for_campaign_message(self, id) -> dict[str, Any]:
         """
         Retrieves the relationship between a campaign message and its associated campaign by making a GET request to the "/api/campaign-messages/{id}/relationships/campaign" endpoint, optionally specifying a revision in the header.
 
@@ -814,9 +752,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_template_for_campaign_message(
-        self, id, fields_template=None
-    ) -> dict[str, Any]:
+    async def get_template_for_campaign_message(self, id, fields_template=None) -> dict[str, Any]:
         """
         Retrieves the template details for a campaign message specified by the provided ID, allowing optional filtering of response fields and specifying a revision via the header.
 
@@ -833,14 +769,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/campaign-messages/{id}/template"
-        query_params = {
-            k: v for k, v in [("fields[template]", fields_template)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[template]", fields_template)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_template_id_for_campaign_message(self, id) -> dict[str, Any]:
+    async def get_template_id_for_campaign_message(self, id) -> dict[str, Any]:
         """
         Retrieves the template relationship associated with a specific campaign message, identified by its ID, with an optional revision header parameter for version control.
 
@@ -861,7 +795,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_image_for_campaign_message(self, id, fields_image=None) -> dict[str, Any]:
+    async def get_image_for_campaign_message(self, id, fields_image=None) -> dict[str, Any]:
         """
         Retrieves the image associated with a campaign message by ID, allowing optional filtering by image fields and specifying a revision in the request header.
 
@@ -878,14 +812,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/campaign-messages/{id}/image"
-        query_params = {
-            k: v for k, v in [("fields[image]", fields_image)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[image]", fields_image)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_image_id_for_campaign_message(self, id) -> dict[str, Any]:
+    async def get_image_id_for_campaign_message(self, id) -> dict[str, Any]:
         """
         Retrieves the image relationship for a campaign message with the specified ID, optionally filtered by a header revision parameter.
 
@@ -906,7 +838,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_image_for_campaign_message(self, id, data=None) -> Any:
+    async def update_image_for_campaign_message(self, id, data=None) -> Any:
         """
         Updates the image relationship for a campaign message by replacing the existing related image with a new one using the provided revision for concurrency control.
 
@@ -931,9 +863,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-messages/{id}/relationships/image"
         query_params = {}
@@ -941,9 +871,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_send_job(
-        self, id, fields_campaign_send_job=None
-    ) -> dict[str, Any]:
+    async def get_campaign_send_job(self, id, fields_campaign_send_job=None) -> dict[str, Any]:
         """
         Retrieves a specific campaign send job by ID, supporting optional query parameters for field selection and header-based revision control.
 
@@ -960,16 +888,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/campaign-send-jobs/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[campaign-send-job]", fields_campaign_send_job)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[campaign-send-job]", fields_campaign_send_job)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def cancel_campaign_send(self, id, data=None) -> Any:
+    async def cancel_campaign_send(self, id, data=None) -> Any:
         """
         The **PATCH** operation at path "/api/campaign-send-jobs/{id}" partially updates a campaign send job by applying specific changes, requiring a revision in the header, and returns a successful response without content if modified successfully (204), or error codes for invalid requests (400) or server errors (500).
 
@@ -997,9 +921,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-send-jobs/{id}"
         query_params = {}
@@ -1007,9 +929,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_recipient_estimation_job(
-        self, id, fields_campaign_recipient_estimation_job=None
-    ) -> dict[str, Any]:
+    async def get_campaign_recipient_estimation_job(self, id, fields_campaign_recipient_estimation_job=None) -> dict[str, Any]:
         """
         Retrieves details of a specific campaign recipient estimation job by its ID with optional field selection and revision header.
 
@@ -1027,20 +947,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/campaign-recipient-estimation-jobs/{id}"
         query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[campaign-recipient-estimation-job]",
-                    fields_campaign_recipient_estimation_job,
-                )
-            ]
-            if v is not None
+            k: v for k, v in [("fields[campaign-recipient-estimation-job]", fields_campaign_recipient_estimation_job)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def send_campaign(self, data=None) -> dict[str, Any]:
+    async def send_campaign(self, data=None) -> dict[str, Any]:
         """
         Submits a campaign send job for asynchronous processing of a message dispatch, with a required API version header parameter.
 
@@ -1062,9 +975,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Jobs
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-send-jobs"
         query_params = {}
@@ -1072,7 +983,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def refresh_campaign_recipient_estimation(self, data=None) -> dict[str, Any]:
+    async def refresh_campaign_recipient_estimation(self, data=None) -> dict[str, Any]:
         """
         Submits a request to create and initiate a campaign recipient estimation job, requiring a revision header and returning 202 Accepted, 400 Bad Request, or 500 Internal Server Error responses.
 
@@ -1094,9 +1005,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Jobs
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-recipient-estimation-jobs"
         query_params = {}
@@ -1104,14 +1013,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_catalog_items(
-        self,
-        fields_catalog_item=None,
-        fields_catalog_variant=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_catalog_items(
+        self, fields_catalog_item=None, fields_catalog_variant=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         This API operation retrieves a list of catalog items, allowing for customizable fields, filtering, sorting, and pagination, with optional inclusion of related resources and version control through a revision header.
@@ -1147,7 +1050,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_catalog_item(self, data=None) -> dict[str, Any]:
+    async def create_catalog_item(self, data=None) -> dict[str, Any]:
         """
         Creates a new catalog item entry with optional revision control through header parameters, returning success (201), client error (400), or server error (500) status codes.
 
@@ -1199,9 +1102,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-items"
         query_params = {}
@@ -1209,9 +1110,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_catalog_item(
-        self, id, fields_catalog_item=None, fields_catalog_variant=None, include=None
-    ) -> dict[str, Any]:
+    async def get_catalog_item(self, id, fields_catalog_item=None, fields_catalog_variant=None, include=None) -> dict[str, Any]:
         """
         The **GET /api/catalog-items/{id}** operation retrieves a specific catalog item by its ID, allowing for customizable field selection via query parameters and inclusion of additional resources, while requiring revision information in the header.
 
@@ -1243,7 +1142,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_catalog_item(self, id) -> Any:
+    async def delete_catalog_item(self, id) -> Any:
         """
         Deletes a catalog item by its ID, requiring a revision parameter in the header, and returns a successful response with a 204 status if the operation is completed without issues.
 
@@ -1264,7 +1163,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_catalog_item(self, id, data=None) -> dict[str, Any]:
+    async def update_catalog_item(self, id, data=None) -> dict[str, Any]:
         """
         Updates a catalog item by its ID with partial modifications, requiring a revision header and returning success (200), bad request (400), or server error (500) status codes.
 
@@ -1317,9 +1216,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-items/{id}"
         query_params = {}
@@ -1327,7 +1224,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_create_catalog_items_jobs(
+    async def get_bulk_create_catalog_items_jobs(
         self, fields_catalog_item_bulk_create_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
@@ -1348,10 +1245,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-item-bulk-create-job]",
-                    fields_catalog_item_bulk_create_job,
-                ),
+                ("fields[catalog-item-bulk-create-job]", fields_catalog_item_bulk_create_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -1361,7 +1255,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_create_catalog_items(self, data=None) -> dict[str, Any]:
+    async def bulk_create_catalog_items(self, data=None) -> dict[str, Any]:
         """
         Submits a request to create multiple catalog items asynchronously via bulk processing.
 
@@ -1456,9 +1350,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-item-bulk-create-jobs"
         query_params = {}
@@ -1466,12 +1358,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_create_catalog_items_job(
-        self,
-        job_id,
-        fields_catalog_item_bulk_create_job=None,
-        fields_catalog_item=None,
-        include=None,
+    async def get_bulk_create_catalog_items_job(
+        self, job_id, fields_catalog_item_bulk_create_job=None, fields_catalog_item=None, include=None
     ) -> dict[str, Any]:
         """
         This API operation retrieves a catalog item bulk creation job by its ID, allowing optional fields and included resources to be specified for detailed job information.
@@ -1494,10 +1382,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-item-bulk-create-job]",
-                    fields_catalog_item_bulk_create_job,
-                ),
+                ("fields[catalog-item-bulk-create-job]", fields_catalog_item_bulk_create_job),
                 ("fields[catalog-item]", fields_catalog_item),
                 ("include", include),
             ]
@@ -1507,7 +1392,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_update_catalog_items_jobs(
+    async def get_bulk_update_catalog_items_jobs(
         self, fields_catalog_item_bulk_update_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
@@ -1528,10 +1413,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-item-bulk-update-job]",
-                    fields_catalog_item_bulk_update_job,
-                ),
+                ("fields[catalog-item-bulk-update-job]", fields_catalog_item_bulk_update_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -1541,7 +1423,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_update_catalog_items(self, data=None) -> dict[str, Any]:
+    async def bulk_update_catalog_items(self, data=None) -> dict[str, Any]:
         """
         Creates a bulk update job for catalog items, accepting header-based revision control and returning asynchronous responses including 202 Accepted, 400 Bad Request, and 500 Internal Server Error status codes.
 
@@ -1632,9 +1514,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-item-bulk-update-jobs"
         query_params = {}
@@ -1642,12 +1522,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_update_catalog_items_job(
-        self,
-        job_id,
-        fields_catalog_item_bulk_update_job=None,
-        fields_catalog_item=None,
-        include=None,
+    async def get_bulk_update_catalog_items_job(
+        self, job_id, fields_catalog_item_bulk_update_job=None, fields_catalog_item=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves the status and details of a specific catalog item bulk update job, including optional related items and field filtering via query parameters.
@@ -1670,10 +1546,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-item-bulk-update-job]",
-                    fields_catalog_item_bulk_update_job,
-                ),
+                ("fields[catalog-item-bulk-update-job]", fields_catalog_item_bulk_update_job),
                 ("fields[catalog-item]", fields_catalog_item),
                 ("include", include),
             ]
@@ -1683,7 +1556,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_delete_catalog_items_jobs(
+    async def get_bulk_delete_catalog_items_jobs(
         self, fields_catalog_item_bulk_delete_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
@@ -1704,10 +1577,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-item-bulk-delete-job]",
-                    fields_catalog_item_bulk_delete_job,
-                ),
+                ("fields[catalog-item-bulk-delete-job]", fields_catalog_item_bulk_delete_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -1717,7 +1587,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_delete_catalog_items(self, data=None) -> dict[str, Any]:
+    async def bulk_delete_catalog_items(self, data=None) -> dict[str, Any]:
         """
         Creates a bulk delete job for catalog items with a specified revision header, returning 202 on success, 400 for bad requests, or 500 for server errors.
 
@@ -1752,9 +1622,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-item-bulk-delete-jobs"
         query_params = {}
@@ -1762,9 +1630,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_delete_catalog_items_job(
-        self, job_id, fields_catalog_item_bulk_delete_job=None
-    ) -> dict[str, Any]:
+    async def get_bulk_delete_catalog_items_job(self, job_id, fields_catalog_item_bulk_delete_job=None) -> dict[str, Any]:
         """
         Retrieve a catalog item bulk delete job by its job ID, allowing for the inspection of job details such as status and progress, with optional filtering of returned fields and specification of a revision.
 
@@ -1781,29 +1647,13 @@ class KlaviyoApp(APIApplication):
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
         url = f"{self.base_url}/api/catalog-item-bulk-delete-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[catalog-item-bulk-delete-job]",
-                    fields_catalog_item_bulk_delete_job,
-                )
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[catalog-item-bulk-delete-job]", fields_catalog_item_bulk_delete_job)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_items_for_catalog_category(
-        self,
-        id,
-        fields_catalog_item=None,
-        fields_catalog_variant=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_items_for_catalog_category(
+        self, id, fields_catalog_item=None, fields_catalog_variant=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieve a list of items within a specified catalog category by ID, allowing optional filtering, sorting, and inclusion of additional details.
@@ -1842,9 +1692,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_category_ids_for_catalog_item(
-        self, id, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_category_ids_for_catalog_item(self, id, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         The API operation at path "/api/catalog-items/{id}/relationships/categories" using the "GET" method retrieves the category relationships for a specific catalog item identified by its ID, allowing filtering, pagination, and sorting of the results, with optional revision specification in the header.
 
@@ -1863,20 +1711,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
-        query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_categories_to_catalog_item(self, id, data=None) -> Any:
+    async def add_categories_to_catalog_item(self, id, data=None) -> Any:
         """
         Adds a relationship between the specified catalog item and one or more categories using the provided revision header.
 
@@ -1907,9 +1747,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
         query_params = {}
@@ -1917,7 +1755,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_categories_from_catalog_item(self, id, data=None) -> Any:
+    async def remove_categories_from_catalog_item(self, id, data=None) -> Any:
         """
         Deletes a relationship between a catalog item, identified by `{id}`, and its categories, requiring a revision provided in the header for validation.
 
@@ -1948,9 +1786,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
         query_params = {}
@@ -1958,7 +1794,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_categories_for_catalog_item(self, id, data=None) -> Any:
+    async def update_categories_for_catalog_item(self, id, data=None) -> Any:
         """
         This API operation updates the categories relationship for a catalog item by applying partial modifications using the PATCH method, requiring a revision header to ensure data consistency.
 
@@ -1989,9 +1825,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
         query_params = {}
@@ -1999,9 +1833,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_catalog_variants(
-        self, fields_catalog_variant=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_catalog_variants(self, fields_catalog_variant=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves all catalog variants with optional filtering, sorting, pagination, and field selection parameters.
 
@@ -2032,7 +1864,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_catalog_variant(self, data=None) -> dict[str, Any]:
+    async def create_catalog_variant(self, data=None) -> dict[str, Any]:
         """
         Creates a new catalog variant with the provided data, requiring a revision header and returning status codes for success (201), client errors (400), and server errors (500).
 
@@ -2081,9 +1913,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-variants"
         query_params = {}
@@ -2091,7 +1921,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_catalog_variant(self, id, fields_catalog_variant=None) -> dict[str, Any]:
+    async def get_catalog_variant(self, id, fields_catalog_variant=None) -> dict[str, Any]:
         """
         Retrieves a catalog variant by ID with optional field filtering and revision header support.
 
@@ -2108,16 +1938,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/catalog-variants/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[catalog-variant]", fields_catalog_variant)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[catalog-variant]", fields_catalog_variant)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_catalog_variant(self, id) -> Any:
+    async def delete_catalog_variant(self, id) -> Any:
         """
         Deletes a catalog variant by its ID using a specified header revision, returning status codes for success (204), client error (400), or server error (500).
 
@@ -2138,7 +1964,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_catalog_variant(self, id, data=None) -> dict[str, Any]:
+    async def update_catalog_variant(self, id, data=None) -> dict[str, Any]:
         """
         Updates a catalog variant's partial data using a revision header and returns the updated result upon success.
 
@@ -2180,9 +2006,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-variants/{id}"
         query_params = {}
@@ -2190,9 +2014,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_create_variants_jobs(
-        self, fields_catalog_variant_bulk_create_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_create_variants_jobs(self, fields_catalog_variant_bulk_create_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves a catalog variant bulk create job by ID, supporting optional filtering, pagination, and field selection in the response.
 
@@ -2211,10 +2033,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-variant-bulk-create-job]",
-                    fields_catalog_variant_bulk_create_job,
-                ),
+                ("fields[catalog-variant-bulk-create-job]", fields_catalog_variant_bulk_create_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -2224,7 +2043,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_create_catalog_variants(self, data=None) -> dict[str, Any]:
+    async def bulk_create_catalog_variants(self, data=None) -> dict[str, Any]:
         """
         The **POST /api/catalog-variant-bulk-create-jobs** operation creates a job to bulk create catalog variants, accepting up to 100 variants per request, with a required "revision" header for versioning.
 
@@ -2313,9 +2132,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-variant-bulk-create-jobs"
         query_params = {}
@@ -2323,12 +2140,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_create_variants_job(
-        self,
-        job_id,
-        fields_catalog_variant_bulk_create_job=None,
-        fields_catalog_variant=None,
-        include=None,
+    async def get_create_variants_job(
+        self, job_id, fields_catalog_variant_bulk_create_job=None, fields_catalog_variant=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieve details of a specific catalog variant bulk creation job by its ID, supporting optional field selection, inclusion of related resources, and requiring a revision header.
@@ -2351,10 +2164,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-variant-bulk-create-job]",
-                    fields_catalog_variant_bulk_create_job,
-                ),
+                ("fields[catalog-variant-bulk-create-job]", fields_catalog_variant_bulk_create_job),
                 ("fields[catalog-variant]", fields_catalog_variant),
                 ("include", include),
             ]
@@ -2364,9 +2174,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_update_variants_jobs(
-        self, fields_catalog_variant_bulk_update_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_update_variants_jobs(self, fields_catalog_variant_bulk_update_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         The **GET** operation at "/api/catalog-variant-bulk-update-jobs" retrieves a list of catalog variant bulk update jobs, allowing users to filter results by specific fields and pagination options.
 
@@ -2385,10 +2193,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-variant-bulk-update-job]",
-                    fields_catalog_variant_bulk_update_job,
-                ),
+                ("fields[catalog-variant-bulk-update-job]", fields_catalog_variant_bulk_update_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -2398,7 +2203,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_update_catalog_variants(self, data=None) -> dict[str, Any]:
+    async def bulk_update_catalog_variants(self, data=None) -> dict[str, Any]:
         """
         Creates a catalog variant bulk update job to process batch updates for multiple product variants.
 
@@ -2467,9 +2272,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-variant-bulk-update-jobs"
         query_params = {}
@@ -2477,12 +2280,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_update_variants_job(
-        self,
-        job_id,
-        fields_catalog_variant_bulk_update_job=None,
-        fields_catalog_variant=None,
-        include=None,
+    async def get_update_variants_job(
+        self, job_id, fields_catalog_variant_bulk_update_job=None, fields_catalog_variant=None, include=None
     ) -> dict[str, Any]:
         """
         The API operation defined at path "/api/catalog-variant-bulk-update-jobs/{job_id}" using the "GET" method retrieves details about a specific catalog variant bulk update job, allowing optional specification of fields to include and related objects.
@@ -2505,10 +2304,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-variant-bulk-update-job]",
-                    fields_catalog_variant_bulk_update_job,
-                ),
+                ("fields[catalog-variant-bulk-update-job]", fields_catalog_variant_bulk_update_job),
                 ("fields[catalog-variant]", fields_catalog_variant),
                 ("include", include),
             ]
@@ -2518,9 +2314,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_delete_variants_jobs(
-        self, fields_catalog_variant_bulk_delete_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_delete_variants_jobs(self, fields_catalog_variant_bulk_delete_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         The API operation at path "/api/catalog-variant-bulk-delete-jobs" using the "GET" method retrieves information about catalog variant bulk delete jobs, allowing filtering and pagination, and providing specific fields of the job based on query parameters.
 
@@ -2539,10 +2333,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-variant-bulk-delete-job]",
-                    fields_catalog_variant_bulk_delete_job,
-                ),
+                ("fields[catalog-variant-bulk-delete-job]", fields_catalog_variant_bulk_delete_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -2552,7 +2343,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_delete_catalog_variants(self, data=None) -> dict[str, Any]:
+    async def bulk_delete_catalog_variants(self, data=None) -> dict[str, Any]:
         """
         Creates a bulk delete job for catalog variants, accepting up to 100 variants per request, with header parameter "revision" and returning 202, 400, or 500 status codes.
 
@@ -2587,9 +2378,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-variant-bulk-delete-jobs"
         query_params = {}
@@ -2597,9 +2386,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_delete_variants_job(
-        self, job_id, fields_catalog_variant_bulk_delete_job=None
-    ) -> dict[str, Any]:
+    async def get_delete_variants_job(self, job_id, fields_catalog_variant_bulk_delete_job=None) -> dict[str, Any]:
         """
         Retrieve a specific catalog variant bulk delete job's status and details by its job ID, supporting optional field filtering via query parameters and API version control through headers.
 
@@ -2617,20 +2404,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'job_id'")
         url = f"{self.base_url}/api/catalog-variant-bulk-delete-jobs/{job_id}"
         query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[catalog-variant-bulk-delete-job]",
-                    fields_catalog_variant_bulk_delete_job,
-                )
-            ]
-            if v is not None
+            k: v for k, v in [("fields[catalog-variant-bulk-delete-job]", fields_catalog_variant_bulk_delete_job)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_variants_for_catalog_item(
+    async def get_variants_for_catalog_item(
         self, id, fields_catalog_variant=None, filter=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
@@ -2666,9 +2446,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_variant_ids_for_catalog_item(
-        self, id, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_variant_ids_for_catalog_item(self, id, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves variant relationships for a catalog item with optional filtering, pagination, and sorting parameters.
 
@@ -2687,22 +2465,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/catalog-items/{id}/relationships/variants"
-        query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_catalog_categories(
-        self, fields_catalog_category=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_catalog_categories(self, fields_catalog_category=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         The "/api/catalog-categories" API operation using the "GET" method retrieves a list of catalog categories, allowing filtering, sorting, and pagination through query parameters, while also supporting revision specification via a header.
 
@@ -2733,7 +2501,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_catalog_category(self, data=None) -> dict[str, Any]:
+    async def create_catalog_category(self, data=None) -> dict[str, Any]:
         """
         Creates a new catalog category using specified parameters, returning a 201 status code on successful creation.
 
@@ -2774,9 +2542,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-categories"
         query_params = {}
@@ -2784,7 +2550,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_catalog_category(self, id, fields_catalog_category=None) -> dict[str, Any]:
+    async def get_catalog_category(self, id, fields_catalog_category=None) -> dict[str, Any]:
         """
         Retrieves a specific catalog category by ID with optional field selection and revision header.
 
@@ -2801,16 +2567,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/catalog-categories/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[catalog-category]", fields_catalog_category)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[catalog-category]", fields_catalog_category)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_catalog_category(self, id) -> Any:
+    async def delete_catalog_category(self, id) -> Any:
         """
         Deletes a catalog category identified by its ID, accepting an optional revision header, and returns a successful response with a 204 status code if executed correctly.
 
@@ -2831,7 +2593,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_catalog_category(self, id, data=None) -> dict[str, Any]:
+    async def update_catalog_category(self, id, data=None) -> dict[str, Any]:
         """
         Patches a catalog category with the specified ID, allowing partial updates while requiring a revision header for version control.
 
@@ -2873,9 +2635,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-categories/{id}"
         query_params = {}
@@ -2883,11 +2643,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_create_categories_jobs(
-        self,
-        fields_catalog_category_bulk_create_job=None,
-        filter=None,
-        page_cursor=None,
+    async def get_create_categories_jobs(
+        self, fields_catalog_category_bulk_create_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of catalog category bulk creation jobs with support for filtering, field selection, pagination via cursor, and revision headers.
@@ -2907,10 +2664,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-category-bulk-create-job]",
-                    fields_catalog_category_bulk_create_job,
-                ),
+                ("fields[catalog-category-bulk-create-job]", fields_catalog_category_bulk_create_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -2920,7 +2674,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_create_catalog_categories(self, data=None) -> dict[str, Any]:
+    async def bulk_create_catalog_categories(self, data=None) -> dict[str, Any]:
         """
         Create bulk jobs for catalog category creation, tracking progress via asynchronous processing.
 
@@ -2993,9 +2747,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-category-bulk-create-jobs"
         query_params = {}
@@ -3003,12 +2755,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_create_categories_job(
-        self,
-        job_id,
-        fields_catalog_category_bulk_create_job=None,
-        fields_catalog_category=None,
-        include=None,
+    async def get_create_categories_job(
+        self, job_id, fields_catalog_category_bulk_create_job=None, fields_catalog_category=None, include=None
     ) -> dict[str, Any]:
         """
         The **`GET /api/catalog-category-bulk-create-jobs/{job_id}`** operation retrieves a specific catalog category bulk create job by its job ID, optionally including related resources such as categories based on the provided query parameters.
@@ -3031,10 +2779,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-category-bulk-create-job]",
-                    fields_catalog_category_bulk_create_job,
-                ),
+                ("fields[catalog-category-bulk-create-job]", fields_catalog_category_bulk_create_job),
                 ("fields[catalog-category]", fields_catalog_category),
                 ("include", include),
             ]
@@ -3044,11 +2789,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_update_categories_jobs(
-        self,
-        fields_catalog_category_bulk_update_job=None,
-        filter=None,
-        page_cursor=None,
+    async def get_update_categories_jobs(
+        self, fields_catalog_category_bulk_update_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
         The API operation at "/api/catalog-category-bulk-update-jobs" using the "GET" method retrieves details of catalog category bulk update jobs, allowing for customization through query parameters such as fields, filters, and pagination, while also accepting a revision header.
@@ -3068,10 +2810,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-category-bulk-update-job]",
-                    fields_catalog_category_bulk_update_job,
-                ),
+                ("fields[catalog-category-bulk-update-job]", fields_catalog_category_bulk_update_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -3081,7 +2820,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_update_catalog_categories(self, data=None) -> dict[str, Any]:
+    async def bulk_update_catalog_categories(self, data=None) -> dict[str, Any]:
         """
         This API operation initiates a bulk update job for catalog categories, allowing for the modification of multiple categories simultaneously, with an optional revision header for version control.
 
@@ -3150,9 +2889,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-category-bulk-update-jobs"
         query_params = {}
@@ -3160,12 +2897,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_update_categories_job(
-        self,
-        job_id,
-        fields_catalog_category_bulk_update_job=None,
-        fields_catalog_category=None,
-        include=None,
+    async def get_update_categories_job(
+        self, job_id, fields_catalog_category_bulk_update_job=None, fields_catalog_category=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieve the status and details of a specific catalog category bulk update job by its ID, supporting optional inclusion of related resources and field filtering.
@@ -3188,10 +2921,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-category-bulk-update-job]",
-                    fields_catalog_category_bulk_update_job,
-                ),
+                ("fields[catalog-category-bulk-update-job]", fields_catalog_category_bulk_update_job),
                 ("fields[catalog-category]", fields_catalog_category),
                 ("include", include),
             ]
@@ -3201,11 +2931,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_delete_categories_jobs(
-        self,
-        fields_catalog_category_bulk_delete_job=None,
-        filter=None,
-        page_cursor=None,
+    async def get_delete_categories_jobs(
+        self, fields_catalog_category_bulk_delete_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of catalog category bulk delete jobs based on specified fields, filters, and pagination, with an optional revision header.
@@ -3225,10 +2952,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[catalog-category-bulk-delete-job]",
-                    fields_catalog_category_bulk_delete_job,
-                ),
+                ("fields[catalog-category-bulk-delete-job]", fields_catalog_category_bulk_delete_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -3238,7 +2962,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_delete_catalog_categories(self, data=None) -> dict[str, Any]:
+    async def bulk_delete_catalog_categories(self, data=None) -> dict[str, Any]:
         """
         Creates a catalog category bulk delete job to delete a batch of categories, accepting up to 100 per request and requiring a revision header.
 
@@ -3273,9 +2997,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-category-bulk-delete-jobs"
         query_params = {}
@@ -3283,9 +3005,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_delete_categories_job(
-        self, job_id, fields_catalog_category_bulk_delete_job=None
-    ) -> dict[str, Any]:
+    async def get_delete_categories_job(self, job_id, fields_catalog_category_bulk_delete_job=None) -> dict[str, Any]:
         """
         Retrieves the status and details of a specific catalog category bulk delete job using the provided job ID, with optional field filtering and API version control.
 
@@ -3303,22 +3023,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'job_id'")
         url = f"{self.base_url}/api/catalog-category-bulk-delete-jobs/{job_id}"
         query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[catalog-category-bulk-delete-job]",
-                    fields_catalog_category_bulk_delete_job,
-                )
-            ]
-            if v is not None
+            k: v for k, v in [("fields[catalog-category-bulk-delete-job]", fields_catalog_category_bulk_delete_job)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_item_ids_for_catalog_category(
-        self, id, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_item_ids_for_catalog_category(self, id, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of items related to a specific catalog category with options to filter, sort, and paginate the results.
 
@@ -3337,20 +3048,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
-        query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_items_to_catalog_category(self, id, data=None) -> Any:
+    async def add_items_to_catalog_category(self, id, data=None) -> Any:
         """
         This API operation creates a new relationship between a specified catalog category and items using the POST method, requiring a revision header, and returns a 204 No Content response upon success.
 
@@ -3381,9 +3084,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
         query_params = {}
@@ -3391,7 +3092,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_items_from_catalog_category(self, id, data=None) -> Any:
+    async def remove_items_from_catalog_category(self, id, data=None) -> Any:
         """
         Deletes the relationship between a catalog category and its associated items, identified by the category ID provided in the path, and returns a successful response with no content upon completion.
 
@@ -3422,9 +3123,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
         query_params = {}
@@ -3432,7 +3131,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_items_for_catalog_category(self, id, data=None) -> Any:
+    async def update_items_for_catalog_category(self, id, data=None) -> Any:
         """
         This API operation updates the items relationship of a catalog category with the specified ID using the PATCH method, requiring a revision header to ensure atomic updates, and returns a 204 No Content response upon success.
 
@@ -3463,9 +3162,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
         query_params = {}
@@ -3473,7 +3170,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_categories_for_catalog_item(
+    async def get_categories_for_catalog_item(
         self, id, fields_catalog_category=None, filter=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
@@ -3509,7 +3206,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_back_in_stock_subscription(self, data=None) -> Any:
+    async def create_back_in_stock_subscription(self, data=None) -> Any:
         """
         The POST operation at the "/api/back-in-stock-subscriptions" path creates a new back-in-stock subscription, requiring a "revision" header, and returns a 202 response upon success or error responses for bad requests or internal server errors.
 
@@ -3556,9 +3253,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Back In Stock
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/back-in-stock-subscriptions"
         query_params = {}
@@ -3566,7 +3261,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_client_subscription(self, company_id=None, data=None) -> Any:
+    async def create_client_subscription(self, company_id=None, data=None) -> Any:
         """
         Creates a subscription for a client, requiring a company_id query parameter and revision header while returning a 202 Accepted status upon successful request.
 
@@ -3656,9 +3351,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/subscriptions"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -3666,7 +3359,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_or_update_client_push_token(self, company_id=None, data=None) -> Any:
+    async def create_or_update_client_push_token(self, company_id=None, data=None) -> Any:
         """
         Registers a push token for a client by sending a POST request to "/client/push-tokens," which requires a "company_id" query parameter and a "revision" header, returning a 202 status on success.
 
@@ -3748,9 +3441,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/push-tokens"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -3758,7 +3449,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def unregister_client_push_token(self, company_id=None, data=None) -> Any:
+    async def unregister_client_push_token(self, company_id=None, data=None) -> Any:
         """
         Unregisters a client's push token by accepting a company ID as a query parameter and requiring a revision header, returning status codes for successful acceptance (202), client errors (400), or server errors (500).
 
@@ -3824,9 +3515,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/push-token-unregister"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -3834,7 +3523,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_client_event(self, company_id=None, data=None) -> Any:
+    async def create_client_event(self, company_id=None, data=None) -> Any:
         """
         Creates an event for a client by submitting the event details via the POST method, requiring a `company_id` query parameter and a `revision` header.
 
@@ -3911,9 +3600,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/events"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -3921,7 +3608,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_or_update_client_profile(self, company_id=None, data=None) -> Any:
+    async def create_or_update_client_profile(self, company_id=None, data=None) -> Any:
         """
         Creates client profiles with required company_id in query parameters and revision header, returning status codes for accepted (202), bad request (400), and server error (500).
 
@@ -3977,9 +3664,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/profiles"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -3987,7 +3672,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_create_client_events(self, company_id=None, data=None) -> Any:
+    async def bulk_create_client_events(self, company_id=None, data=None) -> Any:
         """
         Creates multiple client events in bulk using a POST request, requiring a company ID as a query parameter and a revision in the request header.
 
@@ -4092,9 +3777,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/event-bulk-create"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -4102,9 +3785,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_client_back_in_stock_subscription(
-        self, company_id=None, data=None
-    ) -> Any:
+    async def create_client_back_in_stock_subscription(self, company_id=None, data=None) -> Any:
         """
         Subscribe a customer to receive back-in-stock notifications for a product via POST request, requiring company ID and revision header, with responses indicating acceptance (202), invalid parameters (400), or server errors (500).
 
@@ -4152,9 +3833,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/client/back-in-stock-subscriptions"
         query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
@@ -4162,7 +3841,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_coupons(self, fields_coupon=None, page_cursor=None) -> dict[str, Any]:
+    async def get_coupons(self, fields_coupon=None, page_cursor=None) -> dict[str, Any]:
         """
         The API operation at "/api/coupons" using the "GET" method retrieves coupon data based on optional query parameters for selecting fields and pagination, with an additional header option for specifying the revision.
 
@@ -4177,19 +3856,12 @@ class KlaviyoApp(APIApplication):
             Coupons
         """
         url = f"{self.base_url}/api/coupons"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[coupon]", fields_coupon),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[coupon]", fields_coupon), ("page[cursor]", page_cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_coupon(self, data=None) -> dict[str, Any]:
+    async def create_coupon(self, data=None) -> dict[str, Any]:
         """
         Creates a new coupon with a specified revision, returning a successful creation response or error messages for invalid requests or internal server errors.
 
@@ -4214,9 +3886,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/coupons"
         query_params = {}
@@ -4224,7 +3894,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_coupon(self, id, fields_coupon=None) -> dict[str, Any]:
+    async def get_coupon(self, id, fields_coupon=None) -> dict[str, Any]:
         """
         This API operation, located at `/api/coupons/{id}`, uses the GET method to retrieve details of a specific coupon based on its ID, allowing optional filtering by specifying coupon fields in the query and providing a revision in the headers.
 
@@ -4241,14 +3911,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/coupons/{id}"
-        query_params = {
-            k: v for k, v in [("fields[coupon]", fields_coupon)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[coupon]", fields_coupon)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_coupon(self, id) -> Any:
+    async def delete_coupon(self, id) -> Any:
         """
         Deletes a coupon by ID, returning a 204 status code on success, and requires a revision header; error responses include 400 for invalid requests and 500 for server errors.
 
@@ -4269,7 +3937,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_coupon(self, id, data=None) -> dict[str, Any]:
+    async def update_coupon(self, id, data=None) -> dict[str, Any]:
         """
         Updates partial coupon data using the specified revision header, returning 200 for success, 400 for invalid requests, or 500 for errors.
 
@@ -4297,9 +3965,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/coupons/{id}"
         query_params = {}
@@ -4307,13 +3973,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_coupon_codes(
-        self,
-        fields_coupon_code=None,
-        fields_coupon=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
+    async def get_coupon_codes(
+        self, fields_coupon_code=None, fields_coupon=None, filter=None, include=None, page_cursor=None
     ) -> dict[str, Any]:
         """
         This API operation retrieves a list of coupon codes using the GET method at the "/api/coupon-codes" path, supporting filters and pagination through query parameters such as fields, filter, include, and page cursor, with a required revision header.
@@ -4347,7 +4008,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_coupon_code(self, data=None) -> dict[str, Any]:
+    async def create_coupon_code(self, data=None) -> dict[str, Any]:
         """
         Create a new coupon code by sending a POST request to "/api/coupon-codes", optionally specifying a revision in the request headers.
 
@@ -4380,9 +4041,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/coupon-codes"
         query_params = {}
@@ -4390,9 +4049,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_coupon_code(
-        self, id, fields_coupon_code=None, fields_coupon=None, include=None
-    ) -> dict[str, Any]:
+    async def get_coupon_code(self, id, fields_coupon_code=None, fields_coupon=None, include=None) -> dict[str, Any]:
         """
         Retrieves details of a coupon code by ID, allowing optional specification of fields to include and related resources via query parameters.
 
@@ -4413,18 +4070,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/coupon-codes/{id}"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[coupon-code]", fields_coupon_code),
-                ("fields[coupon]", fields_coupon),
-                ("include", include),
-            ]
+            for k, v in [("fields[coupon-code]", fields_coupon_code), ("fields[coupon]", fields_coupon), ("include", include)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_coupon_code(self, id) -> Any:
+    async def delete_coupon_code(self, id) -> Any:
         """
         Deletes a coupon code with the specified ID, returning a 204 No Content response upon successful deletion, with optional revision information provided in the request headers.
 
@@ -4445,7 +4098,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_coupon_code(self, id, data=None) -> dict[str, Any]:
+    async def update_coupon_code(self, id, data=None) -> dict[str, Any]:
         """
         Updates a coupon code's properties using a partial modification request, supporting conditional updates via the revision header.
 
@@ -4474,9 +4127,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/coupon-codes/{id}"
         query_params = {}
@@ -4484,7 +4135,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_create_coupon_code_jobs(
+    async def get_bulk_create_coupon_code_jobs(
         self, fields_coupon_code_bulk_create_job=None, filter=None, page_cursor=None
     ) -> dict[str, Any]:
         """
@@ -4505,10 +4156,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[coupon-code-bulk-create-job]",
-                    fields_coupon_code_bulk_create_job,
-                ),
+                ("fields[coupon-code-bulk-create-job]", fields_coupon_code_bulk_create_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
             ]
@@ -4518,7 +4166,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_create_coupon_codes(self, data=None) -> dict[str, Any]:
+    async def bulk_create_coupon_codes(self, data=None) -> dict[str, Any]:
         """
         This API operation creates bulk jobs for coupon code creation via a POST request to the "/api/coupon-code-bulk-create-jobs" endpoint, requiring a revision header, and returns success with a 202 status code or error responses for bad requests (400) and internal server errors (500).
 
@@ -4575,9 +4223,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/coupon-code-bulk-create-jobs"
         query_params = {}
@@ -4585,12 +4231,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_create_coupon_codes_job(
-        self,
-        job_id,
-        fields_coupon_code_bulk_create_job=None,
-        fields_coupon_code=None,
-        include=None,
+    async def get_bulk_create_coupon_codes_job(
+        self, job_id, fields_coupon_code_bulk_create_job=None, fields_coupon_code=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves information about a specific coupon code bulk create job by ID, allowing optional filtering of fields and inclusion of related data.
@@ -4613,10 +4255,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[coupon-code-bulk-create-job]",
-                    fields_coupon_code_bulk_create_job,
-                ),
+                ("fields[coupon-code-bulk-create-job]", fields_coupon_code_bulk_create_job),
                 ("fields[coupon-code]", fields_coupon_code),
                 ("include", include),
             ]
@@ -4626,7 +4265,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_coupon_for_coupon_code(self, id, fields_coupon=None) -> dict[str, Any]:
+    async def get_coupon_for_coupon_code(self, id, fields_coupon=None) -> dict[str, Any]:
         """
         This API operation retrieves a coupon associated with a specific coupon code by its ID, allowing optional filtering of coupon fields and specifying a revision via header.
 
@@ -4643,14 +4282,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/coupon-codes/{id}/coupon"
-        query_params = {
-            k: v for k, v in [("fields[coupon]", fields_coupon)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[coupon]", fields_coupon)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_coupon_id_for_coupon_code(self, id) -> dict[str, Any]:
+    async def get_coupon_id_for_coupon_code(self, id) -> dict[str, Any]:
         """
         Retrieves the relationship details of a specific coupon code identified by its ID.
 
@@ -4671,9 +4308,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_coupon_codes_for_coupon(
-        self, id, fields_coupon_code=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_coupon_codes_for_coupon(self, id, fields_coupon_code=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves coupon codes associated with a specific coupon ID, supporting optional filtering, field selection, and pagination via cursor-based navigation.
 
@@ -4694,20 +4329,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/coupons/{id}/coupon-codes"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[coupon-code]", fields_coupon_code),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
+            for k, v in [("fields[coupon-code]", fields_coupon_code), ("filter", filter), ("page[cursor]", page_cursor)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_coupon_code_ids_for_coupon(
-        self, id, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_coupon_code_ids_for_coupon(self, id, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         This API operation retrieves the relationships between a coupon and its associated coupon codes, allowing for filtering and pagination with optional revision information provided in the request header.
 
@@ -4725,16 +4354,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/coupons/{id}/relationships/coupon-codes"
-        query_params = {
-            k: v
-            for k, v in [("filter", filter), ("page[cursor]", page_cursor)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def request_profile_deletion(self, data=None) -> Any:
+    async def request_profile_deletion(self, data=None) -> Any:
         """
         Initiates an asynchronous data privacy deletion job with optional revision control via header parameter.
 
@@ -4767,9 +4392,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Data Privacy
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/data-privacy-deletion-jobs"
         query_params = {}
@@ -4777,15 +4400,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_events(
-        self,
-        fields_event=None,
-        fields_metric=None,
-        fields_profile=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_events(
+        self, fields_event=None, fields_metric=None, fields_profile=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves a filtered list of events with customizable fields, pagination, sorting, and related resources.
@@ -4823,7 +4439,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_event(self, data=None) -> Any:
+    async def create_event(self, data=None) -> Any:
         """
         Create a new event by sending a POST request to the `/api/events` endpoint, which includes a `revision` header and returns success with a 202 status code, or error responses for bad requests (400) or internal server errors (500).
 
@@ -4899,9 +4515,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Events
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/events"
         query_params = {}
@@ -4909,14 +4523,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_event(
-        self,
-        id,
-        fields_event=None,
-        fields_metric=None,
-        fields_profile=None,
-        include=None,
-    ) -> dict[str, Any]:
+    async def get_event(self, id, fields_event=None, fields_metric=None, fields_profile=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific event by its ID, with optional filtering for fields and inclusion of related data.
 
@@ -4950,7 +4557,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_create_events(self, data=None) -> Any:
+    async def bulk_create_events(self, data=None) -> Any:
         """
         Creates a batch of events asynchronously via a bulk job with a version-controlled header (revision) and returns status codes for acceptance (202), invalid requests (400), or server errors (500).
 
@@ -5149,9 +4756,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Events
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/event-bulk-create-jobs"
         query_params = {}
@@ -5159,7 +4764,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_metric_for_event(self, id, fields_metric=None) -> dict[str, Any]:
+    async def get_metric_for_event(self, id, fields_metric=None) -> dict[str, Any]:
         """
         This API operation retrieves event metric details by ID using a GET request to "/api/events/{id}/metric," allowing specification of metric fields via query parameters and requiring a revision header.
 
@@ -5176,14 +4781,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/events/{id}/metric"
-        query_params = {
-            k: v for k, v in [("fields[metric]", fields_metric)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[metric]", fields_metric)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_metric_id_for_event(self, id) -> dict[str, Any]:
+    async def get_metric_id_for_event(self, id) -> dict[str, Any]:
         """
         This API operation retrieves a specific relationship between an event and a metric by ID using a GET request to the "/api/events/{id}/relationships/metric" path, with the ability to specify a revision via a header parameter.
 
@@ -5204,9 +4807,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profile_for_event(
-        self, id, additional_fields_profile=None, fields_profile=None
-    ) -> dict[str, Any]:
+    async def get_profile_for_event(self, id, additional_fields_profile=None, fields_profile=None) -> dict[str, Any]:
         """
         This API operation retrieves a profile associated with a specific event by its ID, allowing optional specification of additional fields and profile fields, while also accepting a revision header.
 
@@ -5226,17 +4827,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/events/{id}/profile"
         query_params = {
             k: v
-            for k, v in [
-                ("additional-fields[profile]", additional_fields_profile),
-                ("fields[profile]", fields_profile),
-            ]
+            for k, v in [("additional-fields[profile]", additional_fields_profile), ("fields[profile]", fields_profile)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_profile_id_for_event(self, id) -> dict[str, Any]:
+    async def get_profile_id_for_event(self, id) -> dict[str, Any]:
         """
         Retrieves the profile relationship data for the specified event ID.
 
@@ -5257,7 +4855,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flows(
+    async def get_flows(
         self,
         fields_flow_action=None,
         fields_flow=None,
@@ -5306,7 +4904,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_flow(self, additional_fields_flow=None, data=None) -> dict[str, Any]:
+    async def create_flow(self, additional_fields_flow=None, data=None) -> dict[str, Any]:
         """
         Creates a new flow resource, supporting optional query parameters for additional flow fields and header-based revision tracking, returning HTTP 201 on success.
 
@@ -5410,28 +5008,16 @@ class KlaviyoApp(APIApplication):
         Tags:
             Flows
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/flows"
-        query_params = {
-            k: v
-            for k, v in [("additional-fields[flow]", additional_fields_flow)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("additional-fields[flow]", additional_fields_flow)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_flow(
-        self,
-        id,
-        additional_fields_flow=None,
-        fields_flow_action=None,
-        fields_flow=None,
-        fields_tag=None,
-        include=None,
+    async def get_flow(
+        self, id, additional_fields_flow=None, fields_flow_action=None, fields_flow=None, fields_tag=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves a flow by ID with optional filtering by additional fields, flow actions, flow details, tags, and includes, using a specified revision from the header.
@@ -5468,7 +5054,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_flow(self, id) -> Any:
+    async def delete_flow(self, id) -> Any:
         """
         Deletes the flow with the specified ID, requiring a revision header, and returns a 204 (No Content) on success, with 400 and 500 codes for client errors and server failures.
 
@@ -5489,7 +5075,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_flow_status(self, id, data=None) -> dict[str, Any]:
+    async def update_flow_status(self, id, data=None) -> dict[str, Any]:
         """
         Updates a specific flow by ID using partial modifications, requiring a revision header.
 
@@ -5517,9 +5103,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/flows/{id}"
         query_params = {}
@@ -5527,13 +5111,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flow_action(
-        self,
-        id,
-        fields_flow_action=None,
-        fields_flow_message=None,
-        fields_flow=None,
-        include=None,
+    async def get_flow_action(
+        self, id, fields_flow_action=None, fields_flow_message=None, fields_flow=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves a specific flow action by ID, optionally including additional fields and related resources, with support for revision tracking via a header.
@@ -5568,13 +5147,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flow_message(
-        self,
-        id,
-        fields_flow_action=None,
-        fields_flow_message=None,
-        fields_template=None,
-        include=None,
+    async def get_flow_message(
+        self, id, fields_flow_action=None, fields_flow_message=None, fields_template=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves a specific flow message by ID with optional filtering (fields selection) and related resource inclusion (include parameter).
@@ -5609,14 +5183,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_actions_for_flow(
-        self,
-        id,
-        fields_flow_action=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_actions_for_flow(
+        self, id, fields_flow_action=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves flow actions for a specific flow with filtering, pagination, and field selection capabilities.
@@ -5653,9 +5221,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_action_ids_for_flow(
-        self, id, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_action_ids_for_flow(self, id, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         The API operation at "/api/flows/{id}/relationships/flow-actions" using the "GET" method retrieves relationships associated with flow actions for a specific flow ID, allowing filtering, pagination, and sorting of results.
 
@@ -5676,20 +5242,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/flows/{id}/relationships/flow-actions"
         query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_tags_for_flow(self, id, fields_tag=None) -> dict[str, Any]:
+    async def get_tags_for_flow(self, id, fields_tag=None) -> dict[str, Any]:
         """
         Retrieves the tags associated with a specific flow identified by its ID, allowing optional filtering of tag fields and requiring a revision header.
 
@@ -5711,7 +5270,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_ids_for_flow(self, id) -> dict[str, Any]:
+    async def get_tag_ids_for_flow(self, id) -> dict[str, Any]:
         """
         Retrieves the tag relationships associated with a specific flow ID, requiring a revision header parameter, and returns success (200), client error (400), or server error (500) responses.
 
@@ -5732,7 +5291,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flow_for_flow_action(self, id, fields_flow=None) -> dict[str, Any]:
+    async def get_flow_for_flow_action(self, id, fields_flow=None) -> dict[str, Any]:
         """
         Retrieves the flow details associated with a specific flow action by ID, allowing optional filtering of flow fields and specifying a revision via headers.
 
@@ -5749,14 +5308,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/flow-actions/{id}/flow"
-        query_params = {
-            k: v for k, v in [("fields[flow]", fields_flow)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_flow_id_for_flow_action(self, id) -> dict[str, Any]:
+    async def get_flow_id_for_flow_action(self, id) -> dict[str, Any]:
         """
         Retrieves relationships for a specific flow action identified by `{id}`, requiring a `revision` header and returning responses for successful retrieval, bad requests, or server errors.
 
@@ -5777,14 +5334,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_messages_for_flow_action(
-        self,
-        id,
-        fields_flow_message=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_messages_for_flow_action(
+        self, id, fields_flow_message=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         This API operation, accessible via GET method at the "/api/flow-actions/{id}/flow-messages" path, retrieves flow messages associated with a specific flow action identified by "id," allowing customization through query parameters for fields, filtering, pagination, and sorting, with additional revision details provided in the header.
@@ -5821,9 +5372,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_message_ids_for_flow_action(
-        self, id, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_message_ids_for_flow_action(self, id, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of flow messages associated with the specified flow action, supporting pagination, filtering, sorting, and optional revision header.
 
@@ -5844,22 +5393,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/flow-actions/{id}/relationships/flow-messages"
         query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_action_for_flow_message(
-        self, id, fields_flow_action=None
-    ) -> dict[str, Any]:
+    async def get_action_for_flow_message(self, id, fields_flow_action=None) -> dict[str, Any]:
         """
         Retrieves a flow action for a specific flow message by ID, allowing optional filtering by fields and revision, returning a successful response or error codes for bad requests or server errors.
 
@@ -5876,16 +5416,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/flow-messages/{id}/flow-action"
-        query_params = {
-            k: v
-            for k, v in [("fields[flow-action]", fields_flow_action)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[flow-action]", fields_flow_action)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_action_id_for_flow_message(self, id) -> dict[str, Any]:
+    async def get_action_id_for_flow_message(self, id) -> dict[str, Any]:
         """
         Retrieves the relationships between a flow message, identified by `{id}`, and a flow action, allowing for the inspection of how flow messages are associated with actions, with optional revision filtering via the `revision` header.
 
@@ -5906,7 +5442,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_template_for_flow_message(self, id, fields_template=None) -> dict[str, Any]:
+    async def get_template_for_flow_message(self, id, fields_template=None) -> dict[str, Any]:
         """
         The `/api/flow-messages/{id}/template` operation retrieves a template for a flow message by its ID using the GET method, allowing optional filtering of template fields via query parameters and specifying revisions through headers.
 
@@ -5923,14 +5459,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/flow-messages/{id}/template"
-        query_params = {
-            k: v for k, v in [("fields[template]", fields_template)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[template]", fields_template)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_template_id_for_flow_message(self, id) -> dict[str, Any]:
+    async def get_template_id_for_flow_message(self, id) -> dict[str, Any]:
         """
         Retrieves the relationship details associated with a template for a specific flow message, identified by `{id}`, with optional filtering by revision specified in the header.
 
@@ -5951,9 +5485,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_forms(
-        self, fields_form=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_forms(self, fields_form=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         The "GET /api/forms" operation retrieves a list of forms based on provided query parameters such as fields, filters, pagination, and sorting, with an optional revision header, returning a successful response with a 200 status code.
 
@@ -5986,9 +5518,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_form(
-        self, id, fields_form_version=None, fields_form=None, include=None
-    ) -> dict[str, Any]:
+    async def get_form(self, id, fields_form_version=None, fields_form=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific form using its ID, supporting optional query parameters for field filtering, includes, and a revision header.
 
@@ -6009,18 +5539,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/forms/{id}"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[form-version]", fields_form_version),
-                ("fields[form]", fields_form),
-                ("include", include),
-            ]
+            for k, v in [("fields[form-version]", fields_form_version), ("fields[form]", fields_form), ("include", include)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_form_version(self, id, fields_form_version=None) -> dict[str, Any]:
+    async def get_form_version(self, id, fields_form_version=None) -> dict[str, Any]:
         """
         Retrieves a specific form version by ID using the GET method, allowing optional filtering by form-version fields and revision headers.
 
@@ -6037,23 +5563,13 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/form-versions/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[form-version]", fields_form_version)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[form-version]", fields_form_version)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_versions_for_form(
-        self,
-        id,
-        fields_form_version=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_versions_for_form(
+        self, id, fields_form_version=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves paginated form versions for a specific form with filtering, sorting, field selection, and pagination options.
@@ -6090,9 +5606,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_version_ids_for_form(
-        self, id, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_version_ids_for_form(self, id, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         This API operation retrieves the relationships between a form and its versions via a GET request to "/api/forms/{id}/relationships/form-versions," allowing filtering, pagination, and sorting of results.
 
@@ -6113,20 +5627,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/forms/{id}/relationships/form-versions"
         query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_form_for_form_version(self, id, fields_form=None) -> dict[str, Any]:
+    async def get_form_for_form_version(self, id, fields_form=None) -> dict[str, Any]:
         """
         Retrieves the specified form version's form details, with optional field filtering via `fields[form]` query parameter and revision tracking via `revision` header.
 
@@ -6143,14 +5650,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/form-versions/{id}/form"
-        query_params = {
-            k: v for k, v in [("fields[form]", fields_form)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[form]", fields_form)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_form_id_for_form_version(self, id) -> dict[str, Any]:
+    async def get_form_id_for_form_version(self, id) -> dict[str, Any]:
         """
         Retrieves the relationship details of a specified form version by its ID using the provided revision header.
 
@@ -6171,14 +5676,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_images(
-        self,
-        fields_image=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
-    ) -> dict[str, Any]:
+    async def get_images(self, fields_image=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         The **GET /api/images** operation retrieves image resources based on optional query parameters for filtering, pagination, sorting, and specific fields, with the option to include a revision header.
 
@@ -6211,7 +5709,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def upload_image_from_url(self, data=None) -> dict[str, Any]:
+    async def upload_image_from_url(self, data=None) -> dict[str, Any]:
         """
         Creates a new image resource with the specified revision, returning a successful creation response if valid, or error responses for invalid requests or server issues.
 
@@ -6237,9 +5735,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Images
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/images"
         query_params = {}
@@ -6247,7 +5743,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_image(self, id, fields_image=None) -> dict[str, Any]:
+    async def get_image(self, id, fields_image=None) -> dict[str, Any]:
         """
         Retrieves a specific image by ID, allowing optional query parameter "fields[image]" and a required revision header, returning data if successful or error responses for bad requests or internal server errors.
 
@@ -6264,14 +5760,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/images/{id}"
-        query_params = {
-            k: v for k, v in [("fields[image]", fields_image)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[image]", fields_image)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_image(self, id, data=None) -> dict[str, Any]:
+    async def update_image(self, id, data=None) -> dict[str, Any]:
         """
         The PATCH method at "/api/images/{id}" allows for partial updates of an image resource by specifying changes in the request body, with the revision tracked via a header parameter.
 
@@ -6300,9 +5794,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/images/{id}"
         query_params = {}
@@ -6310,15 +5802,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_lists(
-        self,
-        fields_flow=None,
-        fields_list=None,
-        fields_tag=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_lists(
+        self, fields_flow=None, fields_list=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         The API operation at "/api/lists" using the "GET" method retrieves a list of items based on specified query parameters for fields, filters, sorting, and pagination, with optional headers for revision control.
@@ -6356,7 +5841,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_list(self, data=None) -> dict[str, Any]:
+    async def create_list(self, data=None) -> dict[str, Any]:
         """
         The POST operation at "/api/lists" creates a new list resource, returning a 201 status upon success, and accepts a `revision` parameter in the request header.
 
@@ -6380,9 +5865,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Lists
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/lists"
         query_params = {}
@@ -6390,14 +5873,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_list(
-        self,
-        id,
-        additional_fields_list=None,
-        fields_flow=None,
-        fields_list=None,
-        fields_tag=None,
-        include=None,
+    async def get_list(
+        self, id, additional_fields_list=None, fields_flow=None, fields_list=None, fields_tag=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves a specific list by ID with customizable response fields, optional related resources to include, and support for specifying data revisions via headers.
@@ -6434,7 +5911,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_list(self, id) -> Any:
+    async def delete_list(self, id) -> Any:
         """
         Deletes the specified list by ID when the correct revision header is provided, returning HTTP 204 for successful deletion, or 400/500 for invalid requests or server errors.
 
@@ -6455,7 +5932,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_list(self, id, data=None) -> dict[str, Any]:
+    async def update_list(self, id, data=None) -> dict[str, Any]:
         """
         Updates a list resource partially by applying modifications to the specified fields at the path "/api/lists/{id}", requiring a revision header for concurrent version control.
 
@@ -6483,9 +5960,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/lists/{id}"
         query_params = {}
@@ -6493,7 +5968,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags_for_list(self, id, fields_tag=None) -> dict[str, Any]:
+    async def get_tags_for_list(self, id, fields_tag=None) -> dict[str, Any]:
         """
         This API operation retrieves the tags associated with a list specified by its ID, allowing optional filtering of specific fields and revision information via query and header parameters, respectively.
 
@@ -6515,7 +5990,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_ids_for_list(self, id) -> dict[str, Any]:
+    async def get_tag_ids_for_list(self, id) -> dict[str, Any]:
         """
         Retrieves the relationships between a specified list and its associated tags.
 
@@ -6536,15 +6011,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profiles_for_list(
-        self,
-        id,
-        additional_fields_profile=None,
-        fields_profile=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_profiles_for_list(
+        self, id, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of profiles associated with the specified list ID, allowing optional filtering, sorting, and pagination, with customizable fields and revision tracking.
@@ -6583,9 +6051,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profile_ids_for_list(
-        self, id, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_profile_ids_for_list(self, id, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         This API operation retrieves the profiles related to a list identified by `{id}`, allowing for filtering, pagination, sorting, and revision specification via query parameters and headers.
 
@@ -6606,20 +6072,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/lists/{id}/relationships/profiles"
         query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_profiles_to_list(self, id, data=None) -> Any:
+    async def add_profiles_to_list(self, id, data=None) -> Any:
         """
         Creates a relationship between a specified list and one or more profiles using a POST request with an optional revision header, returning a 204 on success, 400 for client errors, and 500 for server errors.
 
@@ -6650,9 +6109,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/lists/{id}/relationships/profiles"
         query_params = {}
@@ -6660,7 +6117,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_profiles_from_list(self, id, data=None) -> Any:
+    async def remove_profiles_from_list(self, id, data=None) -> Any:
         """
         Deletes the relationship between the specified list and associated profiles using a revision header, returning status codes for success, bad request, and server errors.
 
@@ -6691,9 +6148,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/lists/{id}/relationships/profiles"
         query_params = {}
@@ -6701,7 +6156,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flows_triggered_by_list(self, id, fields_flow=None) -> dict[str, Any]:
+    async def get_flows_triggered_by_list(self, id, fields_flow=None) -> dict[str, Any]:
         """
         Retrieves flow triggers for a specific list by ID, supporting optional filtering by flow fields and specifying a revision in the request header.
 
@@ -6718,14 +6173,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/lists/{id}/flow-triggers"
-        query_params = {
-            k: v for k, v in [("fields[flow]", fields_flow)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_ids_for_flows_triggered_by_list(self, id) -> dict[str, Any]:
+    async def get_ids_for_flows_triggered_by_list(self, id) -> dict[str, Any]:
         """
         Retrieves the flow triggers associated with a specific list using the provided ID, including revision header parameter, and returns status codes for success (200), client errors (400), or server issues (500).
 
@@ -6746,14 +6199,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_metrics(
-        self,
-        fields_flow=None,
-        fields_metric=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-    ) -> dict[str, Any]:
+    async def get_metrics(self, fields_flow=None, fields_metric=None, filter=None, include=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves paginated metrics data with optional field filtering, resource inclusion, and cursor-based pagination, requiring a revision header.
 
@@ -6786,9 +6232,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_metric(
-        self, id, fields_flow=None, fields_metric=None, include=None
-    ) -> dict[str, Any]:
+    async def get_metric(self, id, fields_flow=None, fields_metric=None, include=None) -> dict[str, Any]:
         """
         Retrieves specific metric data by ID, allowing optional filtering by flow and metric fields, inclusion of additional data, and specification of a revision via a header.
 
@@ -6808,25 +6252,14 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/metrics/{id}"
         query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow]", fields_flow),
-                ("fields[metric]", fields_metric),
-                ("include", include),
-            ]
-            if v is not None
+            k: v for k, v in [("fields[flow]", fields_flow), ("fields[metric]", fields_metric), ("include", include)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_metric_property(
-        self,
-        id,
-        additional_fields_metric_property=None,
-        fields_metric_property=None,
-        fields_metric=None,
-        include=None,
+    async def get_metric_property(
+        self, id, additional_fields_metric_property=None, fields_metric_property=None, fields_metric=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves a metric property by ID, allowing optional filtering of fields and inclusion of additional data through query parameters, with support for revision specification via a header.
@@ -6850,10 +6283,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "additional-fields[metric-property]",
-                    additional_fields_metric_property,
-                ),
+                ("additional-fields[metric-property]", additional_fields_metric_property),
                 ("fields[metric-property]", fields_metric_property),
                 ("fields[metric]", fields_metric),
                 ("include", include),
@@ -6864,7 +6294,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_metric_aggregates(self, data=None) -> dict[str, Any]:
+    async def query_metric_aggregates(self, data=None) -> dict[str, Any]:
         """
         Posts a request to the "/api/metric-aggregates" endpoint, requiring a "revision" header, to aggregate metrics, returning a successful response if valid or error responses for bad requests or server errors.
 
@@ -6909,9 +6339,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Metrics
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/metric-aggregates"
         query_params = {}
@@ -6919,7 +6347,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flows_triggered_by_metric(self, id, fields_flow=None) -> dict[str, Any]:
+    async def get_flows_triggered_by_metric(self, id, fields_flow=None) -> dict[str, Any]:
         """
         Retrieves flow trigger details for a specified metric ID, supporting filtering via query parameters and optional header-based versioning.
 
@@ -6936,14 +6364,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/metrics/{id}/flow-triggers"
-        query_params = {
-            k: v for k, v in [("fields[flow]", fields_flow)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_ids_for_flows_triggered_by_metric(self, id) -> dict[str, Any]:
+    async def get_ids_for_flows_triggered_by_metric(self, id) -> dict[str, Any]:
         """
         This API operation retrieves the flow triggers associated with a specific metric identified by `{id}`, allowing for the inspection of triggers configured for that metric.
 
@@ -6964,9 +6390,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_properties_for_metric(
-        self, id, additional_fields_metric_property=None, fields_metric_property=None
-    ) -> dict[str, Any]:
+    async def get_properties_for_metric(self, id, additional_fields_metric_property=None, fields_metric_property=None) -> dict[str, Any]:
         """
         Retrieves properties of a specific metric by ID, supporting query-based field filtering and custom headers for revision management.
 
@@ -6987,10 +6411,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "additional-fields[metric-property]",
-                    additional_fields_metric_property,
-                ),
+                ("additional-fields[metric-property]", additional_fields_metric_property),
                 ("fields[metric-property]", fields_metric_property),
             ]
             if v is not None
@@ -6999,7 +6420,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_property_ids_for_metric(self, id) -> dict[str, Any]:
+    async def get_property_ids_for_metric(self, id) -> dict[str, Any]:
         """
         Retrieves the relationships of metric properties associated with a specific metric by ID, with the option to specify a revision via the request header.
 
@@ -7020,7 +6441,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_metric_for_metric_property(self, id, fields_metric=None) -> dict[str, Any]:
+    async def get_metric_for_metric_property(self, id, fields_metric=None) -> dict[str, Any]:
         """
         Retrieves a specific metric property by ID, allowing filtering via query parameters and supporting revision headers for conditional requests.
 
@@ -7037,14 +6458,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/metric-properties/{id}/metric"
-        query_params = {
-            k: v for k, v in [("fields[metric]", fields_metric)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[metric]", fields_metric)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_metric_id_for_metric_property(self, id) -> dict[str, Any]:
+    async def get_metric_id_for_metric_property(self, id) -> dict[str, Any]:
         """
         Retrieves the relationships of a metric property identified by {id} through the "GET" method, supporting a "revision" header parameter with response codes indicating success (200), client errors (400), and server errors (500).
 
@@ -7065,14 +6484,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profiles(
-        self,
-        additional_fields_profile=None,
-        fields_profile=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_profiles(
+        self, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves profiles with support for field filtering, pagination, sorting, and custom filtering via query parameters.
@@ -7108,9 +6521,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_profile(
-        self, additional_fields_profile=None, data=None
-    ) -> dict[str, Any]:
+    async def create_profile(self, additional_fields_profile=None, data=None) -> dict[str, Any]:
         """
         Creates a new profile with additional fields passed via query parameters and custom header for revision control, returning success (201), client error (400), or server error (500) status codes.
 
@@ -7156,28 +6567,16 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profiles"
-        query_params = {
-            k: v
-            for k, v in [("additional-fields[profile]", additional_fields_profile)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("additional-fields[profile]", additional_fields_profile)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_profile(
-        self,
-        id,
-        additional_fields_profile=None,
-        fields_list=None,
-        fields_profile=None,
-        fields_segment=None,
-        include=None,
+    async def get_profile(
+        self, id, additional_fields_profile=None, fields_list=None, fields_profile=None, fields_segment=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves a specific profile by ID with customizable field selection through query parameters for enhanced data filtering.
@@ -7214,9 +6613,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_profile(
-        self, id, additional_fields_profile=None, data=None
-    ) -> dict[str, Any]:
+    async def update_profile(self, id, additional_fields_profile=None, data=None) -> dict[str, Any]:
         """
         Updates specific fields of a profile identified by {id} using a partial payload, with optional query parameters for additional fields and a revision header for concurrency control.
 
@@ -7274,26 +6671,16 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profiles/{id}"
-        query_params = {
-            k: v
-            for k, v in [("additional-fields[profile]", additional_fields_profile)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("additional-fields[profile]", additional_fields_profile)] if v is not None}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_suppress_profiles_jobs(
-        self,
-        fields_profile_suppression_bulk_create_job=None,
-        filter=None,
-        page_cursor=None,
-        sort=None,
+    async def get_bulk_suppress_profiles_jobs(
+        self, fields_profile_suppression_bulk_create_job=None, filter=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         The GET operation at the "/api/profile-suppression-bulk-create-jobs" path retrieves a list of bulk profile suppression jobs, allowing for filtering, sorting, and pagination of the results through query parameters.
@@ -7314,10 +6701,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[profile-suppression-bulk-create-job]",
-                    fields_profile_suppression_bulk_create_job,
-                ),
+                ("fields[profile-suppression-bulk-create-job]", fields_profile_suppression_bulk_create_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
                 ("sort", sort),
@@ -7328,7 +6712,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_suppress_profiles(self, data=None) -> dict[str, Any]:
+    async def bulk_suppress_profiles(self, data=None) -> dict[str, Any]:
         """
         Creates a bulk suppression job for profiles to prevent email communication via the Klaviyo API.
 
@@ -7381,9 +6765,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-suppression-bulk-create-jobs"
         query_params = {}
@@ -7391,9 +6773,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_suppress_profiles_job(
-        self, job_id, fields_profile_suppression_bulk_create_job=None
-    ) -> dict[str, Any]:
+    async def get_bulk_suppress_profiles_job(self, job_id, fields_profile_suppression_bulk_create_job=None) -> dict[str, Any]:
         """
         Retrieve the status and details of a bulk profile suppression job by its ID, including optional field filtering and revision header support.
 
@@ -7411,25 +6791,14 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'job_id'")
         url = f"{self.base_url}/api/profile-suppression-bulk-create-jobs/{job_id}"
         query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[profile-suppression-bulk-create-job]",
-                    fields_profile_suppression_bulk_create_job,
-                )
-            ]
-            if v is not None
+            k: v for k, v in [("fields[profile-suppression-bulk-create-job]", fields_profile_suppression_bulk_create_job)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_unsuppress_profiles_jobs(
-        self,
-        fields_profile_suppression_bulk_delete_job=None,
-        filter=None,
-        page_cursor=None,
-        sort=None,
+    async def get_bulk_unsuppress_profiles_jobs(
+        self, fields_profile_suppression_bulk_delete_job=None, filter=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of bulk profile suppression deletion jobs with optional filtering, sorting, and field selection.
@@ -7450,10 +6819,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[profile-suppression-bulk-delete-job]",
-                    fields_profile_suppression_bulk_delete_job,
-                ),
+                ("fields[profile-suppression-bulk-delete-job]", fields_profile_suppression_bulk_delete_job),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
                 ("sort", sort),
@@ -7464,7 +6830,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_unsuppress_profiles(self, data=None) -> dict[str, Any]:
+    async def bulk_unsuppress_profiles(self, data=None) -> dict[str, Any]:
         """
         Creates a bulk job to suppress and/or delete profiles asynchronously, returning a 202 Accepted status upon successful initiation.
 
@@ -7517,9 +6883,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-suppression-bulk-delete-jobs"
         query_params = {}
@@ -7527,9 +6891,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_unsuppress_profiles_job(
-        self, job_id, fields_profile_suppression_bulk_delete_job=None
-    ) -> dict[str, Any]:
+    async def get_bulk_unsuppress_profiles_job(self, job_id, fields_profile_suppression_bulk_delete_job=None) -> dict[str, Any]:
         """
         Retrieves the status and details of a bulk profile suppression deletion job using specified query fields and header revision.
 
@@ -7547,22 +6909,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'job_id'")
         url = f"{self.base_url}/api/profile-suppression-bulk-delete-jobs/{job_id}"
         query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[profile-suppression-bulk-delete-job]",
-                    fields_profile_suppression_bulk_delete_job,
-                )
-            ]
-            if v is not None
+            k: v for k, v in [("fields[profile-suppression-bulk-delete-job]", fields_profile_suppression_bulk_delete_job)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_or_update_profile(
-        self, additional_fields_profile=None, data=None
-    ) -> dict[str, Any]:
+    async def create_or_update_profile(self, additional_fields_profile=None, data=None) -> dict[str, Any]:
         """
         The "POST /api/profile-import" operation imports profiles, accepting optional query parameters like "additional-fields[profile]" and requiring a "revision" header, with responses indicating success (200 or 201), bad requests (400), or internal server errors (500).
 
@@ -7618,21 +6971,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-import"
-        query_params = {
-            k: v
-            for k, v in [("additional-fields[profile]", additional_fields_profile)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("additional-fields[profile]", additional_fields_profile)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def merge_profiles(self, data=None) -> dict[str, Any]:
+    async def merge_profiles(self, data=None) -> dict[str, Any]:
         """
         The API operation at "/api/profile-merge" using the "POST" method merges user profiles, integrating data from a source profile into a destination profile, with the source profile being deleted upon successful completion, and requires a revision header for version control.
 
@@ -7668,9 +7015,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-merge"
         query_params = {}
@@ -7678,7 +7023,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_or_update_push_token(self, data=None) -> Any:
+    async def create_or_update_push_token(self, data=None) -> Any:
         """
         This API operation creates a new resource by posting to the "/api/push-tokens" endpoint, accepting a revision parameter in the request header, and returns a 202 response upon successful creation, with error responses for invalid requests or server errors.
 
@@ -7759,9 +7104,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/push-tokens"
         query_params = {}
@@ -7769,7 +7112,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_lists_for_profile(self, id, fields_list=None) -> dict[str, Any]:
+    async def get_lists_for_profile(self, id, fields_list=None) -> dict[str, Any]:
         """
         This API operation retrieves a list associated with a specific profile identified by `{id}`, allowing optional filtering of fields via the `fields[list]` query parameter and specifying a revision via the `revision` header.
 
@@ -7786,14 +7129,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/profiles/{id}/lists"
-        query_params = {
-            k: v for k, v in [("fields[list]", fields_list)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[list]", fields_list)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_list_ids_for_profile(self, id) -> dict[str, Any]:
+    async def get_list_ids_for_profile(self, id) -> dict[str, Any]:
         """
         Retrieves the lists associated with a specified profile ID via header-based version control.
 
@@ -7814,7 +7155,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_segments_for_profile(self, id, fields_segment=None) -> dict[str, Any]:
+    async def get_segments_for_profile(self, id, fields_segment=None) -> dict[str, Any]:
         """
         This API operation retrieves profile segment information for a specified profile ID, allowing for the selection of specific segment fields via query parameters and the specification of a revision in the request header.
 
@@ -7831,14 +7172,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/profiles/{id}/segments"
-        query_params = {
-            k: v for k, v in [("fields[segment]", fields_segment)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[segment]", fields_segment)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_segment_ids_for_profile(self, id) -> dict[str, Any]:
+    async def get_segment_ids_for_profile(self, id) -> dict[str, Any]:
         """
         Retrieves the associated segments of a specific profile, requiring a revision header, and returns a 200 status on success with potential 400 or 500 error responses.
 
@@ -7859,13 +7198,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_import_profiles_jobs(
-        self,
-        fields_profile_bulk_import_job=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_bulk_import_profiles_jobs(
+        self, fields_profile_bulk_import_job=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         The GET operation on `/api/profile-bulk-import-jobs` retrieves and filters paginated bulk profile import job records with customizable sorting, field selection, and cursor-based pagination.
@@ -7899,7 +7233,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_import_profiles(self, data=None) -> dict[str, Any]:
+    async def bulk_import_profiles(self, data=None) -> dict[str, Any]:
         """
         The POST operation at "/api/profile-bulk-import-jobs" creates a new bulk profile import job, allowing for the creation or update of multiple profiles, with a revision specified in the header.
 
@@ -8014,9 +7348,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Bulk Import Profiles
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-bulk-import-jobs"
         query_params = {}
@@ -8024,12 +7356,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_bulk_import_profiles_job(
-        self,
-        job_id,
-        fields_list=None,
-        fields_profile_bulk_import_job=None,
-        include=None,
+    async def get_bulk_import_profiles_job(
+        self, job_id, fields_list=None, fields_profile_bulk_import_job=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieves the status and details of a specific bulk profile import job, including optional field selection and resource inclusion via query parameters.
@@ -8062,9 +7390,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_list_for_bulk_import_profiles_job(
-        self, id, fields_list=None
-    ) -> dict[str, Any]:
+    async def get_list_for_bulk_import_profiles_job(self, id, fields_list=None) -> dict[str, Any]:
         """
         Retrieves profile lists associated with a specific bulk import job ID, allowing field filtering via query parameters and including a revision header.
 
@@ -8081,14 +7407,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/lists"
-        query_params = {
-            k: v for k, v in [("fields[list]", fields_list)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[list]", fields_list)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_list_ids_for_bulk_import_profiles_job(self, id) -> dict[str, Any]:
+    async def get_list_ids_for_bulk_import_profiles_job(self, id) -> dict[str, Any]:
         """
         This API operation retrieves the relationships between a specific bulk profile import job and its associated lists, allowing the caller to fetch related list data using a GET request on the "/api/profile-bulk-import-jobs/{id}/relationships/lists" endpoint.
 
@@ -8109,13 +7433,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profiles_for_bulk_import_profiles_job(
-        self,
-        id,
-        additional_fields_profile=None,
-        fields_profile=None,
-        page_cursor=None,
-        page_size=None,
+    async def get_profiles_for_bulk_import_profiles_job(
+        self, id, additional_fields_profile=None, fields_profile=None, page_cursor=None, page_size=None
     ) -> dict[str, Any]:
         """
         The API operation defined at path "/api/profile-bulk-import-jobs/{id}/profiles" using the "GET" method retrieves a list of profiles associated with a specific bulk import job, allowing for pagination and customization of returned fields.
@@ -8150,9 +7469,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profile_ids_for_bulk_import_profiles_job(
-        self, id, page_cursor=None, page_size=None
-    ) -> dict[str, Any]:
+    async def get_profile_ids_for_bulk_import_profiles_job(self, id, page_cursor=None, page_size=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of profile relationships associated with a specific bulk import job using cursor-based pagination query parameters.
 
@@ -8169,19 +7486,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = (
-            f"{self.base_url}/api/profile-bulk-import-jobs/{id}/relationships/profiles"
-        )
-        query_params = {
-            k: v
-            for k, v in [("page[cursor]", page_cursor), ("page[size]", page_size)]
-            if v is not None
-        }
+        url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/relationships/profiles"
+        query_params = {k: v for k, v in [("page[cursor]", page_cursor), ("page[size]", page_size)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_errors_for_bulk_import_profiles_job(
+    async def get_errors_for_bulk_import_profiles_job(
         self, id, fields_import_error=None, page_cursor=None, page_size=None
     ) -> dict[str, Any]:
         """
@@ -8204,18 +7515,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/import-errors"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[import-error]", fields_import_error),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-            ]
+            for k, v in [("fields[import-error]", fields_import_error), ("page[cursor]", page_cursor), ("page[size]", page_size)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def bulk_subscribe_profiles(self, data=None) -> Any:
+    async def bulk_subscribe_profiles(self, data=None) -> Any:
         """
         Subscribes one or more profiles to email/SMS marketing lists in bulk, handling consent and double opt-in where applicable.
 
@@ -8306,9 +7613,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-subscription-bulk-create-jobs"
         query_params = {}
@@ -8316,7 +7621,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_unsubscribe_profiles(self, data=None) -> Any:
+    async def bulk_unsubscribe_profiles(self, data=None) -> Any:
         """
         Initiates a bulk unsubscribe job to remove multiple profiles from email subscriptions asynchronously.
 
@@ -8395,9 +7700,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/profile-subscription-bulk-delete-jobs"
         query_params = {}
@@ -8405,7 +7708,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_campaign_values(self, page_cursor=None, data=None) -> dict[str, Any]:
+    async def query_campaign_values(self, page_cursor=None, data=None) -> dict[str, Any]:
         """
         Creates a campaign values report, accepting a page cursor as a query parameter and a revision in the request header, returning data if successful.
 
@@ -8438,19 +7741,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/campaign-values-reports"
-        query_params = {
-            k: v for k, v in [("page_cursor", page_cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page_cursor", page_cursor)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def query_flow_values(self, page_cursor=None, data=None) -> dict[str, Any]:
+    async def query_flow_values(self, page_cursor=None, data=None) -> dict[str, Any]:
         """
         This API operation, using the POST method at "/api/flow-values-reports", allows users to generate reports by providing a page cursor in the query and a revision in the header, with potential responses indicating success (200) or error conditions (400, 500).
 
@@ -8483,19 +7782,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/flow-values-reports"
-        query_params = {
-            k: v for k, v in [("page_cursor", page_cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page_cursor", page_cursor)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def query_flow_series(self, page_cursor=None, data=None) -> dict[str, Any]:
+    async def query_flow_series(self, page_cursor=None, data=None) -> dict[str, Any]:
         """
         This API operation at "/api/flow-series-reports" utilizes the POST method to create a flow series report, allowing clients to specify pagination with the "page_cursor" query parameter and specify a revision via the "revision" header, with responses for successful execution (200), bad request (400), and internal server error (500).
 
@@ -8529,19 +7824,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/flow-series-reports"
-        query_params = {
-            k: v for k, v in [("page_cursor", page_cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page_cursor", page_cursor)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def query_form_values(self, data=None) -> dict[str, Any]:
+    async def query_form_values(self, data=None) -> dict[str, Any]:
         """
         Submits form values report data with a specified revision header.
 
@@ -8576,9 +7867,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/form-values-reports"
         query_params = {}
@@ -8586,7 +7875,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_form_series(self, data=None) -> dict[str, Any]:
+    async def query_form_series(self, data=None) -> dict[str, Any]:
         """
         This API operation, exposed at the "/api/form-series-reports" path using the "POST" method, allows users to generate or submit form series reports, specifying a revision via a header parameter, and returns responses indicating success, bad request, or internal server error.
 
@@ -8622,9 +7911,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/form-series-reports"
         query_params = {}
@@ -8632,7 +7919,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_segment_values(self, data=None) -> dict[str, Any]:
+    async def query_segment_values(self, data=None) -> dict[str, Any]:
         """
         Creates a report on segment values using a POST request to the "/api/segment-values-reports" endpoint, which requires a revision header and returns a report upon successful execution.
 
@@ -8663,9 +7950,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/segment-values-reports"
         query_params = {}
@@ -8673,7 +7958,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_segment_series(self, data=None) -> dict[str, Any]:
+    async def query_segment_series(self, data=None) -> dict[str, Any]:
         """
         The POST operation at the "/api/segment-series-reports" path generates segment series reports, requiring a revision number provided in the header, and returns successful reports with a 200 status code or error messages for invalid requests (400) or server issues (500).
 
@@ -8705,9 +7990,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/segment-series-reports"
         query_params = {}
@@ -8715,15 +7998,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_reviews(
-        self,
-        fields_event=None,
-        fields_review=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_reviews(
+        self, fields_event=None, fields_review=None, filter=None, include=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves review data with optional filtering, pagination, sorting, and field selection parameters for events and reviews.
@@ -8761,9 +8037,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_review(
-        self, id, fields_event=None, fields_review=None, include=None
-    ) -> dict[str, Any]:
+    async def get_review(self, id, fields_event=None, fields_review=None, include=None) -> dict[str, Any]:
         """
         The "/api/reviews/{id}" API endpoint uses the GET method to retrieve a specific review by its ID, allowing optional query parameters for selecting fields and specifying additional data to include, with support for a revision header.
 
@@ -8783,19 +8057,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/reviews/{id}"
         query_params = {
-            k: v
-            for k, v in [
-                ("fields[event]", fields_event),
-                ("fields[review]", fields_review),
-                ("include", include),
-            ]
-            if v is not None
+            k: v for k, v in [("fields[event]", fields_event), ("fields[review]", fields_review), ("include", include)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_review(self, id, data=None) -> dict[str, Any]:
+    async def update_review(self, id, data=None) -> dict[str, Any]:
         """
         This API operation uses the PATCH method at the "/api/reviews/{id}" path to partially update a review by applying specific changes while maintaining the integrity of unchanged fields, requiring a revision header for processing.
 
@@ -8829,9 +8097,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/reviews/{id}"
         query_params = {}
@@ -8839,15 +8105,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_segments(
-        self,
-        fields_flow=None,
-        fields_segment=None,
-        fields_tag=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_segments(
+        self, fields_flow=None, fields_segment=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         Use this API endpoint to retrieve a list of segments, allowing you to filter the results by various criteria and customize the output with specific fields and sorting options.
@@ -8885,7 +8144,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_segment(self, data=None) -> dict[str, Any]:
+    async def create_segment(self, data=None) -> dict[str, Any]:
         """
         Creates a new segment with the specified configuration, returning the created resource upon success.
 
@@ -8974,9 +8233,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Segments
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/segments"
         query_params = {}
@@ -8984,14 +8241,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_segment(
-        self,
-        id,
-        additional_fields_segment=None,
-        fields_flow=None,
-        fields_segment=None,
-        fields_tag=None,
-        include=None,
+    async def get_segment(
+        self, id, additional_fields_segment=None, fields_flow=None, fields_segment=None, fields_tag=None, include=None
     ) -> dict[str, Any]:
         """
         Retrieve a segment by its ID, optionally including additional fields, flows, segment details, tags, and related data, with support for specifying a revision in the request header.
@@ -9028,7 +8279,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_segment(self, id) -> Any:
+    async def delete_segment(self, id) -> Any:
         """
         Deletes the specified segment by ID, requiring a revision header, and returns a 204 for success, 400 for invalid requests, or 500 for server errors.
 
@@ -9049,7 +8300,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_segment(self, id, data=None) -> dict[str, Any]:
+    async def update_segment(self, id, data=None) -> dict[str, Any]:
         """
         The PATCH method at "/api/segments/{id}" allows partial updates to a segment resource, enabling modifications of specific fields while leaving others unchanged, with an optional revision header for version control.
 
@@ -9142,9 +8393,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/segments/{id}"
         query_params = {}
@@ -9152,7 +8401,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags_for_segment(self, id, fields_tag=None) -> dict[str, Any]:
+    async def get_tags_for_segment(self, id, fields_tag=None) -> dict[str, Any]:
         """
         Retrieves tags for a segment by ID, allowing optional filtering by specific tag fields and accepting a revision in the request header.
 
@@ -9174,7 +8423,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_ids_for_segment(self, id) -> dict[str, Any]:
+    async def get_tag_ids_for_segment(self, id) -> dict[str, Any]:
         """
         Retrieves the relationships and associated tags for a specific segment identified by its ID, including any revision header information.
 
@@ -9195,15 +8444,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profiles_for_segment(
-        self,
-        id,
-        additional_fields_profile=None,
-        fields_profile=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_profiles_for_segment(
+        self, id, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of profiles associated with a specific segment, supporting filtering, sorting, and field selection.
@@ -9242,9 +8484,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_profile_ids_for_segment(
-        self, id, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_profile_ids_for_segment(self, id, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         This API operation retrieves the profiles related to a segment with the specified ID using a GET method, allowing for filtering, pagination, sorting, and revision specification through query and header parameters.
 
@@ -9265,20 +8505,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/segments/{id}/relationships/profiles"
         query_params = {
-            k: v
-            for k, v in [
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_flows_triggered_by_segment(self, id, fields_flow=None) -> dict[str, Any]:
+    async def get_flows_triggered_by_segment(self, id, fields_flow=None) -> dict[str, Any]:
         """
         Retrieves flow triggers for a segment by ID, optionally filtering by specific flow fields and providing a revision in the header.
 
@@ -9295,14 +8528,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/segments/{id}/flow-triggers"
-        query_params = {
-            k: v for k, v in [("fields[flow]", fields_flow)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_ids_for_flows_triggered_by_segment(self, id) -> dict[str, Any]:
+    async def get_ids_for_flows_triggered_by_segment(self, id) -> dict[str, Any]:
         """
         Retrieves the associated flow triggers linked to a specific segment by its ID, supporting a custom revision header for version control.
 
@@ -9323,14 +8554,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags(
-        self,
-        fields_tag_group=None,
-        fields_tag=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        sort=None,
+    async def get_tags(
+        self, fields_tag_group=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of tags filtered, sorted, and paginated via query parameters while supporting selective field inclusion and specific API revisions via headers.
@@ -9366,7 +8591,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_tag(self, data=None) -> dict[str, Any]:
+    async def create_tag(self, data=None) -> dict[str, Any]:
         """
         Creates a new tag resource using the provided data, requiring a revision header and returning HTTP status codes for success (201), client errors (400), or server issues (500).
 
@@ -9398,9 +8623,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tags, Tags1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags"
         query_params = {}
@@ -9408,9 +8631,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag(
-        self, id, fields_tag_group=None, fields_tag=None, include=None
-    ) -> dict[str, Any]:
+    async def get_tag(self, id, fields_tag_group=None, fields_tag=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific tag by ID with optional query parameters for field selection, included resources, and a header for revision control.
 
@@ -9430,19 +8651,13 @@ class KlaviyoApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/tags/{id}"
         query_params = {
-            k: v
-            for k, v in [
-                ("fields[tag-group]", fields_tag_group),
-                ("fields[tag]", fields_tag),
-                ("include", include),
-            ]
-            if v is not None
+            k: v for k, v in [("fields[tag-group]", fields_tag_group), ("fields[tag]", fields_tag), ("include", include)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_tag(self, id) -> Any:
+    async def delete_tag(self, id) -> Any:
         """
         Deletes the specified tag by ID, requiring a revision header, with responses indicating success (204 No Content), bad request (400), or server error (500).
 
@@ -9463,7 +8678,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_tag(self, id, data=None) -> Any:
+    async def update_tag(self, id, data=None) -> Any:
         """
         Updates the specified tag (ID: {id}) with partial modifications using the revision header for conflict detection, returning 204 on success.
 
@@ -9491,9 +8706,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}"
         query_params = {}
@@ -9501,7 +8714,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flow_ids_for_tag(self, id) -> dict[str, Any]:
+    async def get_flow_ids_for_tag(self, id) -> dict[str, Any]:
         """
         Retrieves the associated flow resources linked to the specified tag ID, using the provided revision header for version control.
 
@@ -9522,7 +8735,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tag_flows(self, id, data=None) -> Any:
+    async def tag_flows(self, id, data=None) -> Any:
         """
         The API operation at path "/api/tags/{id}/relationships/flows" using the "POST" method creates a new relationship between a tag and a flow, optionally specifying a revision in the header.
 
@@ -9553,9 +8766,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/flows"
         query_params = {}
@@ -9563,7 +8774,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_tag_from_flows(self, id, data=None) -> Any:
+    async def remove_tag_from_flows(self, id, data=None) -> Any:
         """
         Deletes the relationship between the specified tag and associated flows, returning a 204 No Content response upon successful deletion.
 
@@ -9594,9 +8805,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/flows"
         query_params = {}
@@ -9604,7 +8813,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign_ids_for_tag(self, id) -> dict[str, Any]:
+    async def get_campaign_ids_for_tag(self, id) -> dict[str, Any]:
         """
         This API operation retrieves relationships between a tag with the specified ID and campaigns, using the GET method at the path "/api/tags/{id}/relationships/campaigns".
 
@@ -9625,7 +8834,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tag_campaigns(self, id, data=None) -> Any:
+    async def tag_campaigns(self, id, data=None) -> Any:
         """
         Creates a relationship between the specified tag and campaign(s) using the "revision" header for concurrency control.
 
@@ -9656,9 +8865,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/campaigns"
         query_params = {}
@@ -9666,7 +8873,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_tag_from_campaigns(self, id, data=None) -> Any:
+    async def remove_tag_from_campaigns(self, id, data=None) -> Any:
         """
         The API operation defined at `/api/tags/{id}/relationships/campaigns` using the `DELETE` method removes the relationship between a tag with the specified ID and associated campaigns, requiring a `revision` header and returning a successful response with a 204 status code if completed correctly.
 
@@ -9697,9 +8904,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/campaigns"
         query_params = {}
@@ -9707,7 +8912,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_list_ids_for_tag(self, id) -> dict[str, Any]:
+    async def get_list_ids_for_tag(self, id) -> dict[str, Any]:
         """
         Retrieves the relationship details for lists associated with a specified tag ID, requiring a revision header parameter.
 
@@ -9728,7 +8933,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tag_lists(self, id, data=None) -> Any:
+    async def tag_lists(self, id, data=None) -> Any:
         """
         Creates a new relationship between a specified tag and lists using the provided header revision.
 
@@ -9759,9 +8964,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/lists"
         query_params = {}
@@ -9769,7 +8972,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_tag_from_lists(self, id, data=None) -> Any:
+    async def remove_tag_from_lists(self, id, data=None) -> Any:
         """
         Deletes the relationship between a tag with the specified ID and its associated lists, requiring a revision header.
 
@@ -9800,9 +9003,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/lists"
         query_params = {}
@@ -9810,7 +9011,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_segment_ids_for_tag(self, id) -> dict[str, Any]:
+    async def get_segment_ids_for_tag(self, id) -> dict[str, Any]:
         """
         Retrieves a list of relationships between a tag identified by `{id}` and segments, with the option to specify a revision in the request header.
 
@@ -9831,7 +9032,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tag_segments(self, id, data=None) -> Any:
+    async def tag_segments(self, id, data=None) -> Any:
         """
         Creates a relationship between a tag identified by `{id}` and one or more segments, using the specified revision from the request header.
 
@@ -9862,9 +9063,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/segments"
         query_params = {}
@@ -9872,7 +9071,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_tag_from_segments(self, id, data=None) -> Any:
+    async def remove_tag_from_segments(self, id, data=None) -> Any:
         """
         Removes tag associations with one or more segments by specifying the tag ID in the path and segment relationships in the request body.
 
@@ -9903,9 +9102,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tags/{id}/relationships/segments"
         query_params = {}
@@ -9913,7 +9110,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_group_for_tag(self, id, fields_tag_group=None) -> dict[str, Any]:
+    async def get_tag_group_for_tag(self, id, fields_tag_group=None) -> dict[str, Any]:
         """
         Retrieves the details of a tag group associated with the specified tag ID, allowing field selection via query parameters and revision specification via headers.
 
@@ -9930,14 +9127,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/tags/{id}/tag-group"
-        query_params = {
-            k: v for k, v in [("fields[tag-group]", fields_tag_group)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[tag-group]", fields_tag_group)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_tag_group_id_for_tag(self, id) -> dict[str, Any]:
+    async def get_tag_group_id_for_tag(self, id) -> dict[str, Any]:
         """
         Retrieves the tag-group relationship details for the specified tag ID, including optional revision header parameters.
 
@@ -9958,9 +9153,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_groups(
-        self, fields_tag_group=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_tag_groups(self, fields_tag_group=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of tag groups with optional filtering, sorting, pagination via cursor, field selection, and revision headers, returning appropriate status responses.
 
@@ -9979,19 +9172,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/tag-groups"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[tag-group]", fields_tag_group),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
+            for k, v in [("fields[tag-group]", fields_tag_group), ("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_tag_group(self, data=None) -> dict[str, Any]:
+    async def create_tag_group(self, data=None) -> dict[str, Any]:
         """
         Creates a new tag group with the specified revision header, returning a 201 response on successful creation or appropriate error codes (400/500) for failures.
 
@@ -10016,9 +9204,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tags, Tag Groups
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tag-groups"
         query_params = {}
@@ -10026,7 +9212,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_group(self, id, fields_tag_group=None) -> dict[str, Any]:
+    async def get_tag_group(self, id, fields_tag_group=None) -> dict[str, Any]:
         """
         Retrieves a tag group by ID, allowing optional filtering by specific fields and including a revision header, returning a successful response with a 200 status code.
 
@@ -10043,14 +9229,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/tag-groups/{id}"
-        query_params = {
-            k: v for k, v in [("fields[tag-group]", fields_tag_group)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[tag-group]", fields_tag_group)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_tag_group(self, id) -> dict[str, Any]:
+    async def delete_tag_group(self, id) -> dict[str, Any]:
         """
         Deletes a tag group by its ID, with the revision specified in the request header, returning success if the operation completes without errors.
 
@@ -10071,7 +9255,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_tag_group(self, id, data=None) -> dict[str, Any]:
+    async def update_tag_group(self, id, data=None) -> dict[str, Any]:
         """
         Updates the specified tag group by ID using partial modifications, requiring a revision header and returning 200, 400, or 500 status codes.
 
@@ -10103,9 +9287,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tag-groups/{id}"
         query_params = {}
@@ -10113,7 +9295,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags_for_tag_group(self, id, fields_tag=None) -> dict[str, Any]:
+    async def get_tags_for_tag_group(self, id, fields_tag=None) -> dict[str, Any]:
         """
         This API operation retrieves a list of tags associated with a specific tag group, identified by `{id}`, allowing optional filtering by specific tag fields via the `fields[tag]` query parameter, with support for specifying a revision in the request header.
 
@@ -10135,7 +9317,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag_ids_for_tag_group(self, id) -> dict[str, Any]:
+    async def get_tag_ids_for_tag_group(self, id) -> dict[str, Any]:
         """
         This GET operation retrieves the relationships between a specific tag group and its associated tags, identified by the provided `{id}` in the path, with an optional `revision` header for additional context.
 
@@ -10156,9 +9338,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_templates(
-        self, fields_template=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_templates(self, fields_template=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves template resources with optional filtering, sorting, pagination, and field selection.
 
@@ -10177,19 +9357,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/templates"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[template]", fields_template),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
+            for k, v in [("fields[template]", fields_template), ("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_template(self, data=None) -> dict[str, Any]:
+    async def create_template(self, data=None) -> dict[str, Any]:
         """
         Creates a new template with the specified revision, returning a successful response if created or error responses for bad requests or server failures.
 
@@ -10216,9 +9391,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/templates"
         query_params = {}
@@ -10226,7 +9399,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_template(self, id, fields_template=None) -> dict[str, Any]:
+    async def get_template(self, id, fields_template=None) -> dict[str, Any]:
         """
         The API operation defined at the path "/api/templates/{id}" using the "GET" method retrieves a specific template by its ID, optionally specifying fields to include and a revision in the headers, returning a successful response with HTTP status 200.
 
@@ -10243,14 +9416,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/templates/{id}"
-        query_params = {
-            k: v for k, v in [("fields[template]", fields_template)] if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[template]", fields_template)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_template(self, id) -> Any:
+    async def delete_template(self, id) -> Any:
         """
         Deletes a template by ID with optional revision header, returning 204 on success or 400/500 for client/server errors.
 
@@ -10271,7 +9442,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_template(self, id, data=None) -> dict[str, Any]:
+    async def update_template(self, id, data=None) -> dict[str, Any]:
         """
         Updates a template's properties using partial modifications with a specified revision header, returning 200 on success.
 
@@ -10301,9 +9472,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/templates/{id}"
         query_params = {}
@@ -10311,7 +9480,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def render_template(self, data=None) -> dict[str, Any]:
+    async def render_template(self, data=None) -> dict[str, Any]:
         """
         Renders a template using the specified revision header, returning success (201) or error status (400/500).
 
@@ -10336,9 +9505,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/template-render"
         query_params = {}
@@ -10346,7 +9513,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def clone_template(self, data=None) -> dict[str, Any]:
+    async def clone_template(self, data=None) -> dict[str, Any]:
         """
         Creates a new template by cloning an existing one, requiring a revision header parameter and returning success (201), bad request (400), or server error (500) responses.
 
@@ -10371,9 +9538,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/template-clone"
         query_params = {}
@@ -10381,13 +9546,8 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_all_universal_content(
-        self,
-        fields_template_universal_content=None,
-        filter=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
+    async def get_all_universal_content(
+        self, fields_template_universal_content=None, filter=None, page_cursor=None, page_size=None, sort=None
     ) -> dict[str, Any]:
         """
         This API operation uses the GET method at the "/api/template-universal-content" path to retrieve template universal content data, allowing filtering and sorting with optional parameters for fields, filter, pagination, and sorting, while requiring a revision in the header.
@@ -10409,10 +9569,7 @@ class KlaviyoApp(APIApplication):
         query_params = {
             k: v
             for k, v in [
-                (
-                    "fields[template-universal-content]",
-                    fields_template_universal_content,
-                ),
+                ("fields[template-universal-content]", fields_template_universal_content),
                 ("filter", filter),
                 ("page[cursor]", page_cursor),
                 ("page[size]", page_size),
@@ -10424,7 +9581,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_universal_content(self, data=None) -> dict[str, Any]:
+    async def create_universal_content(self, data=None) -> dict[str, Any]:
         """
         Generates universal content templates with optional revision control in headers, returning success (201) or error codes (400, 500).
 
@@ -10463,9 +9620,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Universal Content
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/template-universal-content"
         query_params = {}
@@ -10473,9 +9628,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_universal_content(
-        self, id, fields_template_universal_content=None
-    ) -> dict[str, Any]:
+    async def get_universal_content(self, id, fields_template_universal_content=None) -> dict[str, Any]:
         """
         This API operation retrieves a template with universal content specified by the `{id}` using the GET method, allowing optional filtering by specific fields and specifying a revision in the header.
 
@@ -10492,21 +9645,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/template-universal-content/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                (
-                    "fields[template-universal-content]",
-                    fields_template_universal_content,
-                )
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[template-universal-content]", fields_template_universal_content)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_universal_content(self, id) -> Any:
+    async def delete_universal_content(self, id) -> Any:
         """
         Deletes the specified universal content item by ID, requiring a revision header, and returns 204 No Content upon successful deletion.
 
@@ -10527,7 +9671,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_universal_content(self, id, data=None) -> dict[str, Any]:
+    async def update_universal_content(self, id, data=None) -> dict[str, Any]:
         """
         The PATCH operation at "/api/template-universal-content/{id}" partially updates a template's content by specifying specific changes in the request body, with the revision specified in the header, returning a successful response or error based on the request's validity.
 
@@ -10570,9 +9714,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/template-universal-content/{id}"
         query_params = {}
@@ -10580,9 +9722,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tracking_settings(
-        self, fields_tracking_setting=None, page_cursor=None, page_size=None
-    ) -> dict[str, Any]:
+    async def get_tracking_settings(self, fields_tracking_setting=None, page_cursor=None, page_size=None) -> dict[str, Any]:
         """
         Retrieves all tracking settings in an account with optional pagination and field filtering support.
 
@@ -10600,18 +9740,14 @@ class KlaviyoApp(APIApplication):
         url = f"{self.base_url}/api/tracking-settings"
         query_params = {
             k: v
-            for k, v in [
-                ("fields[tracking-setting]", fields_tracking_setting),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-            ]
+            for k, v in [("fields[tracking-setting]", fields_tracking_setting), ("page[cursor]", page_cursor), ("page[size]", page_size)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_tracking_setting(self, id, fields_tracking_setting=None) -> dict[str, Any]:
+    async def get_tracking_setting(self, id, fields_tracking_setting=None) -> dict[str, Any]:
         """
         Retrieves tracking settings by ID with optional field selection and revision header support.
 
@@ -10628,16 +9764,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/tracking-settings/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[tracking-setting]", fields_tracking_setting)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[tracking-setting]", fields_tracking_setting)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_tracking_setting(self, id, data=None) -> dict[str, Any]:
+    async def update_tracking_setting(self, id, data=None) -> dict[str, Any]:
         """
         PATCH /api/tracking-settings/{id} partially updates a specific tracking setting by ID, requiring a revision in the header, and may return a successful response or error codes based on input validity and server status.
 
@@ -10739,9 +9871,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/tracking-settings/{id}"
         query_params = {}
@@ -10749,7 +9879,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhooks(self, fields_webhook=None, include=None) -> dict[str, Any]:
+    async def get_webhooks(self, fields_webhook=None, include=None) -> dict[str, Any]:
         """
         Retrieves webhooks with optional field selection, included resources, and revision headers.
 
@@ -10764,16 +9894,12 @@ class KlaviyoApp(APIApplication):
             Webhooks
         """
         url = f"{self.base_url}/api/webhooks"
-        query_params = {
-            k: v
-            for k, v in [("fields[webhook]", fields_webhook), ("include", include)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[webhook]", fields_webhook), ("include", include)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_webhook(self, data=None) -> dict[str, Any]:
+    async def create_webhook(self, data=None) -> dict[str, Any]:
         """
         The "/api/webhooks" endpoint supports the "POST" method to create a new webhook, requiring a revision header, and returns a successful creation response with a 201 status code, or error responses for bad requests (400) or internal server errors (500).
 
@@ -10814,9 +9940,7 @@ class KlaviyoApp(APIApplication):
         Tags:
             Webhooks
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/webhooks"
         query_params = {}
@@ -10824,7 +9948,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhook(self, id, fields_webhook=None, include=None) -> dict[str, Any]:
+    async def get_webhook(self, id, fields_webhook=None, include=None) -> dict[str, Any]:
         """
         Retrieves a webhook by its ID using a GET request, allowing optional filtering by specifying fields and includes, with support for revision tracking via a header.
 
@@ -10842,16 +9966,12 @@ class KlaviyoApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/webhooks/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[webhook]", fields_webhook), ("include", include)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields[webhook]", fields_webhook), ("include", include)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_webhook(self, id) -> Any:
+    async def delete_webhook(self, id) -> Any:
         """
         Deletes a webhook resource identified by its ID, returning a 204 No Content response upon successful deletion, with optional revision information provided in the headers, and error responses for invalid requests or server errors.
 
@@ -10872,7 +9992,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_webhook(self, id, data=None) -> dict[str, Any]:
+    async def update_webhook(self, id, data=None) -> dict[str, Any]:
         """
         Updates the webhook resource identified by {id} using partial modifications, requiring a revision header and returning appropriate status codes for success (200), client errors (400), or server errors (500).
 
@@ -10918,9 +10038,7 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/webhooks/{id}"
         query_params = {}
@@ -10928,7 +10046,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhook_topics(self) -> dict[str, Any]:
+    async def get_webhook_topics(self) -> dict[str, Any]:
         """
         Retrieves webhook topics with an optional revision header parameter, returning 200, 400, or 500 status codes.
 
@@ -10944,7 +10062,7 @@ class KlaviyoApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhook_topic(self, id) -> dict[str, Any]:
+    async def get_webhook_topic(self, id) -> dict[str, Any]:
         """
         Retrieves a webhook topic by its ID using the GET method, supporting revision information via a header parameter, and returns responses for successful retrieval (200), bad requests (400), and internal server errors (500).
 

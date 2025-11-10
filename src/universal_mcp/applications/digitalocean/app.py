@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class DigitaloceanApp(APIApplication):
         super().__init__(name="digitalocean", integration=integration, **kwargs)
         self.base_url = "https://api.digitalocean.com"
 
-    def one_clicks_list(self, type: str | None = None) -> Any:
+    async def one_clicks_list(self, type: str | None = None) -> Any:
         """
         List 1-Click Applications
 
@@ -30,20 +29,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("type", type)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def one_clicks_install_kubernetes(
-        self, addon_slugs: list[str], cluster_uuid: str
-    ) -> dict[str, Any]:
+    async def one_clicks_install_kubernetes(self, addon_slugs: list[str], cluster_uuid: str) -> dict[str, Any]:
         """
         Install Kubernetes 1-Click Applications
 
@@ -65,34 +58,20 @@ class DigitaloceanApp(APIApplication):
             1-Click Applications
         """
         request_body_data = None
-        request_body_data = {
-            "addon_slugs": addon_slugs,
-            "cluster_uuid": cluster_uuid,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"addon_slugs": addon_slugs, "cluster_uuid": cluster_uuid}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/1-clicks/kubernetes"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def account_get(self) -> Any:
+    async def account_get(self) -> Any:
         """
         Get User Information
 
@@ -110,20 +89,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def ssh_keys_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def ssh_keys_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All SSH Keys
 
@@ -142,29 +115,17 @@ class DigitaloceanApp(APIApplication):
             SSH Keys
         """
         url = f"{self.base_url}/v2/account/keys"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def ssh_keys_create(
-        self,
-        public_key: str,
-        name: str,
-        id: int | None = None,
-        fingerprint: str | None = None,
-    ) -> Any:
+    async def ssh_keys_create(self, public_key: str, name: str, id: int | None = None, fingerprint: str | None = None) -> Any:
         """
         Create a New SSH Key
 
@@ -185,36 +146,20 @@ class DigitaloceanApp(APIApplication):
             SSH Keys
         """
         request_body_data = None
-        request_body_data = {
-            "id": id,
-            "fingerprint": fingerprint,
-            "public_key": public_key,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"id": id, "fingerprint": fingerprint, "public_key": public_key, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/account/keys"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def ssh_keys_get(self, ssh_key_identifier: str) -> Any:
+    async def ssh_keys_get(self, ssh_key_identifier: str) -> Any:
         """
         Retrieve an Existing SSH Key
 
@@ -237,18 +182,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def ssh_keys_update(self, ssh_key_identifier: str, name: str | None = None) -> Any:
+    async def ssh_keys_update(self, ssh_key_identifier: str, name: str | None = None) -> Any:
         """
         Update an SSH Key's Name
 
@@ -269,33 +210,20 @@ class DigitaloceanApp(APIApplication):
         if ssh_key_identifier is None:
             raise ValueError("Missing required parameter 'ssh_key_identifier'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/account/keys/{ssh_key_identifier}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def ssh_keys_delete(self, ssh_key_identifier: str) -> Any:
+    async def ssh_keys_delete(self, ssh_key_identifier: str) -> Any:
         """
         Delete an SSH Key
 
@@ -318,18 +246,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def actions_list(self, per_page: int | None = None, page: int | None = None) -> Any:
+    async def actions_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Actions
 
@@ -348,23 +272,17 @@ class DigitaloceanApp(APIApplication):
             Actions
         """
         url = f"{self.base_url}/v2/actions"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def actions_get(self, action_id: str) -> Any:
+    async def actions_get(self, action_id: str) -> Any:
         """
         Retrieve an Existing Action
 
@@ -387,23 +305,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_list(
-        self,
-        page: int | None = None,
-        per_page: int | None = None,
-        with_projects: bool | None = None,
-    ) -> Any:
+    async def apps_list(self, page: int | None = None, per_page: int | None = None, with_projects: bool | None = None) -> Any:
         """
         List All Apps
 
@@ -423,31 +332,17 @@ class DigitaloceanApp(APIApplication):
             Apps, important
         """
         url = f"{self.base_url}/v2/apps"
-        query_params = {
-            k: v
-            for k, v in [
-                ("page", page),
-                ("per_page", per_page),
-                ("with_projects", with_projects),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page), ("with_projects", with_projects)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_create(
-        self, spec: dict[str, Any], project_id: str | None = None
-    ) -> dict[str, Any]:
+    async def apps_create(self, spec: dict[str, Any], project_id: str | None = None) -> dict[str, Any]:
         """
         Create a New App
 
@@ -466,34 +361,20 @@ class DigitaloceanApp(APIApplication):
             Apps
         """
         request_body_data = None
-        request_body_data = {
-            "spec": spec,
-            "project_id": project_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"spec": spec, "project_id": project_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_delete(self, id: str) -> dict[str, Any]:
+    async def apps_delete(self, id: str) -> dict[str, Any]:
         """
         Delete an App
 
@@ -516,18 +397,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get(self, id: str, name: str | None = None) -> dict[str, Any]:
+    async def apps_get(self, id: str, name: str | None = None) -> dict[str, Any]:
         """
         Retrieve an Existing App
 
@@ -551,23 +428,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("name", name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_update(
-        self,
-        id: str,
-        spec: dict[str, Any],
-        update_all_source_versions: bool | None = None,
-    ) -> dict[str, Any]:
+    async def apps_update(self, id: str, spec: dict[str, Any], update_all_source_versions: bool | None = None) -> dict[str, Any]:
         """
         Update an App
 
@@ -589,36 +457,20 @@ class DigitaloceanApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "spec": spec,
-            "update_all_source_versions": update_all_source_versions,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"spec": spec, "update_all_source_versions": update_all_source_versions}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_restart(
-        self, app_id: str, components: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def apps_restart(self, app_id: str, components: list[str] | None = None) -> dict[str, Any]:
         """
         Restart an App
 
@@ -639,39 +491,21 @@ class DigitaloceanApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'.")
         request_body_data = None
-        request_body_data = {
-            "components": components,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"components": components}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/{app_id}/restart"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_app_component_logs(
-        self,
-        app_id: str,
-        component_name: str,
-        type: str,
-        follow: bool | None = None,
-        pod_connection_timeout: str | None = None,
+    async def get_app_component_logs(
+        self, app_id: str, component_name: str, type: str, follow: bool | None = None, pod_connection_timeout: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieve Active Deployment Logs
@@ -703,30 +537,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'component_name'.")
         url = f"{self.base_url}/v2/apps/{app_id}/components/{component_name}/logs"
         query_params = {
-            k: v
-            for k, v in [
-                ("follow", follow),
-                ("type", type),
-                ("pod_connection_timeout", pod_connection_timeout),
-            ]
-            if v is not None
+            k: v for k, v in [("follow", follow), ("type", type), ("pod_connection_timeout", pod_connection_timeout)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_component_execution_details(
-        self, app_id: str, component_name: str
-    ) -> dict[str, Any]:
+    async def get_component_execution_details(self, app_id: str, component_name: str) -> dict[str, Any]:
         """
         Retrieve Exec URL
 
@@ -752,18 +574,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_instances(self, app_id: str) -> dict[str, Any]:
+    async def apps_get_instances(self, app_id: str) -> dict[str, Any]:
         """
         Retrieve App Instances
 
@@ -786,20 +604,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_list_deployments(
-        self, app_id: str, page: int | None = None, per_page: int | None = None
-    ) -> Any:
+    async def apps_list_deployments(self, app_id: str, page: int | None = None, per_page: int | None = None) -> Any:
         """
         List App Deployments
 
@@ -821,25 +633,17 @@ class DigitaloceanApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'.")
         url = f"{self.base_url}/v2/apps/{app_id}/deployments"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_create_deployment(
-        self, app_id: str, force_build: bool | None = None
-    ) -> dict[str, Any]:
+    async def apps_create_deployment(self, app_id: str, force_build: bool | None = None) -> dict[str, Any]:
         """
         Create an App Deployment
 
@@ -860,33 +664,20 @@ class DigitaloceanApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'.")
         request_body_data = None
-        request_body_data = {
-            "force_build": force_build,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"force_build": force_build}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/{app_id}/deployments"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_deployment(self, app_id: str, deployment_id: str) -> dict[str, Any]:
+    async def apps_get_deployment(self, app_id: str, deployment_id: str) -> dict[str, Any]:
         """
         Retrieve an App Deployment
 
@@ -912,18 +703,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_cancel_deployment(self, app_id: str, deployment_id: str) -> dict[str, Any]:
+    async def apps_cancel_deployment(self, app_id: str, deployment_id: str) -> dict[str, Any]:
         """
         Cancel a Deployment
 
@@ -948,25 +735,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/apps/{app_id}/deployments/{deployment_id}/cancel"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_logs(
+    async def apps_get_logs(
         self,
         app_id: str,
         deployment_id: str,
@@ -1008,34 +786,19 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'component_name'.")
         url = f"{self.base_url}/v2/apps/{app_id}/deployments/{deployment_id}/components/{component_name}/logs"
         query_params = {
-            k: v
-            for k, v in [
-                ("follow", follow),
-                ("type", type),
-                ("pod_connection_timeout", pod_connection_timeout),
-            ]
-            if v is not None
+            k: v for k, v in [("follow", follow), ("type", type), ("pod_connection_timeout", pod_connection_timeout)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_logs_aggregate(
-        self,
-        app_id: str,
-        deployment_id: str,
-        type: str,
-        follow: bool | None = None,
-        pod_connection_timeout: str | None = None,
+    async def apps_get_logs_aggregate(
+        self, app_id: str, deployment_id: str, type: str, follow: bool | None = None, pod_connection_timeout: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieve Aggregate Deployment Logs
@@ -1067,34 +830,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'deployment_id'.")
         url = f"{self.base_url}/v2/apps/{app_id}/deployments/{deployment_id}/logs"
         query_params = {
-            k: v
-            for k, v in [
-                ("follow", follow),
-                ("type", type),
-                ("pod_connection_timeout", pod_connection_timeout),
-            ]
-            if v is not None
+            k: v for k, v in [("follow", follow), ("type", type), ("pod_connection_timeout", pod_connection_timeout)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_exec(
-        self,
-        app_id: str,
-        deployment_id: str,
-        component_name: str,
-        instance_name: str | None = None,
-    ) -> dict[str, Any]:
+    async def apps_get_exec(self, app_id: str, deployment_id: str, component_name: str, instance_name: str | None = None) -> dict[str, Any]:
         """
         Retrieve Exec URL for Deployment
 
@@ -1121,28 +868,18 @@ class DigitaloceanApp(APIApplication):
         if component_name is None:
             raise ValueError("Missing required parameter 'component_name'.")
         url = f"{self.base_url}/v2/apps/{app_id}/deployments/{deployment_id}/components/{component_name}/exec"
-        query_params = {
-            k: v for k, v in [("instance_name", instance_name)] if v is not None
-        }
+        query_params = {k: v for k, v in [("instance_name", instance_name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_app_logs(
-        self,
-        app_id: str,
-        type: str,
-        follow: bool | None = None,
-        pod_connection_timeout: str | None = None,
+    async def get_app_logs(
+        self, app_id: str, type: str, follow: bool | None = None, pod_connection_timeout: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieve Active Deployment Aggregate Logs
@@ -1171,28 +908,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'app_id'.")
         url = f"{self.base_url}/v2/apps/{app_id}/logs"
         query_params = {
-            k: v
-            for k, v in [
-                ("follow", follow),
-                ("type", type),
-                ("pod_connection_timeout", pod_connection_timeout),
-            ]
-            if v is not None
+            k: v for k, v in [("follow", follow), ("type", type), ("pod_connection_timeout", pod_connection_timeout)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_list_instance_sizes(self) -> dict[str, Any]:
+    async def apps_list_instance_sizes(self) -> dict[str, Any]:
         """
         List Instance Sizes
 
@@ -1210,18 +937,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_instance_size(self, slug: str) -> dict[str, Any]:
+    async def apps_get_instance_size(self, slug: str) -> dict[str, Any]:
         """
         Retrieve an Instance Size
 
@@ -1244,18 +967,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_list_regions(self) -> dict[str, Any]:
+    async def apps_list_regions(self) -> dict[str, Any]:
         """
         List App Regions
 
@@ -1273,20 +992,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_validate_app_spec(
-        self, spec: dict[str, Any], app_id: str | None = None
-    ) -> dict[str, Any]:
+    async def apps_validate_app_spec(self, spec: dict[str, Any], app_id: str | None = None) -> dict[str, Any]:
         """
         Propose an App Spec
 
@@ -1305,34 +1018,20 @@ class DigitaloceanApp(APIApplication):
             Apps
         """
         request_body_data = None
-        request_body_data = {
-            "spec": spec,
-            "app_id": app_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"spec": spec, "app_id": app_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/propose"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_list_alerts(self, app_id: str) -> dict[str, Any]:
+    async def apps_list_alerts(self, app_id: str) -> dict[str, Any]:
         """
         List all app alerts
 
@@ -1355,23 +1054,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_assign_alert_destinations(
-        self,
-        app_id: str,
-        alert_id: str,
-        emails: list[str] | None = None,
-        slack_webhooks: list[dict[str, Any]] | None = None,
+    async def apps_assign_alert_destinations(
+        self, app_id: str, alert_id: str, emails: list[str] | None = None, slack_webhooks: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Update destinations for alerts
@@ -1397,39 +1088,20 @@ class DigitaloceanApp(APIApplication):
         if alert_id is None:
             raise ValueError("Missing required parameter 'alert_id'.")
         request_body_data = None
-        request_body_data = {
-            "emails": emails,
-            "slack_webhooks": slack_webhooks,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"emails": emails, "slack_webhooks": slack_webhooks}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/{app_id}/alerts/{alert_id}/destinations"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_create_rollback(
-        self,
-        app_id: str,
-        deployment_id: str | None = None,
-        skip_pin: bool | None = None,
-    ) -> dict[str, Any]:
+    async def apps_create_rollback(self, app_id: str, deployment_id: str | None = None, skip_pin: bool | None = None) -> dict[str, Any]:
         """
         Rollback App
 
@@ -1451,39 +1123,20 @@ class DigitaloceanApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'.")
         request_body_data = None
-        request_body_data = {
-            "deployment_id": deployment_id,
-            "skip_pin": skip_pin,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"deployment_id": deployment_id, "skip_pin": skip_pin}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/{app_id}/rollback"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_validate_rollback(
-        self,
-        app_id: str,
-        deployment_id: str | None = None,
-        skip_pin: bool | None = None,
-    ) -> dict[str, Any]:
+    async def apps_validate_rollback(self, app_id: str, deployment_id: str | None = None, skip_pin: bool | None = None) -> dict[str, Any]:
         """
         Validate App Rollback
 
@@ -1505,34 +1158,20 @@ class DigitaloceanApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'.")
         request_body_data = None
-        request_body_data = {
-            "deployment_id": deployment_id,
-            "skip_pin": skip_pin,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"deployment_id": deployment_id, "skip_pin": skip_pin}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/{app_id}/rollback/validate"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_commit_rollback(self, app_id: str) -> Any:
+    async def apps_commit_rollback(self, app_id: str) -> Any:
         """
         Commit App Rollback
 
@@ -1554,25 +1193,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/apps/{app_id}/rollback/commit"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_revert_rollback(self, app_id: str) -> dict[str, Any]:
+    async def apps_revert_rollback(self, app_id: str) -> dict[str, Any]:
         """
         Revert App Rollback
 
@@ -1594,27 +1224,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/apps/{app_id}/rollback/revert"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_app_bandwidth_daily(
-        self, app_id: str, date: str | None = None
-    ) -> dict[str, Any]:
+    async def get_app_bandwidth_daily(self, app_id: str, date: str | None = None) -> dict[str, Any]:
         """
         Retrieve App Daily Bandwidth Metrics
 
@@ -1638,20 +1257,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("date", date)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_daily_bandwidth_metrics(
-        self, app_ids: list[str], date: str | None = None
-    ) -> dict[str, Any]:
+    async def create_daily_bandwidth_metrics(self, app_ids: list[str], date: str | None = None) -> dict[str, Any]:
         """
         Retrieve Multiple Apps' Daily Bandwidth Metrics
 
@@ -1670,34 +1283,20 @@ class DigitaloceanApp(APIApplication):
             Apps
         """
         request_body_data = None
-        request_body_data = {
-            "app_ids": app_ids,
-            "date": date,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"app_ids": app_ids, "date": date}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/apps/metrics/bandwidth_daily"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def apps_get_health(self, app_id: str) -> dict[str, Any]:
+    async def apps_get_health(self, app_id: str) -> dict[str, Any]:
         """
         Retrieve App Health
 
@@ -1720,20 +1319,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cdn_list_endpoints(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def cdn_list_endpoints(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All CDN Endpoints
 
@@ -1752,23 +1345,17 @@ class DigitaloceanApp(APIApplication):
             CDN Endpoints
         """
         url = f"{self.base_url}/v2/cdn/endpoints"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cdn_create_endpoint(
+    async def cdn_create_endpoint(
         self,
         origin: str,
         id: str | None = None,
@@ -1810,30 +1397,19 @@ class DigitaloceanApp(APIApplication):
             "custom_domain": custom_domain,
             "created_at": created_at,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/cdn/endpoints"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cdn_get_endpoint(self, cdn_id: str) -> Any:
+    async def cdn_get_endpoint(self, cdn_id: str) -> Any:
         """
         Retrieve an Existing CDN Endpoint
 
@@ -1856,23 +1432,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cdn_update_endpoints(
-        self,
-        cdn_id: str,
-        ttl: int | None = None,
-        certificate_id: str | None = None,
-        custom_domain: str | None = None,
+    async def cdn_update_endpoints(
+        self, cdn_id: str, ttl: int | None = None, certificate_id: str | None = None, custom_domain: str | None = None
     ) -> Any:
         """
         Update a CDN Endpoint
@@ -1896,35 +1464,20 @@ class DigitaloceanApp(APIApplication):
         if cdn_id is None:
             raise ValueError("Missing required parameter 'cdn_id'.")
         request_body_data = None
-        request_body_data = {
-            "ttl": ttl,
-            "certificate_id": certificate_id,
-            "custom_domain": custom_domain,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"ttl": ttl, "certificate_id": certificate_id, "custom_domain": custom_domain}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/cdn/endpoints/{cdn_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cdn_delete_endpoint(self, cdn_id: str) -> Any:
+    async def cdn_delete_endpoint(self, cdn_id: str) -> Any:
         """
         Delete a CDN Endpoint
 
@@ -1947,18 +1500,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cdn_purge_cache(self, cdn_id: str, files: list[str]) -> Any:
+    async def cdn_purge_cache(self, cdn_id: str, files: list[str]) -> Any:
         """
         Purge the Cache for an Existing CDN Endpoint
 
@@ -1978,33 +1527,20 @@ class DigitaloceanApp(APIApplication):
         """
         if cdn_id is None:
             raise ValueError("Missing required parameter 'cdn_id'.")
-        request_body_data = {
-            "files": files,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"files": files}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/cdn/endpoints/{cdn_id}/cache"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def certificates_list(
-        self,
-        per_page: int | None = None,
-        page: int | None = None,
-        name: str | None = None,
-    ) -> Any:
+    async def certificates_list(self, per_page: int | None = None, page: int | None = None, name: str | None = None) -> Any:
         """
         List All Certificates
 
@@ -2024,25 +1560,17 @@ class DigitaloceanApp(APIApplication):
             Certificates
         """
         url = f"{self.base_url}/v2/certificates"
-        query_params = {
-            k: v
-            for k, v in [("per_page", per_page), ("page", page), ("name", name)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page), ("name", name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def certificates_create(
+    async def certificates_create(
         self,
         name: str | None = None,
         type: str | None = None,
@@ -2052,26 +1580,138 @@ class DigitaloceanApp(APIApplication):
         certificate_chain: str | None = None,
     ) -> dict[str, Any]:
         """
-        Create a New Certificate
+                Create a New Certificate
 
-        Args:
-            name (string): A unique human-readable name referring to a certificate. Example: 'web-cert-01'.
-            type (string): A string representing the type of the certificate. The value will be `custom` for a user-uploaded certificate or `lets_encrypt` for one automatically generated with Let's Encrypt. Example: 'lets_encrypt'.
-            dns_names (array): An array of fully qualified domain names (FQDNs) for which the certificate was issued. A certificate covering all subdomains can be issued using a wildcard (e.g. `*.example.com`). Example: "['www.example.com', 'example.com']".
-            private_key (string): The contents of a PEM-formatted private-key corresponding to the SSL certificate. Example: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDBIZMz8pnK6V52\nSVf+CYssOfCQHAx5f0Ou5rYbq3xNh8VHAIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1\nDwGb8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86X\nwrE4oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3w\nZ2mzZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1F\nZRnak/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFX\nfqqbQwuRAgMBAAECggEBAILLmkW0JzOkmLTDNzR0giyRkLoIROqDpfLtjKdwm95l\n9NUBJcU4vCvXQITKt/NhtnNTexcowg8pInb0ksJpg3UGE+4oMNBXVi2UW5MQZ5cm\ncVkQqgXkBF2YAY8FMaB6EML+0En2+dGR/3gIAr221xsFiXe1kHbB8Nb2c/d5HpFt\neRpLVJnK+TxSr78PcZA8DDGlSgwvgimdAaFUNO2OqB9/0E9UPyKk2ycdff/Z6ldF\n0hkCLtdYTTl8Kf/OwjcuTgmA2O3Y8/CoQX/L+oP9Rvt9pWCEfuebiOmHJVPO6Y6x\ngtQVEXwmF1pDHH4Qtz/e6UZTdYeMl9G4aNO2CawwcaYECgYEA57imgSOG4XsJLRh\nGGncV9R/xhy4AbDWLtAMzQRX4ktvKCaHWyQV2XK2we/cu29NLv2Y89WmerTNPOU+\nP8+pB31uty2ELySVn15QhKpQClVEAlxCnnNjXYrii5LOM80+lVmxvQwxVd8Yz8nj\nIntyioXNBEnYS7V2RxxFGgFun1cCgYEA1V3W+Uyamhq8JS5EY0FhyGcXdHd70K49\nW1ou7McIpncf9tM9acLS1hkI98rd2T69Zo8mKoV1V2hjFaKUYfNys6tTkYWeZCcJ\n3rW44j9DTD+FmmjcX6b8DzfybGLehfNbCw6n67/r45DXIV/fk6XZfkx6IEGO4ODt\nNfnvx4TuI1cCgYBACDiKqwSUvmkUuweOo4IuCxyb5Ee8v98P5JIE/VRDxlCbKbpx\npxEam6aBBQVcDi+n8o0H3WjjlKc6UqbW/01YMoMrvzotxNBLz8Y0QtQHZvR6KoCG\nRKCKstxTcWflzKuknbqN4RapAhNbKBDJ8PMSWfyDWNyaXzSmBdvaidbF1QKBgDI0\no4oD0Xkjg1QIYAUu9FBQmb9JAjRnW36saNBEQS/SZg4RRKknM683MtoDvVIKJk0E\nsAlfX+4SXQZRPDMUMtA+Jyrd0xhj6zmhbwClvDMr20crF3fWdgcqtft1BEFmsuyW\nJUMe5OWmRkjPI2+9ncDPRAllA7a8lnSV/Crph5N/AoGBAIK249temKrGe9pmsmAo\nQbNuYSmwpnMoAqdHTrl70HEmK7ob6SIVmsR8QFAkH7xkYZc4Bxbx4h1bdpozGB+/\nAangbiaYJcAOD1QyfiFbflvI1RFeHgrk7VIafeSeQv6qu0LLMi2zUbpgVzxt78Wg\neTuK2xNR0PIM8OI7pRpgyj1I\n-----END PRIVATE KEY-----'.
-            leaf_certificate (string): The contents of a PEM-formatted public SSL certificate. Example: '-----BEGIN CERTIFICATE-----\nMIIFFjCCA/6gAwIBAgISA0AznUJmXhu08/89ZuSPC/kRMA0GCSqGSIb3DQEBCwUA\nMEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD\nExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xNjExMjQwMDIzMDBaFw0x\nNzAyMjIwMDIzMDBaMCQxIjAgBgNVBAMTGWNsb3VkLmFuZHJld3NvbWV0aGluZy5j\nb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBIZMz8pnK6V52SVf+\nCYssOfCQHAx5f0Ou5rYbq3xNh8VWHIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1DwGb\n8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86XwrE4\noFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3wZ2mz\nZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1FZRna\nk/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFXfqqb\nQwuRAgMBAAGjggIaMIICFjAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFLsAFcxAhFX1\nMbCnzr9hEO5rL4jqMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMHAG\nCCsGAQUFBwEBBGQwYjAvBggrBgEFBQcwAYYjaHR0cDovL29jc3AuaW50LXgzLmxl\ndHNlbmNyeXB0Lm9yZy8wLwYIKwYBBQUHMAKGI2h0dHA6Ly9jZXJ0LmludC14My5s\nZXRzZW5jcnlwdC5vcmcvMCQGA1UdEQQdMBuCGWNsb3VkLmFuZHJld3NvbWV0aGlu\nZy5jb20wgf4GA1UdIASB9jCB8zAIBgZngQwBAgWrgeYGCysGAQQBgt8TAQEBMIHW\nMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCBqwYIKwYB\nBQUHAgIwgZ4MgZtUaGlzIENlcnRpZmljYXRlIG1heSBvbmx5IGJlIHJlbGllZCB1\ncG9uIGJ5IFJlbHlpbmcgUGFydGllcyBhbmQgb25seSQ2ziBhY2NvcmRhbmNlIHdp\ndGggdGhlIENlcnRpZmljYXRlIFBvbGljeSBmb3VuZCBhdCBodHRwczovL2xldHNl\nbmNyeXB0Lm9yZy9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAOZVQvrjM\nPKXLARTjB5XsgfyDN3/qwLl7SmwGkPe+B+9FJpfScYG1JzVuCj/SoaPaK34G4x/e\niXwlwOXtMOtqjQYzNu2Pr2C+I+rVmaxIrCUXFmC205IMuUBEeWXG9Y/HvXQLPabD\nD3Gdl5+Feink9SDRP7G0HaAwq13hI7ARxkL9p+UIY39X0dV3WOboW2Re8nrkFXJ7\nq9Z6shK5QgpBfsLjtjNsQzaGV3ve1gOg25aTJGearBWOvEjJNA1wGMoKVXOtYwm/\nWyWoVdCQ8HmconcbJB6xc0UZ1EjvzRr5ZIvSa5uHZD0L3m7/kpPWlAlFJ7hHASPu\nUlF1zblDmg2Iaw==\n-----END CERTIFICATE-----'.
-            certificate_chain (string): The full PEM-formatted trust chain between the certificate authority's certificate and your domain's SSL certificate. Example: '-----BEGIN CERTIFICATE-----\nMIIFFjCCA/6gAwIBAgISA0AznUJmXhu08/89ZuSPC/kRMA0GCSqGSIb3DQEBCwUA\nMEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD\nExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xNjExMjQwMDIzMDBaFw0x\nNzAyMjIwMDIzMDBaMCQxIjAgBgNVBAMTGWNsb3VkLmFuZHJld3NvbWV0aGluZy5j\nb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBIZMz7tnK6V52SVf+\nCYssOfCQHAx5f0Ou5rYbq3xNh8VHAIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1DwGb\n8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86XwrE4\noFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3wZ2mz\nZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1FZRna\nk/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFXfqqb\nQwuRAgMBAAGjggIaMIICFjAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFLsAFcxAhFX1\nMbCnzr9hEO5rL4jqMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMHAG\nCCsGAQUFBwEBBGQwYjAvBggrBgEFBQcwAYYjaHR0cDovL29jc3AuaW50LXgzLmxl\ndHNlbmNyeXB0Lm9yZy8wLwYIKwYBBQUHMAKGI2h0dHA6Ly9jZXJ0LmludC14My5s\nZXRzZW5jcnlwdC5vcmcvMCQGA1UdEQQdMBuCGWNsb3VkLmFuZHJld3NvbWV0aGlu\nZy5jb20wgf4GA1UdIASB9jCB8zAIBgZngQwBAgEwgeWECysGAQQBgt8TAQEBMIHW\nMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCBqwYIKwYB\nBQUHAgIwgZ4MgZtUaGlzIENlcnRpZmljYXRlIG1heSBvbmx5IGJlIHJlbGllZCB1\ncG9uIGJ5IFJlbHlpbmcgUGFydGllcyBhbmQgb25seSQ2ziBhY2NvcmRhbmNlIHdp\ndGggdGhlIENlcnRpZmljYXRlIFBvbGljeSBmb3VuZCBhdCBsdHRwczovL2xldHNl\nbmNyeXB0Lm9yZy9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAOZVQvrjM\nPKXLARTjB5XsgfyDN3/qwLl7SmwGkPe+B+9FJpfScYG1JzVuCj/SoaPaK34G4x/e\niXwlwOXtMOtqjQYzNu2Pr2C+I+rVmaxIrCUXFmC205IMuUBEeWXG9Y/HvXQLPabD\nD3Gdl5+Feink9SDRP7G0HaAwq13hI7ARxkL3o+UIY39X0dV3WOboW2Re8nrkFXJ7\nq9Z6shK5QgpBfsLjtjNsQzaGV3ve1gOg25aTJGearBWOvEjJNA1wGMoKVXOtYwm/\nWyWoVdCQ8HmconcbJB6xc0UZ1EjvzRr5ZIvSa5uHZD0L3m7/kpPWlAlFJ7hHASPu\nUlF1zblDmg2Iaw==\n-----END CERTIFICATE-----\n-----BEGIN CERTIFICATE-----\nMIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/\nMSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT\nDkRTVCBSb290IENBIFgzMB4XDTE2MDMxNzE2NDA0NloXDTIxMDMxNzE2NDA0Nlow\nSjELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUxldCdzIEVuY3J5cHQxIzAhBgNVBAMT\nGkxldCdzIEVuY3J5cHQgQXV0aG9yaXR5IFgzMIIBIjANBgkqhkiG9w0BAQEFAAOC\nAQ8AMIIBCgKCAQEAnNMM8FrlLsd3cl03g7NoYzDq1zUmGSXhvb418XCSL7e4S0EF\nq6meNQhY7LEqxGiHC6PjdeTm86dicbp5gWAf15Gan/PQeGdxyGkOlZHP/uaZ6WA8\nSMx+yk13EiSdRxta67nsHjcAHJyse6cF6s5K671B5TaYucv9bTyWaN8jKkKQDIZ0\nZ8h/pZq4UmEUEz9l6YKHy9v6Dlb2honzhT+Xhq+w3Brvaw2VFn3EK6BlspkENnWA\na6xK8xuQSXgvopZPKiAlKQTGdMDQMc2PMTiVFrqoM7hD8bEfwzB/onkxEz0tNvjj\n/PIzark5McWvxI0NHWQWM6r6hCm21AvA2H3DkwIPOIUo4IBfTCCAXkwEgYDVR0T\nAQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAYYwfwYIKwYBBQUHAQEEczBxMDIG\nCCsGAQUFBzABhiZodHRwOi8vaXNyZy50cnVzdGlkLm9jc3AuaWRlbnRydXN0LmNv\nbTA7BggrBgEFBQcwAoYvaHR0cDovL2FwcHMuaWRlbnRydXN0LmNvbS9yb290cy9k\nc3Ryb290Y2F4My5wN2MwHwYDVR0jBBgwFoAUxKexpHsscfrb4UuQdf/EFWCFiRAw\nVAYDVR0gBE0wSzAIBgZngQwBAgEwPwYLKwYBBAGC3xMBAQEwMDAuBggrBgEFBQcC\nARYiaHR0cDovL2Nwcy5yb290LXgxLmxldHNlbmNyeXB0Lm9yZzA8BgNVHR8ENTAz\nMDGgL6AthitodHRwOi8vY3JsLmlkZW50cnVzdC5jb20vRFNUUk9PVENBWDNDUkwu\nY3JsMB0GA1UdDgQWBBSoSmpjBH3duubRObemRWXv86jsoTANBgkqhkiG9w0BAQsF\nAAOCAQEA3TPXEfNjWDjdGBX7CVW+dla5cEilaUcne8IkCJLxWh9KEik3JHRRHGJo\nuM2VcGfl96S8TihRzZvoroed6ti6WqEBmtzw3Wodatg+VyOeph4EYpr/1wXKtx8/\nwApIvJSwtmVi4MFU5aMqrSDE6ea73Mj2tcMyo5jMd6jmeWUHK8so/joWUoHOUgwu\nX4Po1QYz+3dszkDqMp4fklxBwXRsW10KXzPMTZ+sOPAveyxindmjkW8lGy+QsRlG\nPfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6\nKOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==\n-----END CERTIFICATE-----'.
+                Args:
+                    name (string): A unique human-readable name referring to a certificate. Example: 'web-cert-01'.
+                    type (string): A string representing the type of the certificate. The value will be `custom` for a user-uploaded certificate or `lets_encrypt` for one automatically generated with Let's Encrypt. Example: 'lets_encrypt'.
+                    dns_names (array): An array of fully qualified domain names (FQDNs) for which the certificate was issued. A certificate covering all subdomains can be issued using a wildcard (e.g. `*.example.com`). Example: "['www.example.com', 'example.com']".
+                    private_key (string): The contents of a PEM-formatted private-key corresponding to the SSL certificate. Example: '-----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDBIZMz8pnK6V52
+        SVf+CYssOfCQHAx5f0Ou5rYbq3xNh8VHAIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1
+        DwGb8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86X
+        wrE4oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3w
+        Z2mzZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1F
+        ZRnak/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFX
+        fqqbQwuRAgMBAAECggEBAILLmkW0JzOkmLTDNzR0giyRkLoIROqDpfLtjKdwm95l
+        9NUBJcU4vCvXQITKt/NhtnNTexcowg8pInb0ksJpg3UGE+4oMNBXVi2UW5MQZ5cm
+        cVkQqgXkBF2YAY8FMaB6EML+0En2+dGR/3gIAr221xsFiXe1kHbB8Nb2c/d5HpFt
+        eRpLVJnK+TxSr78PcZA8DDGlSgwvgimdAaFUNO2OqB9/0E9UPyKk2ycdff/Z6ldF
+        0hkCLtdYTTl8Kf/OwjcuTgmA2O3Y8/CoQX/L+oP9Rvt9pWCEfuebiOmHJVPO6Y6x
+        gtQVEXwmF1pDHH4Qtz/e6UZTdYeMl9G4aNO2CawwcaYECgYEA57imgSOG4XsJLRh
+        GGncV9R/xhy4AbDWLtAMzQRX4ktvKCaHWyQV2XK2we/cu29NLv2Y89WmerTNPOU+
+        P8+pB31uty2ELySVn15QhKpQClVEAlxCnnNjXYrii5LOM80+lVmxvQwxVd8Yz8nj
+        IntyioXNBEnYS7V2RxxFGgFun1cCgYEA1V3W+Uyamhq8JS5EY0FhyGcXdHd70K49
+        W1ou7McIpncf9tM9acLS1hkI98rd2T69Zo8mKoV1V2hjFaKUYfNys6tTkYWeZCcJ
+        3rW44j9DTD+FmmjcX6b8DzfybGLehfNbCw6n67/r45DXIV/fk6XZfkx6IEGO4ODt
+        Nfnvx4TuI1cCgYBACDiKqwSUvmkUuweOo4IuCxyb5Ee8v98P5JIE/VRDxlCbKbpx
+        pxEam6aBBQVcDi+n8o0H3WjjlKc6UqbW/01YMoMrvzotxNBLz8Y0QtQHZvR6KoCG
+        RKCKstxTcWflzKuknbqN4RapAhNbKBDJ8PMSWfyDWNyaXzSmBdvaidbF1QKBgDI0
+        o4oD0Xkjg1QIYAUu9FBQmb9JAjRnW36saNBEQS/SZg4RRKknM683MtoDvVIKJk0E
+        sAlfX+4SXQZRPDMUMtA+Jyrd0xhj6zmhbwClvDMr20crF3fWdgcqtft1BEFmsuyW
+        JUMe5OWmRkjPI2+9ncDPRAllA7a8lnSV/Crph5N/AoGBAIK249temKrGe9pmsmAo
+        QbNuYSmwpnMoAqdHTrl70HEmK7ob6SIVmsR8QFAkH7xkYZc4Bxbx4h1bdpozGB+/
+        AangbiaYJcAOD1QyfiFbflvI1RFeHgrk7VIafeSeQv6qu0LLMi2zUbpgVzxt78Wg
+        eTuK2xNR0PIM8OI7pRpgyj1I
+        -----END PRIVATE KEY-----'.
+                    leaf_certificate (string): The contents of a PEM-formatted public SSL certificate. Example: '-----BEGIN CERTIFICATE-----
+        MIIFFjCCA/6gAwIBAgISA0AznUJmXhu08/89ZuSPC/kRMA0GCSqGSIb3DQEBCwUA
+        MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+        ExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xNjExMjQwMDIzMDBaFw0x
+        NzAyMjIwMDIzMDBaMCQxIjAgBgNVBAMTGWNsb3VkLmFuZHJld3NvbWV0aGluZy5j
+        b20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBIZMz8pnK6V52SVf+
+        CYssOfCQHAx5f0Ou5rYbq3xNh8VWHIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1DwGb
+        8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86XwrE4
+        oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3wZ2mz
+        Z03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1FZRna
+        k/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFXfqqb
+        QwuRAgMBAAGjggIaMIICFjAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB
+        BQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFLsAFcxAhFX1
+        MbCnzr9hEO5rL4jqMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMHAG
+        CCsGAQUFBwEBBGQwYjAvBggrBgEFBQcwAYYjaHR0cDovL29jc3AuaW50LXgzLmxl
+        dHNlbmNyeXB0Lm9yZy8wLwYIKwYBBQUHMAKGI2h0dHA6Ly9jZXJ0LmludC14My5s
+        ZXRzZW5jcnlwdC5vcmcvMCQGA1UdEQQdMBuCGWNsb3VkLmFuZHJld3NvbWV0aGlu
+        Zy5jb20wgf4GA1UdIASB9jCB8zAIBgZngQwBAgWrgeYGCysGAQQBgt8TAQEBMIHW
+        MCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCBqwYIKwYB
+        BQUHAgIwgZ4MgZtUaGlzIENlcnRpZmljYXRlIG1heSBvbmx5IGJlIHJlbGllZCB1
+        cG9uIGJ5IFJlbHlpbmcgUGFydGllcyBhbmQgb25seSQ2ziBhY2NvcmRhbmNlIHdp
+        dGggdGhlIENlcnRpZmljYXRlIFBvbGljeSBmb3VuZCBhdCBodHRwczovL2xldHNl
+        bmNyeXB0Lm9yZy9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAOZVQvrjM
+        PKXLARTjB5XsgfyDN3/qwLl7SmwGkPe+B+9FJpfScYG1JzVuCj/SoaPaK34G4x/e
+        iXwlwOXtMOtqjQYzNu2Pr2C+I+rVmaxIrCUXFmC205IMuUBEeWXG9Y/HvXQLPabD
+        D3Gdl5+Feink9SDRP7G0HaAwq13hI7ARxkL9p+UIY39X0dV3WOboW2Re8nrkFXJ7
+        q9Z6shK5QgpBfsLjtjNsQzaGV3ve1gOg25aTJGearBWOvEjJNA1wGMoKVXOtYwm/
+        WyWoVdCQ8HmconcbJB6xc0UZ1EjvzRr5ZIvSa5uHZD0L3m7/kpPWlAlFJ7hHASPu
+        UlF1zblDmg2Iaw==
+        -----END CERTIFICATE-----'.
+                    certificate_chain (string): The full PEM-formatted trust chain between the certificate authority's certificate and your domain's SSL certificate. Example: '-----BEGIN CERTIFICATE-----
+        MIIFFjCCA/6gAwIBAgISA0AznUJmXhu08/89ZuSPC/kRMA0GCSqGSIb3DQEBCwUA
+        MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+        ExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xNjExMjQwMDIzMDBaFw0x
+        NzAyMjIwMDIzMDBaMCQxIjAgBgNVBAMTGWNsb3VkLmFuZHJld3NvbWV0aGluZy5j
+        b20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBIZMz7tnK6V52SVf+
+        CYssOfCQHAx5f0Ou5rYbq3xNh8VHAIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1DwGb
+        8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86XwrE4
+        oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3wZ2mz
+        Z03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1FZRna
+        k/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFXfqqb
+        QwuRAgMBAAGjggIaMIICFjAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB
+        BQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFLsAFcxAhFX1
+        MbCnzr9hEO5rL4jqMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMHAG
+        CCsGAQUFBwEBBGQwYjAvBggrBgEFBQcwAYYjaHR0cDovL29jc3AuaW50LXgzLmxl
+        dHNlbmNyeXB0Lm9yZy8wLwYIKwYBBQUHMAKGI2h0dHA6Ly9jZXJ0LmludC14My5s
+        ZXRzZW5jcnlwdC5vcmcvMCQGA1UdEQQdMBuCGWNsb3VkLmFuZHJld3NvbWV0aGlu
+        Zy5jb20wgf4GA1UdIASB9jCB8zAIBgZngQwBAgEwgeWECysGAQQBgt8TAQEBMIHW
+        MCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCBqwYIKwYB
+        BQUHAgIwgZ4MgZtUaGlzIENlcnRpZmljYXRlIG1heSBvbmx5IGJlIHJlbGllZCB1
+        cG9uIGJ5IFJlbHlpbmcgUGFydGllcyBhbmQgb25seSQ2ziBhY2NvcmRhbmNlIHdp
+        dGggdGhlIENlcnRpZmljYXRlIFBvbGljeSBmb3VuZCBhdCBsdHRwczovL2xldHNl
+        bmNyeXB0Lm9yZy9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAOZVQvrjM
+        PKXLARTjB5XsgfyDN3/qwLl7SmwGkPe+B+9FJpfScYG1JzVuCj/SoaPaK34G4x/e
+        iXwlwOXtMOtqjQYzNu2Pr2C+I+rVmaxIrCUXFmC205IMuUBEeWXG9Y/HvXQLPabD
+        D3Gdl5+Feink9SDRP7G0HaAwq13hI7ARxkL3o+UIY39X0dV3WOboW2Re8nrkFXJ7
+        q9Z6shK5QgpBfsLjtjNsQzaGV3ve1gOg25aTJGearBWOvEjJNA1wGMoKVXOtYwm/
+        WyWoVdCQ8HmconcbJB6xc0UZ1EjvzRr5ZIvSa5uHZD0L3m7/kpPWlAlFJ7hHASPu
+        UlF1zblDmg2Iaw==
+        -----END CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
+        MIIEkjCCA3qgAwIBAgIQCgFBQgAAAVOFc2oLheynCDANBgkqhkiG9w0BAQsFADA/
+        MSQwIgYDVQQKExtEaWdpdGFsIFNpZ25hdHVyZSBUcnVzdCBDby4xFzAVBgNVBAMT
+        DkRTVCBSb290IENBIFgzMB4XDTE2MDMxNzE2NDA0NloXDTIxMDMxNzE2NDA0Nlow
+        SjELMAkGA1UEBhMCVVMxFjAUBgNVBAoTDUxldCdzIEVuY3J5cHQxIzAhBgNVBAMT
+        GkxldCdzIEVuY3J5cHQgQXV0aG9yaXR5IFgzMIIBIjANBgkqhkiG9w0BAQEFAAOC
+        AQ8AMIIBCgKCAQEAnNMM8FrlLsd3cl03g7NoYzDq1zUmGSXhvb418XCSL7e4S0EF
+        q6meNQhY7LEqxGiHC6PjdeTm86dicbp5gWAf15Gan/PQeGdxyGkOlZHP/uaZ6WA8
+        SMx+yk13EiSdRxta67nsHjcAHJyse6cF6s5K671B5TaYucv9bTyWaN8jKkKQDIZ0
+        Z8h/pZq4UmEUEz9l6YKHy9v6Dlb2honzhT+Xhq+w3Brvaw2VFn3EK6BlspkENnWA
+        a6xK8xuQSXgvopZPKiAlKQTGdMDQMc2PMTiVFrqoM7hD8bEfwzB/onkxEz0tNvjj
+        /PIzark5McWvxI0NHWQWM6r6hCm21AvA2H3DkwIPOIUo4IBfTCCAXkwEgYDVR0T
+        AQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAYYwfwYIKwYBBQUHAQEEczBxMDIG
+        CCsGAQUFBzABhiZodHRwOi8vaXNyZy50cnVzdGlkLm9jc3AuaWRlbnRydXN0LmNv
+        bTA7BggrBgEFBQcwAoYvaHR0cDovL2FwcHMuaWRlbnRydXN0LmNvbS9yb290cy9k
+        c3Ryb290Y2F4My5wN2MwHwYDVR0jBBgwFoAUxKexpHsscfrb4UuQdf/EFWCFiRAw
+        VAYDVR0gBE0wSzAIBgZngQwBAgEwPwYLKwYBBAGC3xMBAQEwMDAuBggrBgEFBQcC
+        ARYiaHR0cDovL2Nwcy5yb290LXgxLmxldHNlbmNyeXB0Lm9yZzA8BgNVHR8ENTAz
+        MDGgL6AthitodHRwOi8vY3JsLmlkZW50cnVzdC5jb20vRFNUUk9PVENBWDNDUkwu
+        Y3JsMB0GA1UdDgQWBBSoSmpjBH3duubRObemRWXv86jsoTANBgkqhkiG9w0BAQsF
+        AAOCAQEA3TPXEfNjWDjdGBX7CVW+dla5cEilaUcne8IkCJLxWh9KEik3JHRRHGJo
+        uM2VcGfl96S8TihRzZvoroed6ti6WqEBmtzw3Wodatg+VyOeph4EYpr/1wXKtx8/
+        wApIvJSwtmVi4MFU5aMqrSDE6ea73Mj2tcMyo5jMd6jmeWUHK8so/joWUoHOUgwu
+        X4Po1QYz+3dszkDqMp4fklxBwXRsW10KXzPMTZ+sOPAveyxindmjkW8lGy+QsRlG
+        PfZ+G6Z6h7mjem0Y+iWlkYcV4PIWL1iwBi8saCbGS5jN2p8M+X+Q7UNKEkROb3N6
+        KOqkqm57TH2H3eDJAkSnh6/DNFu0Qg==
+        -----END CERTIFICATE-----'.
 
-        Returns:
-            dict[str, Any]: The response will be a JSON object with a key called `certificate`. The value of this will be an object that contains the standard attributes associated with a certificate.
-        When using Let's Encrypt, the initial value of the certificate's `state` attribute will be `pending`. When the certificate has been successfully issued by Let's Encrypt, this will transition to `verified` and be ready for use.
+                Returns:
+                    dict[str, Any]: The response will be a JSON object with a key called `certificate`. The value of this will be an object that contains the standard attributes associated with a certificate.
+                When using Let's Encrypt, the initial value of the certificate's `state` attribute will be `pending`. When the certificate has been successfully issued by Let's Encrypt, this will transition to `verified` and be ready for use.
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Certificates
+                Tags:
+                    Certificates
         """
         request_body_data = None
         request_body_data = {
@@ -2082,30 +1722,19 @@ class DigitaloceanApp(APIApplication):
             "leaf_certificate": leaf_certificate,
             "certificate_chain": certificate_chain,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/certificates"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def certificates_get(self, certificate_id: str) -> dict[str, Any]:
+    async def certificates_get(self, certificate_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing Certificate
 
@@ -2128,18 +1757,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def certificates_delete(self, certificate_id: str) -> Any:
+    async def certificates_delete(self, certificate_id: str) -> Any:
         """
         Delete a Certificate
 
@@ -2162,18 +1787,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def balance_get(self) -> dict[str, Any]:
+    async def balance_get(self) -> dict[str, Any]:
         """
         Get Customer Balance
 
@@ -2191,18 +1812,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def billing_history_list(self) -> Any:
+    async def billing_history_list(self) -> Any:
         """
         List Billing History
 
@@ -2220,20 +1837,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def invoices_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def invoices_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Invoices
 
@@ -2253,28 +1864,17 @@ class DigitaloceanApp(APIApplication):
             Billing
         """
         url = f"{self.base_url}/v2/customers/my/invoices"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def invoices_get_by_uuid(
-        self,
-        invoice_uuid: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def invoices_get_by_uuid(self, invoice_uuid: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         Retrieve an Invoice by UUID
 
@@ -2296,23 +1896,17 @@ class DigitaloceanApp(APIApplication):
         if invoice_uuid is None:
             raise ValueError("Missing required parameter 'invoice_uuid'.")
         url = f"{self.base_url}/v2/customers/my/invoices/{invoice_uuid}"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def invoices_get_csv_by_uuid(self, invoice_uuid: str) -> Any:
+    async def invoices_get_csv_by_uuid(self, invoice_uuid: str) -> Any:
         """
         Retrieve an Invoice CSV by UUID
 
@@ -2335,18 +1929,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def invoices_get_pdf_by_uuid(self, invoice_uuid: str) -> Any:
+    async def invoices_get_pdf_by_uuid(self, invoice_uuid: str) -> Any:
         """
         Retrieve an Invoice PDF by UUID
 
@@ -2369,18 +1959,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def invoices_get_summary_by_uuid(self, invoice_uuid: str) -> dict[str, Any]:
+    async def invoices_get_summary_by_uuid(self, invoice_uuid: str) -> dict[str, Any]:
         """
         Retrieve an Invoice Summary by UUID
 
@@ -2403,18 +1989,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_options(self) -> dict[str, Any]:
+    async def databases_list_options(self) -> dict[str, Any]:
         """
         List Database Options
 
@@ -2432,18 +2014,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_clusters(self, tag_name: str | None = None) -> Any:
+    async def databases_list_clusters(self, tag_name: str | None = None) -> Any:
         """
         List All Database Clusters
 
@@ -2464,18 +2042,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("tag_name", tag_name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_create_cluster(
+    async def databases_create_cluster(
         self,
         name: str,
         engine: str,
@@ -2577,30 +2151,19 @@ class DigitaloceanApp(APIApplication):
             "metrics_endpoints": metrics_endpoints,
             "backup_restore": backup_restore,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_cluster(self, database_cluster_uuid: str) -> dict[str, Any]:
+    async def databases_get_cluster(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         Retrieve an Existing Database Cluster
 
@@ -2623,18 +2186,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_destroy_cluster(self, database_cluster_uuid: str) -> Any:
+    async def databases_destroy_cluster(self, database_cluster_uuid: str) -> Any:
         """
         Destroy a Database Cluster
 
@@ -2657,18 +2216,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_config(self, database_cluster_uuid: str) -> dict[str, Any]:
+    async def databases_get_config(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         Retrieve an Existing Database Cluster Configuration
 
@@ -2691,20 +2246,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_patch_config(
-        self, database_cluster_uuid: str, config: Any | None = None
-    ) -> Any:
+    async def databases_patch_config(self, database_cluster_uuid: str, config: Any | None = None) -> Any:
         """
         Update the Database Configuration for an Existing Database
 
@@ -2725,28 +2274,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/config"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_ca(self, database_cluster_uuid: str) -> dict[str, Any]:
+    async def databases_get_ca(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         Retrieve the Public Certificate
 
@@ -2769,20 +2310,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_migration_status(
-        self, database_cluster_uuid: str
-    ) -> dict[str, Any]:
+    async def databases_get_migration_status(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         Retrieve the Status of an Online Migration
 
@@ -2805,23 +2340,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def start_online_migration(
-        self,
-        database_cluster_uuid: str,
-        source: dict[str, Any],
-        disable_ssl: bool | None = None,
-        ignore_dbs: list[str] | None = None,
+    async def start_online_migration(
+        self, database_cluster_uuid: str, source: dict[str, Any], disable_ssl: bool | None = None, ignore_dbs: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Start an Online Migration
@@ -2845,37 +2372,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "source": source,
-            "disable_ssl": disable_ssl,
-            "ignore_dbs": ignore_dbs,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"source": source, "disable_ssl": disable_ssl, "ignore_dbs": ignore_dbs}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/online-migration"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_online_migration_by_id(
-        self, database_cluster_uuid: str, migration_id: str
-    ) -> Any:
+    async def delete_online_migration_by_id(self, database_cluster_uuid: str, migration_id: str) -> Any:
         """
         Stop an Online Migration
 
@@ -2901,18 +2411,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_region(self, database_cluster_uuid: str, region: str) -> Any:
+    async def databases_update_region(self, database_cluster_uuid: str, region: str) -> Any:
         """
         Migrate a Database Cluster to a New Region
 
@@ -2933,38 +2439,21 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "region": region,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"region": region}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/migrate"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_cluster_size(
-        self,
-        database_cluster_uuid: str,
-        size: str,
-        num_nodes: int,
-        storage_size_mib: int | None = None,
+    async def databases_update_cluster_size(
+        self, database_cluster_uuid: str, size: str, num_nodes: int, storage_size_mib: int | None = None
     ) -> Any:
         """
         Resize a Database Cluster
@@ -2988,35 +2477,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "size": size,
-            "num_nodes": num_nodes,
-            "storage_size_mib": storage_size_mib,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"size": size, "num_nodes": num_nodes, "storage_size_mib": storage_size_mib}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/resize"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_firewall_rules(self, database_cluster_uuid: str) -> Any:
+    async def databases_list_firewall_rules(self, database_cluster_uuid: str) -> Any:
         """
         List Firewall Rules (Trusted Sources) for a Database Cluster
 
@@ -3039,20 +2513,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_database_cluster_firewall(
-        self, database_cluster_uuid: str, rules: list[dict[str, Any]] | None = None
-    ) -> Any:
+    async def update_database_cluster_firewall(self, database_cluster_uuid: str, rules: list[dict[str, Any]] | None = None) -> Any:
         """
         Update Firewall Rules (Trusted Sources) for a Database
 
@@ -3073,39 +2541,21 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "rules": rules,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"rules": rules}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/firewall"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_database_maintenance(
-        self,
-        database_cluster_uuid: str,
-        day: str,
-        hour: str,
-        pending: bool | None = None,
-        description: list[str] | None = None,
+    async def update_database_maintenance(
+        self, database_cluster_uuid: str, day: str, hour: str, pending: bool | None = None, description: list[str] | None = None
     ) -> Any:
         """
         Configure a Database Cluster's Maintenance Window
@@ -3130,36 +2580,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "day": day,
-            "hour": hour,
-            "pending": pending,
-            "description": description,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"day": day, "hour": hour, "pending": pending, "description": description}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/maintenance"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_install_update(self, database_cluster_uuid: str) -> Any:
+    async def databases_install_update(self, database_cluster_uuid: str) -> Any:
         """
         Start Database Maintenance
 
@@ -3181,25 +2615,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/install_update"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_backups(self, database_cluster_uuid: str) -> dict[str, Any]:
+    async def databases_list_backups(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         List Backups for a Database Cluster
 
@@ -3222,18 +2647,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_replicas(self, database_cluster_uuid: str) -> Any:
+    async def databases_list_replicas(self, database_cluster_uuid: str) -> Any:
         """
         List All Read-only Replicas
 
@@ -3256,18 +2677,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_create_replica(
+    async def databases_create_replica(
         self,
         database_cluster_uuid: str,
         id: str | None = None,
@@ -3325,30 +2742,19 @@ class DigitaloceanApp(APIApplication):
             "private_connection": private_connection,
             "storage_size_mib": storage_size_mib,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/replicas"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_events_logs(self, database_cluster_uuid: str) -> Any:
+    async def databases_list_events_logs(self, database_cluster_uuid: str) -> Any:
         """
         List all Events Logs
 
@@ -3371,20 +2777,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_replica(
-        self, database_cluster_uuid: str, replica_name: str
-    ) -> dict[str, Any]:
+    async def databases_get_replica(self, database_cluster_uuid: str, replica_name: str) -> dict[str, Any]:
         """
         Retrieve an Existing Read-only Replica
 
@@ -3410,20 +2810,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_destroy_replica(
-        self, database_cluster_uuid: str, replica_name: str
-    ) -> Any:
+    async def databases_destroy_replica(self, database_cluster_uuid: str, replica_name: str) -> Any:
         """
         Destroy a Read-only Replica
 
@@ -3449,20 +2843,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_promote_replica(
-        self, database_cluster_uuid: str, replica_name: str
-    ) -> Any:
+    async def databases_promote_replica(self, database_cluster_uuid: str, replica_name: str) -> Any:
         """
         Promote a Read-only Replica to become a Primary Cluster
 
@@ -3487,25 +2875,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/replicas/{replica_name}/promote"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_users(self, database_cluster_uuid: str) -> Any:
+    async def databases_list_users(self, database_cluster_uuid: str) -> Any:
         """
         List all Database Users
 
@@ -3528,18 +2907,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_add_user(
+    async def databases_add_user(
         self,
         database_cluster_uuid: str,
         name: str,
@@ -3552,34 +2927,90 @@ class DigitaloceanApp(APIApplication):
         readonly: bool | None = None,
     ) -> dict[str, Any]:
         """
-        Add a Database User
+                Add a Database User
 
-        Args:
-            database_cluster_uuid (string): database_cluster_uuid
-            name (string): The name of a database user. Example: 'app-01'.
-            role (string): A string representing the database user's role. The value will be either
-        "primary" or "normal".
-         Example: 'normal'.
-            password (string): A randomly generated password for the database user. Example: 'jge5lfxtzhx42iff'.
-            access_cert (string): Access certificate for TLS client authentication. (Kafka only) Example: '-----BEGIN CERTIFICATE-----\nMIIFFjCCA/6gAwIBAgISA0AznUJmXhu08/89ZuSPC/kRMA0GCSqGSIb3DQEBCwUA\nMEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD\nExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xNjExMjQwMDIzMDBaFw0x\nNzAyMjIwMDIzMDBaMCQxIjAgBgNVBAMTGWNsb3VkLmFuZHJld3NvbWV0aGluZy5j\nb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBIZMz8pnK6V52SVf+\nCYssOfCQHAx5f0Ou5rYbq3xNh8VWHIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1DwGb\n8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86XwrE4\noFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3wZ2mz\nZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1FZRna\nk/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFXfqqb\nQwuRAgMBAAGjggIaMIICFjAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB\nBQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFLsAFcxAhFX1\nMbCnzr9hEO5rL4jqMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMHAG\nCCsGAQUFBwEBBGQwYjAvBggrBgEFBQcwAYYjaHR0cDovL29jc3AuaW50LXgzLmxl\ndHNlbmNyeXB0Lm9yZy8wLwYIKwYBBQUHMAKGI2h0dHA6Ly9jZXJ0LmludC14My5s\nZXRzZW5jcnlwdC5vcmcvMCQGA1UdEQQdMBuCGWNsb3VkLmFuZHJld3NvbWV0aGlu\nZy5jb20wgf4GA1UdIASB9jCB8zAIBgZngQwBAgWrgeYGCysGAQQBgt8TAQEBMIHW\nMCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCBqwYIKwYB\nBQUHAgIwgZ4MgZtUaGlzIENlcnRpZmljYXRlIG1heSBvbmx5IGJlIHJlbGllZCB1\ncG9uIGJ5IFJlbHlpbmcgUGFydGllcyBhbmQgb25seSQ2ziBhY2NvcmRhbmNlIHdp\ndGggdGhlIENlcnRpZmljYXRlIFBvbGljeSBmb3VuZCBhdCBodHRwczovL2xldHNl\nbmNyeXB0Lm9yZy9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAOZVQvrjM\nPKXLARTjB5XsgfyDN3/qwLl7SmwGkPe+B+9FJpfScYG1JzVuCj/SoaPaK34G4x/e\niXwlwOXtMOtqjQYzNu2Pr2C+I+rVmaxIrCUXFmC205IMuUBEeWXG9Y/HvXQLPabD\nD3Gdl5+Feink9SDRP7G0HaAwq13hI7ARxkL9p+UIY39X0dV3WOboW2Re8nrkFXJ7\nq9Z6shK5QgpBfsLjtjNsQzaGV3ve1gOg25aTJGearBWOvEjJNA1wGMoKVXOtYwm/\nWyWoVdCQ8HmconcbJB6xc0UZ1EjvzRr5ZIvSa5uHZD0L3m7/kpPWlAlFJ7hHASPu\nUlF1zblDmg2Iaw==\n-----END CERTIFICATE-----'.
-            access_key (string): Access key for TLS client authentication. (Kafka only) Example: '-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDBIZMz8pnK6V52\nSVf+CYssOfCQHAx5f0Ou5rYbq3xNh8VHAIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1\nDwGb8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86X\nwrE4oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3w\nZ2mzZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1F\nZRnak/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFX\nfqqbQwuRAgMBAAECggEBAILLmkW0JzOkmLTDNzR0giyRkLoIROqDpfLtjKdwm95l\n9NUBJcU4vCvXQITKt/NhtnNTexcowg8pInb0ksJpg3UGE+4oMNBXVi2UW5MQZ5cm\ncVkQqgXkBF2YAY8FMaB6EML+0En2+dGR/3gIAr221xsFiXe1kHbB8Nb2c/d5HpFt\neRpLVJnK+TxSr78PcZA8DDGlSgwvgimdAaFUNO2OqB9/0E9UPyKk2ycdff/Z6ldF\n0hkCLtdYTTl8Kf/OwjcuTgmA2O3Y8/CoQX/L+oP9Rvt9pWCEfuebiOmHJVPO6Y6x\ngtQVEXwmF1pDHH4Qtz/e6UZTdYeMl9G4aNO2CawwcaYECgYEA57imgSOG4XsJLRh\nGGncV9R/xhy4AbDWLtAMzQRX4ktvKCaHWyQV2XK2we/cu29NLv2Y89WmerTNPOU+\nP8+pB31uty2ELySVn15QhKpQClVEAlxCnnNjXYrii5LOM80+lVmxvQwxVd8Yz8nj\nIntyioXNBEnYS7V2RxxFGgFun1cCgYEA1V3W+Uyamhq8JS5EY0FhyGcXdHd70K49\nW1ou7McIpncf9tM9acLS1hkI98rd2T69Zo8mKoV1V2hjFaKUYfNys6tTkYWeZCcJ\n3rW44j9DTD+FmmjcX6b8DzfybGLehfNbCw6n67/r45DXIV/fk6XZfkx6IEGO4ODt\nNfnvx4TuI1cCgYBACDiKqwSUvmkUuweOo4IuCxyb5Ee8v98P5JIE/VRDxlCbKbpx\npxEam6aBBQVcDi+n8o0H3WjjlKc6UqbW/01YMoMrvzotxNBLz8Y0QtQHZvR6KoCG\nRKCKstxTcWflzKuknbqN4RapAhNbKBDJ8PMSWfyDWNyaXzSmBdvaidbF1QKBgDI0\no4oD0Xkjg1QIYAUu9FBQmb9JAjRnW36saNBEQS/SZg4RRKknM683MtoDvVIKJk0E\nsAlfX+4SXQZRPDMUMtA+Jyrd0xhj6zmhbwClvDMr20crF3fWdgcqtft1BEFmsuyW\nJUMe5OWmRkjPI2+9ncDPRAllA7a8lnSV/Crph5N/AoGBAIK249temKrGe9pmsmAo\nQbNuYSmwpnMoAqdHTrl70HEmK7ob6SIVmsR8QFAkH7xkYZc4Bxbx4h1bdpozGB+/\nAangbiaYJcAOD1QyfiFbflvI1RFeHgrk7VIafeSeQv6qu0LLMi2zUbpgVzxt78Wg\neTuK2xNR0PIM8OI7pRpgyj1I\n-----END PRIVATE KEY-----'.
-            mysql_settings (object): mysql_settings
-            settings (object): settings
-            readonly (boolean): (To be deprecated: use settings.mongo_user_settings.role instead for access controls to MongoDB databases).
-        For MongoDB clusters, set to `true` to create a read-only user.
-        This option is not currently supported for other database engines.
+                Args:
+                    database_cluster_uuid (string): database_cluster_uuid
+                    name (string): The name of a database user. Example: 'app-01'.
+                    role (string): A string representing the database user's role. The value will be either
+                "primary" or "normal".
+                 Example: 'normal'.
+                    password (string): A randomly generated password for the database user. Example: 'jge5lfxtzhx42iff'.
+                    access_cert (string): Access certificate for TLS client authentication. (Kafka only) Example: '-----BEGIN CERTIFICATE-----
+        MIIFFjCCA/6gAwIBAgISA0AznUJmXhu08/89ZuSPC/kRMA0GCSqGSIb3DQEBCwUA
+        MEoxCzAJBgNVBAYTAlVTMRYwFAYDVQQKEw1MZXQncyBFbmNyeXB0MSMwIQYDVQQD
+        ExpMZXQncyBFbmNyeXB0IEF1dGhvcml0eSBYMzAeFw0xNjExMjQwMDIzMDBaFw0x
+        NzAyMjIwMDIzMDBaMCQxIjAgBgNVBAMTGWNsb3VkLmFuZHJld3NvbWV0aGluZy5j
+        b20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDBIZMz8pnK6V52SVf+
+        CYssOfCQHAx5f0Ou5rYbq3xNh8VWHIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1DwGb
+        8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86XwrE4
+        oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3wZ2mz
+        Z03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1FZRna
+        k/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFXfqqb
+        QwuRAgMBAAGjggIaMIICFjAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYB
+        BQUHAwEGCCsGAQUFBwMCMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFLsAFcxAhFX1
+        MbCnzr9hEO5rL4jqMB8GA1UdIwQYMBaAFKhKamMEfd265tE5t6ZFZe/zqOyhMHAG
+        CCsGAQUFBwEBBGQwYjAvBggrBgEFBQcwAYYjaHR0cDovL29jc3AuaW50LXgzLmxl
+        dHNlbmNyeXB0Lm9yZy8wLwYIKwYBBQUHMAKGI2h0dHA6Ly9jZXJ0LmludC14My5s
+        ZXRzZW5jcnlwdC5vcmcvMCQGA1UdEQQdMBuCGWNsb3VkLmFuZHJld3NvbWV0aGlu
+        Zy5jb20wgf4GA1UdIASB9jCB8zAIBgZngQwBAgWrgeYGCysGAQQBgt8TAQEBMIHW
+        MCYGCCsGAQUFBwIBFhpodHRwOi8vY3BzLmxldHNlbmNyeXB0Lm9yZzCBqwYIKwYB
+        BQUHAgIwgZ4MgZtUaGlzIENlcnRpZmljYXRlIG1heSBvbmx5IGJlIHJlbGllZCB1
+        cG9uIGJ5IFJlbHlpbmcgUGFydGllcyBhbmQgb25seSQ2ziBhY2NvcmRhbmNlIHdp
+        dGggdGhlIENlcnRpZmljYXRlIFBvbGljeSBmb3VuZCBhdCBodHRwczovL2xldHNl
+        bmNyeXB0Lm9yZy9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAOZVQvrjM
+        PKXLARTjB5XsgfyDN3/qwLl7SmwGkPe+B+9FJpfScYG1JzVuCj/SoaPaK34G4x/e
+        iXwlwOXtMOtqjQYzNu2Pr2C+I+rVmaxIrCUXFmC205IMuUBEeWXG9Y/HvXQLPabD
+        D3Gdl5+Feink9SDRP7G0HaAwq13hI7ARxkL9p+UIY39X0dV3WOboW2Re8nrkFXJ7
+        q9Z6shK5QgpBfsLjtjNsQzaGV3ve1gOg25aTJGearBWOvEjJNA1wGMoKVXOtYwm/
+        WyWoVdCQ8HmconcbJB6xc0UZ1EjvzRr5ZIvSa5uHZD0L3m7/kpPWlAlFJ7hHASPu
+        UlF1zblDmg2Iaw==
+        -----END CERTIFICATE-----'.
+                    access_key (string): Access key for TLS client authentication. (Kafka only) Example: '-----BEGIN PRIVATE KEY-----
+        MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDBIZMz8pnK6V52
+        SVf+CYssOfCQHAx5f0Ou5rYbq3xNh8VHAIYJCQ1QxQIxKSP6+uODSYrb2KWyurP1
+        DwGb8OYm0J3syEDtCUQik1cpCzpeNlAZ2f8FzXyYQAqPopxdRpsFz8DtZnVvu86X
+        wrE4oFPl9MReICmZfBNWylpV5qgFPoXyJ70ZAsTm3cEe3n+LBXEnY4YrVDRWxA3w
+        Z2mzZ03HZ1hHrxK9CMnS829U+8sK+UneZpCO7yLRPuxwhmps0wpK/YuZZfRAKF1F
+        ZRnak/SIQ28rnWufmdg16YqqHgl5JOgnb3aslKRvL4dI2Gwnkd2IHtpZnTR0gxFX
+        fqqbQwuRAgMBAAECggEBAILLmkW0JzOkmLTDNzR0giyRkLoIROqDpfLtjKdwm95l
+        9NUBJcU4vCvXQITKt/NhtnNTexcowg8pInb0ksJpg3UGE+4oMNBXVi2UW5MQZ5cm
+        cVkQqgXkBF2YAY8FMaB6EML+0En2+dGR/3gIAr221xsFiXe1kHbB8Nb2c/d5HpFt
+        eRpLVJnK+TxSr78PcZA8DDGlSgwvgimdAaFUNO2OqB9/0E9UPyKk2ycdff/Z6ldF
+        0hkCLtdYTTl8Kf/OwjcuTgmA2O3Y8/CoQX/L+oP9Rvt9pWCEfuebiOmHJVPO6Y6x
+        gtQVEXwmF1pDHH4Qtz/e6UZTdYeMl9G4aNO2CawwcaYECgYEA57imgSOG4XsJLRh
+        GGncV9R/xhy4AbDWLtAMzQRX4ktvKCaHWyQV2XK2we/cu29NLv2Y89WmerTNPOU+
+        P8+pB31uty2ELySVn15QhKpQClVEAlxCnnNjXYrii5LOM80+lVmxvQwxVd8Yz8nj
+        IntyioXNBEnYS7V2RxxFGgFun1cCgYEA1V3W+Uyamhq8JS5EY0FhyGcXdHd70K49
+        W1ou7McIpncf9tM9acLS1hkI98rd2T69Zo8mKoV1V2hjFaKUYfNys6tTkYWeZCcJ
+        3rW44j9DTD+FmmjcX6b8DzfybGLehfNbCw6n67/r45DXIV/fk6XZfkx6IEGO4ODt
+        Nfnvx4TuI1cCgYBACDiKqwSUvmkUuweOo4IuCxyb5Ee8v98P5JIE/VRDxlCbKbpx
+        pxEam6aBBQVcDi+n8o0H3WjjlKc6UqbW/01YMoMrvzotxNBLz8Y0QtQHZvR6KoCG
+        RKCKstxTcWflzKuknbqN4RapAhNbKBDJ8PMSWfyDWNyaXzSmBdvaidbF1QKBgDI0
+        o4oD0Xkjg1QIYAUu9FBQmb9JAjRnW36saNBEQS/SZg4RRKknM683MtoDvVIKJk0E
+        sAlfX+4SXQZRPDMUMtA+Jyrd0xhj6zmhbwClvDMr20crF3fWdgcqtft1BEFmsuyW
+        JUMe5OWmRkjPI2+9ncDPRAllA7a8lnSV/Crph5N/AoGBAIK249temKrGe9pmsmAo
+        QbNuYSmwpnMoAqdHTrl70HEmK7ob6SIVmsR8QFAkH7xkYZc4Bxbx4h1bdpozGB+/
+        AangbiaYJcAOD1QyfiFbflvI1RFeHgrk7VIafeSeQv6qu0LLMi2zUbpgVzxt78Wg
+        eTuK2xNR0PIM8OI7pRpgyj1I
+        -----END PRIVATE KEY-----'.
+                    mysql_settings (object): mysql_settings
+                    settings (object): settings
+                    readonly (boolean): (To be deprecated: use settings.mongo_user_settings.role instead for access controls to MongoDB databases).
+                For MongoDB clusters, set to `true` to create a read-only user.
+                This option is not currently supported for other database engines.
 
-         Example: 'True'.
+                 Example: 'True'.
 
-        Returns:
-            dict[str, Any]: A JSON object with a key of `user`.
+                Returns:
+                    dict[str, Any]: A JSON object with a key of `user`.
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Databases
+                Tags:
+                    Databases
         """
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
@@ -3594,32 +3025,19 @@ class DigitaloceanApp(APIApplication):
             "settings": settings,
             "readonly": readonly,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_user(
-        self, database_cluster_uuid: str, username: str
-    ) -> dict[str, Any]:
+    async def databases_get_user(self, database_cluster_uuid: str, username: str) -> dict[str, Any]:
         """
         Retrieve an Existing Database User
 
@@ -3645,18 +3063,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_delete_user(self, database_cluster_uuid: str, username: str) -> Any:
+    async def databases_delete_user(self, database_cluster_uuid: str, username: str) -> Any:
         """
         Remove a Database User
 
@@ -3682,20 +3096,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_user(
-        self, database_cluster_uuid: str, username: str, settings: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def databases_update_user(self, database_cluster_uuid: str, username: str, settings: dict[str, Any]) -> dict[str, Any]:
         """
         Update a Database User
 
@@ -3719,37 +3127,21 @@ class DigitaloceanApp(APIApplication):
         if username is None:
             raise ValueError("Missing required parameter 'username'.")
         request_body_data = None
-        request_body_data = {
-            "settings": settings,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"settings": settings}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/users/{username}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_reset_auth(
-        self,
-        database_cluster_uuid: str,
-        username: str,
-        mysql_settings: dict[str, Any] | None = None,
+    async def databases_reset_auth(
+        self, database_cluster_uuid: str, username: str, mysql_settings: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Reset a Database User's Password or Authentication Method
@@ -3774,33 +3166,20 @@ class DigitaloceanApp(APIApplication):
         if username is None:
             raise ValueError("Missing required parameter 'username'.")
         request_body_data = None
-        request_body_data = {
-            "mysql_settings": mysql_settings,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"mysql_settings": mysql_settings}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/users/{username}/reset_auth"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list(self, database_cluster_uuid: str) -> Any:
+    async def databases_list(self, database_cluster_uuid: str) -> Any:
         """
         List All Databases
 
@@ -3823,18 +3202,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_add(self, database_cluster_uuid: str, name: str) -> dict[str, Any]:
+    async def databases_add(self, database_cluster_uuid: str, name: str) -> dict[str, Any]:
         """
         Add a New Database
 
@@ -3855,35 +3230,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/dbs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get(
-        self, database_cluster_uuid: str, database_name: str
-    ) -> dict[str, Any]:
+    async def databases_get(self, database_cluster_uuid: str, database_name: str) -> dict[str, Any]:
         """
         Retrieve an Existing Database
 
@@ -3905,24 +3265,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if database_name is None:
             raise ValueError("Missing required parameter 'database_name'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/dbs/{database_name}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/dbs/{database_name}"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_delete(self, database_cluster_uuid: str, database_name: str) -> Any:
+    async def databases_delete(self, database_cluster_uuid: str, database_name: str) -> Any:
         """
         Delete a Database
 
@@ -3944,26 +3298,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if database_name is None:
             raise ValueError("Missing required parameter 'database_name'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/dbs/{database_name}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/dbs/{database_name}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_connection_pools(
-        self, database_cluster_uuid: str
-    ) -> dict[str, Any]:
+    async def databases_list_connection_pools(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         List Connection Pools (PostgreSQL)
 
@@ -3986,18 +3332,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_add_connection_pool(
+    async def databases_add_connection_pool(
         self,
         database_cluster_uuid: str,
         name: str,
@@ -4049,32 +3391,19 @@ class DigitaloceanApp(APIApplication):
             "standby_connection": standby_connection,
             "standby_private_connection": standby_private_connection,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/pools"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_connection_pool(
-        self, database_cluster_uuid: str, pool_name: str
-    ) -> dict[str, Any]:
+    async def databases_get_connection_pool(self, database_cluster_uuid: str, pool_name: str) -> dict[str, Any]:
         """
         Retrieve Existing Connection Pool (PostgreSQL)
 
@@ -4100,25 +3429,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_database_pool(
-        self,
-        database_cluster_uuid: str,
-        pool_name: str,
-        mode: str,
-        size: int,
-        db: str,
-        user: str | None = None,
+    async def update_database_pool(
+        self, database_cluster_uuid: str, pool_name: str, mode: str, size: int, db: str, user: str | None = None
     ) -> Any:
         """
         Update Connection Pools (PostgreSQL)
@@ -4146,36 +3465,20 @@ class DigitaloceanApp(APIApplication):
         if pool_name is None:
             raise ValueError("Missing required parameter 'pool_name'.")
         request_body_data = None
-        request_body_data = {
-            "mode": mode,
-            "size": size,
-            "db": db,
-            "user": user,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"mode": mode, "size": size, "db": db, "user": user}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/pools/{pool_name}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_pool(self, database_cluster_uuid: str, pool_name: str) -> Any:
+    async def delete_pool(self, database_cluster_uuid: str, pool_name: str) -> Any:
         """
         Delete a Connection Pool (PostgreSQL)
 
@@ -4201,18 +3504,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_eviction_policy(self, database_cluster_uuid: str) -> Any:
+    async def databases_get_eviction_policy(self, database_cluster_uuid: str) -> Any:
         """
         Retrieve the Eviction Policy for a Redis or Valkey Cluster
 
@@ -4235,20 +3534,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_eviction_policy(
-        self, database_cluster_uuid: str, eviction_policy: str
-    ) -> Any:
+    async def update_eviction_policy(self, database_cluster_uuid: str, eviction_policy: str) -> Any:
         """
         Configure the Eviction Policy for a Redis or Valkey Cluster
 
@@ -4276,33 +3569,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "eviction_policy": eviction_policy,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"eviction_policy": eviction_policy}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/eviction_policy"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_sql_mode(self, database_cluster_uuid: str) -> dict[str, Any]:
+    async def databases_get_sql_mode(self, database_cluster_uuid: str) -> dict[str, Any]:
         """
         Retrieve the SQL Modes for a MySQL Cluster
 
@@ -4325,20 +3605,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_sql_mode(
-        self, database_cluster_uuid: str, sql_mode: str
-    ) -> Any:
+    async def databases_update_sql_mode(self, database_cluster_uuid: str, sql_mode: str) -> Any:
         """
         Update SQL Mode for a Cluster
 
@@ -4359,35 +3633,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "sql_mode": sql_mode,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"sql_mode": sql_mode}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/sql_mode"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_major_version(
-        self, database_cluster_uuid: str, version: str | None = None
-    ) -> Any:
+    async def databases_update_major_version(self, database_cluster_uuid: str, version: str | None = None) -> Any:
         """
         Upgrade Major Version for a Database
 
@@ -4408,33 +3667,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "version": version,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"version": version}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/upgrade"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_kafka_topics(self, database_cluster_uuid: str) -> Any:
+    async def databases_list_kafka_topics(self, database_cluster_uuid: str) -> Any:
         """
         List Topics for a Kafka Cluster
 
@@ -4457,18 +3703,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_create_kafka_topic(
+    async def databases_create_kafka_topic(
         self,
         database_cluster_uuid: str,
         name: str | None = None,
@@ -4499,38 +3741,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "replication_factor": replication_factor,
-            "partition_count": partition_count,
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "replication_factor": replication_factor, "partition_count": partition_count, "config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_kafka_topic(
-        self, database_cluster_uuid: str, topic_name: str
-    ) -> Any:
+    async def databases_get_kafka_topic(self, database_cluster_uuid: str, topic_name: str) -> Any:
         """
         Get Topic for a Kafka Cluster
 
@@ -4552,24 +3776,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if topic_name is None:
             raise ValueError("Missing required parameter 'topic_name'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics/{topic_name}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics/{topic_name}"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_kafka_topic(
+    async def databases_update_kafka_topic(
         self,
         database_cluster_uuid: str,
         topic_name: str,
@@ -4602,39 +3820,20 @@ class DigitaloceanApp(APIApplication):
         if topic_name is None:
             raise ValueError("Missing required parameter 'topic_name'.")
         request_body_data = None
-        request_body_data = {
-            "replication_factor": replication_factor,
-            "partition_count": partition_count,
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics/{topic_name}"
-        )
+        request_body_data = {"replication_factor": replication_factor, "partition_count": partition_count, "config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics/{topic_name}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_delete_kafka_topic(
-        self, database_cluster_uuid: str, topic_name: str
-    ) -> Any:
+    async def databases_delete_kafka_topic(self, database_cluster_uuid: str, topic_name: str) -> Any:
         """
         Delete Topic for a Kafka Cluster
 
@@ -4656,24 +3855,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if topic_name is None:
             raise ValueError("Missing required parameter 'topic_name'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics/{topic_name}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/topics/{topic_name}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_list_logsink(self, database_cluster_uuid: str) -> Any:
+    async def databases_list_logsink(self, database_cluster_uuid: str) -> Any:
         """
         List Logsinks for a Database Cluster
 
@@ -4696,20 +3889,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_create_logsink(
-        self, database_cluster_uuid: str, sink_name: str, sink_type: str, config: Any
-    ) -> Any:
+    async def databases_create_logsink(self, database_cluster_uuid: str, sink_name: str, sink_type: str, config: Any) -> Any:
         """
         Create Logsink for a Database Cluster
 
@@ -4739,35 +3926,20 @@ class DigitaloceanApp(APIApplication):
         if database_cluster_uuid is None:
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "sink_name": sink_name,
-            "sink_type": sink_type,
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"sink_name": sink_name, "sink_type": sink_type, "config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_get_logsink(self, database_cluster_uuid: str, logsink_id: str) -> Any:
+    async def databases_get_logsink(self, database_cluster_uuid: str, logsink_id: str) -> Any:
         """
         Get Logsink for a Database Cluster
 
@@ -4789,26 +3961,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if logsink_id is None:
             raise ValueError("Missing required parameter 'logsink_id'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink/{logsink_id}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink/{logsink_id}"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_update_logsink(
-        self, database_cluster_uuid: str, logsink_id: str, config: Any
-    ) -> Any:
+    async def databases_update_logsink(self, database_cluster_uuid: str, logsink_id: str, config: Any) -> Any:
         """
         Update Logsink for a Database Cluster
 
@@ -4832,37 +3996,20 @@ class DigitaloceanApp(APIApplication):
         if logsink_id is None:
             raise ValueError("Missing required parameter 'logsink_id'.")
         request_body_data = None
-        request_body_data = {
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink/{logsink_id}"
-        )
+        request_body_data = {"config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink/{logsink_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def databases_delete_logsink(
-        self, database_cluster_uuid: str, logsink_id: str
-    ) -> Any:
+    async def databases_delete_logsink(self, database_cluster_uuid: str, logsink_id: str) -> Any:
         """
         Delete Logsink for a Database Cluster
 
@@ -4884,24 +4031,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if logsink_id is None:
             raise ValueError("Missing required parameter 'logsink_id'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink/{logsink_id}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/logsink/{logsink_id}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_database_metrics_credentials(self) -> Any:
+    async def get_database_metrics_credentials(self) -> Any:
         """
         Retrieve Database Clusters' Metrics Endpoint Credentials
 
@@ -4919,20 +4060,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_database_credentials(
-        self, credentials: dict[str, Any] | None = None
-    ) -> Any:
+    async def update_database_credentials(self, credentials: dict[str, Any] | None = None) -> Any:
         """
         Update Database Clusters' Metrics Endpoint Credentials
 
@@ -4950,33 +4085,20 @@ class DigitaloceanApp(APIApplication):
             Databases
         """
         request_body_data = None
-        request_body_data = {
-            "credentials": credentials,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"credentials": credentials}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/databases/metrics/credentials"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_database_indexes(self, database_cluster_uuid: str) -> Any:
+    async def list_database_indexes(self, database_cluster_uuid: str) -> Any:
         """
         List Indexes for a OpenSearch Cluster
 
@@ -4999,20 +4121,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_database_index_by_name(
-        self, database_cluster_uuid: str, index_name: str
-    ) -> Any:
+    async def delete_database_index_by_name(self, database_cluster_uuid: str, index_name: str) -> Any:
         """
         Delete Index for OpenSearch Cluster
 
@@ -5034,24 +4150,18 @@ class DigitaloceanApp(APIApplication):
             raise ValueError("Missing required parameter 'database_cluster_uuid'.")
         if index_name is None:
             raise ValueError("Missing required parameter 'index_name'.")
-        url = (
-            f"{self.base_url}/v2/databases/{database_cluster_uuid}/indexes/{index_name}"
-        )
+        url = f"{self.base_url}/v2/databases/{database_cluster_uuid}/indexes/{index_name}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_list(self, per_page: int | None = None, page: int | None = None) -> Any:
+    async def domains_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Domains
 
@@ -5070,79 +4180,60 @@ class DigitaloceanApp(APIApplication):
             Domains, important
         """
         url = f"{self.base_url}/v2/domains"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_create(
-        self,
-        name: str | None = None,
-        ip_address: str | None = None,
-        ttl: int | None = None,
-        zone_file: str | None = None,
+    async def domains_create(
+        self, name: str | None = None, ip_address: str | None = None, ttl: int | None = None, zone_file: str | None = None
     ) -> Any:
         """
-        Create a New Domain
+                Create a New Domain
 
-        Args:
-            name (string): The name of the domain itself. This should follow the standard domain format of domain.TLD. For instance, `example.com` is a valid domain name. Example: 'example.com'.
-            ip_address (string): This optional attribute may contain an IP address. When provided, an A record will be automatically created pointing to the apex domain. Example: '192.0.2.1'.
-            ttl (integer): This value is the time to live for the records on this domain, in seconds. This defines the time frame that clients can cache queried information before a refresh should be requested. Example: '1800'.
-            zone_file (string): This attribute contains the complete contents of the zone file for the selected domain. Individual domain record resources should be used to get more granular control over records. However, this attribute can also be used to get information about the SOA record, which is created automatically and is not accessible as an individual record resource. Example: '$ORIGIN example.com.\n$TTL 1800\nexample.com. IN SOA ns1.digitalocean.com. hostmaster.example.com. 1415982609 10800 3600 604800 1800\nexample.com. 1800 IN NS ns1.digitalocean.com.\nexample.com. 1800 IN NS ns2.digitalocean.com.\nexample.com. 1800 IN NS ns3.digitalocean.com.\nexample.com. 1800 IN A 1.2.3.4\n'.
+                Args:
+                    name (string): The name of the domain itself. This should follow the standard domain format of domain.TLD. For instance, `example.com` is a valid domain name. Example: 'example.com'.
+                    ip_address (string): This optional attribute may contain an IP address. When provided, an A record will be automatically created pointing to the apex domain. Example: '192.0.2.1'.
+                    ttl (integer): This value is the time to live for the records on this domain, in seconds. This defines the time frame that clients can cache queried information before a refresh should be requested. Example: '1800'.
+                    zone_file (string): This attribute contains the complete contents of the zone file for the selected domain. Individual domain record resources should be used to get more granular control over records. However, this attribute can also be used to get information about the SOA record, which is created automatically and is not accessible as an individual record resource. Example: '$ORIGIN example.com.
+        $TTL 1800
+        example.com. IN SOA ns1.digitalocean.com. hostmaster.example.com. 1415982609 10800 3600 604800 1800
+        example.com. 1800 IN NS ns1.digitalocean.com.
+        example.com. 1800 IN NS ns2.digitalocean.com.
+        example.com. 1800 IN NS ns3.digitalocean.com.
+        example.com. 1800 IN A 1.2.3.4
+        '.
 
-        Returns:
-            Any: The response will be a JSON object with a key called `domain`. The value of this will be an object that contains the standard attributes associated with a domain.
+                Returns:
+                    Any: The response will be a JSON object with a key called `domain`. The value of this will be an object that contains the standard attributes associated with a domain.
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Domains, important
+                Tags:
+                    Domains, important
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "ip_address": ip_address,
-            "ttl": ttl,
-            "zone_file": zone_file,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "ip_address": ip_address, "ttl": ttl, "zone_file": zone_file}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/domains"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_get(self, domain_name: str) -> Any:
+    async def domains_get(self, domain_name: str) -> Any:
         """
         Retrieve an Existing Domain
 
@@ -5165,18 +4256,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_delete(self, domain_name: str) -> Any:
+    async def domains_delete(self, domain_name: str) -> Any:
         """
         Delete a Domain
 
@@ -5199,24 +4286,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_list_records(
-        self,
-        domain_name: str,
-        name: str | None = None,
-        type: str | None = None,
-        per_page: int | None = None,
-        page: int | None = None,
+    async def domains_list_records(
+        self, domain_name: str, name: str | None = None, type: str | None = None, per_page: int | None = None, page: int | None = None
     ) -> Any:
         """
         List All Domain Records
@@ -5241,30 +4319,17 @@ class DigitaloceanApp(APIApplication):
         if domain_name is None:
             raise ValueError("Missing required parameter 'domain_name'.")
         url = f"{self.base_url}/v2/domains/{domain_name}/records"
-        query_params = {
-            k: v
-            for k, v in [
-                ("name", name),
-                ("type", type),
-                ("per_page", per_page),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("name", name), ("type", type), ("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_create_record(
+    async def domains_create_record(
         self,
         domain_name: str,
         id: int | None = None,
@@ -5319,30 +4384,19 @@ class DigitaloceanApp(APIApplication):
             "flags": flags,
             "tag": tag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/domains/{domain_name}/records"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_get_record(self, domain_name: str, domain_record_id: str) -> Any:
+    async def domains_get_record(self, domain_name: str, domain_record_id: str) -> Any:
         """
         Retrieve an Existing Domain Record
 
@@ -5368,18 +4422,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_patch_record(
+    async def domains_patch_record(
         self,
         domain_name: str,
         domain_record_id: str,
@@ -5438,25 +4488,19 @@ class DigitaloceanApp(APIApplication):
             "flags": flags,
             "tag": tag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/domains/{domain_name}/records/{domain_record_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_update_record(
+    async def domains_update_record(
         self,
         domain_name: str,
         domain_record_id: str,
@@ -5515,30 +4559,19 @@ class DigitaloceanApp(APIApplication):
             "flags": flags,
             "tag": tag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/domains/{domain_name}/records/{domain_record_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def domains_delete_record(self, domain_name: str, domain_record_id: str) -> Any:
+    async def domains_delete_record(self, domain_name: str, domain_record_id: str) -> Any:
         """
         Delete a Domain Record
 
@@ -5564,18 +4597,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list(
+    async def droplets_list(
         self,
         per_page: int | None = None,
         page: int | None = None,
@@ -5606,29 +4635,19 @@ class DigitaloceanApp(APIApplication):
         url = f"{self.base_url}/v2/droplets"
         query_params = {
             k: v
-            for k, v in [
-                ("per_page", per_page),
-                ("page", page),
-                ("tag_name", tag_name),
-                ("name", name),
-                ("type", type),
-            ]
+            for k, v in [("per_page", per_page), ("page", page), ("tag_name", tag_name), ("name", name), ("type", type)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_create(
+    async def droplets_create(
         self,
         name: str | None = None,
         region: str | None = None,
@@ -5648,35 +4667,38 @@ class DigitaloceanApp(APIApplication):
         names: list[str] | None = None,
     ) -> Any:
         """
-        Create a New Droplet
+                Create a New Droplet
 
-        Args:
-            name (string): The human-readable string you wish to use when displaying the Droplet name. The name, if set to a domain name managed in the DigitalOcean DNS management system, will configure a PTR record for the Droplet. The name set during creation will also determine the hostname for the Droplet in its internal configuration. Example: 'example.com'.
-            region (string): The slug identifier for the region that you wish to deploy the Droplet in. If the specific datacenter is not not important, a slug prefix (e.g. `nyc`) can be used to deploy the Droplet in any of the that region's locations (`nyc1`, `nyc2`, or `nyc3`). If the region is omitted from the create request completely, the Droplet may deploy in any region. Example: 'nyc3'.
-            size (string): The slug identifier for the size that you wish to select for this Droplet. Example: 's-1vcpu-1gb'.
-            image (string): The image ID of a public or private image or the slug identifier for a public image. This image will be the base image for your Droplet. Example: 'ubuntu-20-04-x64'.
-            ssh_keys (array): An array containing the IDs or fingerprints of the SSH keys that you wish to embed in the Droplet's root account upon creation. You must add the keys to your team before they can be embedded on a Droplet. Example: "[289794, '3b:16:e4:bf:8b:00:8b:b8:59:8c:a9:d3:f0:19:fa:45']".
-            backups (boolean): A boolean indicating whether automated backups should be enabled for the Droplet. Example: 'True'.
-            backup_policy (string): backup_policy
-            ipv6 (boolean): A boolean indicating whether to enable IPv6 on the Droplet. Example: 'True'.
-            monitoring (boolean): A boolean indicating whether to install the DigitalOcean agent for monitoring. Example: 'True'.
-            tags (array): A flat array of tag names as strings to apply to the Droplet after it is created. Tag names can either be existing or new tags. Example: "['env:prod', 'web']".
-            user_data (string): A string containing 'user data' which may be used to configure the Droplet on first boot, often a 'cloud-config' file or Bash script. It must be plain text and may not exceed 64 KiB in size. Example: '#cloud-config\nruncmd:\n  - touch /test.txt\n'.
-            private_networking (boolean): This parameter has been deprecated. Use `vpc_uuid` instead to specify a VPC network for the Droplet. If no `vpc_uuid` is provided, the Droplet will be placed in your account's default VPC for the region. Example: 'True'.
-            volumes (array): An array of IDs for block storage volumes that will be attached to the Droplet once created. The volumes must not already be attached to an existing Droplet. Example: "['12e97116-7280-11ed-b3d0-0a58ac146812']".
-            vpc_uuid (string): A string specifying the UUID of the VPC to which the Droplet will be assigned. If excluded, the Droplet will be assigned to your account's default VPC for the region. Example: '760e09ef-dc84-11e8-981e-3cfdfeaae000'.
-            with_droplet_agent (boolean): A boolean indicating whether to install the DigitalOcean agent used for providing access to the Droplet web console in the control panel. By default, the agent is installed on new Droplets but installation errors (i.e. OS not supported) are ignored. To prevent it from being installed, set to `false`. To make installation errors fatal, explicitly set it to `true`. Example: 'True'.
-            names (array): An array of human human-readable strings you wish to use when displaying the Droplet name. Each name, if set to a domain name managed in the DigitalOcean DNS management system, will configure a PTR record for the Droplet. Each name set during creation will also determine the hostname for the Droplet in its internal configuration. Example: "['sub-01.example.com', 'sub-02.example.com']".
+                Args:
+                    name (string): The human-readable string you wish to use when displaying the Droplet name. The name, if set to a domain name managed in the DigitalOcean DNS management system, will configure a PTR record for the Droplet. The name set during creation will also determine the hostname for the Droplet in its internal configuration. Example: 'example.com'.
+                    region (string): The slug identifier for the region that you wish to deploy the Droplet in. If the specific datacenter is not not important, a slug prefix (e.g. `nyc`) can be used to deploy the Droplet in any of the that region's locations (`nyc1`, `nyc2`, or `nyc3`). If the region is omitted from the create request completely, the Droplet may deploy in any region. Example: 'nyc3'.
+                    size (string): The slug identifier for the size that you wish to select for this Droplet. Example: 's-1vcpu-1gb'.
+                    image (string): The image ID of a public or private image or the slug identifier for a public image. This image will be the base image for your Droplet. Example: 'ubuntu-20-04-x64'.
+                    ssh_keys (array): An array containing the IDs or fingerprints of the SSH keys that you wish to embed in the Droplet's root account upon creation. You must add the keys to your team before they can be embedded on a Droplet. Example: "[289794, '3b:16:e4:bf:8b:00:8b:b8:59:8c:a9:d3:f0:19:fa:45']".
+                    backups (boolean): A boolean indicating whether automated backups should be enabled for the Droplet. Example: 'True'.
+                    backup_policy (string): backup_policy
+                    ipv6 (boolean): A boolean indicating whether to enable IPv6 on the Droplet. Example: 'True'.
+                    monitoring (boolean): A boolean indicating whether to install the DigitalOcean agent for monitoring. Example: 'True'.
+                    tags (array): A flat array of tag names as strings to apply to the Droplet after it is created. Tag names can either be existing or new tags. Example: "['env:prod', 'web']".
+                    user_data (string): A string containing 'user data' which may be used to configure the Droplet on first boot, often a 'cloud-config' file or Bash script. It must be plain text and may not exceed 64 KiB in size. Example: '#cloud-config
+        runcmd:
+          - touch /test.txt
+        '.
+                    private_networking (boolean): This parameter has been deprecated. Use `vpc_uuid` instead to specify a VPC network for the Droplet. If no `vpc_uuid` is provided, the Droplet will be placed in your account's default VPC for the region. Example: 'True'.
+                    volumes (array): An array of IDs for block storage volumes that will be attached to the Droplet once created. The volumes must not already be attached to an existing Droplet. Example: "['12e97116-7280-11ed-b3d0-0a58ac146812']".
+                    vpc_uuid (string): A string specifying the UUID of the VPC to which the Droplet will be assigned. If excluded, the Droplet will be assigned to your account's default VPC for the region. Example: '760e09ef-dc84-11e8-981e-3cfdfeaae000'.
+                    with_droplet_agent (boolean): A boolean indicating whether to install the DigitalOcean agent used for providing access to the Droplet web console in the control panel. By default, the agent is installed on new Droplets but installation errors (i.e. OS not supported) are ignored. To prevent it from being installed, set to `false`. To make installation errors fatal, explicitly set it to `true`. Example: 'True'.
+                    names (array): An array of human human-readable strings you wish to use when displaying the Droplet name. Each name, if set to a domain name managed in the DigitalOcean DNS management system, will configure a PTR record for the Droplet. Each name set during creation will also determine the hostname for the Droplet in its internal configuration. Example: "['sub-01.example.com', 'sub-02.example.com']".
 
-        Returns:
-            Any: Accepted
+                Returns:
+                    Any: Accepted
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Droplets, important
+                Tags:
+                    Droplets, important
         """
         request_body_data = None
         request_body_data = {
@@ -5697,30 +4719,19 @@ class DigitaloceanApp(APIApplication):
             "with_droplet_agent": with_droplet_agent,
             "names": names,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/droplets"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_destroy_by_tag(self, tag_name: str) -> Any:
+    async def droplets_destroy_by_tag(self, tag_name: str) -> Any:
         """
         Deleting Droplets by Tag
 
@@ -5741,18 +4752,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("tag_name", tag_name)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_get(self, droplet_id: str) -> Any:
+    async def droplets_get(self, droplet_id: str) -> Any:
         """
         Retrieve an Existing Droplet
 
@@ -5776,18 +4783,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_destroy(self, droplet_id: str) -> Any:
+    async def droplets_destroy(self, droplet_id: str) -> Any:
         """
         Delete an Existing Droplet
 
@@ -5810,23 +4813,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_backups(
-        self,
-        droplet_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def droplets_list_backups(self, droplet_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Backups for a Droplet
 
@@ -5848,23 +4842,17 @@ class DigitaloceanApp(APIApplication):
         if droplet_id is None:
             raise ValueError("Missing required parameter 'droplet_id'.")
         url = f"{self.base_url}/v2/droplets/{droplet_id}/backups"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_get_backup_policy(self, droplet_id: str) -> Any:
+    async def droplets_get_backup_policy(self, droplet_id: str) -> Any:
         """
         Retrieve the Backup Policy for an Existing Droplet
 
@@ -5888,20 +4876,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_backup_policies(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def droplets_list_backup_policies(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Backup Policies for All Existing Droplets
 
@@ -5920,23 +4902,17 @@ class DigitaloceanApp(APIApplication):
             Droplets
         """
         url = f"{self.base_url}/v2/droplets/backups/policies"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_supported_policies(self) -> dict[str, Any]:
+    async def list_supported_policies(self) -> dict[str, Any]:
         """
         List Supported Droplet Backup Policies
 
@@ -5954,23 +4930,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_snapshots(
-        self,
-        droplet_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def droplets_list_snapshots(self, droplet_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Snapshots for a Droplet
 
@@ -5992,28 +4959,17 @@ class DigitaloceanApp(APIApplication):
         if droplet_id is None:
             raise ValueError("Missing required parameter 'droplet_id'.")
         url = f"{self.base_url}/v2/droplets/{droplet_id}/snapshots"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplet_actions_list(
-        self,
-        droplet_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def droplet_actions_list(self, droplet_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Actions for a Droplet
 
@@ -6035,23 +4991,17 @@ class DigitaloceanApp(APIApplication):
         if droplet_id is None:
             raise ValueError("Missing required parameter 'droplet_id'.")
         url = f"{self.base_url}/v2/droplets/{droplet_id}/actions"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplet_actions_post(
+    async def droplet_actions_post(
         self,
         droplet_id: str,
         type: str | None = None,
@@ -6097,35 +5047,19 @@ class DigitaloceanApp(APIApplication):
             "name": name,
             "kernel": kernel,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/droplets/{droplet_id}/actions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplet_actions_post_by_tag(
-        self,
-        tag_name: str | None = None,
-        type: str | None = None,
-        name: str | None = None,
-    ) -> Any:
+    async def droplet_actions_post_by_tag(self, tag_name: str | None = None, type: str | None = None, name: str | None = None) -> Any:
         """
         Acting on Tagged Droplets
 
@@ -6145,34 +5079,20 @@ class DigitaloceanApp(APIApplication):
             Droplet Actions
         """
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/droplets/actions"
         query_params = {k: v for k, v in [("tag_name", tag_name)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplet_actions_get(self, droplet_id: str, action_id: str) -> Any:
+    async def droplet_actions_get(self, droplet_id: str, action_id: str) -> Any:
         """
         Retrieve a Droplet Action
 
@@ -6198,23 +5118,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_kernels(
-        self,
-        droplet_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def droplets_list_kernels(self, droplet_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Available Kernels for a Droplet
 
@@ -6236,28 +5147,17 @@ class DigitaloceanApp(APIApplication):
         if droplet_id is None:
             raise ValueError("Missing required parameter 'droplet_id'.")
         url = f"{self.base_url}/v2/droplets/{droplet_id}/kernels"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_firewalls(
-        self,
-        droplet_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def droplets_list_firewalls(self, droplet_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List all Firewalls Applied to a Droplet
 
@@ -6279,23 +5179,17 @@ class DigitaloceanApp(APIApplication):
         if droplet_id is None:
             raise ValueError("Missing required parameter 'droplet_id'.")
         url = f"{self.base_url}/v2/droplets/{droplet_id}/firewalls"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_neighbors(self, droplet_id: str) -> Any:
+    async def droplets_list_neighbors(self, droplet_id: str) -> Any:
         """
         List Neighbors for a Droplet
 
@@ -6318,18 +5212,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def destroy_droplet_with_resources(self, droplet_id: str) -> Any:
+    async def destroy_droplet_with_resources(self, droplet_id: str) -> Any:
         """
         List Associated Resources for a Droplet
 
@@ -6352,18 +5242,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def destroy_select(
+    async def destroy_select(
         self,
         droplet_id: str,
         floating_ips: list[str] | None = None,
@@ -6402,25 +5288,19 @@ class DigitaloceanApp(APIApplication):
             "volumes": volumes,
             "volume_snapshots": volume_snapshots,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/droplets/{droplet_id}/destroy_with_associated_resources/selective"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_droplet_resources(self, droplet_id: str) -> Any:
+    async def delete_droplet_resources(self, droplet_id: str) -> Any:
         """
         Destroy a Droplet and All of its Associated Resources (Dangerous)
 
@@ -6443,18 +5323,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_status(self, droplet_id: str) -> dict[str, Any]:
+    async def get_droplet_status(self, droplet_id: str) -> dict[str, Any]:
         """
         Check Status of a Droplet Destroy with Associated Resources Request
 
@@ -6477,18 +5353,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retry_droplet_with_resources(self, droplet_id: str) -> Any:
+    async def retry_droplet_with_resources(self, droplet_id: str) -> Any:
         """
         Retry a Droplet Destroy with Associated Resources Request
 
@@ -6510,30 +5382,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/droplets/{droplet_id}/destroy_with_associated_resources/retry"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_list(
-        self,
-        per_page: int | None = None,
-        page: int | None = None,
-        name: str | None = None,
-    ) -> Any:
+    async def autoscalepools_list(self, per_page: int | None = None, page: int | None = None, name: str | None = None) -> Any:
         """
         List All Autoscale Pools
 
@@ -6553,78 +5411,55 @@ class DigitaloceanApp(APIApplication):
             Droplet Autoscale Pools
         """
         url = f"{self.base_url}/v2/droplets/autoscale"
-        query_params = {
-            k: v
-            for k, v in [("per_page", per_page), ("page", page), ("name", name)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page), ("name", name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_create(
-        self,
-        name: str | None = None,
-        config: dict[str, Any] | None = None,
-        droplet_template: dict[str, Any] | None = None,
+    async def autoscalepools_create(
+        self, name: str | None = None, config: dict[str, Any] | None = None, droplet_template: dict[str, Any] | None = None
     ) -> Any:
         """
-        Create a New Autoscale Pool
+                Create a New Autoscale Pool
 
-        Args:
-            name (string): The human-readable name of the autoscale pool. This field cannot be updated Example: 'my-autoscale-pool'.
-            config (object): The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). Example: {'min_instances': 1, 'max_instances': 5, 'target_cpu_utilization': 0.5, 'cooldown_minutes': 10}.
-            droplet_template (object): droplet_template Example: {'name': 'example.com', 'region': 'nyc3', 'size': 'c-2', 'image': 'ubuntu-20-04-x64', 'ssh_keys': ['3b:16:e4:bf:8b:00:8b:b8:59:8c:a9:d3:f0:19:fa:45'], 'backups': True, 'ipv6': True, 'monitoring': True, 'tags': ['env:prod', 'web'], 'user_data': '#cloud-config\nruncmd:\n  - touch /test.txt\n', 'vpc_uuid': '760e09ef-dc84-11e8-981e-3cfdfeaae000'}.
+                Args:
+                    name (string): The human-readable name of the autoscale pool. This field cannot be updated Example: 'my-autoscale-pool'.
+                    config (object): The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). Example: {'min_instances': 1, 'max_instances': 5, 'target_cpu_utilization': 0.5, 'cooldown_minutes': 10}.
+                    droplet_template (object): droplet_template Example: {'name': 'example.com', 'region': 'nyc3', 'size': 'c-2', 'image': 'ubuntu-20-04-x64', 'ssh_keys': ['3b:16:e4:bf:8b:00:8b:b8:59:8c:a9:d3:f0:19:fa:45'], 'backups': True, 'ipv6': True, 'monitoring': True, 'tags': ['env:prod', 'web'], 'user_data': '#cloud-config
+        runcmd:
+          - touch /test.txt
+        ', 'vpc_uuid': '760e09ef-dc84-11e8-981e-3cfdfeaae000'}.
 
-        Returns:
-            Any: Accepted
+                Returns:
+                    Any: Accepted
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Droplet Autoscale Pools
+                Tags:
+                    Droplet Autoscale Pools
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "config": config,
-            "droplet_template": droplet_template,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "config": config, "droplet_template": droplet_template}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/droplets/autoscale"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_get(self, autoscale_pool_id: str) -> Any:
+    async def autoscalepools_get(self, autoscale_pool_id: str) -> Any:
         """
         Retrieve an Existing Autoscale Pool
 
@@ -6648,18 +5483,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_update(
+    async def autoscalepools_update(
         self,
         autoscale_pool_id: str,
         name: str | None = None,
@@ -6667,56 +5498,44 @@ class DigitaloceanApp(APIApplication):
         droplet_template: dict[str, Any] | None = None,
     ) -> Any:
         """
-        Update Autoscale Pool
+                Update Autoscale Pool
 
-        Args:
-            autoscale_pool_id (string): autoscale_pool_id
-            name (string): The human-readable name of the autoscale pool. This field cannot be updated Example: 'my-autoscale-pool'.
-            config (object): The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). Example: {'target_number_instances': 2}.
-            droplet_template (object): droplet_template Example: {'name': 'example.com', 'region': 'nyc3', 'size': 'c-2', 'image': 'ubuntu-20-04-x64', 'ssh_keys': ['3b:16:e4:bf:8b:00:8b:b8:59:8c:a9:d3:f0:19:fa:45'], 'backups': True, 'ipv6': True, 'monitoring': True, 'tags': ['env:prod', 'web'], 'user_data': '#cloud-config\nruncmd:\n  - touch /test.txt\n', 'vpc_uuid': '760e09ef-dc84-11e8-981e-3cfdfeaae000'}.
+                Args:
+                    autoscale_pool_id (string): autoscale_pool_id
+                    name (string): The human-readable name of the autoscale pool. This field cannot be updated Example: 'my-autoscale-pool'.
+                    config (object): The scaling configuration for an autoscale pool, which is how the pool scales up and down (either by resource utilization or static configuration). Example: {'target_number_instances': 2}.
+                    droplet_template (object): droplet_template Example: {'name': 'example.com', 'region': 'nyc3', 'size': 'c-2', 'image': 'ubuntu-20-04-x64', 'ssh_keys': ['3b:16:e4:bf:8b:00:8b:b8:59:8c:a9:d3:f0:19:fa:45'], 'backups': True, 'ipv6': True, 'monitoring': True, 'tags': ['env:prod', 'web'], 'user_data': '#cloud-config
+        runcmd:
+          - touch /test.txt
+        ', 'vpc_uuid': '760e09ef-dc84-11e8-981e-3cfdfeaae000'}.
 
-        Returns:
-            Any: Accepted
+                Returns:
+                    Any: Accepted
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Droplet Autoscale Pools
+                Tags:
+                    Droplet Autoscale Pools
         """
         if autoscale_pool_id is None:
             raise ValueError("Missing required parameter 'autoscale_pool_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "config": config,
-            "droplet_template": droplet_template,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "config": config, "droplet_template": droplet_template}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/droplets/autoscale/{autoscale_pool_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_delete(self, autoscale_pool_id: str) -> Any:
+    async def autoscalepools_delete(self, autoscale_pool_id: str) -> Any:
         """
         Delete autoscale pool
 
@@ -6739,18 +5558,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_autoscale_pool_dangerously(self, autoscale_pool_id: str) -> Any:
+    async def delete_autoscale_pool_dangerously(self, autoscale_pool_id: str) -> Any:
         """
         Delete autoscale pool and resources
 
@@ -6773,23 +5588,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_list_members(
-        self,
-        autoscale_pool_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def autoscalepools_list_members(self, autoscale_pool_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List members
 
@@ -6811,28 +5617,17 @@ class DigitaloceanApp(APIApplication):
         if autoscale_pool_id is None:
             raise ValueError("Missing required parameter 'autoscale_pool_id'.")
         url = f"{self.base_url}/v2/droplets/autoscale/{autoscale_pool_id}/members"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def autoscalepools_list_history(
-        self,
-        autoscale_pool_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def autoscalepools_list_history(self, autoscale_pool_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List history events
 
@@ -6854,25 +5649,17 @@ class DigitaloceanApp(APIApplication):
         if autoscale_pool_id is None:
             raise ValueError("Missing required parameter 'autoscale_pool_id'.")
         url = f"{self.base_url}/v2/droplets/autoscale/{autoscale_pool_id}/history"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def firewalls_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Firewalls
 
@@ -6891,23 +5678,17 @@ class DigitaloceanApp(APIApplication):
             Firewalls
         """
         url = f"{self.base_url}/v2/firewalls"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_create(
+    async def firewalls_create(
         self,
         id: str | None = None,
         status: str | None = None,
@@ -6955,30 +5736,19 @@ class DigitaloceanApp(APIApplication):
             "inbound_rules": inbound_rules,
             "outbound_rules": outbound_rules,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_get(self, firewall_id: str) -> Any:
+    async def firewalls_get(self, firewall_id: str) -> Any:
         """
         Retrieve an Existing Firewall
 
@@ -7001,18 +5771,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_update(
+    async def firewalls_update(
         self,
         firewall_id: str,
         id: str | None = None,
@@ -7064,30 +5830,19 @@ class DigitaloceanApp(APIApplication):
             "inbound_rules": inbound_rules,
             "outbound_rules": outbound_rules,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_delete(self, firewall_id: str) -> Any:
+    async def firewalls_delete(self, firewall_id: str) -> Any:
         """
         Delete a Firewall
 
@@ -7110,20 +5865,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_assign_droplets(
-        self, firewall_id: str, droplet_ids: list[int] | None = None
-    ) -> Any:
+    async def firewalls_assign_droplets(self, firewall_id: str, droplet_ids: list[int] | None = None) -> Any:
         """
         Add Droplets to a Firewall
 
@@ -7144,35 +5893,20 @@ class DigitaloceanApp(APIApplication):
         if firewall_id is None:
             raise ValueError("Missing required parameter 'firewall_id'.")
         request_body_data = None
-        request_body_data = {
-            "droplet_ids": droplet_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"droplet_ids": droplet_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}/droplets"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_delete_droplets(
-        self, firewall_id: str, droplet_ids: list[int] | None = None
-    ) -> Any:
+    async def firewalls_delete_droplets(self, firewall_id: str, droplet_ids: list[int] | None = None) -> Any:
         """
         Remove Droplets from a Firewall
 
@@ -7192,28 +5926,20 @@ class DigitaloceanApp(APIApplication):
         """
         if firewall_id is None:
             raise ValueError("Missing required parameter 'firewall_id'.")
-        request_body_data = {
-            "droplet_ids": droplet_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"droplet_ids": droplet_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}/droplets"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_add_tags(self, firewall_id: str, tags: Any | None = None) -> Any:
+    async def firewalls_add_tags(self, firewall_id: str, tags: Any | None = None) -> Any:
         """
         Add Tags to a Firewall
 
@@ -7234,33 +5960,20 @@ class DigitaloceanApp(APIApplication):
         if firewall_id is None:
             raise ValueError("Missing required parameter 'firewall_id'.")
         request_body_data = None
-        request_body_data = {
-            "tags": tags,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"tags": tags}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}/tags"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_delete_tags(self, firewall_id: str, tags: Any | None = None) -> Any:
+    async def firewalls_delete_tags(self, firewall_id: str, tags: Any | None = None) -> Any:
         """
         Remove Tags from a Firewall
 
@@ -7280,32 +5993,21 @@ class DigitaloceanApp(APIApplication):
         """
         if firewall_id is None:
             raise ValueError("Missing required parameter 'firewall_id'.")
-        request_body_data = {
-            "tags": tags,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"tags": tags}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}/tags"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_add_rules(
-        self,
-        firewall_id: str,
-        inbound_rules: list[Any] | None = None,
-        outbound_rules: list[Any] | None = None,
+    async def firewalls_add_rules(
+        self, firewall_id: str, inbound_rules: list[Any] | None = None, outbound_rules: list[Any] | None = None
     ) -> Any:
         """
         Add Rules to a Firewall
@@ -7328,38 +6030,21 @@ class DigitaloceanApp(APIApplication):
         if firewall_id is None:
             raise ValueError("Missing required parameter 'firewall_id'.")
         request_body_data = None
-        request_body_data = {
-            "inbound_rules": inbound_rules,
-            "outbound_rules": outbound_rules,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"inbound_rules": inbound_rules, "outbound_rules": outbound_rules}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}/rules"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def firewalls_delete_rules(
-        self,
-        firewall_id: str,
-        inbound_rules: list[Any] | None = None,
-        outbound_rules: list[Any] | None = None,
+    async def firewalls_delete_rules(
+        self, firewall_id: str, inbound_rules: list[Any] | None = None, outbound_rules: list[Any] | None = None
     ) -> Any:
         """
         Remove Rules from a Firewall
@@ -7381,31 +6066,20 @@ class DigitaloceanApp(APIApplication):
         """
         if firewall_id is None:
             raise ValueError("Missing required parameter 'firewall_id'.")
-        request_body_data = {
-            "inbound_rules": inbound_rules,
-            "outbound_rules": outbound_rules,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"inbound_rules": inbound_rules, "outbound_rules": outbound_rules}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/firewalls/{firewall_id}/rules"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def floating_ips_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Floating IPs
 
@@ -7424,27 +6098,18 @@ class DigitaloceanApp(APIApplication):
             Floating IPs
         """
         url = f"{self.base_url}/v2/floating_ips"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_create(
-        self,
-        droplet_id: int | None = None,
-        region: str | None = None,
-        project_id: str | None = None,
+    async def floating_ips_create(
+        self, droplet_id: int | None = None, region: str | None = None, project_id: str | None = None
     ) -> dict[str, Any]:
         """
         Create a New Floating IP
@@ -7466,35 +6131,20 @@ class DigitaloceanApp(APIApplication):
             Floating IPs
         """
         request_body_data = None
-        request_body_data = {
-            "droplet_id": droplet_id,
-            "region": region,
-            "project_id": project_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"droplet_id": droplet_id, "region": region, "project_id": project_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/floating_ips"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_get(self, floating_ip: str) -> dict[str, Any]:
+    async def floating_ips_get(self, floating_ip: str) -> dict[str, Any]:
         """
         Retrieve an Existing Floating IP
 
@@ -7517,18 +6167,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_delete(self, floating_ip: str) -> Any:
+    async def floating_ips_delete(self, floating_ip: str) -> Any:
         """
         Delete a Floating IP
 
@@ -7551,18 +6197,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_action_list(self, floating_ip: str) -> Any:
+    async def floating_ips_action_list(self, floating_ip: str) -> Any:
         """
         List All Actions for a Floating IP
 
@@ -7585,23 +6227,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_action_post(
-        self,
-        floating_ip: str,
-        type: str | None = None,
-        droplet_id: int | None = None,
-    ) -> Any:
+    async def floating_ips_action_post(self, floating_ip: str, type: str | None = None, droplet_id: int | None = None) -> Any:
         """
         Initiate a Floating IP Action
 
@@ -7623,34 +6256,20 @@ class DigitaloceanApp(APIApplication):
         if floating_ip is None:
             raise ValueError("Missing required parameter 'floating_ip'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "droplet_id": droplet_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "droplet_id": droplet_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/floating_ips/{floating_ip}/actions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def floating_ips_action_get(self, floating_ip: str, action_id: str) -> Any:
+    async def floating_ips_action_get(self, floating_ip: str, action_id: str) -> Any:
         """
         Retrieve an Existing Floating IP Action
 
@@ -7676,18 +6295,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_list_namespaces(self) -> Any:
+    async def functions_list_namespaces(self) -> Any:
         """
         List Namespaces
 
@@ -7706,18 +6321,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_create_namespace(self, region: str, label: str) -> dict[str, Any]:
+    async def functions_create_namespace(self, region: str, label: str) -> dict[str, Any]:
         """
         Create Namespace
 
@@ -7737,34 +6348,20 @@ class DigitaloceanApp(APIApplication):
             Functions
         """
         request_body_data = None
-        request_body_data = {
-            "region": region,
-            "label": label,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"region": region, "label": label}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/functions/namespaces"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_get_namespace(self, namespace_id: str) -> dict[str, Any]:
+    async def functions_get_namespace(self, namespace_id: str) -> dict[str, Any]:
         """
         Get Namespace
 
@@ -7788,18 +6385,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_delete_namespace(self, namespace_id: str) -> Any:
+    async def functions_delete_namespace(self, namespace_id: str) -> Any:
         """
         Delete Namespace
 
@@ -7822,18 +6415,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_list_triggers(self, namespace_id: str) -> Any:
+    async def functions_list_triggers(self, namespace_id: str) -> Any:
         """
         List Triggers
 
@@ -7857,25 +6446,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_create_trigger(
-        self,
-        namespace_id: str,
-        name: str,
-        function: str,
-        type: str,
-        is_enabled: bool,
-        scheduled_details: dict[str, Any],
+    async def functions_create_trigger(
+        self, namespace_id: str, name: str, function: str, type: str, is_enabled: bool, scheduled_details: dict[str, Any]
     ) -> dict[str, Any]:
         """
         Create Trigger
@@ -7910,32 +6489,19 @@ class DigitaloceanApp(APIApplication):
             "is_enabled": is_enabled,
             "scheduled_details": scheduled_details,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/functions/namespaces/{namespace_id}/triggers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_get_trigger(
-        self, namespace_id: str, trigger_name: str
-    ) -> dict[str, Any]:
+    async def functions_get_trigger(self, namespace_id: str, trigger_name: str) -> dict[str, Any]:
         """
         Get Trigger
 
@@ -7962,23 +6528,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_update_trigger(
-        self,
-        namespace_id: str,
-        trigger_name: str,
-        is_enabled: bool | None = None,
-        scheduled_details: dict[str, Any] | None = None,
+    async def functions_update_trigger(
+        self, namespace_id: str, trigger_name: str, is_enabled: bool | None = None, scheduled_details: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Update Trigger
@@ -8006,34 +6564,20 @@ class DigitaloceanApp(APIApplication):
         if trigger_name is None:
             raise ValueError("Missing required parameter 'trigger_name'.")
         request_body_data = None
-        request_body_data = {
-            "is_enabled": is_enabled,
-            "scheduled_details": scheduled_details,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"is_enabled": is_enabled, "scheduled_details": scheduled_details}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/functions/namespaces/{namespace_id}/triggers/{trigger_name}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def functions_delete_trigger(self, namespace_id: str, trigger_name: str) -> Any:
+    async def functions_delete_trigger(self, namespace_id: str, trigger_name: str) -> Any:
         """
         Delete Trigger
 
@@ -8059,18 +6603,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def images_list(
+    async def images_list(
         self,
         type: str | None = None,
         private: bool | None = None,
@@ -8101,29 +6641,19 @@ class DigitaloceanApp(APIApplication):
         url = f"{self.base_url}/v2/images"
         query_params = {
             k: v
-            for k, v in [
-                ("type", type),
-                ("private", private),
-                ("tag_name", tag_name),
-                ("per_page", per_page),
-                ("page", page),
-            ]
+            for k, v in [("type", type), ("private", private), ("tag_name", tag_name), ("per_page", per_page), ("page", page)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def images_create_custom(
+    async def images_create_custom(
         self,
         name: str,
         url: str,
@@ -8162,30 +6692,19 @@ class DigitaloceanApp(APIApplication):
             "region": region,
             "tags": tags,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/images"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def images_get(self, image_id: str) -> dict[str, Any]:
+    async def images_get(self, image_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing Image
 
@@ -8208,23 +6727,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def images_update(
-        self,
-        image_id: str,
-        name: str | None = None,
-        distribution: str | None = None,
-        description: str | None = None,
+    async def images_update(
+        self, image_id: str, name: str | None = None, distribution: str | None = None, description: str | None = None
     ) -> dict[str, Any]:
         """
         Update an Image
@@ -8248,35 +6759,20 @@ class DigitaloceanApp(APIApplication):
         if image_id is None:
             raise ValueError("Missing required parameter 'image_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "distribution": distribution,
-            "description": description,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "distribution": distribution, "description": description}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/images/{image_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def images_delete(self, image_id: str) -> Any:
+    async def images_delete(self, image_id: str) -> Any:
         """
         Delete an Image
 
@@ -8299,18 +6795,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def image_actions_list(self, image_id: str) -> Any:
+    async def image_actions_list(self, image_id: str) -> Any:
         """
         List All Actions for an Image
 
@@ -8333,20 +6825,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def image_actions_post(
-        self, image_id: str, type: str | None = None, region: str | None = None
-    ) -> dict[str, Any]:
+    async def image_actions_post(self, image_id: str, type: str | None = None, region: str | None = None) -> dict[str, Any]:
         """
         Initiate an Image Action
 
@@ -8368,34 +6854,20 @@ class DigitaloceanApp(APIApplication):
         if image_id is None:
             raise ValueError("Missing required parameter 'image_id'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "region": region,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "region": region}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/images/{image_id}/actions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def image_actions_get(self, image_id: str, action_id: str) -> dict[str, Any]:
+    async def image_actions_get(self, image_id: str, action_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing Action
 
@@ -8421,20 +6893,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_list_clusters(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def kubernetes_list_clusters(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Kubernetes Clusters
 
@@ -8455,23 +6921,17 @@ class DigitaloceanApp(APIApplication):
             Kubernetes
         """
         url = f"{self.base_url}/v2/kubernetes/clusters"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_create_cluster(
+    async def kubernetes_create_cluster(
         self,
         name: str,
         region: str,
@@ -8565,30 +7025,19 @@ class DigitaloceanApp(APIApplication):
             "cluster_autoscaler_configuration": cluster_autoscaler_configuration,
             "routing_agent": routing_agent,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_get_cluster(self, cluster_id: str) -> Any:
+    async def kubernetes_get_cluster(self, cluster_id: str) -> Any:
         """
         Retrieve an Existing Kubernetes Cluster
 
@@ -8613,18 +7062,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_update_cluster(
+    async def kubernetes_update_cluster(
         self,
         cluster_id: str,
         name: str,
@@ -8678,30 +7123,19 @@ class DigitaloceanApp(APIApplication):
             "cluster_autoscaler_configuration": cluster_autoscaler_configuration,
             "routing_agent": routing_agent,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_delete_cluster(self, cluster_id: str) -> Any:
+    async def kubernetes_delete_cluster(self, cluster_id: str) -> Any:
         """
         Delete a Kubernetes Cluster
 
@@ -8724,18 +7158,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def destroy_cluster_resources(self, cluster_id: str) -> dict[str, Any]:
+    async def destroy_cluster_resources(self, cluster_id: str) -> dict[str, Any]:
         """
         List Associated Resources for Cluster Deletion
 
@@ -8758,18 +7188,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_cluster_resources(
+    async def delete_cluster_resources(
         self,
         cluster_id: str,
         load_balancers: list[str] | None = None,
@@ -8797,30 +7223,20 @@ class DigitaloceanApp(APIApplication):
         """
         if cluster_id is None:
             raise ValueError("Missing required parameter 'cluster_id'.")
-        request_body_data = {
-            "load_balancers": load_balancers,
-            "volumes": volumes,
-            "volume_snapshots": volume_snapshots,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"load_balancers": load_balancers, "volumes": volumes, "volume_snapshots": volume_snapshots}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/destroy_with_associated_resources/selective"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def destroy_cluster_with_resources(self, cluster_id: str) -> Any:
+    async def destroy_cluster_with_resources(self, cluster_id: str) -> Any:
         """
         Delete a Cluster and All of its Associated Resources (Dangerous)
 
@@ -8843,20 +7259,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_get_kubeconfig(
-        self, cluster_id: str, expiry_seconds: int | None = None
-    ) -> Any:
+    async def kubernetes_get_kubeconfig(self, cluster_id: str, expiry_seconds: int | None = None) -> Any:
         """
         Retrieve the kubeconfig for a Kubernetes Cluster
 
@@ -8877,25 +7287,17 @@ class DigitaloceanApp(APIApplication):
         if cluster_id is None:
             raise ValueError("Missing required parameter 'cluster_id'.")
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/kubeconfig"
-        query_params = {
-            k: v for k, v in [("expiry_seconds", expiry_seconds)] if v is not None
-        }
+        query_params = {k: v for k, v in [("expiry_seconds", expiry_seconds)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_get_credentials(
-        self, cluster_id: str, expiry_seconds: int | None = None
-    ) -> dict[str, Any]:
+    async def kubernetes_get_credentials(self, cluster_id: str, expiry_seconds: int | None = None) -> dict[str, Any]:
         """
         Retrieve Credentials for a Kubernetes Cluster
 
@@ -8916,23 +7318,17 @@ class DigitaloceanApp(APIApplication):
         if cluster_id is None:
             raise ValueError("Missing required parameter 'cluster_id'.")
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/credentials"
-        query_params = {
-            k: v for k, v in [("expiry_seconds", expiry_seconds)] if v is not None
-        }
+        query_params = {k: v for k, v in [("expiry_seconds", expiry_seconds)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_cluster_upgrades(self, cluster_id: str) -> dict[str, Any]:
+    async def get_cluster_upgrades(self, cluster_id: str) -> dict[str, Any]:
         """
         Retrieve Available Upgrades for an Existing Kubernetes Cluster
 
@@ -8960,20 +7356,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_upgrade_cluster(
-        self, cluster_id: str, version: str | None = None
-    ) -> Any:
+    async def kubernetes_upgrade_cluster(self, cluster_id: str, version: str | None = None) -> Any:
         """
         Upgrade a Kubernetes Cluster
 
@@ -8994,33 +7384,20 @@ class DigitaloceanApp(APIApplication):
         if cluster_id is None:
             raise ValueError("Missing required parameter 'cluster_id'.")
         request_body_data = None
-        request_body_data = {
-            "version": version,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"version": version}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/upgrade"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_list_node_pools(self, cluster_id: str) -> Any:
+    async def kubernetes_list_node_pools(self, cluster_id: str) -> Any:
         """
         List All Node Pools in a Kubernetes Clusters
 
@@ -9045,18 +7422,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_add_node_pool(
+    async def kubernetes_add_node_pool(
         self,
         cluster_id: str,
         size: str,
@@ -9115,30 +7488,19 @@ class DigitaloceanApp(APIApplication):
             "max_nodes": max_nodes,
             "nodes": nodes,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/node_pools"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_get_node_pool(self, cluster_id: str, node_pool_id: str) -> Any:
+    async def kubernetes_get_node_pool(self, cluster_id: str, node_pool_id: str) -> Any:
         """
         Retrieve a Node Pool for a Kubernetes Cluster
 
@@ -9165,18 +7527,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_update_node_pool(
+    async def kubernetes_update_node_pool(
         self,
         cluster_id: str,
         node_pool_id: str,
@@ -9236,30 +7594,19 @@ class DigitaloceanApp(APIApplication):
             "max_nodes": max_nodes,
             "nodes": nodes,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/node_pools/{node_pool_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_delete_node_pool(self, cluster_id: str, node_pool_id: str) -> Any:
+    async def kubernetes_delete_node_pool(self, cluster_id: str, node_pool_id: str) -> Any:
         """
         Delete a Node Pool in a Kubernetes Cluster
 
@@ -9285,24 +7632,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_delete_node(
-        self,
-        cluster_id: str,
-        node_pool_id: str,
-        node_id: str,
-        skip_drain: int | None = None,
-        replace: int | None = None,
+    async def kubernetes_delete_node(
+        self, cluster_id: str, node_pool_id: str, node_id: str, skip_drain: int | None = None, replace: int | None = None
     ) -> Any:
         """
         Delete a Node in a Kubernetes Cluster
@@ -9331,27 +7669,17 @@ class DigitaloceanApp(APIApplication):
         if node_id is None:
             raise ValueError("Missing required parameter 'node_id'.")
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/node_pools/{node_pool_id}/nodes/{node_id}"
-        query_params = {
-            k: v
-            for k, v in [("skip_drain", skip_drain), ("replace", replace)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("skip_drain", skip_drain), ("replace", replace)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_recycle_node_pool(
-        self, cluster_id: str, node_pool_id: str, nodes: list[str] | None = None
-    ) -> Any:
+    async def kubernetes_recycle_node_pool(self, cluster_id: str, node_pool_id: str, nodes: list[str] | None = None) -> Any:
         """
         Recycle a Kubernetes Node Pool
 
@@ -9375,33 +7703,20 @@ class DigitaloceanApp(APIApplication):
         if node_pool_id is None:
             raise ValueError("Missing required parameter 'node_pool_id'.")
         request_body_data = None
-        request_body_data = {
-            "nodes": nodes,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"nodes": nodes}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/node_pools/{node_pool_id}/recycle"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_get_cluster_user(self, cluster_id: str) -> dict[str, Any]:
+    async def kubernetes_get_cluster_user(self, cluster_id: str) -> dict[str, Any]:
         """
         Retrieve User Information for a Kubernetes Cluster
 
@@ -9425,18 +7740,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_list_options(self) -> dict[str, Any]:
+    async def kubernetes_list_options(self) -> dict[str, Any]:
         """
         List Available Regions, Node Sizes, and Versions of Kubernetes
 
@@ -9456,18 +7767,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_run_cluster_lint(
+    async def kubernetes_run_cluster_lint(
         self,
         cluster_id: str,
         include_groups: list[str] | None = None,
@@ -9504,32 +7811,19 @@ class DigitaloceanApp(APIApplication):
             "exclude_groups": exclude_groups,
             "exclude_checks": exclude_checks,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/clusters/{cluster_id}/clusterlint"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_cluster_lint(
-        self, cluster_id: str, run_id: str | None = None
-    ) -> dict[str, Any]:
+    async def get_cluster_lint(self, cluster_id: str, run_id: str | None = None) -> dict[str, Any]:
         """
         Fetch Clusterlint Diagnostics for a Kubernetes Cluster
 
@@ -9555,18 +7849,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("run_id", run_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_add_registry(self, cluster_uuids: list[str] | None = None) -> Any:
+    async def kubernetes_add_registry(self, cluster_uuids: list[str] | None = None) -> Any:
         """
         Add Container Registry to Kubernetes Clusters
 
@@ -9584,33 +7874,20 @@ class DigitaloceanApp(APIApplication):
             Kubernetes
         """
         request_body_data = None
-        request_body_data = {
-            "cluster_uuids": cluster_uuids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"cluster_uuids": cluster_uuids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/registry"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_remove_registry(self, cluster_uuids: list[str] | None = None) -> Any:
+    async def kubernetes_remove_registry(self, cluster_uuids: list[str] | None = None) -> Any:
         """
         Remove Container Registry from Kubernetes Clusters
 
@@ -9627,30 +7904,20 @@ class DigitaloceanApp(APIApplication):
         Tags:
             Kubernetes
         """
-        request_body_data = {
-            "cluster_uuids": cluster_uuids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"cluster_uuids": cluster_uuids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/kubernetes/registry"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def kubernetes_get_status_messages(
-        self, cluster_id: str, since: str | None = None
-    ) -> Any:
+    async def kubernetes_get_status_messages(self, cluster_id: str, since: str | None = None) -> Any:
         """
         Fetch Status Messages for a Kubernetes Cluster
 
@@ -9674,18 +7941,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {k: v for k, v in [("since", since)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_create(
+    async def load_balancers_create(
         self,
         droplet_ids: list[int] | None = None,
         region: str | None = None,
@@ -9801,32 +8064,19 @@ class DigitaloceanApp(APIApplication):
             "tls_cipher_policy": tls_cipher_policy,
             "tag": tag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/load_balancers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def load_balancers_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Load Balancers
 
@@ -9845,23 +8095,17 @@ class DigitaloceanApp(APIApplication):
             Load Balancers
         """
         url = f"{self.base_url}/v2/load_balancers"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_get(self, lb_id: str) -> Any:
+    async def load_balancers_get(self, lb_id: str) -> Any:
         """
         Retrieve an Existing Load Balancer
 
@@ -9886,18 +8130,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_update(
+    async def load_balancers_update(
         self,
         lb_id: str,
         droplet_ids: list[int] | None = None,
@@ -10019,30 +8259,19 @@ class DigitaloceanApp(APIApplication):
             "tls_cipher_policy": tls_cipher_policy,
             "tag": tag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/load_balancers/{lb_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_delete(self, lb_id: str) -> Any:
+    async def load_balancers_delete(self, lb_id: str) -> Any:
         """
         Delete a Load Balancer
 
@@ -10065,18 +8294,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_delete_cache(self, lb_id: str) -> Any:
+    async def load_balancers_delete_cache(self, lb_id: str) -> Any:
         """
         Delete a Global Load Balancer CDN Cache
 
@@ -10099,18 +8324,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_add_droplets(self, lb_id: str, droplet_ids: list[int]) -> Any:
+    async def load_balancers_add_droplets(self, lb_id: str, droplet_ids: list[int]) -> Any:
         """
         Add Droplets to a Load Balancer
 
@@ -10131,33 +8352,20 @@ class DigitaloceanApp(APIApplication):
         if lb_id is None:
             raise ValueError("Missing required parameter 'lb_id'.")
         request_body_data = None
-        request_body_data = {
-            "droplet_ids": droplet_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"droplet_ids": droplet_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/load_balancers/{lb_id}/droplets"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def load_balancers_remove_droplets(self, lb_id: str, droplet_ids: list[int]) -> Any:
+    async def load_balancers_remove_droplets(self, lb_id: str, droplet_ids: list[int]) -> Any:
         """
         Remove Droplets from a Load Balancer
 
@@ -10177,30 +8385,20 @@ class DigitaloceanApp(APIApplication):
         """
         if lb_id is None:
             raise ValueError("Missing required parameter 'lb_id'.")
-        request_body_data = {
-            "droplet_ids": droplet_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"droplet_ids": droplet_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/load_balancers/{lb_id}/droplets"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def add_forwarding_rule(
-        self, lb_id: str, forwarding_rules: list[dict[str, Any]]
-    ) -> Any:
+    async def add_forwarding_rule(self, lb_id: str, forwarding_rules: list[dict[str, Any]]) -> Any:
         """
         Add Forwarding Rules to a Load Balancer
 
@@ -10221,35 +8419,20 @@ class DigitaloceanApp(APIApplication):
         if lb_id is None:
             raise ValueError("Missing required parameter 'lb_id'.")
         request_body_data = None
-        request_body_data = {
-            "forwarding_rules": forwarding_rules,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"forwarding_rules": forwarding_rules}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/load_balancers/{lb_id}/forwarding_rules"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_lb_forwarding_rules(
-        self, lb_id: str, forwarding_rules: list[dict[str, Any]]
-    ) -> Any:
+    async def delete_lb_forwarding_rules(self, lb_id: str, forwarding_rules: list[dict[str, Any]]) -> Any:
         """
         Remove Forwarding Rules from a Load Balancer
 
@@ -10269,30 +8452,20 @@ class DigitaloceanApp(APIApplication):
         """
         if lb_id is None:
             raise ValueError("Missing required parameter 'lb_id'.")
-        request_body_data = {
-            "forwarding_rules": forwarding_rules,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"forwarding_rules": forwarding_rules}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/load_balancers/{lb_id}/forwarding_rules"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_list_alert_policy(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def monitoring_list_alert_policy(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Alert Policies
 
@@ -10311,23 +8484,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/alerts"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_create_alert_policy(
+    async def monitoring_create_alert_policy(
         self,
         alerts: dict[str, Any],
         compare: str,
@@ -10375,30 +8542,19 @@ class DigitaloceanApp(APIApplication):
             "value": value,
             "window": window,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/monitoring/alerts"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_get_alert_policy(self, alert_uuid: str) -> Any:
+    async def monitoring_get_alert_policy(self, alert_uuid: str) -> Any:
         """
         Retrieve an Existing Alert Policy
 
@@ -10421,18 +8577,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_update_alert_policy(
+    async def monitoring_update_alert_policy(
         self,
         alert_uuid: str,
         alerts: dict[str, Any],
@@ -10484,30 +8636,19 @@ class DigitaloceanApp(APIApplication):
             "value": value,
             "window": window,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/monitoring/alerts/{alert_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_delete_alert_policy(self, alert_uuid: str) -> Any:
+    async def monitoring_delete_alert_policy(self, alert_uuid: str) -> Any:
         """
         Delete an Alert Policy
 
@@ -10530,20 +8671,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_bandwidth_metrics(
-        self, host_id: str, interface: str, direction: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_bandwidth_metrics(self, host_id: str, interface: str, direction: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Bandwidth Metrics
 
@@ -10567,31 +8702,19 @@ class DigitaloceanApp(APIApplication):
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/bandwidth"
         query_params = {
             k: v
-            for k, v in [
-                ("host_id", host_id),
-                ("interface", interface),
-                ("direction", direction),
-                ("start", start),
-                ("end", end),
-            ]
+            for k, v in [("host_id", host_id), ("interface", interface), ("direction", direction), ("start", start), ("end", end)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_cpu_metrics(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_cpu_metrics(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet CPU Metrics
 
@@ -10611,27 +8734,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/cpu"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_filesystem_free(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_filesystem_free(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Filesystem Free Metrics
 
@@ -10651,27 +8764,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/filesystem_free"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_filesystem_size(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_filesystem_size(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Filesystem Size Metrics
 
@@ -10691,27 +8794,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/filesystem_size"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_load_metrics(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_load_metrics(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Load1 Metrics
 
@@ -10731,27 +8824,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/load_1"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_load5_metrics(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_load5_metrics(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Load5 Metrics
 
@@ -10771,27 +8854,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/load_5"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_load_metric(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_load_metric(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Load15 Metrics
 
@@ -10811,27 +8884,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/load_15"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_memory_cached(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_memory_cached(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Cached Memory Metrics
 
@@ -10851,27 +8914,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/memory_cached"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_memory_free(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_memory_free(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Free Memory Metrics
 
@@ -10891,27 +8944,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/memory_free"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_memory_total(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_memory_total(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Total Memory Metrics
 
@@ -10931,27 +8974,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/memory_total"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_memory_available(
-        self, host_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_memory_available(self, host_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Available Memory Metrics
 
@@ -10971,27 +9004,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet/memory_available"
-        query_params = {
-            k: v
-            for k, v in [("host_id", host_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("host_id", host_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_app_memory_percentage(
-        self, app_id: str, start: str, end: str, app_component: str | None = None
-    ) -> dict[str, Any]:
+    async def get_app_memory_percentage(self, app_id: str, start: str, end: str, app_component: str | None = None) -> dict[str, Any]:
         """
         Get App Memory Percentage Metrics
 
@@ -11013,31 +9036,18 @@ class DigitaloceanApp(APIApplication):
         """
         url = f"{self.base_url}/v2/monitoring/metrics/apps/memory_percentage"
         query_params = {
-            k: v
-            for k, v in [
-                ("app_id", app_id),
-                ("app_component", app_component),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
+            k: v for k, v in [("app_id", app_id), ("app_component", app_component), ("start", start), ("end", end)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_app_cpu_metrics(
-        self, app_id: str, start: str, end: str, app_component: str | None = None
-    ) -> dict[str, Any]:
+    async def get_app_cpu_metrics(self, app_id: str, start: str, end: str, app_component: str | None = None) -> dict[str, Any]:
         """
         Get App CPU Percentage Metrics
 
@@ -11059,31 +9069,18 @@ class DigitaloceanApp(APIApplication):
         """
         url = f"{self.base_url}/v2/monitoring/metrics/apps/cpu_percentage"
         query_params = {
-            k: v
-            for k, v in [
-                ("app_id", app_id),
-                ("app_component", app_component),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
+            k: v for k, v in [("app_id", app_id), ("app_component", app_component), ("start", start), ("end", end)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_app_restart_count(
-        self, app_id: str, start: str, end: str, app_component: str | None = None
-    ) -> dict[str, Any]:
+    async def get_app_restart_count(self, app_id: str, start: str, end: str, app_component: str | None = None) -> dict[str, Any]:
         """
         Get App Restart Count Metrics
 
@@ -11105,31 +9102,18 @@ class DigitaloceanApp(APIApplication):
         """
         url = f"{self.base_url}/v2/monitoring/metrics/apps/restart_count"
         query_params = {
-            k: v
-            for k, v in [
-                ("app_id", app_id),
-                ("app_component", app_component),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
+            k: v for k, v in [("app_id", app_id), ("app_component", app_component), ("start", start), ("end", end)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_connections(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_connections(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Total Current Active Connections Metrics
 
@@ -11149,27 +9133,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_connections_current"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_lb_frontend_connections_limit(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_lb_frontend_connections_limit(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Max Connections Limit Metrics
 
@@ -11189,27 +9163,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_connections_limit"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_cpu_utilization(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_cpu_utilization(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Average Percentage CPU Utilization Metrics
 
@@ -11229,27 +9193,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_cpu_utilization"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_firewall_bytes(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_firewall_bytes(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Firewall Dropped Bytes Metrics
 
@@ -11269,27 +9223,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_firewall_dropped_bytes"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_lb_frontend_fw_dropped_pkts(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_lb_frontend_fw_dropped_pkts(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Firewall Dropped Packets Metrics
 
@@ -11309,27 +9253,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_firewall_dropped_packets"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_load_balancer_responses(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_load_balancer_responses(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend HTTP Rate Of Response Code Metrics
 
@@ -11349,27 +9283,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_http_responses"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def fetch_frontend_request_rate(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def fetch_frontend_request_rate(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend HTTP Requests Metrics
 
@@ -11389,27 +9313,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_http_requests_per_second"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_network_throughput(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_network_throughput(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend HTTP Throughput Metrics
 
@@ -11429,27 +9343,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_network_throughput_http"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_udp_throughput(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_udp_throughput(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend UDP Throughput Metrics
 
@@ -11469,27 +9373,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_network_throughput_udp"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_tcp_throughput(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_tcp_throughput(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend TCP Throughput Metrics
 
@@ -11509,27 +9403,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_network_throughput_tcp"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_nlb_tcp_throughput(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_nlb_tcp_throughput(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Network Load Balancer Frontend TCP Throughput Metrics
 
@@ -11549,27 +9433,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_nlb_tcp_network_throughput"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_nlb_udp_throughput(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_nlb_udp_throughput(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Network Load Balancer Frontend UDP Throughput Metrics
 
@@ -11589,27 +9463,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_nlb_udp_network_throughput"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_tls_connections(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_tls_connections(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Current TLS Connections Rate Metrics
 
@@ -11629,27 +9493,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_tls_connections_current"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_frontend_tls_connections_limit(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_frontend_tls_connections_limit(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Max TLS Connections Limit Metrics
 
@@ -11669,27 +9523,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_tls_connections_limit"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_tls_exceeding_rate_limit(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_tls_exceeding_rate_limit(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Frontend Closed TLS Connections For Exceeded Rate Limit Metrics
 
@@ -11709,27 +9553,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/frontend_tls_connections_exceeding_rate_limit"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_session_duration_avg(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_session_duration_avg(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets Average HTTP Session Duration Metrics
 
@@ -11749,27 +9583,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_session_duration_avg"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_session_duration_50p(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_session_duration_50p(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets 50th Percentile HTTP Session Duration Metrics
 
@@ -11789,27 +9613,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_session_duration_50p"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_session_duration_95p(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_session_duration_95p(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets 95th Percentile HTTP Session Duration Metrics
 
@@ -11829,27 +9643,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_session_duration_95p"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_response_time(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_response_time(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets Average HTTP Response Time Metrics
 
@@ -11869,27 +9673,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_response_time_avg"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_http_response_time(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_http_response_time(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets 50th Percentile HTTP Response Time Metrics
 
@@ -11909,27 +9703,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_response_time_50p"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplets_http_response_timep_95p(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplets_http_response_timep_95p(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets 95th Percentile HTTP Response Time Metrics
 
@@ -11949,27 +9733,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_response_time_95p"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplets_http_response_timep_99p(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplets_http_response_timep_99p(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets 99th Percentile HTTP Response Time Metrics
 
@@ -11989,27 +9763,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_response_time_99p"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_queue_size(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_queue_size(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets Queue Size Metrics
 
@@ -12029,25 +9793,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_queue_size"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_responses(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
+    async def get_droplet_responses(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets HTTP Rate Of Response Code Metrics
 
@@ -12067,27 +9823,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_http_responses"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_connections(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_connections(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets Active Connections Metrics
 
@@ -12106,30 +9852,18 @@ class DigitaloceanApp(APIApplication):
         Tags:
             Monitoring
         """
-        url = (
-            f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_connections"
-        )
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_connections"
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_health_checks(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_health_checks(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets Health Check Status Metrics
 
@@ -12149,27 +9883,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_health_checks"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_load_balancer_downtime(
-        self, lb_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_load_balancer_downtime(self, lb_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Load Balancer Droplets Downtime Status Metrics
 
@@ -12189,27 +9913,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/load_balancer/droplets_downtime"
-        query_params = {
-            k: v
-            for k, v in [("lb_id", lb_id), ("start", start), ("end", end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("lb_id", lb_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_current_autoscale_instances(
-        self, autoscale_pool_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_current_autoscale_instances(self, autoscale_pool_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Autoscale Pool Current Size
 
@@ -12228,34 +9942,18 @@ class DigitaloceanApp(APIApplication):
         Tags:
             Monitoring
         """
-        url = (
-            f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/current_instances"
-        )
-        query_params = {
-            k: v
-            for k, v in [
-                ("autoscale_pool_id", autoscale_pool_id),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
-        }
+        url = f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/current_instances"
+        query_params = {k: v for k, v in [("autoscale_pool_id", autoscale_pool_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_target_instances(
-        self, autoscale_pool_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def list_target_instances(self, autoscale_pool_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Autoscale Pool Target Size
 
@@ -12274,34 +9972,18 @@ class DigitaloceanApp(APIApplication):
         Tags:
             Monitoring
         """
-        url = (
-            f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/target_instances"
-        )
-        query_params = {
-            k: v
-            for k, v in [
-                ("autoscale_pool_id", autoscale_pool_id),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
-        }
+        url = f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/target_instances"
+        query_params = {k: v for k, v in [("autoscale_pool_id", autoscale_pool_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_cpu_utilization(
-        self, autoscale_pool_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_cpu_utilization(self, autoscale_pool_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Autoscale Pool Current Average CPU utilization
 
@@ -12321,31 +10003,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/current_cpu_utilization"
-        query_params = {
-            k: v
-            for k, v in [
-                ("autoscale_pool_id", autoscale_pool_id),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("autoscale_pool_id", autoscale_pool_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_target_cpu_utilization(
-        self, autoscale_pool_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_target_cpu_utilization(self, autoscale_pool_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Autoscale Pool Target Average CPU utilization
 
@@ -12365,31 +10033,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/target_cpu_utilization"
-        query_params = {
-            k: v
-            for k, v in [
-                ("autoscale_pool_id", autoscale_pool_id),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("autoscale_pool_id", autoscale_pool_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_droplet_memory_utilization(
-        self, autoscale_pool_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_droplet_memory_utilization(self, autoscale_pool_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Autoscale Pool Current Average Memory utilization
 
@@ -12409,31 +10063,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/current_memory_utilization"
-        query_params = {
-            k: v
-            for k, v in [
-                ("autoscale_pool_id", autoscale_pool_id),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("autoscale_pool_id", autoscale_pool_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_autoscale_memory_target(
-        self, autoscale_pool_id: str, start: str, end: str
-    ) -> dict[str, Any]:
+    async def get_autoscale_memory_target(self, autoscale_pool_id: str, start: str, end: str) -> dict[str, Any]:
         """
         Get Droplet Autoscale Pool Target Average Memory utilization
 
@@ -12453,31 +10093,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/metrics/droplet_autoscale/target_memory_utilization"
-        query_params = {
-            k: v
-            for k, v in [
-                ("autoscale_pool_id", autoscale_pool_id),
-                ("start", start),
-                ("end", end),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("autoscale_pool_id", autoscale_pool_id), ("start", start), ("end", end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_create_destination(
-        self, type: Any, config: dict[str, Any], name: str | None = None
-    ) -> Any:
+    async def monitoring_create_destination(self, type: Any, config: dict[str, Any], name: str | None = None) -> Any:
         """
         Create Logging Destination
 
@@ -12499,35 +10125,20 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "type": type,
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "type": type, "config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/monitoring/sinks/destinations"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_list_destinations(self) -> Any:
+    async def monitoring_list_destinations(self) -> Any:
         """
         List Logging Destinations
 
@@ -12545,18 +10156,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_get_destination(self, destination_uuid: str) -> Any:
+    async def monitoring_get_destination(self, destination_uuid: str) -> Any:
         """
         Get Logging Destination
 
@@ -12579,24 +10186,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_update_destination(
-        self,
-        destination_uuid: str,
-        type: Any,
-        config: dict[str, Any],
-        name: str | None = None,
-    ) -> Any:
+    async def monitoring_update_destination(self, destination_uuid: str, type: Any, config: dict[str, Any], name: str | None = None) -> Any:
         """
         Update Logging Destination
 
@@ -12621,35 +10218,20 @@ class DigitaloceanApp(APIApplication):
         if destination_uuid is None:
             raise ValueError("Missing required parameter 'destination_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "type": type,
-            "config": config,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "type": type, "config": config}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/monitoring/sinks/destinations/{destination_uuid}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_delete_destination(self, destination_uuid: str) -> Any:
+    async def monitoring_delete_destination(self, destination_uuid: str) -> Any:
         """
         Delete Logging Destination
 
@@ -12672,22 +10254,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_create_sink(
-        self,
-        destination_uuid: str | None = None,
-        resources: list[dict[str, Any]] | None = None,
-    ) -> Any:
+    async def monitoring_create_sink(self, destination_uuid: str | None = None, resources: list[dict[str, Any]] | None = None) -> Any:
         """
         Create Sink
 
@@ -12706,34 +10280,20 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         request_body_data = None
-        request_body_data = {
-            "destination_uuid": destination_uuid,
-            "resources": resources,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"destination_uuid": destination_uuid, "resources": resources}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/monitoring/sinks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_list_sinks(self, resource_id: str | None = None) -> Any:
+    async def monitoring_list_sinks(self, resource_id: str | None = None) -> Any:
         """
         Lists all sinks
 
@@ -12751,23 +10311,17 @@ class DigitaloceanApp(APIApplication):
             Monitoring
         """
         url = f"{self.base_url}/v2/monitoring/sinks"
-        query_params = {
-            k: v for k, v in [("resource_id", resource_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("resource_id", resource_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_get_sink(self, sink_uuid: str) -> Any:
+    async def monitoring_get_sink(self, sink_uuid: str) -> Any:
         """
         Get Sink
 
@@ -12790,18 +10344,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def monitoring_delete_sink(self, sink_uuid: str) -> Any:
+    async def monitoring_delete_sink(self, sink_uuid: str) -> Any:
         """
         Delete Sink
 
@@ -12824,20 +10374,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def partner_attachments_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def partner_attachments_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List all partner attachments
 
@@ -12857,23 +10401,17 @@ class DigitaloceanApp(APIApplication):
             Partner Network Connect
         """
         url = f"{self.base_url}/v2/partner_network_connect/attachments"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def partner_attachments_create(
+    async def partner_attachments_create(
         self,
         name: str | None = None,
         connection_bandwidth_in_mbps: int | None = None,
@@ -12916,30 +10454,19 @@ class DigitaloceanApp(APIApplication):
             "parent_uuid": parent_uuid,
             "bgp": bgp,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/partner_network_connect/attachments"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def partner_attachments_get(self, pa_id: str) -> Any:
+    async def partner_attachments_get(self, pa_id: str) -> Any:
         """
         Retrieve an existing partner attachment
 
@@ -12963,23 +10490,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def partner_attachments_patch(
-        self,
-        pa_id: str,
-        name: str | None = None,
-        vpc_ids: list[str] | None = None,
-        bgp: dict[str, Any] | None = None,
+    async def partner_attachments_patch(
+        self, pa_id: str, name: str | None = None, vpc_ids: list[str] | None = None, bgp: dict[str, Any] | None = None
     ) -> Any:
         """
         Update an existing partner attachment
@@ -13004,30 +10523,20 @@ class DigitaloceanApp(APIApplication):
         if pa_id is None:
             raise ValueError("Missing required parameter 'pa_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "vpc_ids": vpc_ids,
-            "bgp": bgp,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "vpc_ids": vpc_ids, "bgp": bgp}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/partner_network_connect/attachments/{pa_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def partner_attachments_delete(self, pa_id: str) -> Any:
+    async def partner_attachments_delete(self, pa_id: str) -> Any:
         """
         Delete an existing partner attachment
 
@@ -13051,18 +10560,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_bgp_auth_key_by_pa_id(self, pa_id: str) -> Any:
+    async def get_bgp_auth_key_by_pa_id(self, pa_id: str) -> Any:
         """
         Get current BGP auth key for the partner attachment
 
@@ -13086,20 +10591,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_partner_network_remote_routes(
-        self, pa_id: str, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def get_partner_network_remote_routes(self, pa_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List remote routes for a partner attachment
 
@@ -13122,25 +10621,17 @@ class DigitaloceanApp(APIApplication):
         if pa_id is None:
             raise ValueError("Missing required parameter 'pa_id'.")
         url = f"{self.base_url}/v2/partner_network_connect/attachments/{pa_id}/remote_routes"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_remote_routes(
-        self, pa_id: str, remote_routes: list[dict[str, Any]] | None = None
-    ) -> Any:
+    async def update_remote_routes(self, pa_id: str, remote_routes: list[dict[str, Any]] | None = None) -> Any:
         """
         Set remote routes for a partner attachment
 
@@ -13162,33 +10653,20 @@ class DigitaloceanApp(APIApplication):
         if pa_id is None:
             raise ValueError("Missing required parameter 'pa_id'.")
         request_body_data = None
-        request_body_data = {
-            "remote_routes": remote_routes,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"remote_routes": remote_routes}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/partner_network_connect/attachments/{pa_id}/remote_routes"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_partner_service_key(self, pa_id: str) -> Any:
+    async def get_partner_service_key(self, pa_id: str) -> Any:
         """
         Get the current service key for the partner attachment
 
@@ -13212,18 +10690,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_service_key(self, pa_id: str) -> Any:
+    async def create_service_key(self, pa_id: str) -> Any:
         """
         Regenerate the service key for the partner attachment
 
@@ -13246,27 +10720,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/partner_network_connect/attachments/{pa_id}/service_key"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def projects_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Projects
 
@@ -13285,23 +10748,17 @@ class DigitaloceanApp(APIApplication):
             Projects, important
         """
         url = f"{self.base_url}/v2/projects"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_create(
+    async def projects_create(
         self,
         name: str,
         purpose: str,
@@ -13364,30 +10821,19 @@ class DigitaloceanApp(APIApplication):
             "created_at": created_at,
             "updated_at": updated_at,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_default(self) -> Any:
+    async def projects_get_default(self) -> Any:
         """
         Retrieve the Default Project
 
@@ -13405,18 +10851,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_update_default(
+    async def projects_update_default(
         self,
         name: str,
         description: str,
@@ -13482,30 +10924,19 @@ class DigitaloceanApp(APIApplication):
             "updated_at": updated_at,
             "is_default": is_default,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects/default"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_patch_default(
+    async def projects_patch_default(
         self,
         id: str | None = None,
         owner_uuid: str | None = None,
@@ -13571,25 +11002,19 @@ class DigitaloceanApp(APIApplication):
             "updated_at": updated_at,
             "is_default": is_default,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects/default"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get(self, project_id: str) -> Any:
+    async def projects_get(self, project_id: str) -> Any:
         """
         Retrieve an Existing Project
 
@@ -13612,18 +11037,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_update(
+    async def projects_update(
         self,
         project_id: str,
         name: str,
@@ -13693,30 +11114,19 @@ class DigitaloceanApp(APIApplication):
             "updated_at": updated_at,
             "is_default": is_default,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects/{project_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_patch(
+    async def projects_patch(
         self,
         project_id: str,
         id: str | None = None,
@@ -13786,25 +11196,19 @@ class DigitaloceanApp(APIApplication):
             "updated_at": updated_at,
             "is_default": is_default,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects/{project_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_delete(self, project_id: str) -> Any:
+    async def projects_delete(self, project_id: str) -> Any:
         """
         Delete an Existing Project
 
@@ -13827,23 +11231,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_list_resources(
-        self,
-        project_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def projects_list_resources(self, project_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Project Resources
 
@@ -13865,25 +11260,17 @@ class DigitaloceanApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'.")
         url = f"{self.base_url}/v2/projects/{project_id}/resources"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_assign_resources(
-        self, project_id: str, resources: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def projects_assign_resources(self, project_id: str, resources: list[str] | None = None) -> dict[str, Any]:
         """
         Assign Resources to a Project
 
@@ -13904,33 +11291,20 @@ class DigitaloceanApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'.")
         request_body_data = None
-        request_body_data = {
-            "resources": resources,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"resources": resources}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects/{project_id}/resources"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_project_resources(self) -> Any:
+    async def list_project_resources(self) -> Any:
         """
         List Default Project Resources
 
@@ -13948,20 +11322,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_default_project_resource(
-        self, resources: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def create_default_project_resource(self, resources: list[str] | None = None) -> dict[str, Any]:
         """
         Assign Resources to Default Project
 
@@ -13979,33 +11347,20 @@ class DigitaloceanApp(APIApplication):
             Project Resources
         """
         request_body_data = None
-        request_body_data = {
-            "resources": resources,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"resources": resources}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/projects/default/resources"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def regions_list(self, per_page: int | None = None, page: int | None = None) -> Any:
+    async def regions_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Data Center Regions
 
@@ -14024,23 +11379,17 @@ class DigitaloceanApp(APIApplication):
             Regions
         """
         url = f"{self.base_url}/v2/regions"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_get(self) -> Any:
+    async def registry_get(self) -> Any:
         """
         Get Container Registry Information
 
@@ -14058,20 +11407,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_create(
-        self, name: str, subscription_tier_slug: str, region: str | None = None
-    ) -> Any:
+    async def registry_create(self, name: str, subscription_tier_slug: str, region: str | None = None) -> Any:
         """
         Create Container Registry
 
@@ -14091,35 +11434,20 @@ class DigitaloceanApp(APIApplication):
             Container Registry
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "subscription_tier_slug": subscription_tier_slug,
-            "region": region,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "subscription_tier_slug": subscription_tier_slug, "region": region}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/registry"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_delete(self) -> Any:
+    async def registry_delete(self) -> Any:
         """
         Delete Container Registry
 
@@ -14137,18 +11465,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_get_subscription(self) -> Any:
+    async def registry_get_subscription(self) -> Any:
         """
         Get Subscription Information
 
@@ -14166,18 +11490,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_update_subscription(self, tier_slug: str | None = None) -> Any:
+    async def registry_update_subscription(self, tier_slug: str | None = None) -> Any:
         """
         Update Subscription Tier
 
@@ -14195,35 +11515,20 @@ class DigitaloceanApp(APIApplication):
             Container Registry
         """
         request_body_data = None
-        request_body_data = {
-            "tier_slug": tier_slug,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"tier_slug": tier_slug}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/registry/subscription"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_get_docker_credentials(
-        self, expiry_seconds: int | None = None, read_write: bool | None = None
-    ) -> dict[str, Any]:
+    async def registry_get_docker_credentials(self, expiry_seconds: int | None = None, read_write: bool | None = None) -> dict[str, Any]:
         """
         Get Docker Credentials for Container Registry
 
@@ -14242,25 +11547,17 @@ class DigitaloceanApp(APIApplication):
             Container Registry
         """
         url = f"{self.base_url}/v2/registry/docker-credentials"
-        query_params = {
-            k: v
-            for k, v in [("expiry_seconds", expiry_seconds), ("read_write", read_write)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("expiry_seconds", expiry_seconds), ("read_write", read_write)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_validate_name(self, name: str) -> Any:
+    async def registry_validate_name(self, name: str) -> Any:
         """
         Validate a Container Registry Name
 
@@ -14278,38 +11575,20 @@ class DigitaloceanApp(APIApplication):
             Container Registry
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/registry/validate-name"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_list_repositories(
-        self,
-        registry_name: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def registry_list_repositories(self, registry_name: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Container Registry Repositories
 
@@ -14331,28 +11610,18 @@ class DigitaloceanApp(APIApplication):
         if registry_name is None:
             raise ValueError("Missing required parameter 'registry_name'.")
         url = f"{self.base_url}/v2/registry/{registry_name}/repositories"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_list_repositories_v(
-        self,
-        registry_name: str,
-        per_page: int | None = None,
-        page: int | None = None,
-        page_token: str | None = None,
+    async def registry_list_repositories_v(
+        self, registry_name: str, per_page: int | None = None, page: int | None = None, page_token: str | None = None
     ) -> Any:
         """
         List All Container Registry Repositories (V2)
@@ -14376,34 +11645,18 @@ class DigitaloceanApp(APIApplication):
         if registry_name is None:
             raise ValueError("Missing required parameter 'registry_name'.")
         url = f"{self.base_url}/v2/registry/{registry_name}/repositoriesV2"
-        query_params = {
-            k: v
-            for k, v in [
-                ("per_page", per_page),
-                ("page", page),
-                ("page_token", page_token),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page), ("page_token", page_token)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_list_repository_tags(
-        self,
-        registry_name: str,
-        repository_name: str,
-        per_page: int | None = None,
-        page: int | None = None,
+    async def registry_list_repository_tags(
+        self, registry_name: str, repository_name: str, per_page: int | None = None, page: int | None = None
     ) -> Any:
         """
         List All Container Registry Repository Tags
@@ -14429,25 +11682,17 @@ class DigitaloceanApp(APIApplication):
         if repository_name is None:
             raise ValueError("Missing required parameter 'repository_name'.")
         url = f"{self.base_url}/v2/registry/{registry_name}/repositories/{repository_name}/tags"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_delete_repository_tag(
-        self, registry_name: str, repository_name: str, repository_tag: str
-    ) -> Any:
+    async def registry_delete_repository_tag(self, registry_name: str, repository_name: str, repository_tag: str) -> Any:
         """
         Delete Container Registry Repository Tag
 
@@ -14476,23 +11721,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_repository_digests(
-        self,
-        registry_name: str,
-        repository_name: str,
-        per_page: int | None = None,
-        page: int | None = None,
+    async def get_repository_digests(
+        self, registry_name: str, repository_name: str, per_page: int | None = None, page: int | None = None
     ) -> Any:
         """
         List All Container Registry Repository Manifests
@@ -14518,25 +11755,17 @@ class DigitaloceanApp(APIApplication):
         if repository_name is None:
             raise ValueError("Missing required parameter 'repository_name'.")
         url = f"{self.base_url}/v2/registry/{registry_name}/repositories/{repository_name}/digests"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_manifest_digest(
-        self, registry_name: str, repository_name: str, manifest_digest: str
-    ) -> Any:
+    async def delete_manifest_digest(self, registry_name: str, repository_name: str, manifest_digest: str) -> Any:
         """
         Delete Container Registry Repository Manifest
 
@@ -14565,20 +11794,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_run_garbage_collection(
-        self, registry_name: str, type: str | None = None
-    ) -> dict[str, Any]:
+    async def registry_run_garbage_collection(self, registry_name: str, type: str | None = None) -> dict[str, Any]:
         """
         Start Garbage Collection
 
@@ -14599,33 +11822,20 @@ class DigitaloceanApp(APIApplication):
         if registry_name is None:
             raise ValueError("Missing required parameter 'registry_name'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/registry/{registry_name}/garbage-collection"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_get_garbage_collection(self, registry_name: str) -> dict[str, Any]:
+    async def registry_get_garbage_collection(self, registry_name: str) -> dict[str, Any]:
         """
         Get Active Garbage Collection
 
@@ -14648,22 +11858,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_registry_garbage_collections(
-        self,
-        registry_name: str,
-        per_page: int | None = None,
-        page: int | None = None,
+    async def list_registry_garbage_collections(
+        self, registry_name: str, per_page: int | None = None, page: int | None = None
     ) -> dict[str, Any]:
         """
         List Garbage Collections
@@ -14686,27 +11889,18 @@ class DigitaloceanApp(APIApplication):
         if registry_name is None:
             raise ValueError("Missing required parameter 'registry_name'.")
         url = f"{self.base_url}/v2/registry/{registry_name}/garbage-collections"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_garbage_collection(
-        self,
-        registry_name: str,
-        garbage_collection_uuid: str,
-        cancel: bool | None = None,
+    async def update_garbage_collection(
+        self, registry_name: str, garbage_collection_uuid: str, cancel: bool | None = None
     ) -> dict[str, Any]:
         """
         Update Garbage Collection
@@ -14731,33 +11925,20 @@ class DigitaloceanApp(APIApplication):
         if garbage_collection_uuid is None:
             raise ValueError("Missing required parameter 'garbage_collection_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "cancel": cancel,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"cancel": cancel}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/registry/{registry_name}/garbage-collection/{garbage_collection_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def registry_get_options(self) -> dict[str, Any]:
+    async def registry_get_options(self) -> dict[str, Any]:
         """
         List Registry Options (Subscription Tiers and Available Regions)
 
@@ -14775,18 +11956,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def droplets_list_neighbors_ids(self) -> dict[str, Any]:
+    async def droplets_list_neighbors_ids(self) -> dict[str, Any]:
         """
         List All Droplet Neighbors
 
@@ -14804,20 +11981,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def reserved_ips_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Reserved IPs
 
@@ -14836,27 +12007,18 @@ class DigitaloceanApp(APIApplication):
             Reserved IPs
         """
         url = f"{self.base_url}/v2/reserved_ips"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_create(
-        self,
-        droplet_id: int | None = None,
-        region: str | None = None,
-        project_id: str | None = None,
+    async def reserved_ips_create(
+        self, droplet_id: int | None = None, region: str | None = None, project_id: str | None = None
     ) -> dict[str, Any]:
         """
         Create a New Reserved IP
@@ -14878,35 +12040,20 @@ class DigitaloceanApp(APIApplication):
             Reserved IPs
         """
         request_body_data = None
-        request_body_data = {
-            "droplet_id": droplet_id,
-            "region": region,
-            "project_id": project_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"droplet_id": droplet_id, "region": region, "project_id": project_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/reserved_ips"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_get(self, reserved_ip: str) -> dict[str, Any]:
+    async def reserved_ips_get(self, reserved_ip: str) -> dict[str, Any]:
         """
         Retrieve an Existing Reserved IP
 
@@ -14929,18 +12076,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_delete(self, reserved_ip: str) -> Any:
+    async def reserved_ips_delete(self, reserved_ip: str) -> Any:
         """
         Delete a Reserved IP
 
@@ -14963,18 +12106,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_actions_list(self, reserved_ip: str) -> Any:
+    async def reserved_ips_actions_list(self, reserved_ip: str) -> Any:
         """
         List All Actions for a Reserved IP
 
@@ -14997,23 +12136,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_actions_post(
-        self,
-        reserved_ip: str,
-        type: str | None = None,
-        droplet_id: int | None = None,
-    ) -> Any:
+    async def reserved_ips_actions_post(self, reserved_ip: str, type: str | None = None, droplet_id: int | None = None) -> Any:
         """
         Initiate a Reserved IP Action
 
@@ -15035,34 +12165,20 @@ class DigitaloceanApp(APIApplication):
         if reserved_ip is None:
             raise ValueError("Missing required parameter 'reserved_ip'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "droplet_id": droplet_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "droplet_id": droplet_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/reserved_ips/{reserved_ip}/actions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ips_actions_get(self, reserved_ip: str, action_id: str) -> Any:
+    async def reserved_ips_actions_get(self, reserved_ip: str, action_id: str) -> Any:
         """
         Retrieve an Existing Reserved IP Action
 
@@ -15088,20 +12204,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ipv_list(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def reserved_ipv_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         [Public Preview] List All Reserved IPv6s
 
@@ -15120,23 +12230,17 @@ class DigitaloceanApp(APIApplication):
             [Public Preview] Reserved IPv6
         """
         url = f"{self.base_url}/v2/reserved_ipv6"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ipv_create(self, region_slug: str) -> Any:
+    async def reserved_ipv_create(self, region_slug: str) -> Any:
         """
         [Public Preview] Create a New Reserved IPv6
 
@@ -15154,33 +12258,20 @@ class DigitaloceanApp(APIApplication):
             [Public Preview] Reserved IPv6
         """
         request_body_data = None
-        request_body_data = {
-            "region_slug": region_slug,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"region_slug": region_slug}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/reserved_ipv6"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ipv_get(self, reserved_ipv6: str) -> dict[str, Any]:
+    async def reserved_ipv_get(self, reserved_ipv6: str) -> dict[str, Any]:
         """
         [Public Preview] Retrieve an Existing Reserved IPv6
 
@@ -15203,18 +12294,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ipv_delete(self, reserved_ipv6: str) -> Any:
+    async def reserved_ipv_delete(self, reserved_ipv6: str) -> Any:
         """
         [Public Preview] Delete a Reserved IPv6
 
@@ -15237,23 +12324,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def reserved_ipv_actions_post(
-        self,
-        reserved_ipv6: str,
-        type: str | None = None,
-        droplet_id: int | None = None,
-    ) -> Any:
+    async def reserved_ipv_actions_post(self, reserved_ipv6: str, type: str | None = None, droplet_id: int | None = None) -> Any:
         """
         [Public Preview] Initiate a Reserved IPv6 Action
 
@@ -15275,34 +12353,20 @@ class DigitaloceanApp(APIApplication):
         if reserved_ipv6 is None:
             raise ValueError("Missing required parameter 'reserved_ipv6'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "droplet_id": droplet_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "droplet_id": droplet_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/reserved_ipv6/{reserved_ipv6}/actions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def sizes_list(self, per_page: int | None = None, page: int | None = None) -> Any:
+    async def sizes_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Droplet Sizes
 
@@ -15321,28 +12385,17 @@ class DigitaloceanApp(APIApplication):
             Sizes
         """
         url = f"{self.base_url}/v2/sizes"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def snapshots_list(
-        self,
-        per_page: int | None = None,
-        page: int | None = None,
-        resource_type: str | None = None,
-    ) -> Any:
+    async def snapshots_list(self, per_page: int | None = None, page: int | None = None, resource_type: str | None = None) -> Any:
         """
         List All Snapshots
 
@@ -15362,29 +12415,17 @@ class DigitaloceanApp(APIApplication):
             Snapshots
         """
         url = f"{self.base_url}/v2/snapshots"
-        query_params = {
-            k: v
-            for k, v in [
-                ("per_page", per_page),
-                ("page", page),
-                ("resource_type", resource_type),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page), ("resource_type", resource_type)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def snapshots_get(self, snapshot_id: str) -> Any:
+    async def snapshots_get(self, snapshot_id: str) -> Any:
         """
         Retrieve an Existing Snapshot
 
@@ -15407,18 +12448,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def snapshots_delete(self, snapshot_id: str) -> Any:
+    async def snapshots_delete(self, snapshot_id: str) -> Any:
         """
         Delete a Snapshot
 
@@ -15441,18 +12478,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def spaces_key_list(
+    async def spaces_key_list(
         self,
         per_page: int | None = None,
         page: int | None = None,
@@ -15500,18 +12533,14 @@ class DigitaloceanApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def spaces_key_create(
+    async def spaces_key_create(
         self,
         name: str | None = None,
         grants: list[dict[str, Any]] | None = None,
@@ -15538,36 +12567,20 @@ class DigitaloceanApp(APIApplication):
             Spaces Keys
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "grants": grants,
-            "access_key": access_key,
-            "created_at": created_at,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "grants": grants, "access_key": access_key, "created_at": created_at}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/spaces/keys"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def spaces_key_get(self, access_key: str) -> Any:
+    async def spaces_key_get(self, access_key: str) -> Any:
         """
         Get a Spaces Access Key
 
@@ -15590,18 +12603,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def spaces_key_delete(self, access_key: str) -> Any:
+    async def spaces_key_delete(self, access_key: str) -> Any:
         """
         Delete a Spaces Access Key
 
@@ -15624,18 +12633,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def spaces_key_update(
+    async def spaces_key_update(
         self,
         access_key: str,
         name: str | None = None,
@@ -15666,36 +12671,20 @@ class DigitaloceanApp(APIApplication):
         if access_key is None:
             raise ValueError("Missing required parameter 'access_key'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "grants": grants,
-            "access_key": access_key_body,
-            "created_at": created_at,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "grants": grants, "access_key": access_key_body, "created_at": created_at}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/spaces/keys/{access_key}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def spaces_key_patch(
+    async def spaces_key_patch(
         self,
         access_key: str,
         name: str | None = None,
@@ -15726,31 +12715,20 @@ class DigitaloceanApp(APIApplication):
         if access_key is None:
             raise ValueError("Missing required parameter 'access_key'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "grants": grants,
-            "access_key": access_key_body,
-            "created_at": created_at,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "grants": grants, "access_key": access_key_body, "created_at": created_at}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/spaces/keys/{access_key}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tags_list(self, per_page: int | None = None, page: int | None = None) -> Any:
+    async def tags_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Tags
 
@@ -15769,25 +12747,17 @@ class DigitaloceanApp(APIApplication):
             Tags
         """
         url = f"{self.base_url}/v2/tags"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tags_create(
-        self, name: str | None = None, resources: dict[str, Any] | None = None
-    ) -> Any:
+    async def tags_create(self, name: str | None = None, resources: dict[str, Any] | None = None) -> Any:
         """
         Create a New Tag
 
@@ -15814,34 +12784,20 @@ class DigitaloceanApp(APIApplication):
             Tags
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "resources": resources,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "resources": resources}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/tags"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tags_get(self, tag_id: str) -> dict[str, Any]:
+    async def tags_get(self, tag_id: str) -> dict[str, Any]:
         """
         Retrieve a Tag
 
@@ -15864,18 +12820,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tags_delete(self, tag_id: str) -> Any:
+    async def tags_delete(self, tag_id: str) -> Any:
         """
         Delete a Tag
 
@@ -15898,18 +12850,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tags_assign_resources(self, tag_id: str, resources: list[Any]) -> Any:
+    async def tags_assign_resources(self, tag_id: str, resources: list[Any]) -> Any:
         """
         Tag a Resource
 
@@ -15930,33 +12878,20 @@ class DigitaloceanApp(APIApplication):
         if tag_id is None:
             raise ValueError("Missing required parameter 'tag_id'.")
         request_body_data = None
-        request_body_data = {
-            "resources": resources,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"resources": resources}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/tags/{tag_id}/resources"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tags_unassign_resources(self, tag_id: str, resources: list[Any]) -> Any:
+    async def tags_unassign_resources(self, tag_id: str, resources: list[Any]) -> Any:
         """
         Untag a Resource
 
@@ -15976,33 +12911,21 @@ class DigitaloceanApp(APIApplication):
         """
         if tag_id is None:
             raise ValueError("Missing required parameter 'tag_id'.")
-        request_body_data = {
-            "resources": resources,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"resources": resources}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/tags/{tag_id}/resources"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volumes_list(
-        self,
-        name: str | None = None,
-        region: str | None = None,
-        per_page: int | None = None,
-        page: int | None = None,
+    async def volumes_list(
+        self, name: str | None = None, region: str | None = None, per_page: int | None = None, page: int | None = None
     ) -> Any:
         """
         List All Block Storage Volumes
@@ -16024,30 +12947,17 @@ class DigitaloceanApp(APIApplication):
             Block Storage, important
         """
         url = f"{self.base_url}/v2/volumes"
-        query_params = {
-            k: v
-            for k, v in [
-                ("name", name),
-                ("region", region),
-                ("per_page", per_page),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("name", name), ("region", region), ("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volumes_create(
+    async def volumes_create(
         self,
         id: str | None = None,
         droplet_ids: list[int] | None = None,
@@ -16101,32 +13011,19 @@ class DigitaloceanApp(APIApplication):
             "region": region,
             "filesystem_label": filesystem_label,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/volumes"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volumes_delete_by_name(
-        self, name: str | None = None, region: str | None = None
-    ) -> Any:
+    async def volumes_delete_by_name(self, name: str | None = None, region: str | None = None) -> Any:
         """
         Delete a Block Storage Volume by Name
 
@@ -16145,23 +13042,17 @@ class DigitaloceanApp(APIApplication):
             Block Storage
         """
         url = f"{self.base_url}/v2/volumes"
-        query_params = {
-            k: v for k, v in [("name", name), ("region", region)] if v is not None
-        }
+        query_params = {k: v for k, v in [("name", name), ("region", region)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_actions_post(
+    async def volume_actions_post(
         self,
         per_page: int | None = None,
         page: int | None = None,
@@ -16192,38 +13083,20 @@ class DigitaloceanApp(APIApplication):
             Block Storage Actions
         """
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "region": region,
-            "droplet_id": droplet_id,
-            "tags": tags,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "region": region, "droplet_id": droplet_id, "tags": tags}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/volumes/actions"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_snapshots_get_by_id(self, snapshot_id: str) -> Any:
+    async def volume_snapshots_get_by_id(self, snapshot_id: str) -> Any:
         """
         Retrieve an Existing Volume Snapshot
 
@@ -16246,18 +13119,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_snapshots_delete_by_id(self, snapshot_id: str) -> Any:
+    async def volume_snapshots_delete_by_id(self, snapshot_id: str) -> Any:
         """
         Delete a Volume Snapshot
 
@@ -16280,18 +13149,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volumes_get(self, volume_id: str) -> Any:
+    async def volumes_get(self, volume_id: str) -> Any:
         """
         Retrieve an Existing Block Storage Volume
 
@@ -16314,18 +13179,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volumes_delete(self, volume_id: str) -> Any:
+    async def volumes_delete(self, volume_id: str) -> Any:
         """
         Delete a Block Storage Volume
 
@@ -16348,20 +13209,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_actions_list(
-        self, volume_id: str, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def volume_actions_list(self, volume_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Actions for a Volume
 
@@ -16383,23 +13238,17 @@ class DigitaloceanApp(APIApplication):
         if volume_id is None:
             raise ValueError("Missing required parameter 'volume_id'.")
         url = f"{self.base_url}/v2/volumes/{volume_id}/actions"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_actions_post_by_id(
+    async def volume_actions_post_by_id(
         self,
         volume_id: str,
         per_page: int | None = None,
@@ -16436,45 +13285,20 @@ class DigitaloceanApp(APIApplication):
         if volume_id is None:
             raise ValueError("Missing required parameter 'volume_id'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "region": region,
-            "droplet_id": droplet_id,
-            "tags": tags,
-            "size_gigabytes": size_gigabytes,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "region": region, "droplet_id": droplet_id, "tags": tags, "size_gigabytes": size_gigabytes}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/volumes/{volume_id}/actions"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_actions_get(
-        self,
-        volume_id: str,
-        action_id: str,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> Any:
+    async def volume_actions_get(self, volume_id: str, action_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         Retrieve an Existing Volume Action
 
@@ -16499,25 +13323,17 @@ class DigitaloceanApp(APIApplication):
         if action_id is None:
             raise ValueError("Missing required parameter 'action_id'.")
         url = f"{self.base_url}/v2/volumes/{volume_id}/actions/{action_id}"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_snapshots_list(
-        self, volume_id: str, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def volume_snapshots_list(self, volume_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List Snapshots for a Volume
 
@@ -16539,25 +13355,17 @@ class DigitaloceanApp(APIApplication):
         if volume_id is None:
             raise ValueError("Missing required parameter 'volume_id'.")
         url = f"{self.base_url}/v2/volumes/{volume_id}/snapshots"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def volume_snapshots_create(
-        self, volume_id: str, name: str, tags: list[str] | None = None
-    ) -> Any:
+    async def volume_snapshots_create(self, volume_id: str, name: str, tags: list[str] | None = None) -> Any:
         """
         Create Snapshot from a Volume
 
@@ -16579,34 +13387,20 @@ class DigitaloceanApp(APIApplication):
         if volume_id is None:
             raise ValueError("Missing required parameter 'volume_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "tags": tags,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "tags": tags}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/volumes/{volume_id}/snapshots"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_list(self, per_page: int | None = None, page: int | None = None) -> Any:
+    async def vpcs_list(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All VPCs
 
@@ -16625,29 +13419,17 @@ class DigitaloceanApp(APIApplication):
             VPCs
         """
         url = f"{self.base_url}/v2/vpcs"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_create(
-        self,
-        name: str,
-        region: str,
-        description: str | None = None,
-        ip_range: str | None = None,
-    ) -> dict[str, Any]:
+    async def vpcs_create(self, name: str, region: str, description: str | None = None, ip_range: str | None = None) -> dict[str, Any]:
         """
         Create a New VPC
 
@@ -16668,36 +13450,20 @@ class DigitaloceanApp(APIApplication):
             VPCs
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "description": description,
-            "region": region,
-            "ip_range": ip_range,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "description": description, "region": region, "ip_range": ip_range}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpcs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_get(self, vpc_id: str) -> dict[str, Any]:
+    async def vpcs_get(self, vpc_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing VPC
 
@@ -16720,24 +13486,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_update(
-        self,
-        vpc_id: str,
-        name: str,
-        description: str | None = None,
-        default: bool | None = None,
-    ) -> dict[str, Any]:
+    async def vpcs_update(self, vpc_id: str, name: str, description: str | None = None, default: bool | None = None) -> dict[str, Any]:
         """
         Update a VPC
 
@@ -16760,40 +13516,21 @@ class DigitaloceanApp(APIApplication):
         if vpc_id is None:
             raise ValueError("Missing required parameter 'vpc_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "description": description,
-            "default": default,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "description": description, "default": default}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpcs/{vpc_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_patch(
-        self,
-        vpc_id: str,
-        name: str | None = None,
-        description: str | None = None,
-        default: bool | None = None,
+    async def vpcs_patch(
+        self, vpc_id: str, name: str | None = None, description: str | None = None, default: bool | None = None
     ) -> dict[str, Any]:
         """
         Partially Update a VPC
@@ -16817,30 +13554,20 @@ class DigitaloceanApp(APIApplication):
         if vpc_id is None:
             raise ValueError("Missing required parameter 'vpc_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "description": description,
-            "default": default,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "description": description, "default": default}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpcs/{vpc_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_delete(self, vpc_id: str) -> Any:
+    async def vpcs_delete(self, vpc_id: str) -> Any:
         """
         Delete a VPC
 
@@ -16863,23 +13590,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_list_members(
-        self,
-        vpc_id: str,
-        resource_type: str | None = None,
-        per_page: int | None = None,
-        page: int | None = None,
+    async def vpcs_list_members(
+        self, vpc_id: str, resource_type: str | None = None, per_page: int | None = None, page: int | None = None
     ) -> Any:
         """
         List the Member Resources of a VPC
@@ -16903,31 +13622,17 @@ class DigitaloceanApp(APIApplication):
         if vpc_id is None:
             raise ValueError("Missing required parameter 'vpc_id'.")
         url = f"{self.base_url}/v2/vpcs/{vpc_id}/members"
-        query_params = {
-            k: v
-            for k, v in [
-                ("resource_type", resource_type),
-                ("per_page", per_page),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("resource_type", resource_type), ("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_list_peerings(
-        self, vpc_id: str, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def vpcs_list_peerings(self, vpc_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List the Peerings of a VPC
 
@@ -16949,25 +13654,17 @@ class DigitaloceanApp(APIApplication):
         if vpc_id is None:
             raise ValueError("Missing required parameter 'vpc_id'.")
         url = f"{self.base_url}/v2/vpcs/{vpc_id}/peerings"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_create_peerings(
-        self, vpc_id: str, name: str, vpc_id_body: str
-    ) -> dict[str, Any]:
+    async def vpcs_create_peerings(self, vpc_id: str, name: str, vpc_id_body: str) -> dict[str, Any]:
         """
         Create a Peering with a VPC
 
@@ -16989,36 +13686,20 @@ class DigitaloceanApp(APIApplication):
         if vpc_id is None:
             raise ValueError("Missing required parameter 'vpc_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "vpc_id": vpc_id_body,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "vpc_id": vpc_id_body}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpcs/{vpc_id}/peerings"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpcs_patch_peerings(
-        self, vpc_id: str, vpc_peering_id: str, name: str
-    ) -> dict[str, Any]:
+    async def vpcs_patch_peerings(self, vpc_id: str, vpc_peering_id: str, name: str) -> dict[str, Any]:
         """
         Update a VPC Peering
 
@@ -17042,33 +13723,20 @@ class DigitaloceanApp(APIApplication):
         if vpc_peering_id is None:
             raise ValueError("Missing required parameter 'vpc_peering_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpcs/{vpc_id}/peerings/{vpc_peering_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpc_peerings_list(
-        self,
-        per_page: int | None = None,
-        page: int | None = None,
-        region: str | None = None,
-    ) -> Any:
+    async def vpc_peerings_list(self, per_page: int | None = None, page: int | None = None, region: str | None = None) -> Any:
         """
         List All VPC Peerings
 
@@ -17088,25 +13756,17 @@ class DigitaloceanApp(APIApplication):
             VPC Peerings
         """
         url = f"{self.base_url}/v2/vpc_peerings"
-        query_params = {
-            k: v
-            for k, v in [("per_page", per_page), ("page", page), ("region", region)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page), ("region", region)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpc_peerings_create(self, name: str, vpc_ids: list[str]) -> dict[str, Any]:
+    async def vpc_peerings_create(self, name: str, vpc_ids: list[str]) -> dict[str, Any]:
         """
         Create a New VPC Peering
 
@@ -17125,34 +13785,20 @@ class DigitaloceanApp(APIApplication):
             VPC Peerings
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "vpc_ids": vpc_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "vpc_ids": vpc_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpc_peerings"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpc_peerings_get(self, vpc_peering_id: str) -> dict[str, Any]:
+    async def vpc_peerings_get(self, vpc_peering_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing VPC Peering
 
@@ -17175,18 +13821,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpc_peerings_patch(self, vpc_peering_id: str, name: str) -> dict[str, Any]:
+    async def vpc_peerings_patch(self, vpc_peering_id: str, name: str) -> dict[str, Any]:
         """
         Update a VPC peering
 
@@ -17207,28 +13849,20 @@ class DigitaloceanApp(APIApplication):
         if vpc_peering_id is None:
             raise ValueError("Missing required parameter 'vpc_peering_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/vpc_peerings/{vpc_peering_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def vpc_peerings_delete(self, vpc_peering_id: str) -> dict[str, Any]:
+    async def vpc_peerings_delete(self, vpc_peering_id: str) -> dict[str, Any]:
         """
         Delete a VPC peering
 
@@ -17251,20 +13885,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_list_checks(
-        self, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def uptime_list_checks(self, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Checks
 
@@ -17283,25 +13911,17 @@ class DigitaloceanApp(APIApplication):
             Uptime
         """
         url = f"{self.base_url}/v2/uptime/checks"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_create_check(
-        self, name: str, type: str, target: str, regions: list[str], enabled: bool
-    ) -> dict[str, Any]:
+    async def uptime_create_check(self, name: str, type: str, target: str, regions: list[str], enabled: bool) -> dict[str, Any]:
         """
         Create a New Check
 
@@ -17323,37 +13943,20 @@ class DigitaloceanApp(APIApplication):
             Uptime
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "type": type,
-            "target": target,
-            "regions": regions,
-            "enabled": enabled,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "type": type, "target": target, "regions": regions, "enabled": enabled}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/uptime/checks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_get_check(self, check_id: str) -> dict[str, Any]:
+    async def uptime_get_check(self, check_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing Check
 
@@ -17376,18 +13979,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_update_check(
+    async def uptime_update_check(
         self,
         check_id: str,
         name: str | None = None,
@@ -17420,37 +14019,20 @@ class DigitaloceanApp(APIApplication):
         if check_id is None:
             raise ValueError("Missing required parameter 'check_id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "type": type,
-            "target": target,
-            "regions": regions,
-            "enabled": enabled,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "type": type, "target": target, "regions": regions, "enabled": enabled}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/uptime/checks/{check_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_delete_check(self, check_id: str) -> Any:
+    async def uptime_delete_check(self, check_id: str) -> Any:
         """
         Delete a Check
 
@@ -17473,18 +14055,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_get_check_state(self, check_id: str) -> dict[str, Any]:
+    async def uptime_get_check_state(self, check_id: str) -> dict[str, Any]:
         """
         Retrieve Check State
 
@@ -17507,20 +14085,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_list_alerts(
-        self, check_id: str, per_page: int | None = None, page: int | None = None
-    ) -> Any:
+    async def uptime_list_alerts(self, check_id: str, per_page: int | None = None, page: int | None = None) -> Any:
         """
         List All Alerts
 
@@ -17542,23 +14114,17 @@ class DigitaloceanApp(APIApplication):
         if check_id is None:
             raise ValueError("Missing required parameter 'check_id'.")
         url = f"{self.base_url}/v2/uptime/checks/{check_id}/alerts"
-        query_params = {
-            k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("per_page", per_page), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_create_alert(
+    async def uptime_create_alert(
         self,
         check_id: str,
         name: str,
@@ -17604,30 +14170,19 @@ class DigitaloceanApp(APIApplication):
             "notifications": notifications,
             "period": period,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/uptime/checks/{check_id}/alerts"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_get_alert(self, check_id: str, alert_id: str) -> dict[str, Any]:
+    async def uptime_get_alert(self, check_id: str, alert_id: str) -> dict[str, Any]:
         """
         Retrieve an Existing Alert
 
@@ -17653,18 +14208,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_update_alert(
+    async def uptime_update_alert(
         self,
         check_id: str,
         alert_id: str,
@@ -17711,30 +14262,19 @@ class DigitaloceanApp(APIApplication):
             "notifications": notifications,
             "period": period,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/uptime/checks/{check_id}/alerts/{alert_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def uptime_delete_alert(self, check_id: str, alert_id: str) -> Any:
+    async def uptime_delete_alert(self, check_id: str, alert_id: str) -> Any:
         """
         Delete an Alert
 
@@ -17760,22 +14300,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_agents(
-        self,
-        only_deployed: bool | None = None,
-        page: int | None = None,
-        per_page: int | None = None,
+    async def genai_list_agents(
+        self, only_deployed: bool | None = None, page: int | None = None, per_page: int | None = None
     ) -> dict[str, Any]:
         """
         List Agents
@@ -17796,29 +14329,17 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/agents"
-        query_params = {
-            k: v
-            for k, v in [
-                ("only_deployed", only_deployed),
-                ("page", page),
-                ("per_page", per_page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("only_deployed", only_deployed), ("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_agent(
+    async def genai_create_agent(
         self,
         anthropic_key_uuid: str | None = None,
         description: str | None = None,
@@ -17869,35 +14390,19 @@ class DigitaloceanApp(APIApplication):
             "region": region,
             "tags": tags,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_agent_api_keys(
-        self,
-        agent_uuid: str,
-        page: int | None = None,
-        per_page: int | None = None,
-    ) -> dict[str, Any]:
+    async def genai_list_agent_api_keys(self, agent_uuid: str, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List Agent API Keys
 
@@ -17919,27 +14424,18 @@ class DigitaloceanApp(APIApplication):
         if agent_uuid is None:
             raise ValueError("Missing required parameter 'agent_uuid'.")
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/api_keys"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_agent_api_key(
-        self,
-        agent_uuid: str,
-        agent_uuid_body: str | None = None,
-        name: str | None = None,
+    async def genai_create_agent_api_key(
+        self, agent_uuid: str, agent_uuid_body: str | None = None, name: str | None = None
     ) -> dict[str, Any]:
         """
         Create an Agent API Key
@@ -17962,34 +14458,20 @@ class DigitaloceanApp(APIApplication):
         if agent_uuid is None:
             raise ValueError("Missing required parameter 'agent_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "agent_uuid": agent_uuid_body,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"agent_uuid": agent_uuid_body, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/api_keys"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_agent_api_key(
+    async def genai_update_agent_api_key(
         self,
         agent_uuid: str,
         api_key_uuid: str,
@@ -18022,37 +14504,20 @@ class DigitaloceanApp(APIApplication):
         if api_key_uuid is None:
             raise ValueError("Missing required parameter 'api_key_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "agent_uuid": agent_uuid_body,
-            "api_key_uuid": api_key_uuid_body,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"agent_uuid": agent_uuid_body, "api_key_uuid": api_key_uuid_body, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/api_keys/{api_key_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_delete_agent_api_key(
-        self, agent_uuid: str, api_key_uuid: str
-    ) -> dict[str, Any]:
+    async def genai_delete_agent_api_key(self, agent_uuid: str, api_key_uuid: str) -> dict[str, Any]:
         """
         Delete API Key for an Agent
 
@@ -18078,20 +14543,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_regenerate_agent_api_key(
-        self, agent_uuid: str, api_key_uuid: str
-    ) -> dict[str, Any]:
+    async def genai_regenerate_agent_api_key(self, agent_uuid: str, api_key_uuid: str) -> dict[str, Any]:
         """
         Regenerate API Key for an Agent
 
@@ -18116,25 +14575,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/api_keys/{api_key_uuid}/regenerate"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_attach_agent_function(
+    async def genai_attach_agent_function(
         self,
         agent_uuid: str,
         agent_uuid_body: str | None = None,
@@ -18180,30 +14630,19 @@ class DigitaloceanApp(APIApplication):
             "input_schema": input_schema,
             "output_schema": output_schema,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/functions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_agent_function(
+    async def genai_update_agent_function(
         self,
         agent_uuid: str,
         function_uuid: str,
@@ -18256,32 +14695,19 @@ class DigitaloceanApp(APIApplication):
             "input_schema": input_schema,
             "output_schema": output_schema,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/functions/{function_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_detach_agent_function(
-        self, agent_uuid: str, function_uuid: str
-    ) -> dict[str, Any]:
+    async def genai_detach_agent_function(self, agent_uuid: str, function_uuid: str) -> dict[str, Any]:
         """
         Delete Function Route for an Agent
 
@@ -18307,18 +14733,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_attach_knowledge_bases(self, agent_uuid: str) -> dict[str, Any]:
+    async def genai_attach_knowledge_bases(self, agent_uuid: str) -> dict[str, Any]:
         """
         Attach Knowledge Bases to an Agent
 
@@ -18340,27 +14762,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/knowledge_bases"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_attach_knowledge_base(
-        self, agent_uuid: str, knowledge_base_uuid: str
-    ) -> dict[str, Any]:
+    async def genai_attach_knowledge_base(self, agent_uuid: str, knowledge_base_uuid: str) -> dict[str, Any]:
         """
         Attach Knowledge Base to an Agent
 
@@ -18385,27 +14796,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/gen-ai/agents/{agent_uuid}/knowledge_bases/{knowledge_base_uuid}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_detach_knowledge_base(
-        self, agent_uuid: str, knowledge_base_uuid: str
-    ) -> dict[str, Any]:
+    async def genai_detach_knowledge_base(self, agent_uuid: str, knowledge_base_uuid: str) -> dict[str, Any]:
         """
         Detach Knowledge Base from an Agent
 
@@ -18431,18 +14831,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_attach_agent(
+    async def genai_attach_agent(
         self,
         parent_agent_uuid: str,
         child_agent_uuid: str,
@@ -18483,30 +14879,19 @@ class DigitaloceanApp(APIApplication):
             "parent_agent_uuid": parent_agent_uuid_body,
             "route_name": route_name,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{parent_agent_uuid}/child_agents/{child_agent_uuid}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_attached_agent(
+    async def genai_update_attached_agent(
         self,
         parent_agent_uuid: str,
         child_agent_uuid: str,
@@ -18550,32 +14935,19 @@ class DigitaloceanApp(APIApplication):
             "route_name": route_name,
             "uuid": uuid,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{parent_agent_uuid}/child_agents/{child_agent_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_detach_agent(
-        self, parent_agent_uuid: str, child_agent_uuid: str
-    ) -> dict[str, Any]:
+    async def genai_detach_agent(self, parent_agent_uuid: str, child_agent_uuid: str) -> dict[str, Any]:
         """
         Delete Agent Route for an Agent
 
@@ -18601,18 +14973,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_get_agent(self, uuid: str) -> dict[str, Any]:
+    async def genai_get_agent(self, uuid: str) -> dict[str, Any]:
         """
         Retrieve an Existing Agent
 
@@ -18635,18 +15003,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_agent(
+    async def genai_update_agent(
         self,
         uuid: str,
         anthropic_key_uuid: str | None = None,
@@ -18720,30 +15084,19 @@ class DigitaloceanApp(APIApplication):
             "top_p": top_p,
             "uuid": uuid_body,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_delete_agent(self, uuid: str) -> dict[str, Any]:
+    async def genai_delete_agent(self, uuid: str) -> dict[str, Any]:
         """
         Delete an Agent
 
@@ -18766,18 +15119,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_get_agent_children(self, uuid: str) -> dict[str, Any]:
+    async def genai_get_agent_children(self, uuid: str) -> dict[str, Any]:
         """
         View Agent Routes
 
@@ -18800,23 +15149,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_deployment_visibility(
-        self,
-        uuid: str,
-        uuid_body: str | None = None,
-        visibility: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_deployment_visibility(self, uuid: str, uuid_body: str | None = None, visibility: str | None = None) -> dict[str, Any]:
         """
         Update Agent Status
 
@@ -18842,36 +15182,20 @@ class DigitaloceanApp(APIApplication):
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'.")
         request_body_data = None
-        request_body_data = {
-            "uuid": uuid_body,
-            "visibility": visibility,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"uuid": uuid_body, "visibility": visibility}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{uuid}/deployment_visibility"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_agent_versions(
-        self, uuid: str, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def genai_list_agent_versions(self, uuid: str, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List Agent Versions
 
@@ -18893,27 +15217,18 @@ class DigitaloceanApp(APIApplication):
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'.")
         url = f"{self.base_url}/v2/gen-ai/agents/{uuid}/versions"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_agent_version_by_uuid(
-        self,
-        uuid: str,
-        uuid_body: str | None = None,
-        version_hash: str | None = None,
+    async def update_agent_version_by_uuid(
+        self, uuid: str, uuid_body: str | None = None, version_hash: str | None = None
     ) -> dict[str, Any]:
         """
         Rollback to Agent Version
@@ -18936,36 +15251,20 @@ class DigitaloceanApp(APIApplication):
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'.")
         request_body_data = None
-        request_body_data = {
-            "uuid": uuid_body,
-            "version_hash": version_hash,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"uuid": uuid_body, "version_hash": version_hash}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/agents/{uuid}/versions"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_anthropic_api_keys(
-        self, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def genai_list_anthropic_api_keys(self, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List Anthropic API Keys
 
@@ -18984,25 +15283,17 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/anthropic/keys"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_anthropic_api_key(
-        self, api_key: str | None = None, name: str | None = None
-    ) -> dict[str, Any]:
+    async def genai_create_anthropic_api_key(self, api_key: str | None = None, name: str | None = None) -> dict[str, Any]:
         """
         Create Anthropic API Key
 
@@ -19021,34 +15312,20 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         request_body_data = None
-        request_body_data = {
-            "api_key": api_key,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"api_key": api_key, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/anthropic/keys"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_get_anthropic_api_key(self, api_key_uuid: str) -> dict[str, Any]:
+    async def genai_get_anthropic_api_key(self, api_key_uuid: str) -> dict[str, Any]:
         """
         Get Anthropic API Key
 
@@ -19071,23 +15348,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_anthropic_api_key(
-        self,
-        api_key_uuid: str,
-        api_key: str | None = None,
-        api_key_uuid_body: str | None = None,
-        name: str | None = None,
+    async def genai_update_anthropic_api_key(
+        self, api_key_uuid: str, api_key: str | None = None, api_key_uuid_body: str | None = None, name: str | None = None
     ) -> dict[str, Any]:
         """
         Update Anthropic API Key
@@ -19111,35 +15380,20 @@ class DigitaloceanApp(APIApplication):
         if api_key_uuid is None:
             raise ValueError("Missing required parameter 'api_key_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "api_key": api_key,
-            "api_key_uuid": api_key_uuid_body,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"api_key": api_key, "api_key_uuid": api_key_uuid_body, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/anthropic/keys/{api_key_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_delete_anthropic_api_key(self, api_key_uuid: str) -> dict[str, Any]:
+    async def genai_delete_anthropic_api_key(self, api_key_uuid: str) -> dict[str, Any]:
         """
         Delete Anthropic API Key
 
@@ -19162,20 +15416,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_agents_by_key_uuid(
-        self, uuid: str, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def list_agents_by_key_uuid(self, uuid: str, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List agents by Anthropic key
 
@@ -19197,25 +15445,17 @@ class DigitaloceanApp(APIApplication):
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'.")
         url = f"{self.base_url}/v2/gen-ai/anthropic/keys/{uuid}/agents"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_indexing_jobs(
-        self, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def genai_list_indexing_jobs(self, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List Indexing Jobs for a Knowledge Base
 
@@ -19234,26 +15474,18 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/indexing_jobs"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_indexing_job(
-        self,
-        data_source_uuids: list[str] | None = None,
-        knowledge_base_uuid: str | None = None,
+    async def genai_create_indexing_job(
+        self, data_source_uuids: list[str] | None = None, knowledge_base_uuid: str | None = None
     ) -> dict[str, Any]:
         """
         Start Indexing Job for a Knowledge Base
@@ -19273,34 +15505,20 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         request_body_data = None
-        request_body_data = {
-            "data_source_uuids": data_source_uuids,
-            "knowledge_base_uuid": knowledge_base_uuid,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"data_source_uuids": data_source_uuids, "knowledge_base_uuid": knowledge_base_uuid}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/indexing_jobs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_job_data_sources(self, indexing_job_uuid: str) -> dict[str, Any]:
+    async def list_job_data_sources(self, indexing_job_uuid: str) -> dict[str, Any]:
         """
         List Data Sources for Indexing Job for a Knowledge Base
 
@@ -19319,24 +15537,18 @@ class DigitaloceanApp(APIApplication):
         """
         if indexing_job_uuid is None:
             raise ValueError("Missing required parameter 'indexing_job_uuid'.")
-        url = (
-            f"{self.base_url}/v2/gen-ai/indexing_jobs/{indexing_job_uuid}/data_sources"
-        )
+        url = f"{self.base_url}/v2/gen-ai/indexing_jobs/{indexing_job_uuid}/data_sources"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_get_indexing_job(self, uuid: str) -> dict[str, Any]:
+    async def genai_get_indexing_job(self, uuid: str) -> dict[str, Any]:
         """
         Retrieve Status of Indexing Job for a Knowledge Base
 
@@ -19359,20 +15571,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_cancel_indexing_job(
-        self, uuid: str, uuid_body: str | None = None
-    ) -> dict[str, Any]:
+    async def genai_cancel_indexing_job(self, uuid: str, uuid_body: str | None = None) -> dict[str, Any]:
         """
         Cancel Indexing Job for a Knowledge Base
 
@@ -19393,35 +15599,20 @@ class DigitaloceanApp(APIApplication):
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'.")
         request_body_data = None
-        request_body_data = {
-            "uuid": uuid_body,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"uuid": uuid_body}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/indexing_jobs/{uuid}/cancel"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_knowledge_bases(
-        self, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def genai_list_knowledge_bases(self, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List Knowledge Bases
 
@@ -19440,23 +15631,17 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/knowledge_bases"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_knowledge_base(
+    async def genai_create_knowledge_base(
         self,
         database_id: str | None = None,
         datasources: list[dict[str, Any]] | None = None,
@@ -19503,34 +15688,20 @@ class DigitaloceanApp(APIApplication):
             "tags": tags,
             "vpc_uuid": vpc_uuid,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/knowledge_bases"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_data_source_by_knowledge_base(
-        self,
-        knowledge_base_uuid: str,
-        page: int | None = None,
-        per_page: int | None = None,
+    async def list_data_source_by_knowledge_base(
+        self, knowledge_base_uuid: str, page: int | None = None, per_page: int | None = None
     ) -> dict[str, Any]:
         """
         List Data Sources for a Knowledge Base
@@ -19553,23 +15724,17 @@ class DigitaloceanApp(APIApplication):
         if knowledge_base_uuid is None:
             raise ValueError("Missing required parameter 'knowledge_base_uuid'.")
         url = f"{self.base_url}/v2/gen-ai/knowledge_bases/{knowledge_base_uuid}/data_sources"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def add_data_source(
+    async def add_data_source(
         self,
         knowledge_base_uuid: str,
         knowledge_base_uuid_body: str | None = None,
@@ -19603,32 +15768,19 @@ class DigitaloceanApp(APIApplication):
             "spaces_data_source": spaces_data_source,
             "web_crawler_data_source": web_crawler_data_source,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/knowledge_bases/{knowledge_base_uuid}/data_sources"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_data_source_by_uuid(
-        self, knowledge_base_uuid: str, data_source_uuid: str
-    ) -> dict[str, Any]:
+    async def delete_data_source_by_uuid(self, knowledge_base_uuid: str, data_source_uuid: str) -> dict[str, Any]:
         """
         Delete a Data Source from a Knowledge Base
 
@@ -19654,18 +15806,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_get_knowledge_base(self, uuid: str) -> dict[str, Any]:
+    async def genai_get_knowledge_base(self, uuid: str) -> dict[str, Any]:
         """
         Retrieve Information About an Existing Knowledge Base
 
@@ -19688,18 +15836,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_knowledge_base(
+    async def genai_update_knowledge_base(
         self,
         uuid: str,
         database_id: str | None = None,
@@ -19742,30 +15886,19 @@ class DigitaloceanApp(APIApplication):
             "tags": tags,
             "uuid": uuid_body,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/knowledge_bases/{uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_delete_knowledge_base(self, uuid: str) -> dict[str, Any]:
+    async def genai_delete_knowledge_base(self, uuid: str) -> dict[str, Any]:
         """
         Delete a Knowledge Base
 
@@ -19788,23 +15921,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_models(
-        self,
-        usecases: list[str] | None = None,
-        public_only: bool | None = None,
-        page: int | None = None,
-        per_page: int | None = None,
+    async def genai_list_models(
+        self, usecases: list[str] | None = None, public_only: bool | None = None, page: int | None = None, per_page: int | None = None
     ) -> dict[str, Any]:
         """
         List Available Models
@@ -19835,31 +15960,18 @@ class DigitaloceanApp(APIApplication):
         """
         url = f"{self.base_url}/v2/gen-ai/models"
         query_params = {
-            k: v
-            for k, v in [
-                ("usecases", usecases),
-                ("public_only", public_only),
-                ("page", page),
-                ("per_page", per_page),
-            ]
-            if v is not None
+            k: v for k, v in [("usecases", usecases), ("public_only", public_only), ("page", page), ("per_page", per_page)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_model_api_keys(
-        self, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def genai_list_model_api_keys(self, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List Model API Keys
 
@@ -19878,23 +15990,17 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/models/api_keys"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_model_api_key(self, name: str | None = None) -> dict[str, Any]:
+    async def genai_create_model_api_key(self, name: str | None = None) -> dict[str, Any]:
         """
         Create a Model API Key
 
@@ -19912,37 +16018,21 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/models/api_keys"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_model_api_key(
-        self,
-        api_key_uuid: str,
-        api_key_uuid_body: str | None = None,
-        name: str | None = None,
+    async def genai_update_model_api_key(
+        self, api_key_uuid: str, api_key_uuid_body: str | None = None, name: str | None = None
     ) -> dict[str, Any]:
         """
         Update API Key for a Model
@@ -19965,34 +16055,20 @@ class DigitaloceanApp(APIApplication):
         if api_key_uuid is None:
             raise ValueError("Missing required parameter 'api_key_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "api_key_uuid": api_key_uuid_body,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"api_key_uuid": api_key_uuid_body, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/models/api_keys/{api_key_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_delete_model_api_key(self, api_key_uuid: str) -> dict[str, Any]:
+    async def genai_delete_model_api_key(self, api_key_uuid: str) -> dict[str, Any]:
         """
         Delete API Key for a Model
 
@@ -20015,18 +16091,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_regenerate_model_api_key(self, api_key_uuid: str) -> dict[str, Any]:
+    async def genai_regenerate_model_api_key(self, api_key_uuid: str) -> dict[str, Any]:
         """
         Regenerate API Key for a Model
 
@@ -20048,27 +16120,16 @@ class DigitaloceanApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/gen-ai/models/api_keys/{api_key_uuid}/regenerate"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_openai_api_keys(
-        self, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def genai_list_openai_api_keys(self, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List OpenAI API Keys
 
@@ -20087,25 +16148,17 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/openai/keys"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_create_openai_api_key(
-        self, api_key: str | None = None, name: str | None = None
-    ) -> dict[str, Any]:
+    async def genai_create_openai_api_key(self, api_key: str | None = None, name: str | None = None) -> dict[str, Any]:
         """
         Create OpenAI API Key
 
@@ -20124,34 +16177,20 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         request_body_data = None
-        request_body_data = {
-            "api_key": api_key,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"api_key": api_key, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/openai/keys"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_get_openai_api_key(self, api_key_uuid: str) -> dict[str, Any]:
+    async def genai_get_openai_api_key(self, api_key_uuid: str) -> dict[str, Any]:
         """
         Get OpenAI API Key
 
@@ -20174,23 +16213,15 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_update_openai_api_key(
-        self,
-        api_key_uuid: str,
-        api_key: str | None = None,
-        api_key_uuid_body: str | None = None,
-        name: str | None = None,
+    async def genai_update_openai_api_key(
+        self, api_key_uuid: str, api_key: str | None = None, api_key_uuid_body: str | None = None, name: str | None = None
     ) -> dict[str, Any]:
         """
         Update OpenAI API Key
@@ -20214,35 +16245,20 @@ class DigitaloceanApp(APIApplication):
         if api_key_uuid is None:
             raise ValueError("Missing required parameter 'api_key_uuid'.")
         request_body_data = None
-        request_body_data = {
-            "api_key": api_key,
-            "api_key_uuid": api_key_uuid_body,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"api_key": api_key, "api_key_uuid": api_key_uuid_body, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/gen-ai/openai/keys/{api_key_uuid}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_delete_openai_api_key(self, api_key_uuid: str) -> dict[str, Any]:
+    async def genai_delete_openai_api_key(self, api_key_uuid: str) -> dict[str, Any]:
         """
         Delete OpenAI API Key
 
@@ -20265,20 +16281,14 @@ class DigitaloceanApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_agents_by_key_uuid(
-        self, uuid: str, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def get_agents_by_key_uuid(self, uuid: str, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
         """
         List agents by OpenAI key
 
@@ -20300,27 +16310,17 @@ class DigitaloceanApp(APIApplication):
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'.")
         url = f"{self.base_url}/v2/gen-ai/openai/keys/{uuid}/agents"
-        query_params = {
-            k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def genai_list_datacenter_regions(
-        self,
-        serves_inference: bool | None = None,
-        serves_batch: bool | None = None,
-    ) -> dict[str, Any]:
+    async def genai_list_datacenter_regions(self, serves_inference: bool | None = None, serves_batch: bool | None = None) -> dict[str, Any]:
         """
         List Datacenter Regions
 
@@ -20339,21 +16339,10 @@ class DigitaloceanApp(APIApplication):
             GenAI Platform (Public Preview)
         """
         url = f"{self.base_url}/v2/gen-ai/regions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("serves_inference", serves_inference),
-                ("serves_batch", serves_batch),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("serves_inference", serves_inference), ("serves_batch", serves_batch)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()

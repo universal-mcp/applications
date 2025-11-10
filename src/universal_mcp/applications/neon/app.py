@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class NeonApp(APIApplication):
         super().__init__(name="neon", integration=integration, **kwargs)
         self.base_url = "https://console.neon.tech/api/v2"
 
-    def list_api_keys(
-        self,
-    ) -> list[Any]:
+    async def list_api_keys(self) -> list[Any]:
         """
         Retrieves a list of API keys from the server associated with the current client.
 
@@ -33,7 +30,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_api_key(self, key_name) -> dict[str, Any]:
+    async def create_api_key(self, key_name) -> dict[str, Any]:
         """
         Creates a new API key with the specified name.
 
@@ -52,9 +49,7 @@ class NeonApp(APIApplication):
         """
         if key_name is None:
             raise ValueError("Missing required parameter 'key_name'")
-        request_body = {
-            "key_name": key_name,
-        }
+        request_body = {"key_name": key_name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api_keys"
         query_params = {}
@@ -62,7 +57,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def revoke_api_key(self, key_id) -> dict[str, Any]:
+    async def revoke_api_key(self, key_id) -> dict[str, Any]:
         """
         Revokes an API key by its identifier.
 
@@ -87,7 +82,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_operation(self, project_id, operation_id) -> dict[str, Any]:
+    async def get_project_operation(self, project_id, operation_id) -> dict[str, Any]:
         """
         Retrieves details of a specific operation for a given project from the API.
 
@@ -115,9 +110,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_projects(
-        self, cursor=None, limit=None, search=None, org_id=None, timeout=None
-    ) -> Any:
+    async def list_projects(self, cursor=None, limit=None, search=None, org_id=None, timeout=None) -> Any:
         """
         Retrieves a list of projects with optional pagination, filtering, and organizational scoping.
 
@@ -140,20 +133,14 @@ class NeonApp(APIApplication):
         url = f"{self.base_url}/projects"
         query_params = {
             k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("limit", limit),
-                ("search", search),
-                ("org_id", org_id),
-                ("timeout", timeout),
-            ]
+            for k, v in [("cursor", cursor), ("limit", limit), ("search", search), ("org_id", org_id), ("timeout", timeout)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_project(self, project) -> Any:
+    async def create_project(self, project) -> Any:
         """
         Creates a new project by sending a POST request to the projects endpoint with the given project details.
 
@@ -172,9 +159,7 @@ class NeonApp(APIApplication):
         """
         if project is None:
             raise ValueError("Missing required parameter 'project'")
-        request_body = {
-            "project": project,
-        }
+        request_body = {"project": project}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects"
         query_params = {}
@@ -182,7 +167,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_shared_projects(self, cursor=None, limit=None, search=None) -> Any:
+    async def list_shared_projects(self, cursor=None, limit=None, search=None) -> Any:
         """
         Retrieves a list of shared projects with optional pagination and search filtering.
 
@@ -201,16 +186,12 @@ class NeonApp(APIApplication):
             list, projects, shared, search, api, important
         """
         url = f"{self.base_url}/projects/shared"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("limit", limit), ("search", search)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("search", search)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_project(self, project_id) -> dict[str, Any]:
+    async def get_project(self, project_id) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific project by its project ID.
 
@@ -235,7 +216,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project(self, project_id, project) -> Any:
+    async def update_project(self, project_id, project) -> Any:
         """
         Updates an existing project with new information using a PATCH request.
 
@@ -257,9 +238,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if project is None:
             raise ValueError("Missing required parameter 'project'")
-        request_body = {
-            "project": project,
-        }
+        request_body = {"project": project}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}"
         query_params = {}
@@ -267,7 +246,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project(self, project_id) -> dict[str, Any]:
+    async def delete_project(self, project_id) -> dict[str, Any]:
         """
         Deletes a project identified by the given project_id.
 
@@ -292,7 +271,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_operations(self, project_id, cursor=None, limit=None) -> Any:
+    async def list_project_operations(self, project_id, cursor=None, limit=None) -> Any:
         """
         Retrieves a paginated list of operations for a specified project.
 
@@ -314,14 +293,12 @@ class NeonApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}/operations"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_project_permissions(self, project_id) -> dict[str, Any]:
+    async def list_project_permissions(self, project_id) -> dict[str, Any]:
         """
         Retrieves the permissions assigned to a specific project.
 
@@ -346,7 +323,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def grant_permission_to_project(self, project_id, email) -> dict[str, Any]:
+    async def grant_permission_to_project(self, project_id, email) -> dict[str, Any]:
         """
         Grants a user permission to a specified project by sending a POST request with the user's email.
 
@@ -368,9 +345,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        request_body = {
-            "email": email,
-        }
+        request_body = {"email": email}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/permissions"
         query_params = {}
@@ -378,9 +353,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def revoke_permission_from_project(
-        self, project_id, permission_id
-    ) -> dict[str, Any]:
+    async def revoke_permission_from_project(self, project_id, permission_id) -> dict[str, Any]:
         """
         Revokes a specific permission from a project by sending a DELETE request to the appropriate API endpoint.
 
@@ -408,7 +381,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_jwks(self, project_id) -> dict[str, Any]:
+    async def get_project_jwks(self, project_id) -> dict[str, Any]:
         """
         Retrieves the JSON Web Key Set (JWKS) for a specified project from the server.
 
@@ -433,14 +406,8 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_project_jwks(
-        self,
-        project_id,
-        jwks_url,
-        provider_name,
-        branch_id=None,
-        jwt_audience=None,
-        role_names=None,
+    async def add_project_jwks(
+        self, project_id, jwks_url, provider_name, branch_id=None, jwt_audience=None, role_names=None
     ) -> dict[str, Any]:
         """
         Adds a JWKS (JSON Web Key Set) provider to the specified project for authentication integration.
@@ -483,7 +450,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_jwks(self, project_id, jwks_id) -> dict[str, Any]:
+    async def delete_project_jwks(self, project_id, jwks_id) -> dict[str, Any]:
         """
         Deletes a JSON Web Key Set (JWKS) associated with a specific project.
 
@@ -511,14 +478,8 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_connection_uri(
-        self,
-        project_id,
-        database_name,
-        role_name,
-        branch_id=None,
-        endpoint_id=None,
-        pooled=None,
+    async def get_connection_uri(
+        self, project_id, database_name, role_name, branch_id=None, endpoint_id=None, pooled=None
     ) -> dict[str, Any]:
         """
         Retrieves the connection URI details for a specified database and role within a project.
@@ -563,7 +524,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_branch(self, project_id, branch_id) -> Any:
+    async def get_project_branch(self, project_id, branch_id) -> Any:
         """
         Retrieves details of a specific branch within a project by project and branch ID.
 
@@ -591,7 +552,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_branch(self, project_id, branch_id) -> dict[str, Any]:
+    async def delete_project_branch(self, project_id, branch_id) -> dict[str, Any]:
         """
         Deletes a specific branch from the given project using the API.
 
@@ -619,7 +580,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project_branch(self, project_id, branch_id, branch) -> dict[str, Any]:
+    async def update_project_branch(self, project_id, branch_id, branch) -> dict[str, Any]:
         """
         Updates a branch in the specified project.
 
@@ -644,9 +605,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         if branch is None:
             raise ValueError("Missing required parameter 'branch'")
-        request_body = {
-            "branch": branch,
-        }
+        request_body = {"branch": branch}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}"
         query_params = {}
@@ -654,14 +613,8 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def restore_project_branch(
-        self,
-        project_id,
-        branch_id,
-        source_branch_id,
-        source_lsn=None,
-        source_timestamp=None,
-        preserve_under_name=None,
+    async def restore_project_branch(
+        self, project_id, branch_id, source_branch_id, source_lsn=None, source_timestamp=None, preserve_under_name=None
     ) -> dict[str, Any]:
         """
         Restores a project branch from a given source branch, allowing optional point-in-time recovery and name preservation.
@@ -703,9 +656,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_branch_schema(
-        self, project_id, branch_id, db_name, lsn=None, timestamp=None
-    ) -> dict[str, Any]:
+    async def get_project_branch_schema(self, project_id, branch_id, db_name, lsn=None, timestamp=None) -> dict[str, Any]:
         """
         Retrieves the schema information for a specific project branch database, optionally at a given LSN or timestamp.
 
@@ -733,16 +684,12 @@ class NeonApp(APIApplication):
         if db_name is None:
             raise ValueError("Missing required parameter 'db_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/schema"
-        query_params = {
-            k: v
-            for k, v in [("db_name", db_name), ("lsn", lsn), ("timestamp", timestamp)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("db_name", db_name), ("lsn", lsn), ("timestamp", timestamp)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def set_default_project_branch(self, project_id, branch_id) -> dict[str, Any]:
+    async def set_default_project_branch(self, project_id, branch_id) -> dict[str, Any]:
         """
         Sets the specified branch as the default branch for a given project.
 
@@ -764,15 +711,13 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if branch_id is None:
             raise ValueError("Missing required parameter 'branch_id'")
-        url = (
-            f"{self.base_url}/projects/{project_id}/branches/{branch_id}/set_as_default"
-        )
+        url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/set_as_default"
         query_params = {}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_project_branch_endpoints(self, project_id, branch_id) -> dict[str, Any]:
+    async def list_project_branch_endpoints(self, project_id, branch_id) -> dict[str, Any]:
         """
         Retrieves a list of endpoint configurations for a specific branch within a project.
 
@@ -800,7 +745,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_branch_databases(self, project_id, branch_id) -> dict[str, Any]:
+    async def list_project_branch_databases(self, project_id, branch_id) -> dict[str, Any]:
         """
         Retrieves a list of databases for a specific branch within a project.
 
@@ -828,9 +773,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_project_branch_database(
-        self, project_id, branch_id, database
-    ) -> dict[str, Any]:
+    async def create_project_branch_database(self, project_id, branch_id, database) -> dict[str, Any]:
         """
         Creates a new database in the specified branch of a project and returns the resulting database object.
 
@@ -855,9 +798,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         if database is None:
             raise ValueError("Missing required parameter 'database'")
-        request_body = {
-            "database": database,
-        }
+        request_body = {"database": database}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/databases"
         query_params = {}
@@ -865,9 +806,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_branch_database(
-        self, project_id, branch_id, database_name
-    ) -> dict[str, Any]:
+    async def get_project_branch_database(self, project_id, branch_id, database_name) -> dict[str, Any]:
         """
         Retrieves details of a specific database from a given project branch.
 
@@ -898,9 +837,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project_branch_database(
-        self, project_id, branch_id, database_name, database
-    ) -> dict[str, Any]:
+    async def update_project_branch_database(self, project_id, branch_id, database_name, database) -> dict[str, Any]:
         """
         Updates the specified database configuration for a given branch in a project.
 
@@ -928,9 +865,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'database_name'")
         if database is None:
             raise ValueError("Missing required parameter 'database'")
-        request_body = {
-            "database": database,
-        }
+        request_body = {"database": database}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/databases/{database_name}"
         query_params = {}
@@ -938,9 +873,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_branch_database(
-        self, project_id, branch_id, database_name
-    ) -> dict[str, Any]:
+    async def delete_project_branch_database(self, project_id, branch_id, database_name) -> dict[str, Any]:
         """
         Deletes a specific database from a project's branch and returns the response details.
 
@@ -971,7 +904,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_branch_roles(self, project_id, branch_id) -> dict[str, Any]:
+    async def list_project_branch_roles(self, project_id, branch_id) -> dict[str, Any]:
         """
         Retrieve the list of roles associated with a specific branch in a given project.
 
@@ -999,7 +932,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_project_branch_role(self, project_id, branch_id, role) -> dict[str, Any]:
+    async def create_project_branch_role(self, project_id, branch_id, role) -> dict[str, Any]:
         """
         Creates a new role for a specific branch within a project and returns the created role information.
 
@@ -1024,9 +957,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         if role is None:
             raise ValueError("Missing required parameter 'role'")
-        request_body = {
-            "role": role,
-        }
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles"
         query_params = {}
@@ -1034,9 +965,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_branch_role(
-        self, project_id, branch_id, role_name
-    ) -> dict[str, Any]:
+    async def get_project_branch_role(self, project_id, branch_id, role_name) -> dict[str, Any]:
         """
         Retrieves a specific role from a project branch.
 
@@ -1067,9 +996,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_branch_role(
-        self, project_id, branch_id, role_name
-    ) -> dict[str, Any]:
+    async def delete_project_branch_role(self, project_id, branch_id, role_name) -> dict[str, Any]:
         """
         Deletes a specific role from a branch within a project.
 
@@ -1100,9 +1027,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_branch_role_password(
-        self, project_id, branch_id, role_name
-    ) -> dict[str, Any]:
+    async def get_project_branch_role_password(self, project_id, branch_id, role_name) -> dict[str, Any]:
         """
         Retrieves the revealed password for a specified role within a project branch.
 
@@ -1133,9 +1058,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def reset_project_branch_role_password(
-        self, project_id, branch_id, role_name
-    ) -> dict[str, Any]:
+    async def reset_project_branch_role_password(self, project_id, branch_id, role_name) -> dict[str, Any]:
         """
         Resets the password for a specific role in a project branch.
 
@@ -1166,7 +1089,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_vpcendpoints(self, project_id) -> dict[str, Any]:
+    async def list_project_vpcendpoints(self, project_id) -> dict[str, Any]:
         """
         Retrieves a list of VPC endpoints associated with a specific project.
 
@@ -1191,7 +1114,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def assign_project_vpcendpoint(self, project_id, vpc_endpoint_id, label) -> Any:
+    async def assign_project_vpcendpoint(self, project_id, vpc_endpoint_id, label) -> Any:
         """
         Assigns a VPC endpoint to a project with a specified label and returns the server response.
 
@@ -1216,9 +1139,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'vpc_endpoint_id'")
         if label is None:
             raise ValueError("Missing required parameter 'label'")
-        request_body = {
-            "label": label,
-        }
+        request_body = {"label": label}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
@@ -1226,7 +1147,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_vpcendpoint(self, project_id, vpc_endpoint_id) -> Any:
+    async def delete_project_vpcendpoint(self, project_id, vpc_endpoint_id) -> Any:
         """
         Deletes a VPC endpoint associated with a given project.
 
@@ -1254,7 +1175,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_project_endpoint(self, project_id, endpoint) -> dict[str, Any]:
+    async def create_project_endpoint(self, project_id, endpoint) -> dict[str, Any]:
         """
         Creates a new endpoint for the specified project by sending a POST request to the project endpoint API.
 
@@ -1276,9 +1197,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if endpoint is None:
             raise ValueError("Missing required parameter 'endpoint'")
-        request_body = {
-            "endpoint": endpoint,
-        }
+        request_body = {"endpoint": endpoint}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/endpoints"
         query_params = {}
@@ -1286,7 +1205,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_endpoints(self, project_id) -> dict[str, Any]:
+    async def list_project_endpoints(self, project_id) -> dict[str, Any]:
         """
         Retrieves a list of API endpoints associated with a specified project.
 
@@ -1311,7 +1230,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
+    async def get_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
         """
         Retrieves the details of a specific endpoint within a project.
 
@@ -1339,7 +1258,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
+    async def delete_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
         """
         Deletes a specific endpoint from a given project.
 
@@ -1367,9 +1286,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project_endpoint(
-        self, project_id, endpoint_id, endpoint
-    ) -> dict[str, Any]:
+    async def update_project_endpoint(self, project_id, endpoint_id, endpoint) -> dict[str, Any]:
         """
         Updates the configuration of a specific endpoint within a project.
 
@@ -1394,9 +1311,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         if endpoint is None:
             raise ValueError("Missing required parameter 'endpoint'")
-        request_body = {
-            "endpoint": endpoint,
-        }
+        request_body = {"endpoint": endpoint}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/endpoints/{endpoint_id}"
         query_params = {}
@@ -1404,7 +1319,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def start_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
+    async def start_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
         """
         Starts the specified endpoint for a given project by making a POST request to the API.
 
@@ -1432,7 +1347,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def suspend_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
+    async def suspend_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
         """
         Suspends a specific endpoint within a project by issuing a POST request to the suspend endpoint API.
 
@@ -1460,7 +1375,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def restart_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
+    async def restart_project_endpoint(self, project_id, endpoint_id) -> dict[str, Any]:
         """
         Restarts a specific project endpoint by sending a POST request to the server.
 
@@ -1488,7 +1403,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization(self, org_id) -> dict[str, Any]:
+    async def get_organization(self, org_id) -> dict[str, Any]:
         """
         Retrieves the details of a specific organization using its unique organization ID.
 
@@ -1513,7 +1428,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def revoke_org_api_key(self, org_id, key_id) -> dict[str, Any]:
+    async def revoke_org_api_key(self, org_id, key_id) -> dict[str, Any]:
         """
         Revokes an API key for a specific organization by sending a DELETE request.
 
@@ -1541,7 +1456,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_members(self, org_id) -> dict[str, Any]:
+    async def get_organization_members(self, org_id) -> dict[str, Any]:
         """
         Retrieves the list of members belonging to a specified organization by organization ID.
 
@@ -1566,7 +1481,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_member(self, org_id, member_id) -> dict[str, Any]:
+    async def get_organization_member(self, org_id, member_id) -> dict[str, Any]:
         """
         Retrieves information about a specific member within an organization by their identifiers.
 
@@ -1594,7 +1509,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_organization_member(self, org_id, member_id, role) -> dict[str, Any]:
+    async def update_organization_member(self, org_id, member_id, role) -> dict[str, Any]:
         """
         Updates the role of a specific member within an organization.
 
@@ -1619,9 +1534,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         if role is None:
             raise ValueError("Missing required parameter 'role'")
-        request_body = {
-            "role": role,
-        }
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organizations/{org_id}/members/{member_id}"
         query_params = {}
@@ -1629,7 +1542,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_organization_member(self, org_id, member_id) -> dict[str, Any]:
+    async def remove_organization_member(self, org_id, member_id) -> dict[str, Any]:
         """
         Removes a specified member from an organization.
 
@@ -1657,7 +1570,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_invitations(self, org_id) -> dict[str, Any]:
+    async def get_organization_invitations(self, org_id) -> dict[str, Any]:
         """
         Retrieves the list of invitations for a specified organization.
 
@@ -1682,7 +1595,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_organization_invitations(self, org_id, invitations) -> dict[str, Any]:
+    async def create_organization_invitations(self, org_id, invitations) -> dict[str, Any]:
         """
         Creates new invitations for users to join an organization by sending a POST request to the organization's invitations endpoint.
 
@@ -1704,9 +1617,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if invitations is None:
             raise ValueError("Missing required parameter 'invitations'")
-        request_body = {
-            "invitations": invitations,
-        }
+        request_body = {"invitations": invitations}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organizations/{org_id}/invitations"
         query_params = {}
@@ -1714,7 +1625,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_organization_vpcendpoints(self, org_id, region_id) -> dict[str, Any]:
+    async def list_organization_vpcendpoints(self, org_id, region_id) -> dict[str, Any]:
         """
         Retrieves a list of VPC endpoints for a specified organization and region.
 
@@ -1742,9 +1653,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_vpcendpoint_details(
-        self, org_id, region_id, vpc_endpoint_id
-    ) -> dict[str, Any]:
+    async def get_organization_vpcendpoint_details(self, org_id, region_id, vpc_endpoint_id) -> dict[str, Any]:
         """
         Retrieves details about a specific VPC endpoint for an organization in a given region.
 
@@ -1775,9 +1684,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def assign_organization_vpcendpoint(
-        self, org_id, region_id, vpc_endpoint_id, label
-    ) -> Any:
+    async def assign_organization_vpcendpoint(self, org_id, region_id, vpc_endpoint_id, label) -> Any:
         """
         Assigns a label to a specified organization VPC endpoint in a given region.
 
@@ -1805,9 +1712,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'vpc_endpoint_id'")
         if label is None:
             raise ValueError("Missing required parameter 'label'")
-        request_body = {
-            "label": label,
-        }
+        request_body = {"label": label}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organizations/{org_id}/vpc/region/{region_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
@@ -1815,9 +1720,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_organization_vpcendpoint(
-        self, org_id, region_id, vpc_endpoint_id
-    ) -> Any:
+    async def delete_organization_vpcendpoint(self, org_id, region_id, vpc_endpoint_id) -> Any:
         """
         Deletes a specific VPC endpoint associated with an organization and region.
 
@@ -1848,9 +1751,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_active_regions(
-        self,
-    ) -> dict[str, Any]:
+    async def get_active_regions(self) -> dict[str, Any]:
         """
         Retrieves a list of active regions available in the system.
 
@@ -1869,9 +1770,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_current_user_info(
-        self,
-    ) -> dict[str, Any]:
+    async def get_current_user_info(self) -> dict[str, Any]:
         """
         Retrieves information about the currently authenticated user from the API.
 
@@ -1893,9 +1792,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_current_user_organizations(
-        self,
-    ) -> dict[str, Any]:
+    async def get_current_user_organizations(self) -> dict[str, Any]:
         """
         Retrieves a list of organizations associated with the current authenticated user.
 
@@ -1917,7 +1814,7 @@ class NeonApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def transfer_projects_from_user_to_org(self, org_id, project_ids) -> dict[str, Any]:
+    async def transfer_projects_from_user_to_org(self, org_id, project_ids) -> dict[str, Any]:
         """
         Transfers ownership of specified projects from the authenticated user to a target organization.
 
@@ -1939,10 +1836,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if project_ids is None:
             raise ValueError("Missing required parameter 'project_ids'")
-        request_body = {
-            "org_id": org_id,
-            "project_ids": project_ids,
-        }
+        request_body = {"org_id": org_id, "project_ids": project_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/users/me/projects/transfer"
         query_params = {}

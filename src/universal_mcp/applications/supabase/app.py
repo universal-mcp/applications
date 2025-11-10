@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class SupabaseApp(APIApplication):
         super().__init__(name="supabase", integration=integration, **kwargs)
         self.base_url = "https://api.supabase.com"
 
-    def v1_get_a_branch_config(self, branch_id) -> dict[str, Any]:
+    async def v1_get_a_branch_config(self, branch_id) -> dict[str, Any]:
         """
         Retrieves the configuration details for a specific branch by branch ID.
 
@@ -34,14 +33,8 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_a_branch_config(
-        self,
-        branch_id,
-        branch_name=None,
-        git_branch=None,
-        reset_on_push=None,
-        persistent=None,
-        status=None,
+    async def v1_update_a_branch_config(
+        self, branch_id, branch_name=None, git_branch=None, reset_on_push=None, persistent=None, status=None
     ) -> dict[str, Any]:
         """
         Updates the configuration of a specified branch by sending a PATCH request with provided configuration fields.
@@ -80,7 +73,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_delete_a_branch(self, branch_id) -> dict[str, Any]:
+    async def v1_delete_a_branch(self, branch_id) -> dict[str, Any]:
         """
         Deletes a branch with the specified branch ID using a DELETE request to the API.
 
@@ -105,7 +98,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_reset_a_branch(self, branch_id) -> dict[str, Any]:
+    async def v1_reset_a_branch(self, branch_id) -> dict[str, Any]:
         """
         Resets the specified branch by making a POST request to the branch reset endpoint.
 
@@ -130,9 +123,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_projects(
-        self,
-    ) -> list[Any]:
+    async def v1_list_all_projects(self) -> list[Any]:
         """
         Retrieves a list of all projects from the v1 API endpoint.
 
@@ -154,7 +145,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_create_a_project(
+    async def v1_create_a_project(
         self,
         db_pass,
         name,
@@ -219,9 +210,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_organizations(
-        self,
-    ) -> list[Any]:
+    async def v1_list_all_organizations(self) -> list[Any]:
         """
         Retrieves a list of all organizations from the API endpoint.
 
@@ -243,7 +232,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_create_an_organization(self, name) -> dict[str, Any]:
+    async def v1_create_an_organization(self, name) -> dict[str, Any]:
         """
         Creates a new organization using the provided name and returns the organization details.
 
@@ -262,9 +251,7 @@ class SupabaseApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/organizations"
         query_params = {}
@@ -272,7 +259,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_authorize_user(
+    async def v1_authorize_user(
         self,
         client_id,
         response_type,
@@ -331,7 +318,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_snippets(self, project_ref=None) -> dict[str, Any]:
+    async def v1_list_all_snippets(self, project_ref=None) -> dict[str, Any]:
         """
         Retrieves all code snippets for the specified project, or for all projects if no project reference is provided.
 
@@ -348,14 +335,12 @@ class SupabaseApp(APIApplication):
             list, snippets, management, api, important
         """
         url = f"{self.base_url}/v1/snippets"
-        query_params = {
-            k: v for k, v in [("project_ref", project_ref)] if v is not None
-        }
+        query_params = {k: v for k, v in [("project_ref", project_ref)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def v1_get_a_snippet(self, id) -> dict[str, Any]:
+    async def v1_get_a_snippet(self, id) -> dict[str, Any]:
         """
         Retrieves a snippet resource by its unique identifier using a GET request to the v1 endpoint.
 
@@ -380,7 +365,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_project_api_keys(self, ref) -> list[Any]:
+    async def v1_get_project_api_keys(self, ref) -> list[Any]:
         """
         Retrieves the list of API keys associated with a specified project reference.
 
@@ -405,9 +390,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_api_key(
-        self, ref, type, description=None, secret_jwt_template=None
-    ) -> dict[str, Any]:
+    async def create_api_key(self, ref, type, description=None, secret_jwt_template=None) -> dict[str, Any]:
         """
         Creates a new API key for the specified project with optional description and secret JWT template.
 
@@ -431,11 +414,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if type is None:
             raise ValueError("Missing required parameter 'type'")
-        request_body = {
-            "type": type,
-            "description": description,
-            "secret_jwt_template": secret_jwt_template,
-        }
+        request_body = {"type": type, "description": description, "secret_jwt_template": secret_jwt_template}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/api-keys"
         query_params = {}
@@ -443,9 +422,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_api_key(
-        self, ref, id, description=None, secret_jwt_template=None
-    ) -> dict[str, Any]:
+    async def update_api_key(self, ref, id, description=None, secret_jwt_template=None) -> dict[str, Any]:
         """
         Updates an existing API key identified by its project reference and key ID, allowing optional update of description and secret JWT template.
 
@@ -469,10 +446,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "description": description,
-            "secret_jwt_template": secret_jwt_template,
-        }
+        request_body = {"description": description, "secret_jwt_template": secret_jwt_template}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/api-keys/{id}"
         query_params = {}
@@ -480,7 +454,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_api_key(self, ref, id) -> dict[str, Any]:
+    async def delete_api_key(self, ref, id) -> dict[str, Any]:
         """
         Deletes an API key associated with a project using the provided reference and key ID.
 
@@ -508,7 +482,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_branches(self, ref) -> list[Any]:
+    async def v1_list_all_branches(self, ref) -> list[Any]:
         """
         Retrieves a list of all branches for the specified project reference using the v1 API.
 
@@ -533,7 +507,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_create_a_branch(
+    async def v1_create_a_branch(
         self,
         ref,
         branch_name,
@@ -587,7 +561,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_disable_preview_branching(self, ref) -> Any:
+    async def v1_disable_preview_branching(self, ref) -> Any:
         """
         Disables preview branching for a specified project reference by sending a DELETE request to the corresponding API endpoint.
 
@@ -612,7 +586,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_hostname_config(self, ref) -> dict[str, Any]:
+    async def v1_get_hostname_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the configuration for a custom hostname associated with a given project reference.
 
@@ -637,7 +611,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_verify_dns_config(self, ref) -> dict[str, Any]:
+    async def v1_verify_dns_config(self, ref) -> dict[str, Any]:
         """
         Triggers DNS configuration verification for a specified project reference via a POST request.
 
@@ -662,7 +636,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_activate_custom_hostname(self, ref) -> dict[str, Any]:
+    async def v1_activate_custom_hostname(self, ref) -> dict[str, Any]:
         """
         Activates a custom hostname for the specified project reference using the v1 API endpoint.
 
@@ -687,7 +661,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_network_bans(self, ref) -> dict[str, Any]:
+    async def v1_list_all_network_bans(self, ref) -> dict[str, Any]:
         """
         Retrieves all network bans associated with the specified project reference.
 
@@ -712,7 +686,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_delete_network_bans(self, ref, ipv4_addresses) -> Any:
+    async def v1_delete_network_bans(self, ref, ipv4_addresses) -> Any:
         """
         Deletes specified IPv4 addresses from the network ban list for a given project reference.
 
@@ -734,9 +708,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if ipv4_addresses is None:
             raise ValueError("Missing required parameter 'ipv4_addresses'")
-        request_body = {
-            "ipv4_addresses": ipv4_addresses,
-        }
+        request_body = {"ipv4_addresses": ipv4_addresses}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/network-bans"
         query_params = {}
@@ -744,7 +716,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_network_restrictions(self, ref) -> dict[str, Any]:
+    async def v1_get_network_restrictions(self, ref) -> dict[str, Any]:
         """
         Retrieves network restriction settings for a given project reference.
 
@@ -769,9 +741,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_network_restrictions(
-        self, ref, dbAllowedCidrs=None, dbAllowedCidrsV6=None
-    ) -> dict[str, Any]:
+    async def v1_update_network_restrictions(self, ref, dbAllowedCidrs=None, dbAllowedCidrsV6=None) -> dict[str, Any]:
         """
         Updates network access restrictions for the specified project by applying the given allowed IPv4 and IPv6 CIDR ranges.
 
@@ -792,10 +762,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {
-            "dbAllowedCidrs": dbAllowedCidrs,
-            "dbAllowedCidrsV6": dbAllowedCidrsV6,
-        }
+        request_body = {"dbAllowedCidrs": dbAllowedCidrs, "dbAllowedCidrsV6": dbAllowedCidrsV6}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/network-restrictions/apply"
         query_params = {}
@@ -803,7 +770,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_pgsodium_config(self, ref) -> dict[str, Any]:
+    async def v1_get_pgsodium_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the pgSodium configuration for a specified project reference from the v1 API endpoint.
 
@@ -828,7 +795,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_pgsodium_config(self, ref, root_key) -> dict[str, Any]:
+    async def v1_update_pgsodium_config(self, ref, root_key) -> dict[str, Any]:
         """
         Updates the pgsodium configuration for a specified project reference using the provided root key.
 
@@ -850,9 +817,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if root_key is None:
             raise ValueError("Missing required parameter 'root_key'")
-        request_body = {
-            "root_key": root_key,
-        }
+        request_body = {"root_key": root_key}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/pgsodium"
         query_params = {}
@@ -860,7 +825,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_postgrest_service_config(self, ref) -> dict[str, Any]:
+    async def v1_get_postgrest_service_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the configuration details for the PostgREST service associated with the specified project reference.
 
@@ -885,13 +850,8 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_postgrest_service_config(
-        self,
-        ref,
-        max_rows=None,
-        db_pool=None,
-        db_extra_search_path=None,
-        db_schema=None,
+    async def v1_update_postgrest_service_config(
+        self, ref, max_rows=None, db_pool=None, db_extra_search_path=None, db_schema=None
     ) -> dict[str, Any]:
         """
         Updates the configuration settings for a PostgREST service for a specified project.
@@ -915,12 +875,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {
-            "max_rows": max_rows,
-            "db_pool": db_pool,
-            "db_extra_search_path": db_extra_search_path,
-            "db_schema": db_schema,
-        }
+        request_body = {"max_rows": max_rows, "db_pool": db_pool, "db_extra_search_path": db_extra_search_path, "db_schema": db_schema}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/postgrest"
         query_params = {}
@@ -928,7 +883,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_delete_a_project(self, ref) -> dict[str, Any]:
+    async def v1_delete_a_project(self, ref) -> dict[str, Any]:
         """
         Deletes a project identified by its reference and returns the API response as a dictionary.
 
@@ -953,7 +908,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_secrets(self, ref) -> list[Any]:
+    async def v1_list_all_secrets(self, ref) -> list[Any]:
         """
         Lists all secrets for the specified project reference via the v1 API.
 
@@ -978,7 +933,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_bulk_create_secrets(self, ref, items) -> Any:
+    async def v1_bulk_create_secrets(self, ref, items) -> Any:
         """
         Creates multiple secrets for a specified project reference in a single batch request.
 
@@ -1007,7 +962,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_bulk_delete_secrets(self, ref, items) -> dict[str, Any]:
+    async def v1_bulk_delete_secrets(self, ref, items) -> dict[str, Any]:
         """
         Deletes multiple secrets from a given project by making a bulk delete request.
 
@@ -1035,7 +990,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_ssl_enforcement_config(self, ref) -> dict[str, Any]:
+    async def v1_get_ssl_enforcement_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the SSL enforcement configuration for the specified project.
 
@@ -1060,7 +1015,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_ssl_enforcement_config(self, ref, requestedConfig) -> dict[str, Any]:
+    async def v1_update_ssl_enforcement_config(self, ref, requestedConfig) -> dict[str, Any]:
         """
         Updates the SSL enforcement configuration for the specified project reference.
 
@@ -1082,9 +1037,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if requestedConfig is None:
             raise ValueError("Missing required parameter 'requestedConfig'")
-        request_body = {
-            "requestedConfig": requestedConfig,
-        }
+        request_body = {"requestedConfig": requestedConfig}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/ssl-enforcement"
         query_params = {}
@@ -1092,9 +1045,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_generate_typescript_types(
-        self, ref, included_schemas=None
-    ) -> dict[str, Any]:
+    async def v1_generate_typescript_types(self, ref, included_schemas=None) -> dict[str, Any]:
         """
         Generates TypeScript type definitions for a specified project reference, optionally including specific schemas.
 
@@ -1115,14 +1066,12 @@ class SupabaseApp(APIApplication):
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/types/typescript"
-        query_params = {
-            k: v for k, v in [("included_schemas", included_schemas)] if v is not None
-        }
+        query_params = {k: v for k, v in [("included_schemas", included_schemas)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def v1_get_vanity_subdomain_config(self, ref) -> dict[str, Any]:
+    async def v1_get_vanity_subdomain_config(self, ref) -> dict[str, Any]:
         """
         Retrieve the vanity subdomain configuration for a given project reference.
 
@@ -1147,7 +1096,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_deactivate_vanity_subdomain_config(self, ref) -> Any:
+    async def v1_deactivate_vanity_subdomain_config(self, ref) -> Any:
         """
         Deactivates the vanity subdomain configuration for a specified project reference.
 
@@ -1172,9 +1121,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_check_vanity_subdomain_availability(
-        self, ref, vanity_subdomain
-    ) -> dict[str, Any]:
+    async def v1_check_vanity_subdomain_availability(self, ref, vanity_subdomain) -> dict[str, Any]:
         """
         Checks the availability of a specified vanity subdomain for a given project reference.
 
@@ -1196,9 +1143,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if vanity_subdomain is None:
             raise ValueError("Missing required parameter 'vanity_subdomain'")
-        request_body = {
-            "vanity_subdomain": vanity_subdomain,
-        }
+        request_body = {"vanity_subdomain": vanity_subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain/check-availability"
         query_params = {}
@@ -1206,9 +1151,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_activate_vanity_subdomain_config(
-        self, ref, vanity_subdomain
-    ) -> dict[str, Any]:
+    async def v1_activate_vanity_subdomain_config(self, ref, vanity_subdomain) -> dict[str, Any]:
         """
         Activates the vanity subdomain configuration for a specified project reference.
 
@@ -1230,9 +1173,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if vanity_subdomain is None:
             raise ValueError("Missing required parameter 'vanity_subdomain'")
-        request_body = {
-            "vanity_subdomain": vanity_subdomain,
-        }
+        request_body = {"vanity_subdomain": vanity_subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain/activate"
         query_params = {}
@@ -1240,9 +1181,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_upgrade_postgres_version(
-        self, ref, release_channel, target_version
-    ) -> dict[str, Any]:
+    async def v1_upgrade_postgres_version(self, ref, release_channel, target_version) -> dict[str, Any]:
         """
         Initiates an upgrade of a PostgreSQL instance to a specified target version via API call.
 
@@ -1267,10 +1206,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'release_channel'")
         if target_version is None:
             raise ValueError("Missing required parameter 'target_version'")
-        request_body = {
-            "release_channel": release_channel,
-            "target_version": target_version,
-        }
+        request_body = {"release_channel": release_channel, "target_version": target_version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/upgrade"
         query_params = {}
@@ -1278,7 +1214,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_postgrest_upgrade_eligibility(self, ref) -> dict[str, Any]:
+    async def v1_get_postgrest_upgrade_eligibility(self, ref) -> dict[str, Any]:
         """
         Checks the eligibility of a PostgREST upgrade for a specified project reference.
 
@@ -1303,7 +1239,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_postgrest_upgrade_status(self, ref) -> dict[str, Any]:
+    async def v1_get_postgrest_upgrade_status(self, ref) -> dict[str, Any]:
         """
         Retrieves the current upgrade status for a specified PostgREST project.
 
@@ -1328,7 +1264,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_readonly_mode_status(self, ref) -> dict[str, Any]:
+    async def v1_get_readonly_mode_status(self, ref) -> dict[str, Any]:
         """
         Retrieves the read-only mode status for a specified project reference.
 
@@ -1353,7 +1289,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_disable_readonly_mode_temporarily(self, ref) -> Any:
+    async def v1_disable_readonly_mode_temporarily(self, ref) -> Any:
         """
         Temporarily disables readonly mode for a specified project reference via a POST request.
 
@@ -1378,7 +1314,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_setup_a_read_replica(self, ref, read_replica_region) -> Any:
+    async def v1_setup_a_read_replica(self, ref, read_replica_region) -> Any:
         """
         Initiates the setup of a read replica for a specified project in the given region.
 
@@ -1400,9 +1336,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if read_replica_region is None:
             raise ValueError("Missing required parameter 'read_replica_region'")
-        request_body = {
-            "read_replica_region": read_replica_region,
-        }
+        request_body = {"read_replica_region": read_replica_region}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/read-replicas/setup"
         query_params = {}
@@ -1410,7 +1344,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_remove_a_read_replica(self, ref, database_identifier) -> Any:
+    async def v1_remove_a_read_replica(self, ref, database_identifier) -> Any:
         """
         Removes a read replica from a specified database within a project.
 
@@ -1432,9 +1366,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if database_identifier is None:
             raise ValueError("Missing required parameter 'database_identifier'")
-        request_body = {
-            "database_identifier": database_identifier,
-        }
+        request_body = {"database_identifier": database_identifier}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/read-replicas/remove"
         query_params = {}
@@ -1442,7 +1374,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_services_health(self, ref, services, timeout_ms=None) -> list[Any]:
+    async def v1_get_services_health(self, ref, services, timeout_ms=None) -> list[Any]:
         """
         Checks the health status of specified services for a given project reference.
 
@@ -1466,16 +1398,12 @@ class SupabaseApp(APIApplication):
         if services is None:
             raise ValueError("Missing required parameter 'services'")
         url = f"{self.base_url}/v1/projects/{ref}/health"
-        query_params = {
-            k: v
-            for k, v in [("timeout_ms", timeout_ms), ("services", services)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("timeout_ms", timeout_ms), ("services", services)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def v1_get_postgres_config(self, ref) -> dict[str, Any]:
+    async def v1_get_postgres_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the PostgreSQL configuration for the specified project reference.
 
@@ -1500,7 +1428,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_postgres_config(
+    async def v1_update_postgres_config(
         self,
         ref,
         statement_timeout=None,
@@ -1582,7 +1510,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_project_pgbouncer_config(self, ref) -> dict[str, Any]:
+    async def v1_get_project_pgbouncer_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the PgBouncer configuration for a specific project by project reference.
 
@@ -1607,7 +1535,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_supavisor_config(self, ref) -> list[Any]:
+    async def v1_get_supavisor_config(self, ref) -> list[Any]:
         """
         Retrieves the Supavisor configuration for a specified project reference from the configured API.
 
@@ -1632,9 +1560,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_supavisor_config(
-        self, ref, default_pool_size=None, pool_mode=None
-    ) -> dict[str, Any]:
+    async def v1_update_supavisor_config(self, ref, default_pool_size=None, pool_mode=None) -> dict[str, Any]:
         """
         Updates the Supavisor configuration for a specified project by modifying database pooler settings.
 
@@ -1655,10 +1581,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {
-            "default_pool_size": default_pool_size,
-            "pool_mode": pool_mode,
-        }
+        request_body = {"default_pool_size": default_pool_size, "pool_mode": pool_mode}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/config/database/pooler"
         query_params = {}
@@ -1666,7 +1589,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_auth_service_config(self, ref) -> dict[str, Any]:
+    async def v1_get_auth_service_config(self, ref) -> dict[str, Any]:
         """
         Retrieves the authentication service configuration for the specified project reference from the API.
 
@@ -1691,7 +1614,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_auth_service_config(
+    async def v1_update_auth_service_config(
         self,
         ref,
         site_url=None,
@@ -2229,9 +2152,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_tpafor_project(
-        self, ref, oidc_issuer_url=None, jwks_url=None, custom_jwks=None
-    ) -> dict[str, Any]:
+    async def create_tpafor_project(self, ref, oidc_issuer_url=None, jwks_url=None, custom_jwks=None) -> dict[str, Any]:
         """
         Creates a third-party authentication (TPA) configuration for a specific project using provided OIDC or JWKS details.
 
@@ -2253,11 +2174,7 @@ class SupabaseApp(APIApplication):
         """
         if ref is None:
             raise ValueError("Missing required parameter 'ref'")
-        request_body = {
-            "oidc_issuer_url": oidc_issuer_url,
-            "jwks_url": jwks_url,
-            "custom_jwks": custom_jwks,
-        }
+        request_body = {"oidc_issuer_url": oidc_issuer_url, "jwks_url": jwks_url, "custom_jwks": custom_jwks}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth"
         query_params = {}
@@ -2265,7 +2182,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_tpafor_project(self, ref) -> list[Any]:
+    async def list_tpafor_project(self, ref) -> list[Any]:
         """
         Retrieves the list of third-party authentication configurations for a specified project.
 
@@ -2290,7 +2207,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_tpafor_project(self, ref, tpa_id) -> dict[str, Any]:
+    async def delete_tpafor_project(self, ref, tpa_id) -> dict[str, Any]:
         """
         Deletes a third-party authentication provider configuration for a given project.
 
@@ -2318,7 +2235,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tpafor_project(self, ref, tpa_id) -> dict[str, Any]:
+    async def get_tpafor_project(self, ref, tpa_id) -> dict[str, Any]:
         """
         Retrieve the third-party authentication configuration for a specific project and TPA identifier.
 
@@ -2346,7 +2263,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_run_a_query(self, ref, query) -> dict[str, Any]:
+    async def v1_run_a_query(self, ref, query) -> dict[str, Any]:
         """
         Executes a database query for a specified project reference using the provided query string.
 
@@ -2368,9 +2285,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        request_body = {
-            "query": query,
-        }
+        request_body = {"query": query}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/database/query"
         query_params = {}
@@ -2378,7 +2293,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_enable_database_webhook(self, ref) -> Any:
+    async def v1_enable_database_webhook(self, ref) -> Any:
         """
         Enables the database webhook for the specified project reference.
 
@@ -2403,7 +2318,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_functions(self, ref) -> list[Any]:
+    async def v1_list_all_functions(self, ref) -> list[Any]:
         """
         Lists all available functions for the specified project reference.
 
@@ -2428,7 +2343,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_a_function(self, ref, function_slug) -> dict[str, Any]:
+    async def v1_get_a_function(self, ref, function_slug) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific function from a project using the function's reference and slug.
 
@@ -2456,7 +2371,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_update_a_function(
+    async def v1_update_a_function(
         self,
         ref,
         function_slug,
@@ -2496,11 +2411,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if function_slug is None:
             raise ValueError("Missing required parameter 'function_slug'")
-        request_body = {
-            "name": name,
-            "body": body,
-            "verify_jwt": verify_jwt,
-        }
+        request_body = {"name": name, "body": body, "verify_jwt": verify_jwt}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}"
         query_params = {
@@ -2519,7 +2430,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_delete_a_function(self, ref, function_slug) -> Any:
+    async def v1_delete_a_function(self, ref, function_slug) -> Any:
         """
         Deletes a specified function from a project using its reference and function slug.
 
@@ -2547,7 +2458,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_a_function_body(self, ref, function_slug) -> Any:
+    async def v1_get_a_function_body(self, ref, function_slug) -> Any:
         """
         Retrieves the body of a specified function from a project via a REST API call.
 
@@ -2575,7 +2486,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_buckets(self, ref) -> list[Any]:
+    async def v1_list_all_buckets(self, ref) -> list[Any]:
         """
         Retrieves a list of all storage buckets for the specified project reference.
 
@@ -2600,14 +2511,8 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_create_a_sso_provider(
-        self,
-        ref,
-        type,
-        metadata_xml=None,
-        metadata_url=None,
-        domains=None,
-        attribute_mapping=None,
+    async def v1_create_a_sso_provider(
+        self, ref, type, metadata_xml=None, metadata_url=None, domains=None, attribute_mapping=None
     ) -> dict[str, Any]:
         """
         Creates a new Single Sign-On (SSO) provider configuration for the specified project.
@@ -2648,7 +2553,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_sso_provider(self, ref) -> dict[str, Any]:
+    async def v1_list_all_sso_provider(self, ref) -> dict[str, Any]:
         """
         Retrieves a list of all SSO providers configured for the specified project.
 
@@ -2673,7 +2578,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_a_sso_provider(self, ref, provider_id) -> dict[str, Any]:
+    async def v1_get_a_sso_provider(self, ref, provider_id) -> dict[str, Any]:
         """
         Retrieves details of a specific SSO provider configuration for the given project reference and provider ID.
 
@@ -2695,22 +2600,14 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if provider_id is None:
             raise ValueError("Missing required parameter 'provider_id'")
-        url = (
-            f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
-        )
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def v1_update_a_sso_provider(
-        self,
-        ref,
-        provider_id,
-        metadata_xml=None,
-        metadata_url=None,
-        domains=None,
-        attribute_mapping=None,
+    async def v1_update_a_sso_provider(
+        self, ref, provider_id, metadata_xml=None, metadata_url=None, domains=None, attribute_mapping=None
     ) -> dict[str, Any]:
         """
         Updates the configuration of an existing SSO provider using the provided metadata and attributes.
@@ -2744,15 +2641,13 @@ class SupabaseApp(APIApplication):
             "attribute_mapping": attribute_mapping,
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = (
-            f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
-        )
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def v1_delete_a_sso_provider(self, ref, provider_id) -> dict[str, Any]:
+    async def v1_delete_a_sso_provider(self, ref, provider_id) -> dict[str, Any]:
         """
         Deletes a specified SSO provider from the given project configuration.
 
@@ -2774,15 +2669,13 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if provider_id is None:
             raise ValueError("Missing required parameter 'provider_id'")
-        url = (
-            f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
-        )
+        url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def v1_list_all_backups(self, ref) -> dict[str, Any]:
+    async def v1_list_all_backups(self, ref) -> dict[str, Any]:
         """
         Retrieves a list of all database backups for the specified project reference.
 
@@ -2807,7 +2700,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_restore_pitr_backup(self, ref, recovery_time_target_unix) -> Any:
+    async def v1_restore_pitr_backup(self, ref, recovery_time_target_unix) -> Any:
         """
         Initiates a point-in-time restore operation for a database backup using the specified reference and recovery time target.
 
@@ -2829,9 +2722,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         if recovery_time_target_unix is None:
             raise ValueError("Missing required parameter 'recovery_time_target_unix'")
-        request_body = {
-            "recovery_time_target_unix": recovery_time_target_unix,
-        }
+        request_body = {"recovery_time_target_unix": recovery_time_target_unix}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/database/backups/restore-pitr"
         query_params = {}
@@ -2839,7 +2730,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_list_organization_members(self, slug) -> list[Any]:
+    async def v1_list_organization_members(self, slug) -> list[Any]:
         """
         Retrieves a list of members associated with the specified organization slug via the v1 API.
 
@@ -2864,7 +2755,7 @@ class SupabaseApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def v1_get_an_organization(self, slug) -> dict[str, Any]:
+    async def v1_get_an_organization(self, slug) -> dict[str, Any]:
         """
         Retrieves details of a specific organization by its unique slug identifier.
 

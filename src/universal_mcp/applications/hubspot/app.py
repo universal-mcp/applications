@@ -46,9 +46,7 @@ class HubspotApp(APIApplication):
         # Build the properties object
         properties = {
             "hs_note_body": hs_note_body,
-            "hs_timestamp": hs_timestamp
-            if hs_timestamp
-            else datetime.now(UTC).isoformat(),
+            "hs_timestamp": hs_timestamp if hs_timestamp else datetime.now(UTC).isoformat(),
         }
 
         # Build the request body
@@ -61,9 +59,7 @@ class HubspotApp(APIApplication):
         response = self._post(url, data=request_body_data)
         return self._handle_response(response)
 
-    def fetch_multiple_lists(
-        self, listIds: list[str] | None = None, includeFilters: bool | None = None
-    ) -> dict[str, Any]:
+    def fetch_multiple_lists(self, listIds: list[str] | None = None, includeFilters: bool | None = None) -> dict[str, Any]:
         """
         Fetch multiple lists in a single request by ILS list ID. The response will include the definitions of all lists that exist for the listIds provided.
 
@@ -81,11 +77,7 @@ class HubspotApp(APIApplication):
             Lists
         """
         url = f"{self.base_url}/crm/v3/lists/"
-        query_params = {
-            k: v
-            for k, v in [("listIds", listIds), ("includeFilters", includeFilters)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("listIds", listIds), ("includeFilters", includeFilters)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -176,9 +168,7 @@ class HubspotApp(APIApplication):
             "listPermissions": listPermissions,
             "filterBranch": filterBranch,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/crm/v3/lists/"
         query_params = {}
         response = self._post(
@@ -189,9 +179,7 @@ class HubspotApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def get_list_by_id(
-        self, listId: str, includeFilters: bool | None = None
-    ) -> dict[str, Any]:
+    def get_list_by_id(self, listId: str, includeFilters: bool | None = None) -> dict[str, Any]:
         """
         Fetch a single list by ILS list ID.
 
@@ -211,9 +199,7 @@ class HubspotApp(APIApplication):
         if listId is None:
             raise ValueError("Missing required parameter 'listId'.")
         url = f"{self.base_url}/crm/v3/lists/{listId}"
-        query_params = {
-            k: v for k, v in [("includeFilters", includeFilters)] if v is not None
-        }
+        query_params = {k: v for k, v in [("includeFilters", includeFilters)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
@@ -355,9 +341,7 @@ class HubspotApp(APIApplication):
             "additionalProperties": additionalProperties,
             "sort": sort,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/crm/v3/lists/search"
         query_params = {}
         response = self._post(
@@ -368,9 +352,7 @@ class HubspotApp(APIApplication):
         )
         return self._handle_response(response)
 
-    def fetch_list_by_name(
-        self, objectTypeId: str, listName: str, includeFilters: bool | None = None
-    ) -> dict[str, Any]:
+    def fetch_list_by_name(self, objectTypeId: str, listName: str, includeFilters: bool | None = None) -> dict[str, Any]:
         """
         Fetch a list by its name and object type ID.
 
@@ -393,9 +375,7 @@ class HubspotApp(APIApplication):
         if listName is None:
             raise ValueError("Missing required parameter 'listName'.")
         url = f"{self.base_url}/crm/v3/lists/object-type-id/{objectTypeId}/name/{listName}"
-        query_params = {
-            k: v for k, v in [("includeFilters", includeFilters)] if v is not None
-        }
+        query_params = {k: v for k, v in [("includeFilters", includeFilters)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 

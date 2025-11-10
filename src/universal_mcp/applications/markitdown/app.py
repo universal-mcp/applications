@@ -1,7 +1,5 @@
 import re
-
 from universal_mcp.applications.application import BaseApplication
-
 from markitdown import MarkItDown
 
 
@@ -38,36 +36,26 @@ class MarkitdownApp(BaseApplication):
         """
         if not uri:
             raise ValueError("URI cannot be empty")
-
         known_schemes = ["http://", "https://", "file://", "data:"]
-        has_scheme = any(uri.lower().startswith(scheme) for scheme in known_schemes)
-        if not has_scheme and not re.match(r"^[a-zA-Z]+:", uri):
-            if re.match(r"^[a-zA-Z]:[\\/]", uri):  # Check for Windows drive letter path
-                normalized_path = uri.replace("\\", "/")  # Normalize backslashes
+        has_scheme = any((uri.lower().startswith(scheme) for scheme in known_schemes))
+        if not has_scheme and (not re.match("^[a-zA-Z]+:", uri)):
+            if re.match("^[a-zA-Z]:[\\\\/]", uri):
+                normalized_path = uri.replace("\\", "/")
                 processed_uri = f"file:///{normalized_path}"
-            else:  # Assume Unix-like path or simple relative path
-                processed_uri = (
-                    f"file://{uri}" if uri.startswith("/") else f"file:///{uri}"
-                )  # Add leading slash if missing for absolute paths
-
+            else:
+                processed_uri = f"file://{uri}" if uri.startswith("/") else f"file:///{uri}"
             uri_to_process = processed_uri
         else:
-            # Use the uri as provided
             uri_to_process = uri
-
         return self.markitdown.convert_uri(uri_to_process).markdown
 
     def list_tools(self):
-        return [
-            self.convert_to_markdown,
-        ]
+        return [self.convert_to_markdown]
 
 
 async def main():
     app = MarkitdownApp()
-    await app.convert_to_markdown(
-        "https://www.youtube.com/watch?v=Cr9B6yyLZSk"
-    )
+    await app.convert_to_markdown("https://www.youtube.com/watch?v=Cr9B6yyLZSk")
 
 
 if __name__ == "__main__":

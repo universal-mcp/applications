@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class BillApp(APIApplication):
         super().__init__(name="bill", integration=integration, **kwargs)
         self.base_url = "https://gateway.stage.bill.com/connect"
 
-    def list_customer_attachments(
-        self, customerId: str, max: int | None = None, page: str | None = None
-    ) -> dict[str, Any]:
+    async def list_customer_attachments(self, customerId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
         """
         Get list of customer attachments
 
@@ -32,15 +29,11 @@ class BillApp(APIApplication):
         if customerId is None:
             raise ValueError("Missing required parameter 'customerId'.")
         url = f"{self.base_url}/v3/attachments/customers/{customerId}"
-        query_params = {
-            k: v for k, v in [("max", max), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_customer_attachment(
-        self, customerId: str, name: str, items: list[bytes]
-    ) -> dict[str, Any]:
+    async def create_customer_attachment(self, customerId: str, name: str, items: list[bytes]) -> dict[str, Any]:
         """
         Upload customer attachment
 
@@ -60,21 +53,13 @@ class BillApp(APIApplication):
         if customerId is None:
             raise ValueError("Missing required parameter 'customerId'.")
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/attachments/customers/{customerId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/octet-stream",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
-    def list_invoice_attachments(
-        self, invoiceId: str, max: int | None = None, page: str | None = None
-    ) -> dict[str, Any]:
+    async def list_invoice_attachments(self, invoiceId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
         """
         Get list of invoice attachments
 
@@ -95,15 +80,11 @@ class BillApp(APIApplication):
         if invoiceId is None:
             raise ValueError("Missing required parameter 'invoiceId'.")
         url = f"{self.base_url}/v3/attachments/invoices/{invoiceId}"
-        query_params = {
-            k: v for k, v in [("max", max), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_invoice_attachment(
-        self, invoiceId: str, name: str, items: list[bytes]
-    ) -> dict[str, Any]:
+    async def create_invoice_attachment(self, invoiceId: str, name: str, items: list[bytes]) -> dict[str, Any]:
         """
         Upload invoice attachment
 
@@ -123,21 +104,13 @@ class BillApp(APIApplication):
         if invoiceId is None:
             raise ValueError("Missing required parameter 'invoiceId'.")
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/attachments/invoices/{invoiceId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/octet-stream",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
-    def list_vendor_attachments(
-        self, vendorId: str, max: int | None = None, page: str | None = None
-    ) -> dict[str, Any]:
+    async def list_vendor_attachments(self, vendorId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
         """
         Get list of vendor attachments
 
@@ -158,15 +131,11 @@ class BillApp(APIApplication):
         if vendorId is None:
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/attachments/vendors/{vendorId}"
-        query_params = {
-            k: v for k, v in [("max", max), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_vendor_attachment(
-        self, vendorId: str, name: str, items: list[bytes]
-    ) -> dict[str, Any]:
+    async def create_vendor_attachment(self, vendorId: str, name: str, items: list[bytes]) -> dict[str, Any]:
         """
         Upload vendor attachment
 
@@ -186,19 +155,13 @@ class BillApp(APIApplication):
         if vendorId is None:
             raise ValueError("Missing required parameter 'vendorId'.")
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/attachments/vendors/{vendorId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/octet-stream",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
-    def get_attachment(self, attachmentId: str) -> dict[str, Any]:
+    async def get_attachment(self, attachmentId: str) -> dict[str, Any]:
         """
         Get attachment details
 
@@ -221,12 +184,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_bills(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_bills(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of bills
@@ -247,20 +206,11 @@ class BillApp(APIApplication):
             bills, , important
         """
         url = f"{self.base_url}/v3/bills"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_bill(
+    async def create_bill(
         self,
         vendorId: str,
         dueDate: str,
@@ -301,20 +251,13 @@ class BillApp(APIApplication):
             "payFromChartOfAccountId": payFromChartOfAccountId,
             "classifications": classifications,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/bills"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def create_bulk_bills(self, items: list[dict[str, Any]]) -> list[Any]:
+    async def create_bulk_bills(self, items: list[dict[str, Any]]) -> list[Any]:
         """
         Create multiple bills
 
@@ -330,19 +273,13 @@ class BillApp(APIApplication):
             bills
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/bills/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_bill(self, billId: str) -> dict[str, Any]:
+    async def get_bill(self, billId: str) -> dict[str, Any]:
         """
         Get bill details
 
@@ -365,7 +302,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def replace_bill(
+    async def replace_bill(
         self,
         billId: str,
         vendorId: str,
@@ -410,20 +347,13 @@ class BillApp(APIApplication):
             "payFromChartOfAccountId": payFromChartOfAccountId,
             "classifications": classifications,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/bills/{billId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def update_bill(
+    async def update_bill(
         self,
         billId: str,
         vendorId: str | None = None,
@@ -468,15 +398,13 @@ class BillApp(APIApplication):
             "payFromChartOfAccountId": payFromChartOfAccountId,
             "classifications": classifications,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/bills/{billId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_bill(self, billId: str) -> dict[str, Any]:
+    async def archive_bill(self, billId: str) -> dict[str, Any]:
         """
         Archive a bill
 
@@ -497,15 +425,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/bills/{billId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_bill(self, billId: str) -> dict[str, Any]:
+    async def restore_bill(self, billId: str) -> dict[str, Any]:
         """
         Restore an archived bill
 
@@ -526,20 +449,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/bills/{billId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_accounting_classes(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_accounting_classes(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of accounting classes
@@ -560,25 +474,12 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/accounting-classes"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_accounting_class(
-        self,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def create_classification_accounting_class(
+        self, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Create an accounting class
@@ -599,28 +500,14 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/accounting-classes"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_accounting_class(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_accounting_class(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple accounting classes
 
@@ -636,21 +523,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_accounting_class(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_accounting_class(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple accounting classes
 
@@ -666,14 +545,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_accounting_class(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_accounting_class(self, ids: str) -> dict[str, Any]:
         """
         Archive multiple accounting classes
 
@@ -692,15 +570,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_accounting_class(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_accounting_class(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple accounting classes
 
@@ -719,15 +592,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_accounting_class(self, id: str) -> dict[str, Any]:
+    async def get_classification_accounting_class(self, id: str) -> dict[str, Any]:
         """
         Get accounting class details
 
@@ -750,13 +618,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_accounting_class(
-        self,
-        id: str,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def update_classification_accounting_class(
+        self, id: str, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Update an accounting class
@@ -780,21 +643,14 @@ class BillApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/accounting-classes/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_accounting_class(self, id: str) -> dict[str, Any]:
+    async def archive_classification_accounting_class(self, id: str) -> dict[str, Any]:
         """
         Archive an accounting class
 
@@ -815,15 +671,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_accounting_class(self, id: str) -> dict[str, Any]:
+    async def restore_classification_accounting_class(self, id: str) -> dict[str, Any]:
         """
         Restore an archived accounting class
 
@@ -844,20 +695,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_chart_of_accounts(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_chart_of_accounts(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of chart of accounts
@@ -878,25 +720,12 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/chart-of-accounts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_chart_of_accounts(
-        self,
-        name: str,
-        description: str | None = None,
-        parentId: str | None = None,
-        account: Any | None = None,
+    async def create_classification_chart_of_accounts(
+        self, name: str, description: str | None = None, parentId: str | None = None, account: Any | None = None
     ) -> dict[str, Any]:
         """
         Create a chart of accounts
@@ -917,28 +746,14 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "description": description,
-            "parentId": parentId,
-            "account": account,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "description": description, "parentId": parentId, "account": account}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/chart-of-accounts"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_chart_of_accounts(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_chart_of_accounts(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple chart of accounts
 
@@ -954,21 +769,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_chart_of_accounts(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_chart_of_accounts(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple chart of accounts
 
@@ -984,14 +791,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_chart_of_accounts(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_chart_of_accounts(self, ids: str) -> dict[str, Any]:
         """
         Archive mutliple chart of accounts
 
@@ -1010,15 +816,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_chart_of_accounts(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_chart_of_accounts(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple chart of accounts
 
@@ -1037,15 +838,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
+    async def get_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
         """
         Get chart of accounts details
 
@@ -1068,13 +864,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_chart_of_accounts(
-        self,
-        id: str,
-        name: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
-        account: Any | None = None,
+    async def update_classification_chart_of_accounts(
+        self, id: str, name: str | None = None, description: str | None = None, parentId: str | None = None, account: Any | None = None
     ) -> dict[str, Any]:
         """
         Update a chart of accounts
@@ -1098,21 +889,14 @@ class BillApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "description": description,
-            "parentId": parentId,
-            "account": account,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "description": description, "parentId": parentId, "account": account}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
+    async def archive_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
         """
         Archive a chart of accounts
 
@@ -1133,15 +917,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
+    async def restore_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
         """
         Restore an archived chart of accounts
 
@@ -1162,20 +941,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_departments(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_departments(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of departments
@@ -1196,25 +966,12 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/departments"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_department(
-        self,
-        name: str,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def create_classification_department(
+        self, name: str, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Create a department
@@ -1235,28 +992,14 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/departments"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_department(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_department(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple departments
 
@@ -1272,21 +1015,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/departments/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_department(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_department(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple departments
 
@@ -1302,14 +1037,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/departments/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_department(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_department(self, ids: str) -> dict[str, Any]:
         """
         Archive multiple departments
 
@@ -1328,15 +1062,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_department(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_department(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple departments
 
@@ -1355,15 +1084,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_department(self, id: str) -> dict[str, Any]:
+    async def get_classification_department(self, id: str) -> dict[str, Any]:
         """
         Get department details
 
@@ -1386,13 +1110,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_department(
-        self,
-        id: str,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def update_classification_department(
+        self, id: str, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Update a department
@@ -1416,21 +1135,14 @@ class BillApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/departments/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_department(self, id: str) -> dict[str, Any]:
+    async def archive_classification_department(self, id: str) -> dict[str, Any]:
         """
         Archive a department
 
@@ -1451,15 +1163,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_department(self, id: str) -> dict[str, Any]:
+    async def restore_classification_department(self, id: str) -> dict[str, Any]:
         """
         Restore an archived department
 
@@ -1480,20 +1187,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_employees(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_employees(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of employees
@@ -1514,25 +1212,12 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/employees"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_employee(
-        self,
-        firstName: str | None = None,
-        lastName: str | None = None,
-        shortName: str | None = None,
-        parentId: str | None = None,
+    async def create_classification_employee(
+        self, firstName: str | None = None, lastName: str | None = None, shortName: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Create an employee
@@ -1553,28 +1238,14 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        request_body_data = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "shortName": shortName,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"firstName": firstName, "lastName": lastName, "shortName": shortName, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/employees"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_employee(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_employee(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple employees
 
@@ -1590,21 +1261,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/employees/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_employee(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_employee(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple employees
 
@@ -1620,14 +1283,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/employees/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_employee(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_employee(self, ids: str) -> dict[str, Any]:
         """
         Archive multiple employees
 
@@ -1646,15 +1308,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_employee(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_employee(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple employees
 
@@ -1673,15 +1330,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_employee(self, id: str) -> dict[str, Any]:
+    async def get_classification_employee(self, id: str) -> dict[str, Any]:
         """
         Get employee details
 
@@ -1704,13 +1356,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_employee(
-        self,
-        id: str,
-        firstName: str | None = None,
-        lastName: str | None = None,
-        shortName: str | None = None,
-        parentId: str | None = None,
+    async def update_classification_employee(
+        self, id: str, firstName: str | None = None, lastName: str | None = None, shortName: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Update an employee
@@ -1734,21 +1381,14 @@ class BillApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "shortName": shortName,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"firstName": firstName, "lastName": lastName, "shortName": shortName, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/employees/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_employee(self, id: str) -> dict[str, Any]:
+    async def archive_classification_employee(self, id: str) -> dict[str, Any]:
         """
         Archive an employee
 
@@ -1769,15 +1409,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_employee(self, id: str) -> dict[str, Any]:
+    async def restore_classification_employee(self, id: str) -> dict[str, Any]:
         """
         Restore an archived employee
 
@@ -1798,20 +1433,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_items(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_items(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of items
@@ -1832,20 +1458,11 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/items"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_item(
+    async def create_classification_item(
         self,
         type: Any,
         name: str,
@@ -1898,22 +1515,13 @@ class BillApp(APIApplication):
             "chartOfAccountId": chartOfAccountId,
             "taxable": taxable,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/items"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_item(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_item(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple items
 
@@ -1929,21 +1537,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/items/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_item(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_item(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple items
 
@@ -1959,14 +1559,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/items/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_item(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_item(self, ids: str) -> dict[str, Any]:
         """
         Archive multiple items
 
@@ -1985,15 +1584,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_item(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_item(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple items
 
@@ -2012,15 +1606,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_item(self, id: str) -> dict[str, Any]:
+    async def get_classification_item(self, id: str) -> dict[str, Any]:
         """
         Get item details
 
@@ -2043,7 +1632,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_item(
+    async def update_classification_item(
         self,
         id: str,
         type: Any | None = None,
@@ -2100,15 +1689,13 @@ class BillApp(APIApplication):
             "chartOfAccountId": chartOfAccountId,
             "taxable": taxable,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/items/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_item(self, id: str) -> dict[str, Any]:
+    async def archive_classification_item(self, id: str) -> dict[str, Any]:
         """
         Archive an item
 
@@ -2129,15 +1716,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_item(self, id: str) -> dict[str, Any]:
+    async def restore_classification_item(self, id: str) -> dict[str, Any]:
         """
         Restore an archived item
 
@@ -2158,20 +1740,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_jobs(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_jobs(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of jobs
@@ -2192,25 +1765,12 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_job(
-        self,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def create_classification_job(
+        self, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Create a job
@@ -2231,28 +1791,14 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/jobs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_job(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_job(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple jobs
 
@@ -2268,21 +1814,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/jobs/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_job(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_job(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple jobs
 
@@ -2298,14 +1836,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/jobs/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_job(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_job(self, ids: str) -> dict[str, Any]:
         """
         Archive multiple jobs
 
@@ -2324,15 +1861,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_job(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_job(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple jobs
 
@@ -2351,15 +1883,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_job(self, id: str) -> dict[str, Any]:
+    async def get_classification_job(self, id: str) -> dict[str, Any]:
         """
         Get job details
 
@@ -2382,13 +1909,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_job(
-        self,
-        id: str,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def update_classification_job(
+        self, id: str, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Update a job
@@ -2412,21 +1934,14 @@ class BillApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/jobs/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_job(self, id: str) -> dict[str, Any]:
+    async def archive_classification_job(self, id: str) -> dict[str, Any]:
         """
         Archive a job
 
@@ -2447,15 +1962,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_job(self, id: str) -> dict[str, Any]:
+    async def restore_classification_job(self, id: str) -> dict[str, Any]:
         """
         Restore an archived job
 
@@ -2476,20 +1986,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_classification_locations(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_classification_locations(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of locations
@@ -2510,25 +2011,12 @@ class BillApp(APIApplication):
             classifications
         """
         url = f"{self.base_url}/v3/classifications/locations"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_classification_location(
-        self,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def create_classification_location(
+        self, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Create a location
@@ -2549,28 +2037,14 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/locations"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_create_classification_location(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_create_classification_location(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple locations
 
@@ -2586,21 +2060,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/locations/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_update_classification_location(
-        self, items: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def bulk_update_classification_location(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update multiple locations
 
@@ -2616,14 +2082,13 @@ class BillApp(APIApplication):
             classifications
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/locations/bulk"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def bulk_archive_classification_location(self, ids: str) -> dict[str, Any]:
+    async def bulk_archive_classification_location(self, ids: str) -> dict[str, Any]:
         """
         Archive multiple locations
 
@@ -2642,15 +2107,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def bulk_restore_classification_location(self, ids: str) -> dict[str, Any]:
+    async def bulk_restore_classification_location(self, ids: str) -> dict[str, Any]:
         """
         Restore multiple locations
 
@@ -2669,15 +2129,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_classification_location(self, id: str) -> dict[str, Any]:
+    async def get_classification_location(self, id: str) -> dict[str, Any]:
         """
         Get location details
 
@@ -2700,13 +2155,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_classification_location(
-        self,
-        id: str,
-        name: str | None = None,
-        shortName: str | None = None,
-        description: str | None = None,
-        parentId: str | None = None,
+    async def update_classification_location(
+        self, id: str, name: str | None = None, shortName: str | None = None, description: str | None = None, parentId: str | None = None
     ) -> dict[str, Any]:
         """
         Update a location
@@ -2730,21 +2180,14 @@ class BillApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "shortName": shortName,
-            "description": description,
-            "parentId": parentId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "shortName": shortName, "description": description, "parentId": parentId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/locations/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_classification_location(self, id: str) -> dict[str, Any]:
+    async def archive_classification_location(self, id: str) -> dict[str, Any]:
         """
         Archive a location
 
@@ -2765,15 +2208,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_classification_location(self, id: str) -> dict[str, Any]:
+    async def restore_classification_location(self, id: str) -> dict[str, Any]:
         """
         Restore an archived location
 
@@ -2794,20 +2232,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/{id}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_customers(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_customers(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of customers
@@ -2828,20 +2257,11 @@ class BillApp(APIApplication):
             customers
         """
         url = f"{self.base_url}/v3/customers"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_customer(
+    async def create_customer(
         self,
         name: str,
         email: str,
@@ -2900,20 +2320,13 @@ class BillApp(APIApplication):
             "billingAddress": billingAddress,
             "shippingAddress": shippingAddress,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/customers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_customer(self, customerId: str) -> dict[str, Any]:
+    async def get_customer(self, customerId: str) -> dict[str, Any]:
         """
         Get customer details
 
@@ -2936,7 +2349,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_customer(
+    async def update_customer(
         self,
         customerId: str,
         name: str | None = None,
@@ -2999,15 +2412,13 @@ class BillApp(APIApplication):
             "billingAddress": billingAddress,
             "shippingAddress": shippingAddress,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/customers/{customerId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_customer(self, customerId: str) -> dict[str, Any]:
+    async def archive_customer(self, customerId: str) -> dict[str, Any]:
         """
         Archive a customer
 
@@ -3028,15 +2439,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/customers/{customerId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_customer(self, customerId: str) -> dict[str, Any]:
+    async def restore_customer(self, customerId: str) -> dict[str, Any]:
         """
         Restore an archived customer
 
@@ -3057,17 +2463,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/customers/{customerId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_documents(
-        self, billId: str, max: int | None = None, page: str | None = None
-    ) -> dict[str, Any]:
+    async def list_documents(self, billId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
         """
         Get list of documents
 
@@ -3088,15 +2487,11 @@ class BillApp(APIApplication):
         if billId is None:
             raise ValueError("Missing required parameter 'billId'.")
         url = f"{self.base_url}/v3/documents/bills/{billId}"
-        query_params = {
-            k: v for k, v in [("max", max), ("page", page)] if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_bill_document(
-        self, billId: str, name: str, items: list[bytes]
-    ) -> dict[str, Any]:
+    async def create_bill_document(self, billId: str, name: str, items: list[bytes]) -> dict[str, Any]:
         """
         Upload bill document
 
@@ -3116,19 +2511,13 @@ class BillApp(APIApplication):
         if billId is None:
             raise ValueError("Missing required parameter 'billId'.")
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/documents/bills/{billId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/octet-stream",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
-    def upload_status(self, ids: str) -> list[Any]:
+    async def upload_status(self, ids: str) -> list[Any]:
         """
         Get document upload status
 
@@ -3149,7 +2538,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_document(self, documentId: str) -> dict[str, Any]:
+    async def get_document(self, documentId: str) -> dict[str, Any]:
         """
         Get document details
 
@@ -3172,7 +2561,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_payable_apcards(self) -> list[Any]:
+    async def list_payable_apcards(self) -> list[Any]:
         """
         Get list of AP Cards
 
@@ -3190,12 +2579,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_bank_accounts(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_bank_accounts(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of bank accounts
@@ -3216,20 +2601,11 @@ class BillApp(APIApplication):
             funding accounts
         """
         url = f"{self.base_url}/v3/funding-accounts/banks"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_bank_account(
+    async def create_bank_account(
         self,
         nameOnAccount: str,
         type: Any,
@@ -3273,20 +2649,13 @@ class BillApp(APIApplication):
             "accessToAdmins": accessToAdmins,
             "chartOfAccountId": chartOfAccountId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_bank_account_users(
+    async def list_bank_account_users(
         self,
         max: int | None = None,
         sort: str | None = None,
@@ -3316,21 +2685,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/funding-accounts/banks/users"
         query_params = {
             k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-                ("currentUser", currentUser),
-            ]
+            for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page), ("currentUser", currentUser)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def nominate_bank_account_user(
-        self, userId: str, bankAccountId: str
-    ) -> dict[str, Any]:
+    async def nominate_bank_account_user(self, userId: str, bankAccountId: str) -> dict[str, Any]:
         """
         Nominate a bank account user
 
@@ -3351,24 +2712,14 @@ class BillApp(APIApplication):
             funding accounts
         """
         request_body_data = None
-        request_body_data = {
-            "userId": userId,
-            "bankAccountId": bankAccountId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"userId": userId, "bankAccountId": bankAccountId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks/users/nominate"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def archive_bank_account_user(self, bankAccountUserId: str) -> dict[str, Any]:
+    async def archive_bank_account_user(self, bankAccountUserId: str) -> dict[str, Any]:
         """
         Archive a bank account user
 
@@ -3389,15 +2740,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/funding-accounts/banks/users/{bankAccountUserId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_bank_account(self, bankAccountId: str) -> dict[str, Any]:
+    async def get_bank_account(self, bankAccountId: str) -> dict[str, Any]:
         """
         Get bank account details
 
@@ -3420,7 +2766,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_bank_account(
+    async def update_bank_account(
         self,
         bankAccountId: str,
         nameOnAccount: str | None = None,
@@ -3462,15 +2808,13 @@ class BillApp(APIApplication):
             "default": default,
             "chartOfAccountId": chartOfAccountId,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks/{bankAccountId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_bank_account(self, bankAccountId: str) -> dict[str, Any]:
+    async def archive_bank_account(self, bankAccountId: str) -> dict[str, Any]:
         """
         Archive a bank account
 
@@ -3491,17 +2835,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/funding-accounts/banks/{bankAccountId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def verify_bank_account(
-        self, bankAccountId: str, depositAmount: float
-    ) -> dict[str, Any]:
+    async def verify_bank_account(self, bankAccountId: str, depositAmount: float) -> dict[str, Any]:
         """
         Verify a bank account
 
@@ -3523,23 +2860,14 @@ class BillApp(APIApplication):
         if bankAccountId is None:
             raise ValueError("Missing required parameter 'bankAccountId'.")
         request_body_data = None
-        request_body_data = {
-            "depositAmount": depositAmount,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"depositAmount": depositAmount}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks/{bankAccountId}/verify"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_payable_card_accounts(self, cardUserStatus: Any) -> dict[str, Any]:
+    async def list_payable_card_accounts(self, cardUserStatus: Any) -> dict[str, Any]:
         """
         Get list of card accounts
 
@@ -3556,13 +2884,11 @@ class BillApp(APIApplication):
             funding accounts
         """
         url = f"{self.base_url}/v3/funding-accounts/cards"
-        query_params = {
-            k: v for k, v in [("cardUserStatus", cardUserStatus)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cardUserStatus", cardUserStatus)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_card_funding_purposes(self, vendorId: str, brand: str) -> dict[str, Any]:
+    async def list_card_funding_purposes(self, vendorId: str, brand: str) -> dict[str, Any]:
         """
         Get card funding purpose
 
@@ -3580,13 +2906,11 @@ class BillApp(APIApplication):
             funding accounts
         """
         url = f"{self.base_url}/v3/funding-accounts/cards/funding-purposes"
-        query_params = {
-            k: v for k, v in [("vendorId", vendorId), ("brand", brand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("vendorId", vendorId), ("brand", brand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_card_account_users(
+    async def list_card_account_users(
         self,
         max: int | None = None,
         sort: str | None = None,
@@ -3616,19 +2940,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/funding-accounts/cards/users"
         query_params = {
             k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-                ("currentUser", currentUser),
-            ]
+            for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page), ("currentUser", currentUser)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_card_account(self, cardAccountId: str) -> dict[str, Any]:
+    async def get_card_account(self, cardAccountId: str) -> dict[str, Any]:
         """
         Get card account details
 
@@ -3651,7 +2969,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_funding_account_permission(self) -> dict[str, Any]:
+    async def get_funding_account_permission(self) -> dict[str, Any]:
         """
         Get funding account permissions
 
@@ -3669,7 +2987,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_health_check(self) -> dict[str, Any]:
+    async def get_health_check(self) -> dict[str, Any]:
         """
         Check app health
 
@@ -3687,12 +3005,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_invoices(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_invoices(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of invoices
@@ -3713,20 +3027,11 @@ class BillApp(APIApplication):
             invoices
         """
         url = f"{self.base_url}/v3/invoices"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_invoice(
+    async def create_invoice(
         self,
         customer: Any,
         invoiceLineItems: list[dict[str, Any]],
@@ -3776,20 +3081,13 @@ class BillApp(APIApplication):
             "payToChartOfAccountId": payToChartOfAccountId,
             "classifications": classifications,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def record_invoice(
+    async def record_invoice(
         self,
         paymentDate: str,
         paymentType: Any,
@@ -3827,20 +3125,13 @@ class BillApp(APIApplication):
             "description": description,
             "invoices": invoices,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/record-payment"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_invoice(self, invoiceId: str) -> dict[str, Any]:
+    async def get_invoice(self, invoiceId: str) -> dict[str, Any]:
         """
         Get invoice details
 
@@ -3863,7 +3154,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def replace_invoice(
+    async def replace_invoice(
         self,
         invoiceId: str,
         customer: Any,
@@ -3917,20 +3208,13 @@ class BillApp(APIApplication):
             "payToChartOfAccountId": payToChartOfAccountId,
             "classifications": classifications,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/{invoiceId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def update_invoice(
+    async def update_invoice(
         self,
         invoiceId: str,
         invoiceNumber: str | None = None,
@@ -3984,15 +3268,13 @@ class BillApp(APIApplication):
             "payToChartOfAccountId": payToChartOfAccountId,
             "classifications": classifications,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/{invoiceId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_invoice(self, invoiceId: str) -> dict[str, Any]:
+    async def archive_invoice(self, invoiceId: str) -> dict[str, Any]:
         """
         Archive an invoice
 
@@ -4013,15 +3295,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/invoices/{invoiceId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def send_invoice(self, invoiceId: str, replyTo: Any, recipient: Any) -> Any:
+    async def send_invoice(self, invoiceId: str, replyTo: Any, recipient: Any) -> Any:
         """
         Send an invoice
 
@@ -4042,24 +3319,14 @@ class BillApp(APIApplication):
         if invoiceId is None:
             raise ValueError("Missing required parameter 'invoiceId'.")
         request_body_data = None
-        request_body_data = {
-            "replyTo": replyTo,
-            "recipient": recipient,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"replyTo": replyTo, "recipient": recipient}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/{invoiceId}/email"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_invoice(self, invoiceId: str) -> dict[str, Any]:
+    async def restore_invoice(self, invoiceId: str) -> dict[str, Any]:
         """
         Restore an archived invoice
 
@@ -4080,22 +3347,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/invoices/{invoiceId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def login(
-        self,
-        devKey: str,
-        username: str,
-        password: str,
-        organizationId: str,
-        rememberMeId: str | None = None,
-        device: str | None = None,
+    async def login(
+        self, devKey: str, username: str, password: str, organizationId: str, rememberMeId: str | None = None, device: str | None = None
     ) -> dict[str, Any]:
         """
         API login
@@ -4130,20 +3386,13 @@ class BillApp(APIApplication):
             "rememberMeId": rememberMeId,
             "device": device,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/login"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_session_info(self) -> dict[str, Any]:
+    async def get_session_info(self) -> dict[str, Any]:
         """
         Get API session details
 
@@ -4161,7 +3410,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def logout(self) -> Any:
+    async def logout(self) -> Any:
         """
         API logout
 
@@ -4177,15 +3426,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/logout"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def generate_challenge(self, useBackup: bool | None = None) -> dict[str, Any]:
+    async def generate_challenge(self, useBackup: bool | None = None) -> dict[str, Any]:
         """
         Generate MFA challenge
 
@@ -4202,29 +3446,15 @@ class BillApp(APIApplication):
             mfa
         """
         request_body_data = None
-        request_body_data = {
-            "useBackup": useBackup,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"useBackup": useBackup}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/challenge"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def validate_challenge(
-        self,
-        challengeId: str,
-        token: str,
-        device: str | None = None,
-        machineName: str | None = None,
-        rememberMe: bool | None = None,
+    async def validate_challenge(
+        self, challengeId: str, token: str, device: str | None = None, machineName: str | None = None, rememberMe: bool | None = None
     ) -> dict[str, Any]:
         """
         Validate MFA challenge
@@ -4253,20 +3483,13 @@ class BillApp(APIApplication):
             "machineName": machineName,
             "rememberMe": rememberMe,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/challenge/validate"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_mfa_phones(self) -> dict[str, Any]:
+    async def list_mfa_phones(self) -> dict[str, Any]:
         """
         Get list of MFA phone numbers
 
@@ -4284,7 +3507,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def setup(self, phone: str, type: Any, primary: bool) -> dict[str, Any]:
+    async def setup(self, phone: str, type: Any, primary: bool) -> dict[str, Any]:
         """
         Add phone for MFA setup
 
@@ -4304,25 +3527,14 @@ class BillApp(APIApplication):
             mfa
         """
         request_body_data = None
-        request_body_data = {
-            "phone": phone,
-            "type": type,
-            "primary": primary,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"phone": phone, "type": type, "primary": primary}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/setup"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def validate(self, setupId: str, type: Any, token: str) -> dict[str, Any]:
+    async def validate(self, setupId: str, type: Any, token: str) -> dict[str, Any]:
         """
         Validate phone for MFA setup
 
@@ -4341,27 +3553,14 @@ class BillApp(APIApplication):
             mfa
         """
         request_body_data = None
-        request_body_data = {
-            "setupId": setupId,
-            "type": type,
-            "token": token,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"setupId": setupId, "type": type, "token": token}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/setup/validate"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def step_up_session(
-        self, rememberMeId: str | None = None, device: str | None = None
-    ) -> dict[str, Any]:
+    async def step_up_session(self, rememberMeId: str | None = None, device: str | None = None) -> dict[str, Any]:
         """
         MFA step-up for API session
 
@@ -4383,29 +3582,15 @@ class BillApp(APIApplication):
             mfa
         """
         request_body_data = None
-        request_body_data = {
-            "rememberMeId": rememberMeId,
-            "device": device,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"rememberMeId": rememberMeId, "device": device}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/step-up"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def search(
-        self,
-        name: str,
-        scope: Any | None = None,
-        zipOrPostalCode: str | None = None,
-        accountNumber: str | None = None,
+    async def search(
+        self, name: str, scope: Any | None = None, zipOrPostalCode: str | None = None, accountNumber: str | None = None
     ) -> dict[str, Any]:
         """
         Search for an organization in the BILL networks
@@ -4428,24 +3613,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/network"
         query_params = {
             k: v
-            for k, v in [
-                ("name", name),
-                ("scope", scope),
-                ("zipOrPostalCode", zipOrPostalCode),
-                ("accountNumber", accountNumber),
-            ]
+            for k, v in [("name", name), ("scope", scope), ("zipOrPostalCode", zipOrPostalCode), ("accountNumber", accountNumber)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def accept_invitation(
-        self,
-        networkId: str,
-        type: Any,
-        id: str | None = None,
-        name: str | None = None,
-    ) -> Any:
+    async def accept_invitation(self, networkId: str, type: Any, id: str | None = None, name: str | None = None) -> Any:
         """
         Accept network invitation
 
@@ -4471,26 +3645,14 @@ class BillApp(APIApplication):
             network
         """
         request_body_data = None
-        request_body_data = {
-            "networkId": networkId,
-            "type": type,
-            "id": id,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"networkId": networkId, "type": type, "id": id, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/network/invitation/accept"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_customer_invitation(self, customerId: str) -> dict[str, Any]:
+    async def get_customer_invitation(self, customerId: str) -> dict[str, Any]:
         """
         Get customer invitation status
 
@@ -4513,12 +3675,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_customer_invitation(
-        self,
-        customerId: str,
-        networkId: str,
-        networkType: Any,
-        rppsInformation: Any | None = None,
+    async def create_customer_invitation(
+        self, customerId: str, networkId: str, networkType: Any, rppsInformation: Any | None = None
     ) -> Any:
         """
         Invite a customer in the BILL network
@@ -4543,25 +3701,14 @@ class BillApp(APIApplication):
         if customerId is None:
             raise ValueError("Missing required parameter 'customerId'.")
         request_body_data = None
-        request_body_data = {
-            "networkId": networkId,
-            "networkType": networkType,
-            "rppsInformation": rppsInformation,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"networkId": networkId, "networkType": networkType, "rppsInformation": rppsInformation}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/network/invitation/customer/{customerId}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def delete_customer_invitation(self, customerId: str) -> Any:
+    async def delete_customer_invitation(self, customerId: str) -> Any:
         """
         Delete customer connection
 
@@ -4584,7 +3731,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def get_vendor_invitation(self, vendorId: str) -> dict[str, Any]:
+    async def get_vendor_invitation(self, vendorId: str) -> dict[str, Any]:
         """
         Get vendor invitation status
 
@@ -4607,13 +3754,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_vendor_invitation(
-        self,
-        vendorId: str,
-        networkId: str,
-        networkType: Any,
-        rppsInformation: Any | None = None,
-    ) -> Any:
+    async def create_vendor_invitation(self, vendorId: str, networkId: str, networkType: Any, rppsInformation: Any | None = None) -> Any:
         """
         Invite a vendor in the BILL network
 
@@ -4637,25 +3778,14 @@ class BillApp(APIApplication):
         if vendorId is None:
             raise ValueError("Missing required parameter 'vendorId'.")
         request_body_data = None
-        request_body_data = {
-            "networkId": networkId,
-            "networkType": networkType,
-            "rppsInformation": rppsInformation,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"networkId": networkId, "networkType": networkType, "rppsInformation": rppsInformation}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/network/invitation/vendor/{vendorId}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def delete_vendor_invitation(self, vendorId: str) -> Any:
+    async def delete_vendor_invitation(self, vendorId: str) -> Any:
         """
         Delete vendor connection
 
@@ -4678,7 +3808,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def list_industries(self) -> dict[str, Any]:
+    async def list_industries(self) -> dict[str, Any]:
         """
         Get list of organization industries
 
@@ -4696,7 +3826,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_organization(self, organizationId: str) -> dict[str, Any]:
+    async def get_organization(self, organizationId: str) -> dict[str, Any]:
         """
         Get organization details
 
@@ -4719,7 +3849,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_organization(
+    async def update_organization(
         self,
         organizationId: str,
         name: str | None = None,
@@ -4776,15 +3906,13 @@ class BillApp(APIApplication):
             "accountType": accountType,
             "processingOptions": processingOptions,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/organizations/{organizationId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def get_price_plan(self, organizationId: str) -> dict[str, Any]:
+    async def get_price_plan(self, organizationId: str) -> dict[str, Any]:
         """
         Get organization price plan details
 
@@ -4807,9 +3935,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def partner_login(
-        self, appKey: str, username: str, password: str
-    ) -> dict[str, Any]:
+    async def partner_login(self, appKey: str, username: str, password: str) -> dict[str, Any]:
         """
         API partner login
 
@@ -4828,30 +3954,15 @@ class BillApp(APIApplication):
             partner
         """
         request_body_data = None
-        request_body_data = {
-            "appKey": appKey,
-            "username": username,
-            "password": password,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"appKey": appKey, "username": username, "password": password}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/login"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def login_as_user(
-        self,
-        userId: str,
-        organizationId: str,
-        rememberMeId: str | None = None,
-        device: str | None = None,
+    async def login_as_user(
+        self, userId: str, organizationId: str, rememberMeId: str | None = None, device: str | None = None
     ) -> dict[str, Any]:
         """
         API login as user
@@ -4876,31 +3987,15 @@ class BillApp(APIApplication):
             partner
         """
         request_body_data = None
-        request_body_data = {
-            "userId": userId,
-            "organizationId": organizationId,
-            "rememberMeId": rememberMeId,
-            "device": device,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"userId": userId, "organizationId": organizationId, "rememberMeId": rememberMeId, "device": device}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/login-as-user"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_partner_organizations(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_partner_organizations(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of organizations
@@ -4921,20 +4016,11 @@ class BillApp(APIApplication):
             partner
         """
         url = f"{self.base_url}/v3/partner/organizations"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_organization(
+    async def create_organization(
         self,
         name: str,
         address: Any,
@@ -4987,20 +4073,13 @@ class BillApp(APIApplication):
             "accountType": accountType,
             "processingOptions": processingOptions,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/organizations"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def create_phone(self, userId: str, phoneNumber: str, phoneType: Any) -> Any:
+    async def create_phone(self, userId: str, phoneNumber: str, phoneType: Any) -> Any:
         """
         Add phone for risk verification
 
@@ -5021,29 +4100,15 @@ class BillApp(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "phoneNumber": phoneNumber,
-            "phoneType": phoneType,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"phoneNumber": phoneNumber, "phoneType": phoneType}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/risk-verifications/{userId}/phone"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_partner_user_roles(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_partner_user_roles(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of user roles
@@ -5064,20 +4129,11 @@ class BillApp(APIApplication):
             partner
         """
         url = f"{self.base_url}/v3/partner/roles"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_partner_user_role(self, roleId: str) -> dict[str, Any]:
+    async def get_partner_user_role(self, roleId: str) -> dict[str, Any]:
         """
         Get user role details
 
@@ -5100,12 +4156,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_partner_users(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_partner_users(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of users
@@ -5126,20 +4178,11 @@ class BillApp(APIApplication):
             partner
         """
         url = f"{self.base_url}/v3/partner/users"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_partner_user(
+    async def create_partner_user(
         self,
         firstName: str,
         email: str,
@@ -5184,20 +4227,13 @@ class BillApp(APIApplication):
             "externalReferenceId": externalReferenceId,
             "acceptTermsOfService": acceptTermsOfService,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_partner_user(self, userId: str) -> dict[str, Any]:
+    async def get_partner_user(self, userId: str) -> dict[str, Any]:
         """
         Get user details
 
@@ -5220,13 +4256,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_partner_user(
-        self,
-        userId: str,
-        firstName: str | None = None,
-        lastName: str | None = None,
-        email: str | None = None,
-        roleId: str | None = None,
+    async def update_partner_user(
+        self, userId: str, firstName: str | None = None, lastName: str | None = None, email: str | None = None, roleId: str | None = None
     ) -> dict[str, Any]:
         """
         Update a user
@@ -5252,21 +4283,14 @@ class BillApp(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "email": email,
-            "roleId": roleId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"firstName": firstName, "lastName": lastName, "email": email, "roleId": roleId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/users/{userId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_partner_user(self, userId: str) -> dict[str, Any]:
+    async def archive_partner_user(self, userId: str) -> dict[str, Any]:
         """
         Archive a user
 
@@ -5287,15 +4311,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/partner/users/{userId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_partner_user(self, userId: str) -> dict[str, Any]:
+    async def restore_partner_user(self, userId: str) -> dict[str, Any]:
         """
         Restore an archived user
 
@@ -5316,20 +4335,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/partner/users/{userId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_payments(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_payments(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of payments
@@ -5350,20 +4360,11 @@ class BillApp(APIApplication):
             payments
         """
         url = f"{self.base_url}/v3/payments"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_payment(
+    async def create_payment(
         self,
         fundingAccount: Any,
         amount: float,
@@ -5421,20 +4422,13 @@ class BillApp(APIApplication):
             "transactionNumber": transactionNumber,
             "cardFundingPurpose": cardFundingPurpose,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/payments"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def create_bulk_payment(
+    async def create_bulk_payment(
         self,
         fundingAccount: Any,
         payments: list[dict[str, Any]],
@@ -5486,20 +4480,13 @@ class BillApp(APIApplication):
             "transactionNumber": transactionNumber,
             "cardFundingPurpose": cardFundingPurpose,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/payments/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_payment_options(self, vendorId: str, amount: float) -> dict[str, Any]:
+    async def list_payment_options(self, vendorId: str, amount: float) -> dict[str, Any]:
         """
         Get list of vendor payment options
 
@@ -5517,15 +4504,11 @@ class BillApp(APIApplication):
             payments
         """
         url = f"{self.base_url}/v3/payments/options"
-        query_params = {
-            k: v
-            for k, v in [("vendorId", vendorId), ("amount", amount)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("vendorId", vendorId), ("amount", amount)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_payment(self, paymentId: str) -> dict[str, Any]:
+    async def get_payment(self, paymentId: str) -> dict[str, Any]:
         """
         Get payment details
 
@@ -5548,7 +4531,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def cancel_payment(self, paymentId: str) -> dict[str, Any]:
+    async def cancel_payment(self, paymentId: str) -> dict[str, Any]:
         """
         Cancel a payment
 
@@ -5569,15 +4552,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/payments/{paymentId}/cancel"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_check_image_data(self, paymentId: str) -> dict[str, Any]:
+    async def get_check_image_data(self, paymentId: str) -> dict[str, Any]:
         """
         Get check image data
 
@@ -5600,7 +4578,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def void_payment(self, paymentId: str, type: Any, reason: str) -> dict[str, Any]:
+    async def void_payment(self, paymentId: str, type: Any, reason: str) -> dict[str, Any]:
         """
         Void a payment
 
@@ -5621,29 +4599,15 @@ class BillApp(APIApplication):
         if paymentId is None:
             raise ValueError("Missing required parameter 'paymentId'.")
         request_body_data = None
-        request_body_data = {
-            "type": type,
-            "reason": reason,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"type": type, "reason": reason}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/payments/{paymentId}/void"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_recurring_bills(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_recurring_bills(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of recurring bills
@@ -5664,20 +4628,11 @@ class BillApp(APIApplication):
             recurringbills
         """
         url = f"{self.base_url}/v3/recurringbills"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_recurring_bill(
+    async def create_recurring_bill(
         self,
         vendorId: str,
         schedule: Any,
@@ -5715,20 +4670,13 @@ class BillApp(APIApplication):
             "processingOptions": processingOptions,
             "paymentInformation": paymentInformation,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/recurringbills"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
+    async def get_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
         """
         Get recurring bill details
 
@@ -5751,7 +4699,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def replace_recurring_bill(
+    async def replace_recurring_bill(
         self,
         recurringBillId: str,
         vendorId: str,
@@ -5793,20 +4741,13 @@ class BillApp(APIApplication):
             "processingOptions": processingOptions,
             "paymentInformation": paymentInformation,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def update_recurring_bill(
+    async def update_recurring_bill(
         self,
         recurringBillId: str,
         vendorId: str | None = None,
@@ -5848,15 +4789,13 @@ class BillApp(APIApplication):
             "processingOptions": processingOptions,
             "paymentInformation": paymentInformation,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
+    async def archive_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
         """
         Archive a recurring bill
 
@@ -5877,15 +4816,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
+    async def restore_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
         """
         Restore an archived recurring bill
 
@@ -5906,20 +4840,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_vendor_audit_trail(
-        self,
-        vendorId: str,
-        includeArchived: bool | None = None,
-        start: int | None = None,
-        max: int | None = None,
+    async def get_vendor_audit_trail(
+        self, vendorId: str, includeArchived: bool | None = None, start: int | None = None, max: int | None = None
     ) -> list[Any]:
         """
         Get audit trail details for a vendor
@@ -5942,19 +4867,11 @@ class BillApp(APIApplication):
         if vendorId is None:
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/reports/audit-trail/vendor/{vendorId}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("includeArchived", includeArchived),
-                ("start", start),
-                ("max", max),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includeArchived", includeArchived), ("start", start), ("max", max)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_risk_verifications(self) -> dict[str, Any]:
+    async def get_risk_verifications(self) -> dict[str, Any]:
         """
         Get risk verification details
 
@@ -5972,7 +4889,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def initiate_risk_verifications(self) -> dict[str, Any]:
+    async def initiate_risk_verifications(self) -> dict[str, Any]:
         """
         Initiate risk verification for an organization
 
@@ -5988,15 +4905,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/risk-verifications"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_risk_verification_phone(self) -> dict[str, Any]:
+    async def get_risk_verification_phone(self) -> dict[str, Any]:
         """
         Get phone status for risk verification
 
@@ -6014,7 +4926,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_risk_verification_phone(self, phoneNumber: str, phoneType: Any) -> Any:
+    async def create_risk_verification_phone(self, phoneNumber: str, phoneType: Any) -> Any:
         """
         Add phone for risk verification
 
@@ -6032,29 +4944,15 @@ class BillApp(APIApplication):
             risk verifications
         """
         request_body_data = None
-        request_body_data = {
-            "phoneNumber": phoneNumber,
-            "phoneType": phoneType,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"phoneNumber": phoneNumber, "phoneType": phoneType}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/risk-verifications/phone"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_organization_user_roles(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_organization_user_roles(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of user roles
@@ -6075,20 +4973,11 @@ class BillApp(APIApplication):
             roles
         """
         url = f"{self.base_url}/v3/roles"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_organization_user_role(self, roleId: str) -> dict[str, Any]:
+    async def get_organization_user_role(self, roleId: str) -> dict[str, Any]:
         """
         Get user role details
 
@@ -6111,7 +5000,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_budgets(
+    async def list_budgets(
         self,
         nextPage: str | None = None,
         prevPage: str | None = None,
@@ -6141,19 +5030,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/spend/budgets"
         query_params = {
             k: v
-            for k, v in [
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-            ]
+            for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("sort", sort), ("filters", filters)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_budget(
+    async def create_budget(
         self,
         name: str,
         owners: list[str],
@@ -6236,20 +5119,13 @@ class BillApp(APIApplication):
             "overspendBuffer": overspendBuffer,
             "shareFunds": shareFunds,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_budget(self, budgetId: str) -> dict[str, Any]:
+    async def get_budget(self, budgetId: str) -> dict[str, Any]:
         """
         Get budget details
 
@@ -6272,7 +5148,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_budget(self, budgetId: str) -> Any:
+    async def delete_budget(self, budgetId: str) -> Any:
         """
         Delete a budget
 
@@ -6295,7 +5171,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_budget(
+    async def update_budget(
         self,
         budgetId: str,
         name: str | None = None,
@@ -6367,15 +5243,13 @@ class BillApp(APIApplication):
             "overspendBuffer": overspendBuffer,
             "shareFunds": shareFunds,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def list_budget_members(
+    async def list_budget_members(
         self,
         budgetId: str,
         max: int | None = None,
@@ -6409,21 +5283,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members"
         query_params = {
             k: v
-            for k, v in [
-                ("max", max),
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("sort", sort),
-                ("filters", filters),
-            ]
+            for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage), ("sort", sort), ("filters", filters)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def upsert_bulk_budget_users(
-        self, budgetId: str, members: list[dict[str, Any]]
-    ) -> Any:
+    async def upsert_bulk_budget_users(self, budgetId: str, members: list[dict[str, Any]]) -> Any:
         """
         Update a list of budget members in a budget
 
@@ -6443,23 +5309,14 @@ class BillApp(APIApplication):
         if budgetId is None:
             raise ValueError("Missing required parameter 'budgetId'.")
         request_body_data = None
-        request_body_data = {
-            "members": members,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"members": members}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members/bulk"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_budget_member(self, budgetId: str, userId: str) -> dict[str, Any]:
+    async def get_budget_member(self, budgetId: str, userId: str) -> dict[str, Any]:
         """
         Get a single member for a budget
 
@@ -6485,7 +5342,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def upsert_budget_member(
+    async def upsert_budget_member(
         self,
         budgetId: str,
         userId: str,
@@ -6519,26 +5376,14 @@ class BillApp(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "limit": limit,
-            "recurringLimit": recurringLimit,
-            "role": role,
-            "shareBudgetFunds": shareBudgetFunds,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"limit": limit, "recurringLimit": recurringLimit, "role": role, "shareBudgetFunds": shareBudgetFunds}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members/{userId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def delete_budget_member(self, budgetId: str, userId: str) -> Any:
+    async def delete_budget_member(self, budgetId: str, userId: str) -> Any:
         """
         Delete a member from a budget
 
@@ -6564,7 +5409,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def list_cards(
+    async def list_cards(
         self,
         nextPage: str | None = None,
         prevPage: str | None = None,
@@ -6594,19 +5439,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/spend/cards"
         query_params = {
             k: v
-            for k, v in [
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-            ]
+            for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("sort", sort), ("filters", filters)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_budget_card(
+    async def create_budget_card(
         self,
         name: str,
         userId: str,
@@ -6647,20 +5486,13 @@ class BillApp(APIApplication):
             "expirationDate": expirationDate,
             "shareBudgetFunds": shareBudgetFunds,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/cards"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_card(self, cardId: str) -> dict[str, Any]:
+    async def get_card(self, cardId: str) -> dict[str, Any]:
         """
         Get card details
 
@@ -6683,7 +5515,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_card(self, cardId: str, reason: Any | None = None) -> Any:
+    async def delete_card(self, cardId: str, reason: Any | None = None) -> Any:
         """
         Delete a card
 
@@ -6707,7 +5539,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_card(
+    async def update_card(
         self,
         cardId: str,
         name: str | None = None,
@@ -6752,15 +5584,13 @@ class BillApp(APIApplication):
             "shareBudgetFunds": shareBudgetFunds,
             "recurring": recurring,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/cards/{cardId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def get_pan_jwt(self, cardId: str) -> dict[str, Any]:
+    async def get_pan_jwt(self, cardId: str) -> dict[str, Any]:
         """
         Get PAN JWT
 
@@ -6783,7 +5613,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_custom_fields(
+    async def list_custom_fields(
         self,
         max: int | None = None,
         nextPage: str | None = None,
@@ -6813,19 +5643,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/spend/custom-fields"
         query_params = {
             k: v
-            for k, v in [
-                ("max", max),
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("sort", sort),
-                ("filters", filters),
-            ]
+            for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage), ("sort", sort), ("filters", filters)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_custom_field(
+    async def create_custom_field(
         self,
         name: str,
         allowCustomValues: bool,
@@ -6875,20 +5699,13 @@ class BillApp(APIApplication):
             "selectedBudgetIds": selectedBudgetIds,
             "requiredBudgetIds": requiredBudgetIds,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/custom-fields"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_custom_field(self, customFieldId: str) -> dict[str, Any]:
+    async def get_custom_field(self, customFieldId: str) -> dict[str, Any]:
         """
         Get custom field details
 
@@ -6911,7 +5728,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_custom_field(self, customFieldId: str) -> Any:
+    async def delete_custom_field(self, customFieldId: str) -> Any:
         """
         Delete a custom field
 
@@ -6934,7 +5751,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_custom_field(
+    async def update_custom_field(
         self,
         customFieldId: str,
         name: str | None = None,
@@ -6982,15 +5799,13 @@ class BillApp(APIApplication):
             "selectedBudgetIds": selectedBudgetIds,
             "requiredBudgetIds": requiredBudgetIds,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def list_custom_field_values(
+    async def list_custom_field_values(
         self,
         customFieldId: str,
         max: int | None = None,
@@ -7021,21 +5836,12 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'.")
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}/values"
         query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("filters", filters),
-            ]
-            if v is not None
+            k: v for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage), ("filters", filters)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_custom_field_values(
-        self, customFieldId: str, values: list[str]
-    ) -> dict[str, Any]:
+    async def create_custom_field_values(self, customFieldId: str, values: list[str]) -> dict[str, Any]:
         """
         Create custom field values
 
@@ -7055,23 +5861,14 @@ class BillApp(APIApplication):
         if customFieldId is None:
             raise ValueError("Missing required parameter 'customFieldId'.")
         request_body_data = None
-        request_body_data = {
-            "values": values,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"values": values}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}/values"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def delete_custom_field_value(self, customFieldId: str) -> Any:
+    async def delete_custom_field_value(self, customFieldId: str) -> Any:
         """
         Delete custom field values
 
@@ -7094,9 +5891,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def get_custom_field_values(
-        self, customFieldId: str, customFieldValueId: str
-    ) -> dict[str, Any]:
+    async def get_custom_field_values(self, customFieldId: str, customFieldValueId: str) -> dict[str, Any]:
         """
         Get custom field value
 
@@ -7122,7 +5917,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_reimbursements(
+    async def list_reimbursements(
         self,
         nextPage: str | None = None,
         prevPage: str | None = None,
@@ -7152,19 +5947,13 @@ class BillApp(APIApplication):
         url = f"{self.base_url}/v3/spend/reimbursements"
         query_params = {
             k: v
-            for k, v in [
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-            ]
+            for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("sort", sort), ("filters", filters)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_reimbursement(
+    async def create_reimbursement(
         self,
         userId: str,
         budgetId: str,
@@ -7208,20 +5997,13 @@ class BillApp(APIApplication):
             "receipts": receipts,
             "customFields": customFields,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/reimbursements"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def create_image_upload_url(self) -> dict[str, Any]:
+    async def create_image_upload_url(self) -> dict[str, Any]:
         """
         Create an image upload URL for a reimbursement.
 
@@ -7237,15 +6019,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/spend/reimbursements/image-upload-url"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_reimbursement(self, reimbursementId: str) -> dict[str, Any]:
+    async def get_reimbursement(self, reimbursementId: str) -> dict[str, Any]:
         """
         Get reimbursement details
 
@@ -7268,7 +6045,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_reimbursement(self, reimbursementId: str) -> Any:
+    async def delete_reimbursement(self, reimbursementId: str) -> Any:
         """
         Delete a reimbursement
 
@@ -7291,7 +6068,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_reimbursement(
+    async def update_reimbursement(
         self,
         reimbursementId: str,
         userId: str | None = None,
@@ -7339,17 +6116,13 @@ class BillApp(APIApplication):
             "receipts": receipts,
             "customFields": customFields,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/reimbursements/{reimbursementId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def approve_or_deny_reimbursement(
-        self, reimbursementId: str, action: Any, note: str | None = None
-    ) -> dict[str, Any]:
+    async def approve_or_deny_reimbursement(self, reimbursementId: str, action: Any, note: str | None = None) -> dict[str, Any]:
         """
         Approve or deny a reimbursement
 
@@ -7370,24 +6143,14 @@ class BillApp(APIApplication):
         if reimbursementId is None:
             raise ValueError("Missing required parameter 'reimbursementId'.")
         request_body_data = None
-        request_body_data = {
-            "action": action,
-            "note": note,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"action": action, "note": note}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/reimbursements/{reimbursementId}/action"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_transactions(
+    async def list_transactions(
         self,
         max: int | None = None,
         nextPage: str | None = None,
@@ -7432,9 +6195,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_transaction(
-        self, transactionId: str, showCustomFieldIds: str | None = None
-    ) -> dict[str, Any]:
+    async def get_transaction(self, transactionId: str, showCustomFieldIds: str | None = None) -> dict[str, Any]:
         """
         Get transaction details
 
@@ -7454,15 +6215,11 @@ class BillApp(APIApplication):
         if transactionId is None:
             raise ValueError("Missing required parameter 'transactionId'.")
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}"
-        query_params = {
-            k: v
-            for k, v in [("showCustomFieldIds", showCustomFieldIds)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("showCustomFieldIds", showCustomFieldIds)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_transaction(self, transactionId: str, budgetId: str) -> dict[str, Any]:
+    async def update_transaction(self, transactionId: str, budgetId: str) -> dict[str, Any]:
         """
         Update transaction
 
@@ -7482,25 +6239,14 @@ class BillApp(APIApplication):
         if transactionId is None:
             raise ValueError("Missing required parameter 'transactionId'.")
         request_body_data = None
-        request_body_data = {
-            "budgetId": budgetId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"budgetId": budgetId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_transaction_custom_fields(
-        self, transactionId: str, filters: str | None = None
-    ) -> dict[str, Any]:
+    async def list_transaction_custom_fields(self, transactionId: str, filters: str | None = None) -> dict[str, Any]:
         """
         Get transaction custom field details
 
@@ -7524,9 +6270,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_transaction_custom_fields(
-        self, transactionId: str, customFields: list[dict[str, Any]]
-    ) -> dict[str, Any]:
+    async def update_transaction_custom_fields(self, transactionId: str, customFields: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Update a custom field and values on a transaction
 
@@ -7546,29 +6290,15 @@ class BillApp(APIApplication):
         if transactionId is None:
             raise ValueError("Missing required parameter 'transactionId'.")
         request_body_data = None
-        request_body_data = {
-            "customFields": customFields,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"customFields": customFields}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}/custom-fields"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_transaction_custom_field_values(
-        self,
-        transactionId: str,
-        customFieldId: str,
-        max: int | None = None,
-        nextPage: str | None = None,
-        prevPage: str | None = None,
+    async def list_transaction_custom_field_values(
+        self, transactionId: str, customFieldId: str, max: int | None = None, nextPage: str | None = None, prevPage: str | None = None
     ) -> dict[str, Any]:
         """
         Get transaction custom field value details
@@ -7594,20 +6324,12 @@ class BillApp(APIApplication):
         if customFieldId is None:
             raise ValueError("Missing required parameter 'customFieldId'.")
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}/custom-fields/{customFieldId}/values"
-        query_params = {
-            k: v
-            for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_users(
-        self,
-        nextPage: str | None = None,
-        prevPage: str | None = None,
-        max: int | None = None,
-        filters: str | None = None,
+    async def list_users(
+        self, nextPage: str | None = None, prevPage: str | None = None, max: int | None = None, filters: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of users
@@ -7629,26 +6351,12 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/spend/users"
         query_params = {
-            k: v
-            for k, v in [
-                ("nextPage", nextPage),
-                ("prevPage", prevPage),
-                ("max", max),
-                ("filters", filters),
-            ]
-            if v is not None
+            k: v for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("filters", filters)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_user(
-        self,
-        firstName: str,
-        lastName: str,
-        email: str,
-        role: Any,
-        dateOfBirth: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_user(self, firstName: str, lastName: str, email: str, role: Any, dateOfBirth: str | None = None) -> dict[str, Any]:
         """
         Create a user
 
@@ -7669,27 +6377,14 @@ class BillApp(APIApplication):
             users
         """
         request_body_data = None
-        request_body_data = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "email": email,
-            "role": role,
-            "dateOfBirth": dateOfBirth,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"firstName": firstName, "lastName": lastName, "email": email, "role": role, "dateOfBirth": dateOfBirth}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_current_user(self) -> dict[str, Any]:
+    async def get_current_user(self) -> dict[str, Any]:
         """
         Get current user details
 
@@ -7707,7 +6402,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_user(self, userId: str) -> dict[str, Any]:
+    async def get_user(self, userId: str) -> dict[str, Any]:
         """
         Get user details
 
@@ -7730,7 +6425,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_user(self, userId: str) -> Any:
+    async def delete_user(self, userId: str) -> Any:
         """
         Delete a user
 
@@ -7753,7 +6448,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def update_user(
+    async def update_user(
         self,
         userId: str,
         firstName: str | None = None,
@@ -7785,27 +6480,15 @@ class BillApp(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "email": email,
-            "role": role,
-            "dateOfBirth": dateOfBirth,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"firstName": firstName, "lastName": lastName, "email": email, "role": role, "dateOfBirth": dateOfBirth}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/users/{userId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def list_organization_users(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_organization_users(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of users
@@ -7826,26 +6509,12 @@ class BillApp(APIApplication):
             organization users
         """
         url = f"{self.base_url}/v3/users"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_organization_user(
-        self,
-        firstName: str,
-        lastName: str,
-        email: str,
-        roleId: str,
-        acceptTermsOfService: bool,
+    async def create_organization_user(
+        self, firstName: str, lastName: str, email: str, roleId: str, acceptTermsOfService: bool
     ) -> dict[str, Any]:
         """
         Create a user
@@ -7876,20 +6545,13 @@ class BillApp(APIApplication):
             "roleId": roleId,
             "acceptTermsOfService": acceptTermsOfService,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_organization_user(self, userId: str) -> dict[str, Any]:
+    async def get_organization_user(self, userId: str) -> dict[str, Any]:
         """
         Get user details
 
@@ -7912,12 +6574,8 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_organization_user(
-        self,
-        userId: str,
-        firstName: str | None = None,
-        lastName: str | None = None,
-        roleId: str | None = None,
+    async def update_organization_user(
+        self, userId: str, firstName: str | None = None, lastName: str | None = None, roleId: str | None = None
     ) -> dict[str, Any]:
         """
         Update a user
@@ -7942,20 +6600,14 @@ class BillApp(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "firstName": firstName,
-            "lastName": lastName,
-            "roleId": roleId,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"firstName": firstName, "lastName": lastName, "roleId": roleId}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/users/{userId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_organization_user(self, userId: str) -> dict[str, Any]:
+    async def archive_organization_user(self, userId: str) -> dict[str, Any]:
         """
         Archive a user
 
@@ -7976,15 +6628,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/users/{userId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def restore_organization_user(self, userId: str) -> dict[str, Any]:
+    async def restore_organization_user(self, userId: str) -> dict[str, Any]:
         """
         Restore an archived user
 
@@ -8005,20 +6652,11 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/users/{userId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def list_vendors(
-        self,
-        max: int | None = None,
-        sort: str | None = None,
-        filters: str | None = None,
-        page: str | None = None,
+    async def list_vendors(
+        self, max: int | None = None, sort: str | None = None, filters: str | None = None, page: str | None = None
     ) -> dict[str, Any]:
         """
         Get list of vendors
@@ -8039,20 +6677,11 @@ class BillApp(APIApplication):
             vendors
         """
         url = f"{self.base_url}/v3/vendors"
-        query_params = {
-            k: v
-            for k, v in [
-                ("max", max),
-                ("sort", sort),
-                ("filters", filters),
-                ("page", page),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_vendor(
+    async def create_vendor(
         self,
         name: str,
         address: Any,
@@ -8107,20 +6736,13 @@ class BillApp(APIApplication):
             "billCurrency": billCurrency,
             "autoPay": autoPay,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/vendors"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def create_bulk_vendor(self, items: list[dict[str, Any]]) -> dict[str, Any]:
+    async def create_bulk_vendor(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """
         Create multiple vendors
 
@@ -8136,21 +6758,13 @@ class BillApp(APIApplication):
             vendors
         """
         request_body_data = None
-        # Using array parameter 'items' directly as request body
         request_body_data = items
         url = f"{self.base_url}/v3/vendors/bulk"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_intl_config(
-        self, country: Any, billCurrency: Any, accountType: Any
-    ) -> dict[str, Any]:
+    async def get_intl_config(self, country: Any, billCurrency: Any, accountType: Any) -> dict[str, Any]:
         """
         Get international payments configuration
 
@@ -8170,18 +6784,12 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/vendors/configuration/international-payments"
         query_params = {
-            k: v
-            for k, v in [
-                ("country", country),
-                ("billCurrency", billCurrency),
-                ("accountType", accountType),
-            ]
-            if v is not None
+            k: v for k, v in [("country", country), ("billCurrency", billCurrency), ("accountType", accountType)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_vendor(self, vendorId: str) -> dict[str, Any]:
+    async def get_vendor(self, vendorId: str) -> dict[str, Any]:
         """
         Get vendor details
 
@@ -8204,7 +6812,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_vendor(
+    async def update_vendor(
         self,
         vendorId: str,
         name: str | None = None,
@@ -8263,15 +6871,13 @@ class BillApp(APIApplication):
             "billCurrency": billCurrency,
             "autoPay": autoPay,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/vendors/{vendorId}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def archive_vendor(self, vendorId: str) -> dict[str, Any]:
+    async def archive_vendor(self, vendorId: str) -> dict[str, Any]:
         """
         Archive a vendor
 
@@ -8292,15 +6898,10 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/vendors/{vendorId}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_vendor_bank_account(self, vendorId: str) -> dict[str, Any]:
+    async def get_vendor_bank_account(self, vendorId: str) -> dict[str, Any]:
         """
         Get vendor bank account details
 
@@ -8323,7 +6924,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_vendor_bank_account(
+    async def create_vendor_bank_account(
         self,
         vendorId: str,
         accountNumber: str,
@@ -8374,20 +6975,13 @@ class BillApp(APIApplication):
             "regulatoryFields": regulatoryFields,
             "paymentCurrency": paymentCurrency,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/vendors/{vendorId}/bank-account"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def delete_vendor_bank_account(self, vendorId: str) -> Any:
+    async def delete_vendor_bank_account(self, vendorId: str) -> Any:
         """
         Delete a vendor bank account
 
@@ -8410,7 +7004,7 @@ class BillApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def get_configuration_by_vendor_id(self, vendorId: str) -> dict[str, Any]:
+    async def get_configuration_by_vendor_id(self, vendorId: str) -> dict[str, Any]:
         """
         Get vendor configuration
 
@@ -8433,7 +7027,7 @@ class BillApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def restore_vendor(self, vendorId: str) -> dict[str, Any]:
+    async def restore_vendor(self, vendorId: str) -> dict[str, Any]:
         """
         Restore an archived vendor
 
@@ -8454,12 +7048,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/vendors/{vendorId}/restore"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     def list_tools(self):

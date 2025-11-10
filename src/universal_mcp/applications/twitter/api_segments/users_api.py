@@ -7,9 +7,7 @@ class UsersApi(APISegmentBase):
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
-    def get_users_by_ids(
-        self, ids, user_fields=None, expansions=None, tweet_fields=None
-    ) -> dict[str, Any]:
+    def get_users_by_ids(self, ids, user_fields=None, expansions=None, tweet_fields=None) -> dict[str, Any]:
         """
         Retrieves detailed information for multiple users in a single API request, specified by a list of their unique IDs. Unlike `find_user_by_id`, which fetches a single user, this function performs a bulk lookup and allows for response customization with optional fields and expansions.
 
@@ -44,9 +42,7 @@ class UsersApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_users_by_usernames(
-        self, usernames, user_fields=None, expansions=None, tweet_fields=None
-    ) -> dict[str, Any]:
+    def get_users_by_usernames(self, usernames, user_fields=None, expansions=None, tweet_fields=None) -> dict[str, Any]:
         """
         Fetches public data for a batch of users specified by their usernames. This function supports retrieving multiple users in a single request, unlike `find_user_by_username`. It allows for data customization through optional fields and expansions.
 
@@ -81,9 +77,7 @@ class UsersApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def find_user_by_username(
-        self, username, user_fields=None, expansions=None, tweet_fields=None
-    ) -> dict[str, Any]:
+    def find_user_by_username(self, username, user_fields=None, expansions=None, tweet_fields=None) -> dict[str, Any]:
         """
         Retrieves detailed information for a single user specified by their username, with options to include additional user, tweet, and expansion fields. This differs from `find_users_by_username`, which fetches data for multiple users in a single request.
 
@@ -119,9 +113,7 @@ class UsersApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_users_compliance_stream(
-        self, partition, backfill_minutes=None, start_time=None, end_time=None
-    ) -> Any:
+    def get_users_compliance_stream(self, partition, backfill_minutes=None, start_time=None, end_time=None) -> Any:
         """
         Streams real-time user compliance events, such as account deletions or suspensions, from a specified data partition. Allows for backfilling missed data after a disconnection and filtering the event stream by a specific time range for targeted data retrieval.
 
@@ -156,9 +148,7 @@ class UsersApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_authenticated_user(
-        self, user_fields=None, expansions=None, tweet_fields=None
-    ) -> dict[str, Any]:
+    def get_authenticated_user(self, user_fields=None, expansions=None, tweet_fields=None) -> dict[str, Any]:
         """
         Retrieves detailed information about the authenticated user making the request. Optional parameters allow for customizing the returned user and tweet data fields and including expanded objects. This differs from other 'find' functions as it requires no ID or username.
 
@@ -238,9 +228,7 @@ class UsersApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def find_user_by_id(
-        self, id, user_fields=None, expansions=None, tweet_fields=None
-    ) -> dict[str, Any]:
+    def find_user_by_id(self, id, user_fields=None, expansions=None, tweet_fields=None) -> dict[str, Any]:
         """
         Retrieves detailed information for a single user specified by their unique ID. This function allows for response customization using optional fields and expansions. It differs from `find_users_by_id`, which fetches data for multiple users in a single request.
 
@@ -403,9 +391,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"tweet_id": tweet_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/bookmarks"
         query_params = {}
         response = self._post(
@@ -515,9 +501,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"list_id": list_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/followed_lists"
         query_params = {}
         response = self._post(
@@ -675,9 +659,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"target_user_id": target_user_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/following"
         query_params = {}
         response = self._post(
@@ -768,9 +750,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"tweet_id": tweet_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/likes"
         query_params = {}
         response = self._post(
@@ -997,9 +977,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"target_user_id": target_user_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/muting"
         query_params = {}
         response = self._post(
@@ -1059,9 +1037,7 @@ class UsersApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_user_pinned_lists(
-        self, id, list_fields=None, expansions=None, user_fields=None
-    ) -> dict[str, Any]:
+    def get_user_pinned_lists(self, id, list_fields=None, expansions=None, user_fields=None) -> dict[str, Any]:
         """
         Retrieves the collection of lists pinned by a specific user, identified by their ID. Optional parameters allow for customizing the returned list and user data fields, and including expansions. This is distinct from fetching lists a user follows or owns.
 
@@ -1119,9 +1095,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"list_id": list_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/pinned_lists"
         query_params = {}
         response = self._post(
@@ -1183,9 +1157,7 @@ class UsersApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"tweet_id": tweet_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/users/{id}/retweets"
         query_params = {}
         response = self._post(

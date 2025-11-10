@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -11,20 +10,10 @@ class HeygenApp(APIApplication):
 
     def _get_headers(self) -> dict[str, Any]:
         credentials = self.integration.get_credentials()
-        api_key = (
-            credentials.get("api_key")
-            or credentials.get("API_KEY")
-            or credentials.get("apiKey")
-        )
-        return {
-            "x-api-key": f"{api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        return {"x-api-key": f"{api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 
-    def get_v1_voice_list(
-        self,
-    ) -> Any:
+    async def get_v1_voice_list(self) -> Any:
         """
         Retrieves the list of available voices from the v1 voice API endpoint.
 
@@ -46,9 +35,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v1_avatar_list(
-        self,
-    ) -> Any:
+    async def get_v1_avatar_list(self) -> Any:
         """
         Retrieves a list of available avatars from the v1 API endpoint.
 
@@ -70,9 +57,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_voices(
-        self,
-    ) -> Any:
+    async def get_v2_voices(self) -> Any:
         """
         Retrieves the list of available v2 voices from the API endpoint.
 
@@ -94,9 +79,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_avatars(
-        self,
-    ) -> Any:
+    async def get_v2_avatars(self) -> Any:
         """
         Retrieves a list of avatar objects from the /v2/avatars API endpoint.
 
@@ -118,9 +101,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v1_video_list(
-        self,
-    ) -> Any:
+    async def get_v1_video_list(self) -> Any:
         """
         Retrieves a list of videos from the v1 API endpoint.
 
@@ -142,15 +123,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v2_video_generate(
-        self,
-        video_inputs,
-        title=None,
-        test=None,
-        callback_id=None,
-        dimension=None,
-        aspect_ratio=None,
-    ) -> Any:
+    async def post_v2_video_generate(self, video_inputs, title=None, test=None, callback_id=None, dimension=None, aspect_ratio=None) -> Any:
         """
         Submits a request to generate a video using specified input parameters via the v2 video generate API endpoint.
 
@@ -189,7 +162,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_v1_video(self, video_id=None) -> Any:
+    async def delete_v1_video(self, video_id=None) -> Any:
         """
         Deletes a video using the v1 API endpoint with the specified video ID.
 
@@ -211,9 +184,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_templates(
-        self,
-    ) -> Any:
+    async def get_v2_templates(self) -> Any:
         """
         Retrieves the list of v2 templates from the API endpoint.
 
@@ -235,7 +206,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_template_by_id(self, id) -> Any:
+    async def get_v2_template_by_id(self, id) -> Any:
         """
         Retrieves a v2 template resource by its unique identifier.
 
@@ -260,9 +231,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v2_template_generate_by_id(
-        self, id, title, variables, test=None, caption=None, dimension=None
-    ) -> Any:
+    async def post_v2_template_generate_by_id(self, id, title, variables, test=None, caption=None, dimension=None) -> Any:
         """
         Generates content from a template specified by ID using the provided title and variables, and returns the generation result.
 
@@ -290,13 +259,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'title'")
         if variables is None:
             raise ValueError("Missing required parameter 'variables'")
-        request_body = {
-            "title": title,
-            "variables": variables,
-            "test": test,
-            "caption": caption,
-            "dimension": dimension,
-        }
+        request_body = {"title": title, "variables": variables, "test": test, "caption": caption, "dimension": dimension}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/template/{id}/generate"
         query_params = {}
@@ -304,9 +267,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_video_translate_target_languages(
-        self,
-    ) -> Any:
+    async def get_v2_video_translate_target_languages(self) -> Any:
         """
         Retrieves the list of supported target languages for video translation via the v2 API.
 
@@ -328,14 +289,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v2_video_translate(
-        self,
-        video_url,
-        output_language,
-        title=None,
-        translate_audio_only=None,
-        speaker_num=None,
-    ) -> Any:
+    async def post_v2_video_translate(self, video_url, output_language, title=None, translate_audio_only=None, speaker_num=None) -> Any:
         """
         Submits a video translation request and returns the API response as JSON.
 
@@ -374,7 +328,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_video_translate_status_by_id(self, id) -> Any:
+    async def get_v2_video_translate_status_by_id(self, id) -> Any:
         """
         Retrieves the status of a video translation job by its unique identifier.
 
@@ -399,7 +353,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_streaming_new(self, quality=None) -> Any:
+    async def post_streaming_new(self, quality=None) -> Any:
         """
         Initiates a new streaming session with optional quality parameter and returns the server's JSON response.
 
@@ -415,9 +369,7 @@ class HeygenApp(APIApplication):
         Tags:
             post, streaming, async-job, start, api
         """
-        request_body = {
-            "quality": quality,
-        }
+        request_body = {"quality": quality}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.new"
         query_params = {}
@@ -425,9 +377,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_streaming_list(
-        self,
-    ) -> Any:
+    async def get_streaming_list(self) -> Any:
         """
         Retrieves the list of available streaming resources from the remote API.
 
@@ -449,7 +399,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_streaming_ice(self, session_id, candidate) -> Any:
+    async def post_streaming_ice(self, session_id, candidate) -> Any:
         """
         Sends an ICE candidate for a streaming session to the server and returns the JSON response.
 
@@ -471,10 +421,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'session_id'")
         if candidate is None:
             raise ValueError("Missing required parameter 'candidate'")
-        request_body = {
-            "session_id": session_id,
-            "candidate": candidate,
-        }
+        request_body = {"session_id": session_id, "candidate": candidate}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.ice"
         query_params = {}
@@ -482,7 +429,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_streaming_task(self, session_id, text) -> Any:
+    async def post_streaming_task(self, session_id, text) -> Any:
         """
         Submits a streaming task for the specified session and text input, returning the response from the remote API.
 
@@ -504,10 +451,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'session_id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {
-            "session_id": session_id,
-            "text": text,
-        }
+        request_body = {"session_id": session_id, "text": text}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.task"
         query_params = {}
@@ -515,7 +459,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_streaming_stop(self, session_id) -> Any:
+    async def post_streaming_stop(self, session_id) -> Any:
         """
         Stops an ongoing streaming session by sending a stop request for the specified session ID.
 
@@ -534,9 +478,7 @@ class HeygenApp(APIApplication):
         """
         if session_id is None:
             raise ValueError("Missing required parameter 'session_id'")
-        request_body = {
-            "session_id": session_id,
-        }
+        request_body = {"session_id": session_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.stop"
         query_params = {}
@@ -544,7 +486,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_streaming_interrupt(self, session_id) -> Any:
+    async def post_streaming_interrupt(self, session_id) -> Any:
         """
         Sends a request to interrupt an active streaming session identified by the given session ID.
 
@@ -563,9 +505,7 @@ class HeygenApp(APIApplication):
         """
         if session_id is None:
             raise ValueError("Missing required parameter 'session_id'")
-        request_body = {
-            "session_id": session_id,
-        }
+        request_body = {"session_id": session_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.interrupt"
         query_params = {}
@@ -573,7 +513,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_streaming_create_token(self, expiry=None) -> Any:
+    async def post_streaming_create_token(self, expiry=None) -> Any:
         """
         Creates a new streaming token with an optional expiry time by sending a POST request to the streaming token API endpoint.
 
@@ -589,9 +529,7 @@ class HeygenApp(APIApplication):
         Tags:
             create, streaming, token, api
         """
-        request_body = {
-            "expiry": expiry,
-        }
+        request_body = {"expiry": expiry}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.create_token"
         query_params = {}
@@ -599,9 +537,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_streaming_avatar_list(
-        self,
-    ) -> Any:
+    async def get_streaming_avatar_list(self) -> Any:
         """
         Retrieves a list of available streaming avatars from the API endpoint.
 
@@ -623,9 +559,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v1_webhook_list(
-        self,
-    ) -> Any:
+    async def get_v1_webhook_list(self) -> Any:
         """
         Retrieves a list of all registered webhooks via the v1 API endpoint.
 
@@ -647,7 +581,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v1_webhook_endpoint_add(self, url, events) -> Any:
+    async def post_v1_webhook_endpoint_add(self, url, events) -> Any:
         """
         Registers a new webhook endpoint with the specified URL and events.
 
@@ -669,10 +603,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'url'")
         if events is None:
             raise ValueError("Missing required parameter 'events'")
-        request_body = {
-            "url": url,
-            "events": events,
-        }
+        request_body = {"url": url, "events": events}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/webhook/endpoint.add"
         query_params = {}
@@ -680,7 +611,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_v1_webhook_endpoint_by_id(self, endpoint_id) -> Any:
+    async def delete_v1_webhook_endpoint_by_id(self, endpoint_id) -> Any:
         """
         Deletes a webhook endpoint identified by its ID via a DELETE request to the v1 API.
 
@@ -705,9 +636,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v1_webhook_endpoint_list(
-        self,
-    ) -> Any:
+    async def get_v1_webhook_endpoint_list(self) -> Any:
         """
         Retrieves a list of webhook endpoints from the v1 API.
 
@@ -729,9 +658,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v1_talking_photo_list(
-        self,
-    ) -> Any:
+    async def get_v1_talking_photo_list(self) -> Any:
         """
         Retrieves the list of talking photos from the v1 API endpoint.
 
@@ -753,7 +680,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_v2_talking_photo_by_id(self, id) -> Any:
+    async def delete_v2_talking_photo_by_id(self, id) -> Any:
         """
         Deletes a v2 talking photo resource identified by its unique ID.
 
@@ -778,7 +705,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_personalized_video_add_contact(self, project_id, variables_list) -> Any:
+    async def post_personalized_video_add_contact(self, project_id, variables_list) -> Any:
         """
         Adds a new contact to a personalized video project by sending the contact variables to the server.
 
@@ -800,10 +727,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if variables_list is None:
             raise ValueError("Missing required parameter 'variables_list'")
-        request_body = {
-            "project_id": project_id,
-            "variables_list": variables_list,
-        }
+        request_body = {"project_id": project_id, "variables_list": variables_list}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/personalized_video/add_contact"
         query_params = {}
@@ -811,7 +735,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_personalized_video_audience_detail(self, id=None) -> Any:
+    async def get_personalized_video_audience_detail(self, id=None) -> Any:
         """
         Retrieves detailed information about a personalized video audience by ID.
 
@@ -833,7 +757,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_personalized_video_project_detail(self, id=None) -> Any:
+    async def get_personalized_video_project_detail(self, id=None) -> Any:
         """
         Retrieves the details of a personalized video project by its unique identifier.
 
@@ -855,9 +779,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v2_user_remaining_quota(
-        self,
-    ) -> Any:
+    async def get_v2_user_remaining_quota(self) -> Any:
         """
         Retrieves the current remaining quota information for the user from the v2 API endpoint.
 
@@ -879,7 +801,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v1_asset_upload(self, request_body=None) -> Any:
+    async def post_v1_asset_upload(self, request_body=None) -> Any:
         """
         Uploads an asset to the server using a POST request to the '/v1/asset' endpoint.
 
@@ -901,7 +823,7 @@ class HeygenApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_v1_video_status(self, video_id=None) -> Any:
+    async def get_v1_video_status(self, video_id=None) -> Any:
         """
         Retrieves the status of a video by making a GET request to the v1 video_status endpoint.
 

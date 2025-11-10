@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -11,15 +10,9 @@ class CrustdataApp(APIApplication):
 
     def _get_headers(self) -> dict[str, Any]:
         api_key = self.integration.get_credentials().get("api_key")
-        return {
-            "Authorization": f"Token {api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        return {"Authorization": f"Token {api_key}", "Content-Type": "application/json", "Accept": "application/json"}
 
-    def screen_companies(
-        self, metrics, filters, offset, count, sorts
-    ) -> dict[str, Any]:
+    async def screen_companies(self, metrics, filters, offset, count, sorts) -> dict[str, Any]:
         """
         Screens companies based on specified metrics, filters, sorting, and pagination parameters, and returns the result as a JSON-compatible dictionary.
 
@@ -50,13 +43,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {
-            "metrics": metrics,
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-        }
+        request_body = {"metrics": metrics, "filters": filters, "offset": offset, "count": count, "sorts": sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/screen/"
         query_params = {}
@@ -64,7 +51,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_headcount_timeseries(self, filters, offset, count, sorts) -> dict[str, Any]:
+    async def get_headcount_timeseries(self, filters, offset, count, sorts) -> dict[str, Any]:
         """
         Retrieve headcount timeseries data from the data lab endpoint using the provided filters, pagination, and sorting options.
 
@@ -92,12 +79,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-        }
+        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/headcount_timeseries/"
         query_params = {}
@@ -105,9 +87,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_headcount_by_facet_timeseries(
-        self, filters, offset, count, sorts
-    ) -> dict[str, Any]:
+    async def get_headcount_by_facet_timeseries(self, filters, offset, count, sorts) -> dict[str, Any]:
         """
         Retrieves headcount timeseries data aggregated by specified facets using provided filters and sorting options.
 
@@ -135,12 +115,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-        }
+        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/headcount_by_facet_timeseries/"
         query_params = {}
@@ -148,9 +123,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_funding_milestone_timeseries(
-        self, filters, offset, count, sorts
-    ) -> dict[str, Any]:
+    async def get_funding_milestone_timeseries(self, filters, offset, count, sorts) -> dict[str, Any]:
         """
         Retrieves a time series of funding milestone data based on specified filters, pagination, and sorting options.
 
@@ -178,12 +151,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-        }
+        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/funding_milestone_timeseries/"
         query_params = {}
@@ -191,9 +159,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_decision_makers(
-        self, filters, offset, count, sorts, decision_maker_titles
-    ) -> dict[str, Any]:
+    async def get_decision_makers(self, filters, offset, count, sorts, decision_maker_titles) -> dict[str, Any]:
         """
         Retrieves decision makers based on specified filters and parameters.
 
@@ -238,7 +204,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_web_traffic(self, filters, offset, count, sorts) -> dict[str, Any]:
+    async def get_web_traffic(self, filters, offset, count, sorts) -> dict[str, Any]:
         """
         Retrieves web traffic data based on provided filters, pagination, and sorting criteria.
 
@@ -266,12 +232,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-        }
+        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/webtraffic/"
         query_params = {}
@@ -279,7 +240,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_investor_portfolio(self, investor_name) -> dict[str, Any]:
+    async def get_investor_portfolio(self, investor_name) -> dict[str, Any]:
         """
         Retrieves the investment portfolio information for a specified investor.
 
@@ -299,16 +260,12 @@ class CrustdataApp(APIApplication):
         if investor_name is None:
             raise ValueError("Missing required parameter 'investor_name'")
         url = f"{self.base_url}/data_lab/investor_portfolio"
-        query_params = {
-            k: v for k, v in [("investor_name", investor_name)] if v is not None
-        }
+        query_params = {k: v for k, v in [("investor_name", investor_name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_job_listings(
-        self, tickers, dataset, filters, offset, count, sorts
-    ) -> dict[str, Any]:
+    async def get_job_listings(self, tickers, dataset, filters, offset, count, sorts) -> dict[str, Any]:
         """
         Retrieves job listings data based on specified parameters.
 
@@ -342,14 +299,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {
-            "tickers": tickers,
-            "dataset": dataset,
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-        }
+        request_body = {"tickers": tickers, "dataset": dataset, "filters": filters, "offset": offset, "count": count, "sorts": sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/job_listings/Table/"
         query_params = {}
@@ -357,7 +307,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_persons(self, job_id) -> dict[str, Any]:
+    async def search_persons(self, job_id) -> dict[str, Any]:
         """
         Submits a search request for persons associated with a given asynchronous job and returns the search results as a dictionary.
 
@@ -376,9 +326,7 @@ class CrustdataApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        request_body = {
-            "job_id": job_id,
-        }
+        request_body = {"job_id": job_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/person/search"
         query_params = {}
@@ -386,7 +334,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_companies(self, filters, page) -> dict[str, Any]:
+    async def search_companies(self, filters, page) -> dict[str, Any]:
         """
         Searches for companies using specified filters and pagination parameters.
 
@@ -408,10 +356,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'filters'")
         if page is None:
             raise ValueError("Missing required parameter 'page'")
-        request_body = {
-            "filters": filters,
-            "page": page,
-        }
+        request_body = {"filters": filters, "page": page}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/company/search"
         query_params = {}
@@ -419,9 +364,7 @@ class CrustdataApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def enrich_person(
-        self, linkedin_profile_url, enrich_realtime, fields
-    ) -> dict[str, Any]:
+    async def enrich_person(self, linkedin_profile_url, enrich_realtime, fields) -> dict[str, Any]:
         """
         Retrieves enriched person data from LinkedIn profile using the provided profile URL, enrichment mode, and requested fields.
 
@@ -449,18 +392,14 @@ class CrustdataApp(APIApplication):
         url = f"{self.base_url}/screener/person/enrich"
         query_params = {
             k: v
-            for k, v in [
-                ("linkedin_profile_url", linkedin_profile_url),
-                ("enrich_realtime", enrich_realtime),
-                ("fields", fields),
-            ]
+            for k, v in [("linkedin_profile_url", linkedin_profile_url), ("enrich_realtime", enrich_realtime), ("fields", fields)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def enrich_company(self, company_domain, enrich_realtime) -> dict[str, Any]:
+    async def enrich_company(self, company_domain, enrich_realtime) -> dict[str, Any]:
         """
         Retrieves enriched company data using the provided company domain and enrichment mode.
 
@@ -483,19 +422,12 @@ class CrustdataApp(APIApplication):
         if enrich_realtime is None:
             raise ValueError("Missing required parameter 'enrich_realtime'")
         url = f"{self.base_url}/screener/company"
-        query_params = {
-            k: v
-            for k, v in [
-                ("company_domain", company_domain),
-                ("enrich_realtime", enrich_realtime),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("company_domain", company_domain), ("enrich_realtime", enrich_realtime)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_linked_in_posts(self, company_linkedin_url) -> dict[str, Any]:
+    async def get_linked_in_posts(self, company_linkedin_url) -> dict[str, Any]:
         """
         Fetches LinkedIn posts for a specified company using its LinkedIn URL.
 
@@ -515,18 +447,12 @@ class CrustdataApp(APIApplication):
         if company_linkedin_url is None:
             raise ValueError("Missing required parameter 'company_linkedin_url'")
         url = f"{self.base_url}/screener/linkedin_posts"
-        query_params = {
-            k: v
-            for k, v in [("company_linkedin_url", company_linkedin_url)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("company_linkedin_url", company_linkedin_url)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_linked_in_posts(
-        self, keyword, page, sort_by, date_posted
-    ) -> dict[str, Any]:
+    async def search_linked_in_posts(self, keyword, page, sort_by, date_posted) -> dict[str, Any]:
         """
         Searches LinkedIn posts using the provided keyword and filters, returning the search results as a dictionary.
 
@@ -554,12 +480,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'sort_by'")
         if date_posted is None:
             raise ValueError("Missing required parameter 'date_posted'")
-        request_body = {
-            "keyword": keyword,
-            "page": page,
-            "sort_by": sort_by,
-            "date_posted": date_posted,
-        }
+        request_body = {"keyword": keyword, "page": page, "sort_by": sort_by, "date_posted": date_posted}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/linkedin_posts/keyword_search/"
         query_params = {}

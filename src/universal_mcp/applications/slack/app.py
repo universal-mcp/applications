@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -17,35 +16,22 @@ class SlackApp(APIApplication):
         """
         if not self.integration:
             raise ValueError("Integration not configured for SlackApp")
-        
         credentials = self.integration.get_credentials()
         if not credentials:
             raise ValueError("No credentials found for Slack integration")
-        
         access_token = None
-        raw = credentials.get('raw', {})
-        if isinstance(raw, dict) and 'authed_user' in raw:
-            authed_user = raw.get('authed_user', {})
+        raw = credentials.get("raw", {})
+        if isinstance(raw, dict) and "authed_user" in raw:
+            authed_user = raw.get("authed_user", {})
             if isinstance(authed_user, dict):
-                access_token = authed_user.get('access_token')
-        
+                access_token = authed_user.get("access_token")
         if not access_token:
-            access_token = credentials.get('access_token')
-        
+            access_token = credentials.get("access_token")
         if not access_token:
             raise ValueError("Access token not found in Slack credentials")
-        
-        return {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-        }
+        return {"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"}
 
-    def chat_delete(
-        self,
-        as_user: bool | None = None,
-        channel: str | None = None,
-        ts: float | None = None,
-    ) -> dict[str, Any]:
+    async def chat_delete(self, as_user: bool | None = None, channel: str | None = None, ts: float | None = None) -> dict[str, Any]:
         """
         Deletes a specific message from a Slack channel. It identifies the message using its channel ID and timestamp (`ts`). This function is distinct from `chat_update` which modifies a message, and `chat_post_message` which sends a new one.
 
@@ -64,25 +50,14 @@ class SlackApp(APIApplication):
             chat
         """
         request_body_data = None
-        request_body_data = {
-            "as_user": as_user,
-            "channel": channel,
-            "ts": ts,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"as_user": as_user, "channel": channel, "ts": ts}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chat.delete"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         return self._handle_response(response)
 
-    def chat_post_message(
+    async def chat_post_message(
         self,
         as_user: bool | None = None,
         attachments: str | None = None,
@@ -147,20 +122,13 @@ class SlackApp(APIApplication):
             "unfurl_media": unfurl_media,
             "username": username,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chat.postMessage"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         return self._handle_response(response)
 
-    def chat_update(
+    async def chat_update(
         self,
         as_user: str | None = None,
         attachments: str | None = None,
@@ -204,20 +172,13 @@ class SlackApp(APIApplication):
             "text": text,
             "ts": ts,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chat.update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         return self._handle_response(response)
 
-    def conversations_history(
+    async def conversations_history(
         self,
         token: str | None = None,
         channel: str | None = None,
@@ -265,7 +226,7 @@ class SlackApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def conversations_list(
+    async def conversations_list(
         self,
         token: str | None = None,
         exclude_archived: bool | None = None,
@@ -295,19 +256,13 @@ class SlackApp(APIApplication):
         url = f"{self.base_url}/conversations.list"
         query_params = {
             k: v
-            for k, v in [
-                ("token", token),
-                ("exclude_archived", exclude_archived),
-                ("types", types),
-                ("limit", limit),
-                ("cursor", cursor),
-            ]
+            for k, v in [("token", token), ("exclude_archived", exclude_archived), ("types", types), ("limit", limit), ("cursor", cursor)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def reactions_add(self, channel: str, name: str, timestamp: str) -> dict[str, Any]:
+    async def reactions_add(self, channel: str, name: str, timestamp: str) -> dict[str, Any]:
         """
         Adds a specific emoji reaction to a message in a Slack channel, identifying the message by its channel ID and timestamp. This method creates a new reaction, unlike `reactions_get` or `reactions_list` which retrieve existing reaction data for items or users.
 
@@ -326,25 +281,14 @@ class SlackApp(APIApplication):
             reactions
         """
         request_body_data = None
-        request_body_data = {
-            "channel": channel,
-            "name": name,
-            "timestamp": timestamp,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"channel": channel, "name": name, "timestamp": timestamp}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/reactions.add"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         return self._handle_response(response)
 
-    def get_reactions_for_item(
+    async def get_reactions_for_item(
         self,
         token: str,
         channel: str | None = None,
@@ -389,7 +333,7 @@ class SlackApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_user_reactions(
+    async def get_user_reactions(
         self,
         token: str,
         user: str | None = None,
@@ -437,7 +381,7 @@ class SlackApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def search_messages(
+    async def search_messages(
         self,
         token: str,
         query: str,
@@ -485,7 +429,7 @@ class SlackApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def team_info(self, token: str, team: str | None = None) -> dict[str, Any]:
+    async def team_info(self, token: str, team: str | None = None) -> dict[str, Any]:
         """
         Fetches details for a Slack team, such as name and domain, by calling the `team.info` API endpoint. This function requires an authentication token and can optionally target a specific team by its ID, distinguishing it from user or channel-specific functions.
 
@@ -503,18 +447,11 @@ class SlackApp(APIApplication):
             team
         """
         url = f"{self.base_url}/team.info"
-        query_params = {
-            k: v for k, v in [("token", token), ("team", team)] if v is not None
-        }
+        query_params = {k: v for k, v in [("token", token), ("team", team)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_user_info(
-        self,
-        token: str,
-        include_locale: bool | None = None,
-        user: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_user_info(self, token: str, include_locale: bool | None = None, user: str | None = None) -> dict[str, Any]:
         """
         Fetches detailed profile information for a single Slack user, identified by their user ID. Unlike `users_list`, which retrieves all workspace members, this function targets an individual and can optionally include their locale information. It directly calls the `users.info` Slack API endpoint.
 
@@ -533,24 +470,12 @@ class SlackApp(APIApplication):
             users, important
         """
         url = f"{self.base_url}/users.info"
-        query_params = {
-            k: v
-            for k, v in [
-                ("token", token),
-                ("include_locale", include_locale),
-                ("user", user),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("token", token), ("include_locale", include_locale), ("user", user)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def users_list(
-        self,
-        token: str | None = None,
-        limit: int | None = None,
-        cursor: str | None = None,
-        include_locale: bool | None = None,
+    async def users_list(
+        self, token: str | None = None, limit: int | None = None, cursor: str | None = None, include_locale: bool | None = None
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of all users in a Slack workspace, including deactivated members. Unlike `users_info` which retrieves a single user's details, this function returns a collection and supports limiting results or including locale data through optional parameters.
@@ -572,14 +497,7 @@ class SlackApp(APIApplication):
         """
         url = f"{self.base_url}/users.list"
         query_params = {
-            k: v
-            for k, v in [
-                ("token", token),
-                ("limit", limit),
-                ("cursor", cursor),
-                ("include_locale", include_locale),
-            ]
-            if v is not None
+            k: v for k, v in [("token", token), ("limit", limit), ("cursor", cursor), ("include_locale", include_locale)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)

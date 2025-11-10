@@ -56,9 +56,7 @@ def analyze_sheet_for_tables(
     return tables
 
 
-def analyze_table_schema(
-    get_values_func, spreadsheet_id: str, table_info: dict, sample_size: int = 50
-) -> dict[str, Any]:
+def analyze_table_schema(get_values_func, spreadsheet_id: str, table_info: dict, sample_size: int = 50) -> dict[str, Any]:
     """
     Analyze table structure and infer column names, types, and constraints.
 
@@ -115,9 +113,7 @@ def analyze_columns(sample_values: list[list[Any]]) -> list[dict]:
     columns = []
 
     for col_idx in range(len(headers)):
-        column_name = (
-            str(headers[col_idx]) if col_idx < len(headers) else f"Column_{col_idx + 1}"
-        )
+        column_name = str(headers[col_idx]) if col_idx < len(headers) else f"Column_{col_idx + 1}"
 
         # Extract column values
         column_values = []
@@ -134,12 +130,8 @@ def analyze_columns(sample_values: list[list[Any]]) -> list[dict]:
             "type": column_type,
             "constraints": constraints,
             "sample_values": column_values[:5],  # First 5 sample values
-            "null_count": sum(
-                1 for val in column_values if not val or str(val).strip() == ""
-            ),
-            "unique_count": len(
-                set(str(val) for val in column_values if val and str(val).strip())
-            ),
+            "null_count": sum(1 for val in column_values if not val or str(val).strip() == ""),
+            "unique_count": len(set(str(val) for val in column_values if val and str(val).strip())),
         }
 
         columns.append(column_info)
@@ -159,11 +151,7 @@ def infer_column_type(values: list[Any]) -> tuple[str, dict]:
         return "TEXT", {}
 
     # Check for boolean values
-    boolean_count = sum(
-        1
-        for val in non_empty_values
-        if str(val).lower() in ["true", "false", "yes", "no", "1", "0"]
-    )
+    boolean_count = sum(1 for val in non_empty_values if str(val).lower() in ["true", "false", "yes", "no", "1", "0"])
     if boolean_count / len(non_empty_values) >= 0.8:
         return "BOOLEAN", {}
 
@@ -215,9 +203,7 @@ def infer_column_type(values: list[Any]) -> tuple[str, dict]:
         return "TEXT", {}
 
 
-def find_table_regions(
-    values: list[list], min_rows: int, min_columns: int
-) -> list[dict]:
+def find_table_regions(values: list[list], min_rows: int, min_columns: int) -> list[dict]:
     """Find potential table regions in the data."""
     regions = []
 
@@ -290,9 +276,7 @@ def calculate_table_confidence(values: list[list], region: dict) -> float:
 
     # Calculate confidence based on data consistency
     total_cells = sum(len(row) for row in region_data)
-    non_empty_cells = sum(
-        sum(1 for cell in row if cell and str(cell).strip()) for row in region_data
-    )
+    non_empty_cells = sum(sum(1 for cell in row if cell and str(cell).strip()) for row in region_data)
 
     if total_cells == 0:
         return 0.0
@@ -328,11 +312,7 @@ def has_header_row(data: list[list]) -> bool:
 
     # Check if header row has mostly text values
     header_text_count = sum(
-        1
-        for cell in header_row
-        if cell
-        and isinstance(cell, str)
-        and not cell.replace(".", "").replace("-", "").isdigit()
+        1 for cell in header_row if cell and isinstance(cell, str) and not cell.replace(".", "").replace("-", "").isdigit()
     )
 
     # Check if data rows have different data types than header
@@ -358,18 +338,11 @@ def has_consistent_columns(data: list[list]) -> bool:
         column_values = [row[col] for row in data if col < len(row) and row[col]]
         if len(column_values) >= 2:
             # Check if column has consistent type
-            numeric_count = sum(
-                1
-                for val in column_values
-                if str(val).replace(".", "").replace("-", "").isdigit()
-            )
+            numeric_count = sum(1 for val in column_values if str(val).replace(".", "").replace("-", "").isdigit())
             text_count = len(column_values) - numeric_count
 
             # If 80% of values are same type, consider consistent
-            if (
-                numeric_count / len(column_values) >= 0.8
-                or text_count / len(column_values) >= 0.8
-            ):
+            if numeric_count / len(column_values) >= 0.8 or text_count / len(column_values) >= 0.8:
                 consistent_columns += 1
 
     return consistent_columns / total_columns >= 0.6 if total_columns > 0 else False

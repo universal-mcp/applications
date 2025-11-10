@@ -5,7 +5,7 @@ class ZenquotesApp(APIApplication):
     def __init__(self, **kwargs) -> None:
         super().__init__(name="zenquotes")
 
-    def get_random_quote(self) -> str:
+    async def get_random_quote(self) -> str:
         """
         Fetches a random inspirational quote from the Zen Quotes API via an HTTP request. It parses the JSON response to extract the quote and author, returning them as a single formatted string ('quote - author'). This function is the primary tool provided by the ZenquotesApp.
 
@@ -25,7 +25,7 @@ class ZenquotesApp(APIApplication):
         response = self._get(url)
         data = response.json()
         quote = data[0]
-        return {"quote" : quote["q"], "author" : quote["a"]}
+        return {"quote": quote["q"], "author": quote["a"]}
 
     def list_tools(self):
         return [self.get_random_quote]

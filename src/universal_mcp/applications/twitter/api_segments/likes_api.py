@@ -7,9 +7,7 @@ class LikesApi(APISegmentBase):
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
-    def get_likes_compliance_stream(
-        self, backfill_minutes=None, start_time=None, end_time=None
-    ) -> Any:
+    def get_likes_compliance_stream(self, backfill_minutes=None, start_time=None, end_time=None) -> Any:
         """
         Streams compliance-related data for 'like' events, such as un-likes, with optional time and backfill filters. This endpoint is for compliance monitoring, differing from the firehose and sample streams which provide real-time like creation events.
 

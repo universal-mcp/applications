@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class SemanticscholarApp(APIApplication):
         super().__init__(name="semanticscholar", integration=integration, **kwargs)
         self.base_url = "/graph/v1"
 
-    def post_graph_get_authors(self, fields=None, ids=None) -> dict[str, Any]:
+    async def post_graph_get_authors(self, fields=None, ids=None) -> dict[str, Any]:
         """
         Creates a batch of authors using the provided JSON data in the request body, optionally specifying fields to include in the response via a query parameter.
 
@@ -23,9 +22,7 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Author Data
         """
-        request_body = {
-            "ids": ids,
-        }
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/author/batch"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
@@ -33,9 +30,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_author_search(
-        self, query, offset=None, limit=None, fields=None
-    ) -> dict[str, Any]:
+    async def get_graph_get_author_search(self, query, offset=None, limit=None, fields=None) -> dict[str, Any]:
         """
         Searches for authors based on a query string with optional pagination and field selection parameters.
 
@@ -52,21 +47,12 @@ class SemanticscholarApp(APIApplication):
             Author Data
         """
         url = f"{self.base_url}/author/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("offset", offset),
-                ("limit", limit),
-                ("fields", fields),
-                ("query", query),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields), ("query", query)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_author(self, author_id, fields=None) -> dict[str, Any]:
+    async def get_graph_get_author(self, author_id, fields=None) -> dict[str, Any]:
         """
         Retrieves the profile information for a specific author identified by the `author_id` and returns it with optional fields specified in the `fields` query parameter.
 
@@ -88,9 +74,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_author_papers(
-        self, author_id, offset=None, limit=None, fields=None
-    ) -> dict[str, Any]:
+    async def get_graph_get_author_papers(self, author_id, offset=None, limit=None, fields=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of papers authored by the specified author, with optional field selection.
 
@@ -109,16 +93,12 @@ class SemanticscholarApp(APIApplication):
         if author_id is None:
             raise ValueError("Missing required parameter 'author_id'")
         url = f"{self.base_url}/author/{author_id}/papers"
-        query_params = {
-            k: v
-            for k, v in [("offset", offset), ("limit", limit), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_paper_autocomplete(self, query) -> dict[str, Any]:
+    async def get_graph_get_paper_autocomplete(self, query) -> dict[str, Any]:
         """
         Provides an autocomplete suggestion list based on a required query string parameter.
 
@@ -137,7 +117,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_graph_get_papers(self, fields=None, ids=None) -> dict[str, Any]:
+    async def post_graph_get_papers(self, fields=None, ids=None) -> dict[str, Any]:
         """
         Creates a batch of papers using JSON data in the request body and optionally specifies fields to include in the response.
 
@@ -151,9 +131,7 @@ class SemanticscholarApp(APIApplication):
         Tags:
             Paper Data
         """
-        request_body = {
-            "ids": ids,
-        }
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/paper/batch"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
@@ -161,7 +139,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_paper_relevance_search(
+    async def get_graph_paper_relevance_search(
         self,
         query,
         fields=None,
@@ -219,7 +197,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_paper_bulk_search(
+    async def get_graph_paper_bulk_search(
         self,
         query,
         token=None,
@@ -277,7 +255,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_paper_title_search(
+    async def get_graph_paper_title_search(
         self,
         query,
         fields=None,
@@ -329,7 +307,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_paper(self, paper_id, fields=None) -> dict[str, Any]:
+    async def get_graph_get_paper(self, paper_id, fields=None) -> dict[str, Any]:
         """
         Retrieves details of a paper by its ID, optionally specifying fields to include in the response.
 
@@ -351,9 +329,7 @@ class SemanticscholarApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_paper_authors(
-        self, paper_id, offset=None, limit=None, fields=None
-    ) -> dict[str, Any]:
+    async def get_graph_get_paper_authors(self, paper_id, offset=None, limit=None, fields=None) -> dict[str, Any]:
         """
         Retrieves a list of authors for a specific paper identified by the `paper_id`, allowing optional parameters for offset, limit, and fields to customize the response.
 
@@ -372,18 +348,12 @@ class SemanticscholarApp(APIApplication):
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}/authors"
-        query_params = {
-            k: v
-            for k, v in [("offset", offset), ("limit", limit), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_paper_citations(
-        self, paper_id, offset=None, limit=None, fields=None
-    ) -> dict[str, Any]:
+    async def get_graph_get_paper_citations(self, paper_id, offset=None, limit=None, fields=None) -> dict[str, Any]:
         """
         Retrieves a list of citations for a specific paper, identified by its paper ID, with optional parameters for offset, limit, and fields.
 
@@ -402,18 +372,12 @@ class SemanticscholarApp(APIApplication):
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}/citations"
-        query_params = {
-            k: v
-            for k, v in [("offset", offset), ("limit", limit), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_graph_get_paper_references(
-        self, paper_id, offset=None, limit=None, fields=None
-    ) -> dict[str, Any]:
+    async def get_graph_get_paper_references(self, paper_id, offset=None, limit=None, fields=None) -> dict[str, Any]:
         """
         Retrieves references for a specific paper by its ID using the "GET" method and allows optional filtering by offset, limit, and fields for customizable output.
 
@@ -432,16 +396,12 @@ class SemanticscholarApp(APIApplication):
         if paper_id is None:
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}/references"
-        query_params = {
-            k: v
-            for k, v in [("offset", offset), ("limit", limit), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_snippet_search(self, query, limit=None) -> dict[str, Any]:
+    async def get_snippet_search(self, query, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of search results based on a specified query string, optionally limited by a user-defined number of results, using the "GET" method at the "/snippet/search" endpoint.
 
@@ -456,9 +416,7 @@ class SemanticscholarApp(APIApplication):
             Snippet Text
         """
         url = f"{self.base_url}/snippet/search"
-        query_params = {
-            k: v for k, v in [("query", query), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("query", query), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()

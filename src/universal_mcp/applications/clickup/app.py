@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class ClickupApp(APIApplication):
         super().__init__(name="clickup", integration=integration, **kwargs)
         self.base_url = "https://api.clickup.com/api/v2"
 
-    def authorization_get_access_token(
-        self, client_id, client_secret, code
-    ) -> dict[str, Any]:
+    async def authorization_get_access_token(self, client_id, client_secret, code) -> dict[str, Any]:
         """
         Exchanges an authorization code for an access token using OAuth2 credentials.
 
@@ -37,22 +34,12 @@ class ClickupApp(APIApplication):
         if code is None:
             raise ValueError("Missing required parameter 'code'")
         url = f"{self.base_url}/oauth/token"
-        query_params = {
-            k: v
-            for k, v in [
-                ("client_id", client_id),
-                ("client_secret", client_secret),
-                ("code", code),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("client_id", client_id), ("client_secret", client_secret), ("code", code)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def authorization_view_account_details(
-        self,
-    ) -> dict[str, Any]:
+    async def authorization_view_account_details(self) -> dict[str, Any]:
         """
         Retrieves the current authenticated user's account details from the authorization service.
 
@@ -74,9 +61,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def authorization_get_workspace_list(
-        self,
-    ) -> dict[str, Any]:
+    async def authorization_get_workspace_list(self) -> dict[str, Any]:
         """
         Retrieves a list of workspaces accessible to the authorized user from the authorization service.
 
@@ -98,9 +83,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_checklists_create_new_checklist(
-        self, task_id, name, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def task_checklists_create_new_checklist(self, task_id, name, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Creates a new checklist for a given task and returns the created checklist details as a dictionary.
 
@@ -124,23 +107,15 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'task_id'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}/checklist"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def task_checklists_update_checklist(
-        self, checklist_id, name=None, position=None
-    ) -> dict[str, Any]:
+    async def task_checklists_update_checklist(self, checklist_id, name=None, position=None) -> dict[str, Any]:
         """
         Updates a checklist's name and/or position by sending a PUT request to the checklist API endpoint.
 
@@ -161,10 +136,7 @@ class ClickupApp(APIApplication):
         """
         if checklist_id is None:
             raise ValueError("Missing required parameter 'checklist_id'")
-        request_body = {
-            "name": name,
-            "position": position,
-        }
+        request_body = {"name": name, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/checklist/{checklist_id}"
         query_params = {}
@@ -172,7 +144,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_checklists_remove_checklist(self, checklist_id) -> dict[str, Any]:
+    async def task_checklists_remove_checklist(self, checklist_id) -> dict[str, Any]:
         """
         Removes a checklist by its ID using a DELETE request to the API.
 
@@ -197,9 +169,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_checklists_add_line_item(
-        self, checklist_id, name=None, assignee=None
-    ) -> dict[str, Any]:
+    async def task_checklists_add_line_item(self, checklist_id, name=None, assignee=None) -> dict[str, Any]:
         """
         Adds a new line item to a specified task checklist.
 
@@ -220,10 +190,7 @@ class ClickupApp(APIApplication):
         """
         if checklist_id is None:
             raise ValueError("Missing required parameter 'checklist_id'")
-        request_body = {
-            "name": name,
-            "assignee": assignee,
-        }
+        request_body = {"name": name, "assignee": assignee}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/checklist/{checklist_id}/checklist_item"
         query_params = {}
@@ -231,14 +198,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_checklists_update_checklist_item(
-        self,
-        checklist_id,
-        checklist_item_id,
-        name=None,
-        assignee=None,
-        resolved=None,
-        parent=None,
+    async def task_checklists_update_checklist_item(
+        self, checklist_id, checklist_item_id, name=None, assignee=None, resolved=None, parent=None
     ) -> dict[str, Any]:
         """
         Updates a checklist item with new details such as name, assignee, resolution status, or parent within a specified checklist.
@@ -265,12 +226,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'checklist_id'")
         if checklist_item_id is None:
             raise ValueError("Missing required parameter 'checklist_item_id'")
-        request_body = {
-            "name": name,
-            "assignee": assignee,
-            "resolved": resolved,
-            "parent": parent,
-        }
+        request_body = {"name": name, "assignee": assignee, "resolved": resolved, "parent": parent}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/checklist/{checklist_id}/checklist_item/{checklist_item_id}"
         query_params = {}
@@ -278,9 +234,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_checklists_remove_checklist_item(
-        self, checklist_id, checklist_item_id
-    ) -> dict[str, Any]:
+    async def task_checklists_remove_checklist_item(self, checklist_id, checklist_item_id) -> dict[str, Any]:
         """
         Removes a specific checklist item from a checklist by issuing a DELETE request to the appropriate API endpoint.
 
@@ -308,9 +262,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def comments_get_task_comments(
-        self, task_id, custom_task_ids=None, team_id=None, start=None, start_id=None
-    ) -> dict[str, Any]:
+    async def comments_get_task_comments(self, task_id, custom_task_ids=None, team_id=None, start=None, start_id=None) -> dict[str, Any]:
         """
         Retrieve all comments associated with a specific task.
 
@@ -336,26 +288,15 @@ class ClickupApp(APIApplication):
         url = f"{self.base_url}/task/{task_id}/comment"
         query_params = {
             k: v
-            for k, v in [
-                ("custom_task_ids", custom_task_ids),
-                ("team_id", team_id),
-                ("start", start),
-                ("start_id", start_id),
-            ]
+            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id), ("start", start), ("start_id", start_id)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def comments_create_new_task_comment(
-        self,
-        task_id,
-        comment_text,
-        assignee,
-        notify_all,
-        custom_task_ids=None,
-        team_id=None,
+    async def comments_create_new_task_comment(
+        self, task_id, comment_text, assignee, notify_all, custom_task_ids=None, team_id=None
     ) -> dict[str, Any]:
         """
         Creates a new comment on the specified task, assigning it to a user and controlling notification behavior.
@@ -386,25 +327,15 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'assignee'")
         if notify_all is None:
             raise ValueError("Missing required parameter 'notify_all'")
-        request_body = {
-            "comment_text": comment_text,
-            "assignee": assignee,
-            "notify_all": notify_all,
-        }
+        request_body = {"comment_text": comment_text, "assignee": assignee, "notify_all": notify_all}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}/comment"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def comments_get_view_comments(
-        self, view_id, start=None, start_id=None
-    ) -> dict[str, Any]:
+    async def comments_get_view_comments(self, view_id, start=None, start_id=None) -> dict[str, Any]:
         """
         Retrieve comments for a specific view, supporting optional pagination parameters.
 
@@ -426,16 +357,12 @@ class ClickupApp(APIApplication):
         if view_id is None:
             raise ValueError("Missing required parameter 'view_id'")
         url = f"{self.base_url}/view/{view_id}/comment"
-        query_params = {
-            k: v for k, v in [("start", start), ("start_id", start_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("start_id", start_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def comments_create_chat_view_comment(
-        self, view_id, comment_text, notify_all
-    ) -> dict[str, Any]:
+    async def comments_create_chat_view_comment(self, view_id, comment_text, notify_all) -> dict[str, Any]:
         """
         Creates a new comment on a chat view and optionally notifies all participants.
 
@@ -460,10 +387,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_text'")
         if notify_all is None:
             raise ValueError("Missing required parameter 'notify_all'")
-        request_body = {
-            "comment_text": comment_text,
-            "notify_all": notify_all,
-        }
+        request_body = {"comment_text": comment_text, "notify_all": notify_all}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/view/{view_id}/comment"
         query_params = {}
@@ -471,9 +395,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def comments_get_list_comments(
-        self, list_id, start=None, start_id=None
-    ) -> dict[str, Any]:
+    async def comments_get_list_comments(self, list_id, start=None, start_id=None) -> dict[str, Any]:
         """
         Retrieve a list of comments associated with a specific list, supporting optional pagination.
 
@@ -495,16 +417,12 @@ class ClickupApp(APIApplication):
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/list/{list_id}/comment"
-        query_params = {
-            k: v for k, v in [("start", start), ("start_id", start_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("start_id", start_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def comments_add_to_list_comment(
-        self, list_id, comment_text, assignee, notify_all
-    ) -> dict[str, Any]:
+    async def comments_add_to_list_comment(self, list_id, comment_text, assignee, notify_all) -> dict[str, Any]:
         """
         Adds a comment to a specified list, assigns it to a given user, and optionally notifies all stakeholders.
 
@@ -532,11 +450,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'assignee'")
         if notify_all is None:
             raise ValueError("Missing required parameter 'notify_all'")
-        request_body = {
-            "comment_text": comment_text,
-            "assignee": assignee,
-            "notify_all": notify_all,
-        }
+        request_body = {"comment_text": comment_text, "assignee": assignee, "notify_all": notify_all}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/list/{list_id}/comment"
         query_params = {}
@@ -544,9 +458,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def comments_update_task_comment(
-        self, comment_id, comment_text, assignee, resolved
-    ) -> dict[str, Any]:
+    async def comments_update_task_comment(self, comment_id, comment_text, assignee, resolved) -> dict[str, Any]:
         """
         Updates an existing task comment with new text, assignee, and resolution status.
 
@@ -574,11 +486,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'assignee'")
         if resolved is None:
             raise ValueError("Missing required parameter 'resolved'")
-        request_body = {
-            "comment_text": comment_text,
-            "assignee": assignee,
-            "resolved": resolved,
-        }
+        request_body = {"comment_text": comment_text, "assignee": assignee, "resolved": resolved}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/comment/{comment_id}"
         query_params = {}
@@ -586,7 +494,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def comments_delete_task_comment(self, comment_id) -> dict[str, Any]:
+    async def comments_delete_task_comment(self, comment_id) -> dict[str, Any]:
         """
         Deletes a task comment by its ID.
 
@@ -611,7 +519,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def custom_fields_get_list_fields(self, list_id) -> dict[str, Any]:
+    async def custom_fields_get_list_fields(self, list_id) -> dict[str, Any]:
         """
         Retrieves a list of custom fields associated with a specified list by its ID.
 
@@ -636,9 +544,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def custom_fields_remove_field_value(
-        self, task_id, field_id, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def custom_fields_remove_field_value(self, task_id, field_id, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Removes a specific custom field value from a given task.
 
@@ -663,22 +569,13 @@ class ClickupApp(APIApplication):
         if field_id is None:
             raise ValueError("Missing required parameter 'field_id'")
         url = f"{self.base_url}/task/{task_id}/field/{field_id}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def task_relationships_add_dependency(
-        self,
-        task_id,
-        custom_task_ids=None,
-        team_id=None,
-        depends_on=None,
-        depedency_of=None,
+    async def task_relationships_add_dependency(
+        self, task_id, custom_task_ids=None, team_id=None, depends_on=None, depedency_of=None
     ) -> dict[str, Any]:
         """
         Adds a dependency relationship to a specified task, allowing you to define predecessor or dependent tasks within a project management system.
@@ -702,22 +599,15 @@ class ClickupApp(APIApplication):
         """
         if task_id is None:
             raise ValueError("Missing required parameter 'task_id'")
-        request_body = {
-            "depends_on": depends_on,
-            "depedency_of": depedency_of,
-        }
+        request_body = {"depends_on": depends_on, "depedency_of": depedency_of}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}/dependency"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def task_relationships_remove_dependency(
+    async def task_relationships_remove_dependency(
         self, task_id, depends_on, dependency_of, custom_task_ids=None, team_id=None
     ) -> dict[str, Any]:
         """
@@ -761,9 +651,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_relationships_link_tasks(
-        self, task_id, links_to, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def task_relationships_link_tasks(self, task_id, links_to, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Links one task to another by creating a relationship between the source and target task IDs, with optional custom task and team identifiers.
 
@@ -788,18 +676,12 @@ class ClickupApp(APIApplication):
         if links_to is None:
             raise ValueError("Missing required parameter 'links_to'")
         url = f"{self.base_url}/task/{task_id}/link/{links_to}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def task_relationships_remove_link_between_tasks(
-        self, task_id, links_to, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def task_relationships_remove_link_between_tasks(self, task_id, links_to, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Removes a link between two specified tasks within the task management system.
 
@@ -824,16 +706,12 @@ class ClickupApp(APIApplication):
         if links_to is None:
             raise ValueError("Missing required parameter 'links_to'")
         url = f"{self.base_url}/task/{task_id}/link/{links_to}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def folders_get_contents_of(self, space_id, archived=None) -> dict[str, Any]:
+    async def folders_get_contents_of(self, space_id, archived=None) -> dict[str, Any]:
         """
         Retrieves the contents of all folders within a specified space, with optional filtering for archived folders.
 
@@ -859,7 +737,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def folders_create_new_folder(self, space_id, name) -> dict[str, Any]:
+    async def folders_create_new_folder(self, space_id, name) -> dict[str, Any]:
         """
         Creates a new folder within a specified space.
 
@@ -881,9 +759,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'space_id'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/space/{space_id}/folder"
         query_params = {}
@@ -891,7 +767,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def folders_get_folder_content(self, folder_id) -> dict[str, Any]:
+    async def folders_get_folder_content(self, folder_id) -> dict[str, Any]:
         """
         Retrieves the contents of a specified folder by its ID.
 
@@ -916,7 +792,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def folders_rename_folder(self, folder_id, name) -> dict[str, Any]:
+    async def folders_rename_folder(self, folder_id, name) -> dict[str, Any]:
         """
         Renames an existing folder by updating its name using the specified folder ID.
 
@@ -938,9 +814,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folder/{folder_id}"
         query_params = {}
@@ -948,7 +822,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def folders_remove_folder(self, folder_id) -> dict[str, Any]:
+    async def folders_remove_folder(self, folder_id) -> dict[str, Any]:
         """
         Removes a folder with the specified folder ID by sending a DELETE request to the API.
 
@@ -973,9 +847,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_get_workspace_goals(
-        self, team_id, include_completed=None
-    ) -> dict[str, Any]:
+    async def goals_get_workspace_goals(self, team_id, include_completed=None) -> dict[str, Any]:
         """
         Retrieves all workspace goals for a specified team, optionally including completed goals.
 
@@ -996,16 +868,12 @@ class ClickupApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/team/{team_id}/goal"
-        query_params = {
-            k: v for k, v in [("include_completed", include_completed)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_completed", include_completed)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def goals_add_new_goal_to_workspace(
-        self, team_id, description, name, due_date, multiple_owners, owners, color
-    ) -> dict[str, Any]:
+    async def goals_add_new_goal_to_workspace(self, team_id, description, name, due_date, multiple_owners, owners, color) -> dict[str, Any]:
         """
         Adds a new goal to the specified team workspace.
 
@@ -1056,7 +924,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_get_details(self, goal_id) -> dict[str, Any]:
+    async def goals_get_details(self, goal_id) -> dict[str, Any]:
         """
         Retrieves detailed information about a goal based on the provided goal ID.
 
@@ -1080,9 +948,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_update_goal_details(
-        self, goal_id, description, name, due_date, rem_owners, add_owners, color
-    ) -> dict[str, Any]:
+    async def goals_update_goal_details(self, goal_id, description, name, due_date, rem_owners, add_owners, color) -> dict[str, Any]:
         """
         Updates the details of an existing goal with new information, including description, name, due date, owners, and color.
 
@@ -1134,7 +1000,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_remove_goal(self, goal_id) -> dict[str, Any]:
+    async def goals_remove_goal(self, goal_id) -> dict[str, Any]:
         """
         Removes a goal from the system using the specified goal ID.
 
@@ -1159,18 +1025,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_add_key_result(
-        self,
-        goal_id,
-        name,
-        owners,
-        type,
-        steps_start,
-        steps_end,
-        unit,
-        task_ids,
-        list_ids,
-    ) -> dict[str, Any]:
+    async def goals_add_key_result(self, goal_id, name, owners, type, steps_start, steps_end, unit, task_ids, list_ids) -> dict[str, Any]:
         """
         Creates and adds a new key result to a specified goal with the provided details and associated tasks/lists.
 
@@ -1230,9 +1085,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_update_key_result(
-        self, key_result_id, steps_current, note
-    ) -> dict[str, Any]:
+    async def goals_update_key_result(self, key_result_id, steps_current, note) -> dict[str, Any]:
         """
         Updates the current number of steps and note for a specific key result.
 
@@ -1257,10 +1110,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'steps_current'")
         if note is None:
             raise ValueError("Missing required parameter 'note'")
-        request_body = {
-            "steps_current": steps_current,
-            "note": note,
-        }
+        request_body = {"steps_current": steps_current, "note": note}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/key_result/{key_result_id}"
         query_params = {}
@@ -1268,7 +1118,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def goals_remove_target(self, key_result_id) -> dict[str, Any]:
+    async def goals_remove_target(self, key_result_id) -> dict[str, Any]:
         """
         Removes the target associated with a specified key result by sending a DELETE request to the API.
 
@@ -1293,15 +1143,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def guests_invite_to_workspace(
-        self,
-        team_id,
-        email,
-        can_edit_tags,
-        can_see_time_spent,
-        can_see_time_estimated,
-        can_create_views,
-        custom_role_id,
+    async def guests_invite_to_workspace(
+        self, team_id, email, can_edit_tags, can_see_time_spent, can_see_time_estimated, can_create_views, custom_role_id
     ) -> dict[str, Any]:
         """
         Invites a guest to a workspace with specific permissions.
@@ -1354,7 +1197,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def guests_get_guest_information(self, team_id, guest_id) -> dict[str, Any]:
+    async def guests_get_guest_information(self, team_id, guest_id) -> dict[str, Any]:
         """
         Fetches guest information for a specific guest in a team.
 
@@ -1381,16 +1224,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def guests_edit_guest_on_workspace(
-        self,
-        team_id,
-        guest_id,
-        username,
-        can_edit_tags,
-        can_see_time_spent,
-        can_see_time_estimated,
-        can_create_views,
-        custom_role_id,
+    async def guests_edit_guest_on_workspace(
+        self, team_id, guest_id, username, can_edit_tags, can_see_time_spent, can_see_time_estimated, can_create_views, custom_role_id
     ) -> dict[str, Any]:
         """
         Edits a guest user's permissions and role within a specified workspace team.
@@ -1446,9 +1281,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def guests_revoke_guest_access_to_workspace(
-        self, team_id, guest_id
-    ) -> dict[str, Any]:
+    async def guests_revoke_guest_access_to_workspace(self, team_id, guest_id) -> dict[str, Any]:
         """
         Revokes a guest's access to a workspace for a specified team.
 
@@ -1476,14 +1309,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def guests_add_to_task(
-        self,
-        task_id,
-        guest_id,
-        permission_level,
-        include_shared=None,
-        custom_task_ids=None,
-        team_id=None,
+    async def guests_add_to_task(
+        self, task_id, guest_id, permission_level, include_shared=None, custom_task_ids=None, team_id=None
     ) -> dict[str, Any]:
         """
         Adds a guest to a task with specified permission level and optional parameters.
@@ -1511,25 +1338,19 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'guest_id'")
         if permission_level is None:
             raise ValueError("Missing required parameter 'permission_level'")
-        request_body = {
-            "permission_level": permission_level,
-        }
+        request_body = {"permission_level": permission_level}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}/guest/{guest_id}"
         query_params = {
             k: v
-            for k, v in [
-                ("include_shared", include_shared),
-                ("custom_task_ids", custom_task_ids),
-                ("team_id", team_id),
-            ]
+            for k, v in [("include_shared", include_shared), ("custom_task_ids", custom_task_ids), ("team_id", team_id)]
             if v is not None
         }
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def guests_revoke_access_to_task(
+    async def guests_revoke_access_to_task(
         self, task_id, guest_id, include_shared=None, custom_task_ids=None, team_id=None
     ) -> dict[str, Any]:
         """
@@ -1559,20 +1380,14 @@ class ClickupApp(APIApplication):
         url = f"{self.base_url}/task/{task_id}/guest/{guest_id}"
         query_params = {
             k: v
-            for k, v in [
-                ("include_shared", include_shared),
-                ("custom_task_ids", custom_task_ids),
-                ("team_id", team_id),
-            ]
+            for k, v in [("include_shared", include_shared), ("custom_task_ids", custom_task_ids), ("team_id", team_id)]
             if v is not None
         }
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def guests_share_list_with(
-        self, list_id, guest_id, permission_level, include_shared=None
-    ) -> dict[str, Any]:
+    async def guests_share_list_with(self, list_id, guest_id, permission_level, include_shared=None) -> dict[str, Any]:
         """
         Shares a list with a specified guest by assigning a permission level and optionally including shared items.
 
@@ -1598,21 +1413,15 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'guest_id'")
         if permission_level is None:
             raise ValueError("Missing required parameter 'permission_level'")
-        request_body = {
-            "permission_level": permission_level,
-        }
+        request_body = {"permission_level": permission_level}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/list/{list_id}/guest/{guest_id}"
-        query_params = {
-            k: v for k, v in [("include_shared", include_shared)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_shared", include_shared)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def guests_remove_from_list(
-        self, list_id, guest_id, include_shared=None
-    ) -> dict[str, Any]:
+    async def guests_remove_from_list(self, list_id, guest_id, include_shared=None) -> dict[str, Any]:
         """
         Removes a guest from a specified list, optionally including shared guests in the operation.
 
@@ -1636,16 +1445,12 @@ class ClickupApp(APIApplication):
         if guest_id is None:
             raise ValueError("Missing required parameter 'guest_id'")
         url = f"{self.base_url}/list/{list_id}/guest/{guest_id}"
-        query_params = {
-            k: v for k, v in [("include_shared", include_shared)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_shared", include_shared)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def guests_add_guest_to_folder(
-        self, folder_id, guest_id, permission_level, include_shared=None
-    ) -> dict[str, Any]:
+    async def guests_add_guest_to_folder(self, folder_id, guest_id, permission_level, include_shared=None) -> dict[str, Any]:
         """
         Adds a guest to a specified folder with a given permission level, optionally including shared folders.
 
@@ -1671,21 +1476,15 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'guest_id'")
         if permission_level is None:
             raise ValueError("Missing required parameter 'permission_level'")
-        request_body = {
-            "permission_level": permission_level,
-        }
+        request_body = {"permission_level": permission_level}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folder/{folder_id}/guest/{guest_id}"
-        query_params = {
-            k: v for k, v in [("include_shared", include_shared)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_shared", include_shared)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def guests_revoke_access_from_folder(
-        self, folder_id, guest_id, include_shared=None
-    ) -> dict[str, Any]:
+    async def guests_revoke_access_from_folder(self, folder_id, guest_id, include_shared=None) -> dict[str, Any]:
         """
         Revokes a guest's access from a specified folder, with optional inclusion of shared resources.
 
@@ -1709,14 +1508,12 @@ class ClickupApp(APIApplication):
         if guest_id is None:
             raise ValueError("Missing required parameter 'guest_id'")
         url = f"{self.base_url}/folder/{folder_id}/guest/{guest_id}"
-        query_params = {
-            k: v for k, v in [("include_shared", include_shared)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_shared", include_shared)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def lists_get_folder_lists(self, folder_id, archived=None) -> dict[str, Any]:
+    async def lists_get_folder_lists(self, folder_id, archived=None) -> dict[str, Any]:
         """
         Retrieves all lists contained within a specified folder, with optional filtering for archived lists.
 
@@ -1742,16 +1539,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_add_to_folder(
-        self,
-        folder_id,
-        name,
-        content=None,
-        due_date=None,
-        due_date_time=None,
-        priority=None,
-        assignee=None,
-        status=None,
+    async def lists_add_to_folder(
+        self, folder_id, name, content=None, due_date=None, due_date_time=None, priority=None, assignee=None, status=None
     ) -> dict[str, Any]:
         """
         Creates a new list in the specified folder with the given name and optional attributes.
@@ -1796,7 +1585,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_get_folderless(self, space_id, archived=None) -> dict[str, Any]:
+    async def lists_get_folderless(self, space_id, archived=None) -> dict[str, Any]:
         """
         Retrieves all lists within the specified space that are not associated with a folder.
 
@@ -1822,16 +1611,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_create_folderless_list(
-        self,
-        space_id,
-        name,
-        content=None,
-        due_date=None,
-        due_date_time=None,
-        priority=None,
-        assignee=None,
-        status=None,
+    async def lists_create_folderless_list(
+        self, space_id, name, content=None, due_date=None, due_date_time=None, priority=None, assignee=None, status=None
     ) -> dict[str, Any]:
         """
         Creates a new list within a specified space without associating it with a folder.
@@ -1876,7 +1657,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_get_list_details(self, list_id) -> dict[str, Any]:
+    async def lists_get_list_details(self, list_id) -> dict[str, Any]:
         """
         Retrieves the details of a specific list by its unique identifier.
 
@@ -1901,17 +1682,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_update_list(
-        self,
-        list_id,
-        name,
-        content,
-        due_date,
-        due_date_time,
-        priority,
-        assignee,
-        status,
-        unset_status,
+    async def lists_update_list(
+        self, list_id, name, content, due_date, due_date_time, priority, assignee, status, unset_status
     ) -> dict[str, Any]:
         """
         Updates the information of a list, including name, content, due date, priority, assignee, status, and color attributes.
@@ -1972,7 +1744,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_remove_list(self, list_id) -> dict[str, Any]:
+    async def lists_remove_list(self, list_id) -> dict[str, Any]:
         """
         Removes a list with the specified list ID via an HTTP DELETE request and returns the API response as a dictionary.
 
@@ -1997,7 +1769,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_add_task_to_list(self, list_id, task_id) -> dict[str, Any]:
+    async def lists_add_task_to_list(self, list_id, task_id) -> dict[str, Any]:
         """
         Adds a task to a specified list.
 
@@ -2025,7 +1797,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def lists_remove_task_from_list(self, list_id, task_id) -> dict[str, Any]:
+    async def lists_remove_task_from_list(self, list_id, task_id) -> dict[str, Any]:
         """
         Removes a specific task from a list by sending a DELETE request to the appropriate API endpoint.
 
@@ -2053,7 +1825,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def members_get_task_access(self, task_id) -> dict[str, Any]:
+    async def members_get_task_access(self, task_id) -> dict[str, Any]:
         """
         Retrieves a list of members who have access to the specified task.
 
@@ -2078,7 +1850,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def members_get_list_users(self, list_id) -> dict[str, Any]:
+    async def members_get_list_users(self, list_id) -> dict[str, Any]:
         """
         Retrieves the list of users who are members of the specified list.
 
@@ -2103,9 +1875,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_list_available_custom_roles(
-        self, team_id, include_members=None
-    ) -> dict[str, Any]:
+    async def roles_list_available_custom_roles(self, team_id, include_members=None) -> dict[str, Any]:
         """
         Retrieves a list of available custom roles for a specified team, optionally including role members.
 
@@ -2125,14 +1895,12 @@ class ClickupApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/team/{team_id}/customroles"
-        query_params = {
-            k: v for k, v in [("include_members", include_members)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_members", include_members)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def shared_hierarchy_view_tasks_lists_folders(self, team_id) -> dict[str, Any]:
+    async def shared_hierarchy_view_tasks_lists_folders(self, team_id) -> dict[str, Any]:
         """
         Retrieves the shared hierarchy view including tasks, lists, and folders for a specified team.
 
@@ -2157,7 +1925,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def spaces_get_space_details(self, team_id, archived=None) -> dict[str, Any]:
+    async def spaces_get_space_details(self, team_id, archived=None) -> dict[str, Any]:
         """
         Retrieves details about spaces within a specified team, optionally filtering by archived status.
 
@@ -2183,9 +1951,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def spaces_add_new_space_to_workspace(
-        self, team_id, name, multiple_assignees, features
-    ) -> dict[str, Any]:
+    async def spaces_add_new_space_to_workspace(self, team_id, name, multiple_assignees, features) -> dict[str, Any]:
         """
         Creates a new space within a specified workspace team, configuring assignment settings and desired features.
 
@@ -2213,11 +1979,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'multiple_assignees'")
         if features is None:
             raise ValueError("Missing required parameter 'features'")
-        request_body = {
-            "name": name,
-            "multiple_assignees": multiple_assignees,
-            "features": features,
-        }
+        request_body = {"name": name, "multiple_assignees": multiple_assignees, "features": features}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/space"
         query_params = {}
@@ -2225,7 +1987,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def spaces_get_details(self, space_id) -> dict[str, Any]:
+    async def spaces_get_details(self, space_id) -> dict[str, Any]:
         """
         Retrieves the details of a specified space by its unique identifier.
 
@@ -2250,15 +2012,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def spaces_update_details_and_enable_click_apps(
-        self,
-        space_id,
-        name,
-        color,
-        private,
-        admin_can_manage,
-        multiple_assignees,
-        features,
+    async def spaces_update_details_and_enable_click_apps(
+        self, space_id, name, color, private, admin_can_manage, multiple_assignees, features
     ) -> dict[str, Any]:
         """
         Updates the details of a specific space and enables click apps by sending a PUT request with the provided attributes.
@@ -2311,7 +2066,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def spaces_remove_space(self, space_id) -> dict[str, Any]:
+    async def spaces_remove_space(self, space_id) -> dict[str, Any]:
         """
         Removes a space identified by the given space_id.
 
@@ -2336,7 +2091,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tags_get_space(self, space_id) -> dict[str, Any]:
+    async def tags_get_space(self, space_id) -> dict[str, Any]:
         """
         Retrieves all tags associated with a specific space by its unique identifier.
 
@@ -2361,7 +2116,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tags_create_space_tag(self, space_id, tag) -> dict[str, Any]:
+    async def tags_create_space_tag(self, space_id, tag) -> dict[str, Any]:
         """
         Creates a new tag for a specified space by sending a POST request to the space tag API endpoint.
 
@@ -2383,9 +2138,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'space_id'")
         if tag is None:
             raise ValueError("Missing required parameter 'tag'")
-        request_body = {
-            "tag": tag,
-        }
+        request_body = {"tag": tag}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/space/{space_id}/tag"
         query_params = {}
@@ -2393,7 +2146,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tags_update_space_tag(self, space_id, tag_name, tag) -> dict[str, Any]:
+    async def tags_update_space_tag(self, space_id, tag_name, tag) -> dict[str, Any]:
         """
         Updates a tag for a specified space by sending a PUT request with the provided tag data.
 
@@ -2418,9 +2171,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_name'")
         if tag is None:
             raise ValueError("Missing required parameter 'tag'")
-        request_body = {
-            "tag": tag,
-        }
+        request_body = {"tag": tag}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/space/{space_id}/tag/{tag_name}"
         query_params = {}
@@ -2428,7 +2179,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tags_remove_space_tag(self, space_id, tag_name, tag) -> dict[str, Any]:
+    async def tags_remove_space_tag(self, space_id, tag_name, tag) -> dict[str, Any]:
         """
         Removes a specified tag from a given space by tag name.
 
@@ -2453,9 +2204,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_name'")
         if tag is None:
             raise ValueError("Missing required parameter 'tag'")
-        request_body = {
-            "tag": tag,
-        }
+        request_body = {"tag": tag}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/space/{space_id}/tag/{tag_name}"
         query_params = {}
@@ -2463,9 +2212,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tags_add_to_task(
-        self, task_id, tag_name, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def tags_add_to_task(self, task_id, tag_name, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Adds a tag to a specific task.
 
@@ -2490,18 +2237,12 @@ class ClickupApp(APIApplication):
         if tag_name is None:
             raise ValueError("Missing required parameter 'tag_name'")
         url = f"{self.base_url}/task/{task_id}/tag/{tag_name}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def tags_remove_from_task(
-        self, task_id, tag_name, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def tags_remove_from_task(self, task_id, tag_name, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Removes a specific tag from a task by ID, with optional filtering by custom task IDs and team ID.
 
@@ -2525,16 +2266,12 @@ class ClickupApp(APIApplication):
         if tag_name is None:
             raise ValueError("Missing required parameter 'tag_name'")
         url = f"{self.base_url}/task/{task_id}/tag/{tag_name}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def tasks_get_list_tasks(
+    async def tasks_get_list_tasks(
         self,
         list_id,
         archived=None,
@@ -2627,7 +2364,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tasks_create_new_task(
+    async def tasks_create_new_task(
         self,
         list_id,
         name,
@@ -2710,22 +2447,13 @@ class ClickupApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/list/{list_id}/task"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def tasks_get_task_details(
-        self,
-        task_id,
-        custom_task_ids=None,
-        team_id=None,
-        include_subtasks=None,
-        include_markdown_description=None,
+    async def tasks_get_task_details(
+        self, task_id, custom_task_ids=None, team_id=None, include_subtasks=None, include_markdown_description=None
     ) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific task, with options to include subtasks, use custom task IDs, filter by team, and specify description formatting.
@@ -2764,7 +2492,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tasks_update_task_fields(
+    async def tasks_update_task_fields(
         self,
         task_id,
         custom_task_ids=None,
@@ -2833,18 +2561,12 @@ class ClickupApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def tasks_remove_task_by_id(
-        self, task_id, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def tasks_remove_task_by_id(self, task_id, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Removes a specific task by its unique task ID, optionally filtering by custom task IDs and team ID.
 
@@ -2866,16 +2588,12 @@ class ClickupApp(APIApplication):
         if task_id is None:
             raise ValueError("Missing required parameter 'task_id'")
         url = f"{self.base_url}/task/{task_id}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def tasks_filter_team_tasks(
+    async def tasks_filter_team_tasks(
         self,
         team_Id,
         page=None,
@@ -2983,9 +2701,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def tasks_get_time_in_status(
-        self, task_id, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def tasks_get_time_in_status(self, task_id, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Retrieves the amount of time a specified task has spent in each status, with optional filters for custom task IDs and team ID.
 
@@ -3007,18 +2723,12 @@ class ClickupApp(APIApplication):
         if task_id is None:
             raise ValueError("Missing required parameter 'task_id'")
         url = f"{self.base_url}/task/{task_id}/time_in_status"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def tasks_get_time_in_status_bulk(
-        self, task_ids, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def tasks_get_time_in_status_bulk(self, task_ids, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Retrieves the time each specified task has spent in various statuses, in bulk, based on provided task identifiers.
 
@@ -3041,19 +2751,13 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'task_ids'")
         url = f"{self.base_url}/task/bulk_time_in_status/task_ids"
         query_params = {
-            k: v
-            for k, v in [
-                ("task_ids", task_ids),
-                ("custom_task_ids", custom_task_ids),
-                ("team_id", team_id),
-            ]
-            if v is not None
+            k: v for k, v in [("task_ids", task_ids), ("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def task_templates_get_templates(self, team_id, page) -> dict[str, Any]:
+    async def task_templates_get_templates(self, team_id, page) -> dict[str, Any]:
         """
         Retrieves a paginated list of task templates for a given team.
 
@@ -3081,9 +2785,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def task_templates_create_from_template(
-        self, list_id, template_id, name
-    ) -> dict[str, Any]:
+    async def task_templates_create_from_template(self, list_id, template_id, name) -> dict[str, Any]:
         """
         Creates a new task template instance in a specific list by cloning from an existing task template.
 
@@ -3108,9 +2810,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/list/{list_id}/taskTemplate/{template_id}"
         query_params = {}
@@ -3118,7 +2818,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def teams_workspaces_get_workspace_seats(self, team_id) -> dict[str, Any]:
+    async def teams_workspaces_get_workspace_seats(self, team_id) -> dict[str, Any]:
         """
         Retrieves detailed seat allocation information for a specific workspace team.
 
@@ -3143,7 +2843,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def teams_workspaces_get_workspace_plan(self, team_id) -> dict[str, Any]:
+    async def teams_workspaces_get_workspace_plan(self, team_id) -> dict[str, Any]:
         """
         Retrieves the plan details for a workspace associated with the specified team.
 
@@ -3168,7 +2868,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def teams_user_groups_create_team(self, team_id, name, members) -> dict[str, Any]:
+    async def teams_user_groups_create_team(self, team_id, name, members) -> dict[str, Any]:
         """
         Creates a new team user group with the specified name and members under the given team.
 
@@ -3193,10 +2893,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'name'")
         if members is None:
             raise ValueError("Missing required parameter 'members'")
-        request_body = {
-            "name": name,
-            "members": members,
-        }
+        request_body = {"name": name, "members": members}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/group"
         query_params = {}
@@ -3204,7 +2901,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def custom_task_types_get_available_task_types(self, team_id) -> dict[str, Any]:
+    async def custom_task_types_get_available_task_types(self, team_id) -> dict[str, Any]:
         """
         Retrieves the available custom task types for a specified team.
 
@@ -3229,9 +2926,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def teams_user_groups_update_user_group(
-        self, group_id, name=None, handle=None, members=None
-    ) -> dict[str, Any]:
+    async def teams_user_groups_update_user_group(self, group_id, name=None, handle=None, members=None) -> dict[str, Any]:
         """
         Updates the attributes of a user group in the Teams system.
 
@@ -3253,11 +2948,7 @@ class ClickupApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {
-            "name": name,
-            "handle": handle,
-            "members": members,
-        }
+        request_body = {"name": name, "handle": handle, "members": members}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/group/{group_id}"
         query_params = {}
@@ -3265,7 +2956,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def teams_user_groups_remove_group(self, group_id) -> dict[str, Any]:
+    async def teams_user_groups_remove_group(self, group_id) -> dict[str, Any]:
         """
         Removes a user group from the Teams service by group ID.
 
@@ -3290,9 +2981,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def teams_user_groups_get_user_groups(
-        self, team_id=None, group_ids=None
-    ) -> dict[str, Any]:
+    async def teams_user_groups_get_user_groups(self, team_id=None, group_ids=None) -> dict[str, Any]:
         """
         Retrieves user group information for a specified team and/or group IDs from the remote service.
 
@@ -3310,18 +2999,12 @@ class ClickupApp(APIApplication):
             get, user-groups, team-management, api
         """
         url = f"{self.base_url}/group"
-        query_params = {
-            k: v
-            for k, v in [("team_id", team_id), ("group_ids", group_ids)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("team_id", team_id), ("group_ids", group_ids)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_legacy_get_tracked_time(
-        self, task_id, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def time_tracking_legacy_get_tracked_time(self, task_id, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Retrieves time tracking data for a specific task.
 
@@ -3343,16 +3026,12 @@ class ClickupApp(APIApplication):
         if task_id is None:
             raise ValueError("Missing required parameter 'task_id'")
         url = f"{self.base_url}/task/{task_id}/time"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_legacy_record_time_for_task(
+    async def time_tracking_legacy_record_time_for_task(
         self, task_id, start, end, time, custom_task_ids=None, team_id=None
     ) -> dict[str, Any]:
         """
@@ -3383,23 +3062,15 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'end'")
         if time is None:
             raise ValueError("Missing required parameter 'time'")
-        request_body = {
-            "start": start,
-            "end": end,
-            "time": time,
-        }
+        request_body = {"start": start, "end": end, "time": time}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}/time"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_legacy_edit_time_tracked(
+    async def time_tracking_legacy_edit_time_tracked(
         self, task_id, interval_id, start, end, time, custom_task_ids=None, team_id=None
     ) -> dict[str, Any]:
         """
@@ -3434,25 +3105,15 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'end'")
         if time is None:
             raise ValueError("Missing required parameter 'time'")
-        request_body = {
-            "start": start,
-            "end": end,
-            "time": time,
-        }
+        request_body = {"start": start, "end": end, "time": time}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task/{task_id}/time/{interval_id}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_legacy_remove_tracked_time(
-        self, task_id, interval_id, custom_task_ids=None, team_id=None
-    ) -> dict[str, Any]:
+    async def time_tracking_legacy_remove_tracked_time(self, task_id, interval_id, custom_task_ids=None, team_id=None) -> dict[str, Any]:
         """
         Removes tracked time from a time-tracking interval associated with a specific task.
 
@@ -3476,16 +3137,12 @@ class ClickupApp(APIApplication):
         if interval_id is None:
             raise ValueError("Missing required parameter 'interval_id'")
         url = f"{self.base_url}/task/{task_id}/time/{interval_id}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_get_time_entries_within_date_range(
+    async def time_tracking_get_time_entries_within_date_range(
         self,
         team_Id,
         start_date=None,
@@ -3551,7 +3208,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_create_time_entry(
+    async def time_tracking_create_time_entry(
         self,
         team_Id,
         start,
@@ -3612,16 +3269,12 @@ class ClickupApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_Id}/time_entries"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_get_single_time_entry(
+    async def time_tracking_get_single_time_entry(
         self, team_id, timer_id, include_task_=None, include_location_names=None
     ) -> dict[str, Any]:
         """
@@ -3648,18 +3301,13 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'timer_id'")
         url = f"{self.base_url}/team/{team_id}/time_entries/{timer_id}"
         query_params = {
-            k: v
-            for k, v in [
-                ("include_task_", include_task_),
-                ("include_location_names", include_location_names),
-            ]
-            if v is not None
+            k: v for k, v in [("include_task_", include_task_), ("include_location_names", include_location_names)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_remove_entry(self, team_id, timer_id) -> dict[str, Any]:
+    async def time_tracking_remove_entry(self, team_id, timer_id) -> dict[str, Any]:
         """
         Removes a specific time tracking entry for a team by deleting the corresponding timer record.
 
@@ -3687,7 +3335,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_update_time_entry_details(
+    async def time_tracking_update_time_entry_details(
         self,
         team_id,
         timer_id,
@@ -3744,16 +3392,12 @@ class ClickupApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/time_entries/{timer_id}"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_get_time_entry_history(self, team_id, timer_id) -> dict[str, Any]:
+    async def time_tracking_get_time_entry_history(self, team_id, timer_id) -> dict[str, Any]:
         """
         Retrieves the history of a specific time entry for a given team from the time tracking service.
 
@@ -3781,9 +3425,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_get_current_time_entry(
-        self, team_id, assignee=None
-    ) -> dict[str, Any]:
+    async def time_tracking_get_current_time_entry(self, team_id, assignee=None) -> dict[str, Any]:
         """
         Retrieves the current time entry for a specified team, optionally filtered by assignee.
 
@@ -3809,9 +3451,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_remove_tags_from_time_entries(
-        self, team_id, tags, time_entry_ids
-    ) -> dict[str, Any]:
+    async def time_tracking_remove_tags_from_time_entries(self, team_id, tags, time_entry_ids) -> dict[str, Any]:
         """
         Removes specified tags from multiple time entries for a given team.
 
@@ -3836,10 +3476,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'tags'")
         if time_entry_ids is None:
             raise ValueError("Missing required parameter 'time_entry_ids'")
-        request_body = {
-            "tags": tags,
-            "time_entry_ids": time_entry_ids,
-        }
+        request_body = {"tags": tags, "time_entry_ids": time_entry_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/time_entries/tags"
         query_params = {}
@@ -3847,7 +3484,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_get_all_tags_from_time_entries(self, team_id) -> dict[str, Any]:
+    async def time_tracking_get_all_tags_from_time_entries(self, team_id) -> dict[str, Any]:
         """
         Retrieves all tags associated with time entries for a specified team.
 
@@ -3872,9 +3509,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_add_tags_from_time_entries(
-        self, team_id, tags, time_entry_ids
-    ) -> dict[str, Any]:
+    async def time_tracking_add_tags_from_time_entries(self, team_id, tags, time_entry_ids) -> dict[str, Any]:
         """
         Adds tags to specified time entries for a team.
 
@@ -3899,10 +3534,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'tags'")
         if time_entry_ids is None:
             raise ValueError("Missing required parameter 'time_entry_ids'")
-        request_body = {
-            "tags": tags,
-            "time_entry_ids": time_entry_ids,
-        }
+        request_body = {"tags": tags, "time_entry_ids": time_entry_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/time_entries/tags"
         query_params = {}
@@ -3910,9 +3542,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_change_tag_names(
-        self, team_id, name, new_name, tag_bg, tag_fg
-    ) -> dict[str, Any]:
+    async def time_tracking_change_tag_names(self, team_id, name, new_name, tag_bg, tag_fg) -> dict[str, Any]:
         """
         Updates the name and visual properties of a time tracking tag for a specified team.
 
@@ -3943,12 +3573,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_bg'")
         if tag_fg is None:
             raise ValueError("Missing required parameter 'tag_fg'")
-        request_body = {
-            "name": name,
-            "new_name": new_name,
-            "tag_bg": tag_bg,
-            "tag_fg": tag_fg,
-        }
+        request_body = {"name": name, "new_name": new_name, "tag_bg": tag_bg, "tag_fg": tag_fg}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/time_entries/tags"
         query_params = {}
@@ -3956,15 +3581,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_start_timer(
-        self,
-        team_Id,
-        custom_task_ids=None,
-        team_id=None,
-        tags=None,
-        description=None,
-        tid=None,
-        billable=None,
+    async def time_tracking_start_timer(
+        self, team_Id, custom_task_ids=None, team_id=None, tags=None, description=None, tid=None, billable=None
     ) -> dict[str, Any]:
         """
         Starts a new time tracking timer for a specified team and task with optional metadata such as tags, description, and billable status.
@@ -3990,24 +3608,15 @@ class ClickupApp(APIApplication):
         """
         if team_Id is None:
             raise ValueError("Missing required parameter 'team_Id'")
-        request_body = {
-            "tags": tags,
-            "description": description,
-            "tid": tid,
-            "billable": billable,
-        }
+        request_body = {"tags": tags, "description": description, "tid": tid, "billable": billable}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_Id}/time_entries/start"
-        query_params = {
-            k: v
-            for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("custom_task_ids", custom_task_ids), ("team_id", team_id)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def time_tracking_stop_time_entry(self, team_id) -> dict[str, Any]:
+    async def time_tracking_stop_time_entry(self, team_id) -> dict[str, Any]:
         """
         Stops the currently active time entry for the specified team.
 
@@ -4032,9 +3641,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_invite_user_to_workspace(
-        self, team_id, email, admin, custom_role_id=None
-    ) -> dict[str, Any]:
+    async def users_invite_user_to_workspace(self, team_id, email, admin, custom_role_id=None) -> dict[str, Any]:
         """
         Invites a user to a workspace by sending an invitation to their email address.
 
@@ -4060,11 +3667,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         if admin is None:
             raise ValueError("Missing required parameter 'admin'")
-        request_body = {
-            "email": email,
-            "admin": admin,
-            "custom_role_id": custom_role_id,
-        }
+        request_body = {"email": email, "admin": admin, "custom_role_id": custom_role_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/user"
         query_params = {}
@@ -4072,7 +3675,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_get_user_details(self, team_id, user_id) -> dict[str, Any]:
+    async def users_get_user_details(self, team_id, user_id) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific user within a given team.
 
@@ -4100,9 +3703,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_update_user_details(
-        self, team_id, user_id, username, admin, custom_role_id
-    ) -> dict[str, Any]:
+    async def users_update_user_details(self, team_id, user_id, username, admin, custom_role_id) -> dict[str, Any]:
         """
         Updates the details of a user in a specified team.
 
@@ -4133,11 +3734,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'admin'")
         if custom_role_id is None:
             raise ValueError("Missing required parameter 'custom_role_id'")
-        request_body = {
-            "username": username,
-            "admin": admin,
-            "custom_role_id": custom_role_id,
-        }
+        request_body = {"username": username, "admin": admin, "custom_role_id": custom_role_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/team/{team_id}/user/{user_id}"
         query_params = {}
@@ -4145,7 +3742,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_deactivate_from_workspace(self, team_id, user_id) -> dict[str, Any]:
+    async def users_deactivate_from_workspace(self, team_id, user_id) -> dict[str, Any]:
         """
         Deactivates a user from the specified workspace (team) by sending a DELETE request to the API.
 
@@ -4173,7 +3770,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_get_everything_level(self, team_id) -> dict[str, Any]:
+    async def views_get_everything_level(self, team_id) -> dict[str, Any]:
         """
         Retrieves all view-level data for a specified team.
 
@@ -4198,18 +3795,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_create_workspace_view_everything_level(
-        self,
-        team_id,
-        name,
-        type,
-        grouping,
-        divide,
-        sorting,
-        filters,
-        columns,
-        team_sidebar,
-        settings,
+    async def views_create_workspace_view_everything_level(
+        self, team_id, name, type, grouping, divide, sorting, filters, columns, team_sidebar, settings
     ) -> dict[str, Any]:
         """
         Creates a new 'everything-level' view within a specified workspace team with custom configuration options.
@@ -4274,7 +3861,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_space_views_get(self, space_id) -> dict[str, Any]:
+    async def views_space_views_get(self, space_id) -> dict[str, Any]:
         """
         Retrieves the view details for a specified space by its ID.
 
@@ -4299,18 +3886,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_add_view_to_space(
-        self,
-        space_id,
-        name,
-        type,
-        grouping,
-        divide,
-        sorting,
-        filters,
-        columns,
-        team_sidebar,
-        settings,
+    async def views_add_view_to_space(
+        self, space_id, name, type, grouping, divide, sorting, filters, columns, team_sidebar, settings
     ) -> dict[str, Any]:
         """
         Creates a new view in the specified space with the given configuration parameters.
@@ -4375,7 +3952,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_folder_views_get(self, folder_id) -> dict[str, Any]:
+    async def views_folder_views_get(self, folder_id) -> dict[str, Any]:
         """
         Retrieves the views associated with a specified folder by its folder ID.
 
@@ -4400,18 +3977,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_add_view_to_folder(
-        self,
-        folder_id,
-        name,
-        type,
-        grouping,
-        divide,
-        sorting,
-        filters,
-        columns,
-        team_sidebar,
-        settings,
+    async def views_add_view_to_folder(
+        self, folder_id, name, type, grouping, divide, sorting, filters, columns, team_sidebar, settings
     ) -> dict[str, Any]:
         """
         Adds a new view to a specified folder with the provided configuration details.
@@ -4476,7 +4043,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_get_list_views(self, list_id) -> dict[str, Any]:
+    async def views_get_list_views(self, list_id) -> dict[str, Any]:
         """
         Retrieves all views associated with the specified list.
 
@@ -4501,18 +4068,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_add_view_to_list(
-        self,
-        list_id,
-        name,
-        type,
-        grouping,
-        divide,
-        sorting,
-        filters,
-        columns,
-        team_sidebar,
-        settings,
+    async def views_add_view_to_list(
+        self, list_id, name, type, grouping, divide, sorting, filters, columns, team_sidebar, settings
     ) -> dict[str, Any]:
         """
         Creates a new view for a specified list with the provided configuration and returns the resulting view data.
@@ -4577,7 +4134,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_get_view_info(self, view_id) -> dict[str, Any]:
+    async def views_get_view_info(self, view_id) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific view by its identifier.
 
@@ -4602,19 +4159,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_update_view_details(
-        self,
-        view_id,
-        name,
-        type,
-        parent,
-        grouping,
-        divide,
-        sorting,
-        filters,
-        columns,
-        team_sidebar,
-        settings,
+    async def views_update_view_details(
+        self, view_id, name, type, parent, grouping, divide, sorting, filters, columns, team_sidebar, settings
     ) -> dict[str, Any]:
         """
         Updates the details of an existing view with the specified parameters.
@@ -4683,7 +4229,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_delete_view_by_id(self, view_id) -> dict[str, Any]:
+    async def views_delete_view_by_id(self, view_id) -> dict[str, Any]:
         """
         Deletes a view by its ID.
 
@@ -4708,7 +4254,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def views_get_tasks_in_view(self, view_id, page) -> dict[str, Any]:
+    async def views_get_tasks_in_view(self, view_id, page) -> dict[str, Any]:
         """
         Retrieves a paginated list of tasks associated with a specific view.
 
@@ -4736,7 +4282,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_workspace_get(self, team_id) -> dict[str, Any]:
+    async def webhooks_workspace_get(self, team_id) -> dict[str, Any]:
         """
         Retrieves webhook configurations for a specified workspace team.
 
@@ -4761,15 +4307,8 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_create_webhook(
-        self,
-        team_id,
-        endpoint,
-        events,
-        space_id=None,
-        folder_id=None,
-        list_id=None,
-        task_id=None,
+    async def webhooks_create_webhook(
+        self, team_id, endpoint, events, space_id=None, folder_id=None, list_id=None, task_id=None
     ) -> dict[str, Any]:
         """
         Creates a webhook for a team by sending a POST request to the specified endpoint.
@@ -4813,9 +4352,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_update_events_to_monitor(
-        self, webhook_id, endpoint, events, status
-    ) -> dict[str, Any]:
+    async def webhooks_update_events_to_monitor(self, webhook_id, endpoint, events, status) -> dict[str, Any]:
         """
         Updates the monitored events, endpoint, and status for a specified webhook.
 
@@ -4843,11 +4380,7 @@ class ClickupApp(APIApplication):
             raise ValueError("Missing required parameter 'events'")
         if status is None:
             raise ValueError("Missing required parameter 'status'")
-        request_body = {
-            "endpoint": endpoint,
-            "events": events,
-            "status": status,
-        }
+        request_body = {"endpoint": endpoint, "events": events, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/webhook/{webhook_id}"
         query_params = {}
@@ -4855,7 +4388,7 @@ class ClickupApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_remove_webhook_by_id(self, webhook_id) -> dict[str, Any]:
+    async def webhooks_remove_webhook_by_id(self, webhook_id) -> dict[str, Any]:
         """
         Removes a webhook by ID.
 

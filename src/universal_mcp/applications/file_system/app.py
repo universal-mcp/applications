@@ -1,7 +1,6 @@
 import os
 import shutil
 import uuid
-
 from universal_mcp.applications.application import BaseApplication
 
 
@@ -63,14 +62,7 @@ class FileSystemApp(BaseApplication):
             file_path = await FileSystemApp._generate_file_path()
         with open(file_path, "wb") as f:
             f.write(file_data)
-            result = {
-                "status": "success",
-                "data": {
-                    "url": file_path,
-                    "filename": file_path,
-                    "size": len(file_data),
-                },
-            }
+            result = {"status": "success", "data": {"url": file_path, "filename": file_path, "size": len(file_data)}}
             return result
 
     @staticmethod
@@ -98,7 +90,4 @@ class FileSystemApp(BaseApplication):
         return {"status": "success"}
 
     def list_tools(self):
-        return [
-            FileSystemApp.read_file,
-            FileSystemApp.write_file,
-        ]
+        return [FileSystemApp.read_file, FileSystemApp.write_file]

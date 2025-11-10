@@ -1,5 +1,4 @@
 from typing import Any, Literal
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,17 +8,10 @@ class PerplexityApp(APIApplication):
         super().__init__(name="perplexity", integration=integration)
         self.base_url = "https://api.perplexity.ai"
 
-    def answer_with_search(
+    async def answer_with_search(
         self,
         query: str,
-        model: Literal[
-            "r1-1776",
-            "sonar",
-            "sonar-pro",
-            "sonar-reasoning",
-            "sonar-reasoning-pro",
-            "sonar-deep-research",
-        ] = "sonar-pro",
+        model: Literal["r1-1776", "sonar", "sonar-pro", "sonar-reasoning", "sonar-reasoning-pro", "sonar-deep-research"] = "sonar-pro",
         temperature: float = 1,
         system_prompt: str = "You are a helpful AI assistant that answers questions using real-time information from the web.",
     ) -> dict[str, Any] | str:
@@ -47,12 +39,7 @@ class PerplexityApp(APIApplication):
         if system_prompt:
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": query})
-        payload = {
-            "model": model,
-            "messages": messages,
-            "temperature": temperature,
-            # "max_tokens": 512,
-        }
+        payload = {"model": model, "messages": messages, "temperature": temperature}
         data = self._post(endpoint, data=payload)
         response = data.json()
         content = response["choices"][0]["message"]["content"]
@@ -60,6 +47,4 @@ class PerplexityApp(APIApplication):
         return {"content": content, "citations": citations}
 
     def list_tools(self):
-        return [
-            self.answer_with_search,
-        ]
+        return [self.answer_with_search]

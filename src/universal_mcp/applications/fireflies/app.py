@@ -1,10 +1,7 @@
 from collections.abc import Callable
 from typing import Any
-
 from gql import gql
-from universal_mcp.applications.application import (
-    GraphQLApplication,
-)
+from universal_mcp.applications.application import GraphQLApplication
 from universal_mcp.integrations import Integration
 
 
@@ -14,14 +11,10 @@ class FirefliesApp(GraphQLApplication):
     """
 
     def __init__(self, integration: Integration | None = None, **kwargs: Any) -> None:
-        super().__init__(
-            name="fireflies", base_url="https://api.fireflies.ai/graphql", **kwargs
-        )
+        super().__init__(name="fireflies", base_url="https://api.fireflies.ai/graphql", **kwargs)
         self.integration = integration
 
-    def get_team_conversation_analytics(
-        self, start_time: str | None = None, end_time: str | None = None
-    ) -> dict[str, Any]:
+    async def get_team_conversation_analytics(self, start_time: str | None = None, end_time: str | None = None) -> dict[str, Any]:
         """
         Queries the Fireflies.ai API for team conversation analytics, specifically the average number of filler words. The data retrieval can optionally be filtered by a start and end time. Returns a dictionary containing the fetched analytics.
 
@@ -39,27 +32,18 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             analytics, team, fireflies, query
         """
-        query_gql = gql("""
-        query Analytics($startTime: String, $endTime: String) {
-          analytics(start_time: $startTime, end_time: $endTime) {
-            team {
-              conversation {
-                average_filler_words
-              }
-            }
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query Analytics($startTime: String, $endTime: String) {\n          analytics(start_time: $startTime, end_time: $endTime) {\n            team {\n              conversation {\n                average_filler_words\n              }\n            }\n          }\n        }\n        "
+        )
         variables: dict[str, Any] = {}
         if start_time:
             variables["startTime"] = start_time
         if end_time:
             variables["endTime"] = end_time
-
         result = self.query(query_gql, variables=variables if variables else None)
         return result.get("analytics", {})
 
-    def get_transcript_ai_outputs(self, transcript_id: str) -> list[dict[str, Any]]:
+    async def get_transcript_ai_outputs(self, transcript_id: str) -> list[dict[str, Any]]:
         """
         Retrieves all AI-generated application outputs, such as summaries or analyses, associated with a specific transcript ID. It fetches the detailed prompt and response data for each AI app that has processed the transcript, providing a complete record of AI-generated content.
 
@@ -76,26 +60,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             ai, apps, transcript, fireflies, query
         """
-        query_gql = gql("""
-        query GetAIAppsOutputs($transcriptId: String!) {
-          apps(transcript_id: $transcriptId) {
-            outputs {
-              transcript_id
-              user_id
-              app_id
-              created_at
-              title
-              prompt
-              response
-            }
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query GetAIAppsOutputs($transcriptId: String!) {\n          apps(transcript_id: $transcriptId) {\n            outputs {\n              transcript_id\n              user_id\n              app_id\n              created_at\n              title\n              prompt\n              response\n            }\n          }\n        }\n        "
+        )
         variables = {"transcriptId": transcript_id}
         result = self.query(query_gql, variables=variables)
         return result.get("apps", {})
 
-    def get_user_details(self, user_id: str) -> dict[str, Any]:
+    async def get_user_details(self, user_id: str) -> dict[str, Any]:
         """
         Fetches details, such as name and integrations, for a single user identified by their unique ID. This function queries for a specific user, differentiating it from `list_users` which retrieves a list of all users in the workspace.
 
@@ -112,19 +84,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             user, details, fireflies, query, important
         """
-        query_gql = gql("""
-        query User($userId: String!) {
-          user(id: $userId) {
-            name
-            integrations
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query User($userId: String!) {\n          user(id: $userId) {\n            name\n            integrations\n          }\n        }\n        "
+        )
         variables = {"userId": user_id}
         result = self.query(query_gql, variables=variables)
         return result.get("user", {})
 
-    def list_users(self) -> list[dict[str, Any]]:
+    async def list_users(self) -> list[dict[str, Any]]:
         """
         Retrieves a list of all users in the workspace, returning each user's name and configured integrations. It provides a complete team roster, differing from `get_user_details`, which fetches information for a single user by their ID.
 
@@ -138,23 +105,11 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             user, list, users, fireflies, query
         """
-        query_str = """
-        query ListAllUsers {
-          users {
-            name
-            integrations
-            # You might want to add other available user fields here if needed, e.g.:
-            # id
-            # email
-            # role
-            # is_admin
-          }
-        }
-        """
+        query_str = "\n        query ListAllUsers {\n          users {\n            name\n            integrations\n            # You might want to add other available user fields here if needed, e.g.:\n            # id\n            # email\n            # role\n            # is_admin\n          }\n        }\n        "
         result = self.query(query_str)
         return result.get("users", [])
 
-    def get_transcript_details(self, transcript_id: str) -> dict[str, Any]:
+    async def get_transcript_details(self, transcript_id: str) -> dict[str, Any]:
         """
         Queries the Fireflies API for a single transcript's details, such as title and ID, using its unique identifier. It fetches one specific entry, distinguishing it from `list_transcripts`, which retrieves a collection, and from `get_ai_apps_outputs` which gets AI data from a transcript.
 
@@ -171,127 +126,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             transcript, details, fireflies, query, important
         """
-        query_gql = gql("""
-        query Transcript($transcriptId: String!) {
-          transcript(id: $transcriptId) {
-            id
-            title
-            host_email
-            organizer_email
-            user {
-              user_id
-              email
-              name
-              num_transcripts
-              recent_meeting
-              minutes_consumed
-              is_admin
-              integrations
-            }
-            speakers {
-              id
-              name
-            }
-            transcript_url
-            participants
-            meeting_attendees {
-              displayName
-              email
-              phoneNumber
-              name
-              location
-            }
-            fireflies_users
-            duration
-            dateString
-            date
-            audio_url
-            video_url
-            sentences {
-              index
-              speaker_name
-              speaker_id
-              text
-              raw_text
-              start_time
-              end_time
-              ai_filters {
-                task
-                pricing
-                metric
-                question
-                date_and_time
-                text_cleanup
-                sentiment
-              }
-            }
-            calendar_id
-            summary {
-              action_items
-              keywords
-              outline
-              overview
-              shorthand_bullet
-              gist
-              bullet_gist
-              short_summary
-              short_overview
-              meeting_type
-              topics_discussed
-              transcript_chapters
-            }
-            meeting_info {
-              fred_joined
-              silent_meeting
-              summary_status
-            }
-            cal_id
-            calendar_type
-            apps_preview {
-              outputs {
-                transcript_id
-                user_id
-                app_id
-                created_at
-                title
-                prompt
-                response
-              }
-            }
-            meeting_link
-            analytics {
-              sentiments {
-                negative_pct
-                neutral_pct
-                positive_pct
-              }
-              categories {
-                questions
-                date_times
-                metrics
-                tasks
-              }
-              speakers {
-                speaker_id
-                name
-                duration
-                word_count
-                longest_monologue
-                monologues_count
-                filler_words
-                questions
-                duration_pct
-                words_per_minute
-              }
-            }
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query Transcript($transcriptId: String!) {\n          transcript(id: $transcriptId) {\n            id\n            title\n            host_email\n            organizer_email\n            user {\n              user_id\n              email\n              name\n              num_transcripts\n              recent_meeting\n              minutes_consumed\n              is_admin\n              integrations\n            }\n            speakers {\n              id\n              name\n            }\n            transcript_url\n            participants\n            meeting_attendees {\n              displayName\n              email\n              phoneNumber\n              name\n              location\n            }\n            fireflies_users\n            duration\n            dateString\n            date\n            audio_url\n            video_url\n            sentences {\n              index\n              speaker_name\n              speaker_id\n              text\n              raw_text\n              start_time\n              end_time\n              ai_filters {\n                task\n                pricing\n                metric\n                question\n                date_and_time\n                text_cleanup\n                sentiment\n              }\n            }\n            calendar_id\n            summary {\n              action_items\n              keywords\n              outline\n              overview\n              shorthand_bullet\n              gist\n              bullet_gist\n              short_summary\n              short_overview\n              meeting_type\n              topics_discussed\n              transcript_chapters\n            }\n            meeting_info {\n              fred_joined\n              silent_meeting\n              summary_status\n            }\n            cal_id\n            calendar_type\n            apps_preview {\n              outputs {\n                transcript_id\n                user_id\n                app_id\n                created_at\n                title\n                prompt\n                response\n              }\n            }\n            meeting_link\n            analytics {\n              sentiments {\n                negative_pct\n                neutral_pct\n                positive_pct\n              }\n              categories {\n                questions\n                date_times\n                metrics\n                tasks\n              }\n              speakers {\n                speaker_id\n                name\n                duration\n                word_count\n                longest_monologue\n                monologues_count\n                filler_words\n                questions\n                duration_pct\n                words_per_minute\n              }\n            }\n          }\n        }\n        "
+        )
         variables = {"transcriptId": transcript_id}
         result = self.query(query_gql, variables=variables)
         return result.get("transcript", {})
 
-    def list_transcripts(self, user_id: str | None = None) -> list[dict[str, Any]]:
+    async def list_transcripts(self, user_id: str | None = None) -> list[dict[str, Any]]:
         """
         Fetches a list of meeting transcripts, returning the title and ID for each. The list can be filtered to return only transcripts for a specific user. This function complements `get_transcript_details`, which retrieves a single transcript by its unique ID.
 
@@ -308,21 +150,16 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             transcript, list, fireflies, query
         """
-        query_gql = gql("""
-        query Transcripts($userId: String) {
-          transcripts(user_id: $userId) {
-            title
-            id
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query Transcripts($userId: String) {\n          transcripts(user_id: $userId) {\n            title\n            id\n          }\n        }\n        "
+        )
         variables: dict[str, Any] = {}
         if user_id:
             variables["userId"] = user_id
         result = self.query(query_gql, variables=variables if variables else None)
         return result.get("transcripts", [])
 
-    def get_bite_details(self, bite_id: str) -> dict[str, Any]:
+    async def get_bite_details(self, bite_id: str) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific bite (soundbite/clip) using its unique ID. It fetches data including the user ID, name, processing status, and summary. This provides a focused view of a single bite, distinguishing it from `list_bites` which fetches a collection of bites.
 
@@ -339,21 +176,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             bite, details, fireflies, query
         """
-        query_gql = gql("""
-        query Bite($biteId: ID!) {
-          bite(id: $biteId) {
-            user_id
-            name
-            status
-            summary
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query Bite($biteId: ID!) {\n          bite(id: $biteId) {\n            user_id\n            name\n            status\n            summary\n          }\n        }\n        "
+        )
         variables = {"biteId": bite_id}
         result = self.query(query_gql, variables=variables)
         return result.get("bite", {})
 
-    def list_bites(self, mine: bool | None = None) -> list[dict[str, Any]]:
+    async def list_bites(self, mine: bool | None = None) -> list[dict[str, Any]]:
         """
         Retrieves a list of soundbites (clips) from the Fireflies API. An optional 'mine' parameter filters for soundbites belonging only to the authenticated user. Differentiates from 'get_bite_details' by fetching multiple items rather than a single one by ID.
 
@@ -370,24 +200,16 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             bite, list, fireflies, query
         """
-        query_gql = gql("""
-        query Bites($mine: Boolean) {
-          bites(mine: $mine) {
-            user_id
-            name
-            end_time
-          }
-        }
-        """)
+        query_gql = gql(
+            "\n        query Bites($mine: Boolean) {\n          bites(mine: $mine) {\n            user_id\n            name\n            end_time\n          }\n        }\n        "
+        )
         variables: dict[str, Any] = {}
-        if (
-            mine is not None
-        ):  # API might default this, ensure we only send if explicitly set
+        if mine is not None:
             variables["mine"] = mine
         result = self.query(query_gql, variables=variables if variables else None)
         return result.get("bites", [])
 
-    def add_to_live_meeting(self, meeting_link: str) -> dict[str, Any]:
+    async def add_to_live_meeting(self, meeting_link: str) -> dict[str, Any]:
         """
         Executes a GraphQL mutation to make the Fireflies.ai notetaker join a live meeting specified by its URL. This action initiates the bot's recording and transcription process for the ongoing session and returns a success confirmation.
 
@@ -404,20 +226,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             meeting, live, fireflies, mutation, important
         """
-        mutation_gql = gql("""
-        mutation AddToLiveMeeting($meetingLink: String!) {
-          addToLiveMeeting(meeting_link: $meetingLink) {
-            success
-          }
-        }
-        """)
+        mutation_gql = gql(
+            "\n        mutation AddToLiveMeeting($meetingLink: String!) {\n          addToLiveMeeting(meeting_link: $meetingLink) {\n            success\n          }\n        }\n        "
+        )
         variables = {"meetingLink": meeting_link}
         result = self.mutate(mutation_gql, variables=variables)
         return result.get("addToLiveMeeting", {})
 
-    def create_soundbite_from_transcript(
-        self, transcript_id: str, start_time: float, end_time: float
-    ) -> dict[str, Any]:
+    async def create_soundbite_from_transcript(self, transcript_id: str, start_time: float, end_time: float) -> dict[str, Any]:
         """
         Creates a soundbite/clip from a specified segment of a transcript using its ID, start, and end times. This function executes a GraphQL mutation, returning details of the newly created bite, such as its ID and processing status.
 
@@ -436,24 +252,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             bite, create, transcript, fireflies, mutation
         """
-        mutation_gql = gql("""
-        mutation CreateBite($transcriptId: ID!, $startTime: Float!, $endTime: Float!) {
-          createBite(transcript_id: $transcriptId, start_time: $startTime, end_time: $endTime) {
-            summary
-            status
-            id
-          }
-        }
-        """)
-        variables = {
-            "transcriptId": transcript_id,
-            "startTime": start_time,
-            "endTime": end_time,
-        }
+        mutation_gql = gql(
+            "\n        mutation CreateBite($transcriptId: ID!, $startTime: Float!, $endTime: Float!) {\n          createBite(transcript_id: $transcriptId, start_time: $startTime, end_time: $endTime) {\n            summary\n            status\n            id\n          }\n        }\n        "
+        )
+        variables = {"transcriptId": transcript_id, "startTime": start_time, "endTime": end_time}
         result = self.mutate(mutation_gql, variables=variables)
         return result.get("createBite", {})
 
-    def delete_transcript(self, transcript_id: str) -> dict[str, Any]:
+    async def delete_transcript(self, transcript_id: str) -> dict[str, Any]:
         """
         Permanently deletes a specific transcript from Fireflies.ai using its ID. This destructive operation executes a GraphQL mutation and returns a dictionary containing the details of the transcript (e.g., title, date) as it existed just before being removed, confirming the action.
 
@@ -470,21 +276,14 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             transcript, delete, fireflies, mutation, destructive
         """
-        mutation_gql = gql("""
-        mutation DeleteTranscript($transcriptId: String!) {
-          deleteTranscript(id: $transcriptId) {
-            title
-            date
-            duration
-            organizer_email
-          }
-        }
-        """)
+        mutation_gql = gql(
+            "\n        mutation DeleteTranscript($transcriptId: String!) {\n          deleteTranscript(id: $transcriptId) {\n            title\n            date\n            duration\n            organizer_email\n          }\n        }\n        "
+        )
         variables = {"transcriptId": transcript_id}
         result = self.mutate(mutation_gql, variables=variables)
         return result.get("deleteTranscript", {})
 
-    def set_user_role(self, user_id: str, role: str) -> dict[str, Any]:
+    async def set_user_role(self, user_id: str, role: str) -> dict[str, Any]:
         """
         Assigns a new role (e.g., 'admin', 'member') to a user specified by their ID. This function executes a GraphQL mutation to modify user data and returns a dictionary with the user's updated name and admin status to confirm the change.
 
@@ -502,23 +301,15 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             user, role, admin, fireflies, mutation
         """
-        mutation_gql = gql("""
-        mutation SetUserRole($user_id: String!, $role: Role!) {
-          setUserRole(user_id: $user_id, role: $role) {
-            name
-            is_admin
-          }
-        }
-        """)
+        mutation_gql = gql(
+            "\n        mutation SetUserRole($user_id: String!, $role: Role!) {\n          setUserRole(user_id: $user_id, role: $role) {\n            name\n            is_admin\n          }\n        }\n        "
+        )
         variables = {"user_id": user_id, "role": role}
         result = self.mutate(mutation_gql, variables=variables)
         return result.get("setUserRole", {})
 
-    def transcribe_audio_from_url(
-        self,
-        url: str,
-        title: str | None = None,
-        attendees: list[dict[str, str]] | None = None,
+    async def transcribe_audio_from_url(
+        self, url: str, title: str | None = None, attendees: list[dict[str, str]] | None = None
     ) -> dict[str, Any]:
         """
         Submits an audio file from a URL to the Fireflies.ai API for transcription. It can optionally associate a title and a list of attendees with the audio, returning the upload status and details upon completion.
@@ -539,28 +330,19 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             audio, upload, transcript, fireflies, mutation
         """
-        mutation_gql = gql("""
-        mutation UploadAudio($input: AudioUploadInput!) {
-          uploadAudio(input: $input) {
-            success
-            title
-            message
-          }
-        }
-        """)
+        mutation_gql = gql(
+            "\n        mutation UploadAudio($input: AudioUploadInput!) {\n          uploadAudio(input: $input) {\n            success\n            title\n            message\n          }\n        }\n        "
+        )
         input_data: dict[str, Any] = {"url": url}
         if title:
             input_data["title"] = title
         if attendees:
             input_data["attendees"] = attendees
-
         variables = {"input": input_data}
         result = self.mutate(mutation_gql, variables=variables)
         return result.get("uploadAudio", {})
 
-    def update_transcript_title(
-        self, transcript_id: str, new_title: str
-    ) -> dict[str, Any]:
+    async def update_transcript_title(self, transcript_id: str, new_title: str) -> dict[str, Any]:
         """
         Updates the title of a specific transcript, identified by its ID, to a new value. This function executes a GraphQL mutation and returns a dictionary containing the newly assigned title upon successful completion of the request.
 
@@ -578,13 +360,9 @@ class FirefliesApp(GraphQLApplication):
         Tags:
             transcript, meeting, title, update, fireflies, mutation
         """
-        mutation_gql = gql("""
-        mutation UpdateMeetingTitle($input: UpdateMeetingTitleInput!) {
-          updateMeetingTitle(input: $input) {
-            title
-          }
-        }
-        """)
+        mutation_gql = gql(
+            "\n        mutation UpdateMeetingTitle($input: UpdateMeetingTitleInput!) {\n          updateMeetingTitle(input: $input) {\n            title\n          }\n        }\n        "
+        )
         variables = {"input": {"id": transcript_id, "title": new_title}}
         result = self.mutate(mutation_gql, variables=variables)
         return result.get("updateMeetingTitle", {})

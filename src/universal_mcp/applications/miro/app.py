@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class MiroApp(APIApplication):
         super().__init__(name="miro", integration=integration, **kwargs)
         self.base_url = "https://api.miro.com"
 
-    def revoke_token_v1(self, access_token=None) -> Any:
+    async def revoke_token_v1(self, access_token=None) -> Any:
         """
         Revokes an OAuth access token using the POST method at "/v1/oauth/revoke", allowing clients to invalidate tokens as needed.
 
@@ -23,14 +22,12 @@ class MiroApp(APIApplication):
             Tokens
         """
         url = f"{self.base_url}/v1/oauth/revoke"
-        query_params = {
-            k: v for k, v in [("access_token", access_token)] if v is not None
-        }
+        query_params = {k: v for k, v in [("access_token", access_token)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_access_token_information(self) -> Any:
+    async def get_access_token_information(self) -> Any:
         """
         Retrieves an OAuth 2.0 token using the GET method for client authorization purposes.
 
@@ -46,14 +43,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_audit_logs(
-        self,
-        createdAfter=None,
-        createdBefore=None,
-        cursor=None,
-        limit=None,
-        sorting=None,
-    ) -> Any:
+    async def get_audit_logs(self, createdAfter=None, createdBefore=None, cursor=None, limit=None, sorting=None) -> Any:
         """
         Retrieves audit logs with optional filtering by time range, pagination, and sorting parameters.
 
@@ -86,7 +76,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_settings(self, org_id) -> Any:
+    async def get_organization_settings(self, org_id) -> Any:
         """
         Retrieves data classification settings for an organization, providing information on how data is categorized and handled within the specified organization.
 
@@ -107,9 +97,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_update_boards_classification(
-        self, org_id, team_id, labelId=None, notClassifiedOnly=None
-    ) -> Any:
+    async def bulk_update_boards_classification(self, org_id, team_id, labelId=None, notClassifiedOnly=None) -> Any:
         """
         Updates the data classification settings for a specific team in an organization using the "PATCH" method.
 
@@ -136,10 +124,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "labelId": labelId,
-            "notClassifiedOnly": notClassifiedOnly,
-        }
+        request_body = {"labelId": labelId, "notClassifiedOnly": notClassifiedOnly}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification"
         query_params = {}
@@ -147,7 +132,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_settings(self, org_id, team_id) -> Any:
+    async def get_team_settings(self, org_id, team_id) -> Any:
         """
         Retrieves the data classification settings for a specific team within an organization.
 
@@ -171,9 +156,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_team_settings(
-        self, org_id, team_id, defaultLabelId=None, enabled=None
-    ) -> Any:
+    async def update_team_settings(self, org_id, team_id, defaultLabelId=None, enabled=None) -> Any:
         """
         Updates data classification settings for a specific team within an organization using the PATCH method.
 
@@ -200,10 +183,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "defaultLabelId": defaultLabelId,
-            "enabled": enabled,
-        }
+        request_body = {"defaultLabelId": defaultLabelId, "enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/data-classification-settings"
         query_params = {}
@@ -211,7 +191,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_board_classification(self, org_id, team_id, board_id) -> Any:
+    async def get_board_classification(self, org_id, team_id, board_id) -> Any:
         """
         Retrieves data classification details for a specified organization, team, and board using the provided identifiers.
 
@@ -238,9 +218,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_board_classification(
-        self, org_id, team_id, board_id, labelId=None
-    ) -> Any:
+    async def update_board_classification(self, org_id, team_id, board_id, labelId=None) -> Any:
         """
         Assigns data classifications to a board within a specified organization and team using the provided criteria and returns a success status upon completion.
 
@@ -268,9 +246,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "labelId": labelId,
-        }
+        request_body = {"labelId": labelId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/boards/{board_id}/data-classification"
         query_params = {}
@@ -278,7 +254,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_all_cases(self, org_id, limit=None, cursor=None) -> Any:
+    async def get_all_cases(self, org_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a list of cases for a specified organization using the "GET" method, allowing optional query parameters for pagination via "limit" and "cursor".
 
@@ -296,14 +272,12 @@ class MiroApp(APIApplication):
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/cases"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_case(self, org_id, case_id) -> Any:
+    async def get_case(self, org_id, case_id) -> Any:
         """
         Retrieves a specific case for an organization with the provided org_id and case_id.
 
@@ -327,9 +301,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_all_legal_holds_within_acase(
-        self, org_id, case_id, limit=None, cursor=None
-    ) -> Any:
+    async def get_all_legal_holds_within_acase(self, org_id, case_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a paginated list of legal holds for a specific case and organization using cursor-based pagination.
 
@@ -350,14 +322,12 @@ class MiroApp(APIApplication):
         if case_id is None:
             raise ValueError("Missing required parameter 'case_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_legal_hold_information(self, org_id, case_id, legal_hold_id) -> Any:
+    async def get_legal_hold_information(self, org_id, case_id, legal_hold_id) -> Any:
         """
         Retrieves a specific legal hold for a case within an organization using the provided identifiers.
 
@@ -384,9 +354,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_content_items_under_legal_hold(
-        self, org_id, case_id, legal_hold_id, limit=None, cursor=None
-    ) -> Any:
+    async def get_content_items_under_legal_hold(self, org_id, case_id, legal_hold_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a list of content items under a specific legal hold in a case for an organization, allowing for pagination using limit and cursor parameters.
 
@@ -410,16 +378,12 @@ class MiroApp(APIApplication):
         if legal_hold_id is None:
             raise ValueError("Missing required parameter 'legal_hold_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/cases/{case_id}/legal-holds/{legal_hold_id}/content-items"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_board_export_job(
-        self, org_id, request_id=None, boardFormat=None, boardIds=None
-    ) -> Any:
+    async def create_board_export_job(self, org_id, request_id=None, boardFormat=None, boardIds=None) -> Any:
         """
         Exports board data for a specified organization using the "POST" method and returns a job status.
 
@@ -446,10 +410,7 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        request_body = {
-            "boardFormat": boardFormat,
-            "boardIds": boardIds,
-        }
+        request_body = {"boardFormat": boardFormat, "boardIds": boardIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/boards/export/jobs"
         query_params = {k: v for k, v in [("request_id", request_id)] if v is not None}
@@ -457,7 +418,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_board_export_job_status(self, org_id, job_id) -> Any:
+    async def get_board_export_job_status(self, org_id, job_id) -> Any:
         """
         Retrieves the status and details of a specified board export job for an organization using the API.
 
@@ -481,7 +442,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_results_for_board_export_job(self, org_id, job_id) -> Any:
+    async def get_results_for_board_export_job(self, org_id, job_id) -> Any:
         """
         Retrieves the export results for a specific organization's board export job using the API.
 
@@ -505,16 +466,8 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_content_change_logs_of_board_items(
-        self,
-        org_id,
-        board_ids=None,
-        emails=None,
-        from_=None,
-        to=None,
-        cursor=None,
-        limit=None,
-        sorting=None,
+    async def retrieve_content_change_logs_of_board_items(
+        self, org_id, board_ids=None, emails=None, from_=None, to=None, cursor=None, limit=None, sorting=None
     ) -> Any:
         """
         Retrieves organization content logs with filtering options such as board IDs, email addresses, date ranges, and pagination parameters.
@@ -557,7 +510,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def reset_all_sessions_of_auser(self, email=None) -> Any:
+    async def reset_all_sessions_of_auser(self, email=None) -> Any:
         """
         Resets all active sessions for a specified user (identified by email), requiring reauthentication.
 
@@ -576,7 +529,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_info(self, org_id) -> Any:
+    async def get_organization_info(self, org_id) -> Any:
         """
         Retrieves information about an organization specified by its ID using the API endpoint "/v2/orgs/{org_id}" with the GET method.
 
@@ -597,16 +550,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_members(
-        self,
-        org_id,
-        emails=None,
-        role=None,
-        license=None,
-        active=None,
-        cursor=None,
-        limit=None,
-    ) -> Any:
+    async def get_organization_members(self, org_id, emails=None, role=None, license=None, active=None, cursor=None, limit=None) -> Any:
         """
         Retrieves a list of members from an organization specified by `{org_id}` using query parameters for filtering by email, role, license status, and member activity, with pagination options.
 
@@ -630,21 +574,14 @@ class MiroApp(APIApplication):
         url = f"{self.base_url}/v2/orgs/{org_id}/members"
         query_params = {
             k: v
-            for k, v in [
-                ("emails", emails),
-                ("role", role),
-                ("license", license),
-                ("active", active),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
+            for k, v in [("emails", emails), ("role", role), ("license", license), ("active", active), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_organization_member(self, org_id, member_id) -> Any:
+    async def get_organization_member(self, org_id, member_id) -> Any:
         """
         Retrieves a specific member's details within an organization using their unique identifiers.
 
@@ -668,16 +605,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_boards(
-        self,
-        team_id=None,
-        project_id=None,
-        query=None,
-        owner=None,
-        limit=None,
-        offset=None,
-        sort=None,
-    ) -> Any:
+    async def get_boards(self, team_id=None, project_id=None, query=None, owner=None, limit=None, offset=None, sort=None) -> Any:
         """
         Retrieves a list of boards filtered by team, project, search query, owner, and pagination parameters.
 
@@ -714,9 +642,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def copy_board(
-        self, copy_from=None, description=None, name=None, policy=None, teamId=None
-    ) -> Any:
+    async def copy_board(self, copy_from=None, description=None, name=None, policy=None, teamId=None) -> Any:
         """
         Updates a board's configuration (with optional source copying) and returns the updated board details.
 
@@ -754,12 +680,7 @@ class MiroApp(APIApplication):
         Tags:
             Boards
         """
-        request_body = {
-            "description": description,
-            "name": name,
-            "policy": policy,
-            "teamId": teamId,
-        }
+        request_body = {"description": description, "name": name, "policy": policy, "teamId": teamId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards"
         query_params = {k: v for k, v in [("copy_from", copy_from)] if v is not None}
@@ -767,9 +688,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_board(
-        self, description=None, name=None, policy=None, projectId=None, teamId=None
-    ) -> Any:
+    async def create_board(self, description=None, name=None, policy=None, projectId=None, teamId=None) -> Any:
         """
         Creates a new board resource and returns a success status upon completion.
 
@@ -808,13 +727,7 @@ class MiroApp(APIApplication):
         Tags:
             Boards
         """
-        request_body = {
-            "description": description,
-            "name": name,
-            "policy": policy,
-            "projectId": projectId,
-            "teamId": teamId,
-        }
+        request_body = {"description": description, "name": name, "policy": policy, "projectId": projectId, "teamId": teamId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards"
         query_params = {}
@@ -822,7 +735,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_specific_board(self, board_id) -> Any:
+    async def get_specific_board(self, board_id) -> Any:
         """
         Retrieves information about a specific board identified by its ID using the API endpoint "/v2/boards/{board_id}" with the GET method.
 
@@ -843,7 +756,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_board(self, board_id) -> Any:
+    async def delete_board(self, board_id) -> Any:
         """
         Deletes a specific board identified by its ID using the "DELETE" method, effectively removing it from the system and returning a success status when completed.
 
@@ -864,15 +777,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_board(
-        self,
-        board_id,
-        description=None,
-        name=None,
-        policy=None,
-        projectId=None,
-        teamId=None,
-    ) -> Any:
+    async def update_board(self, board_id, description=None, name=None, policy=None, projectId=None, teamId=None) -> Any:
         """
         Updates a Trello board identified by `{board_id}` using the Trello API and returns a status message.
 
@@ -914,13 +819,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "description": description,
-            "name": name,
-            "policy": policy,
-            "projectId": projectId,
-            "teamId": teamId,
-        }
+        request_body = {"description": description, "name": name, "policy": policy, "projectId": projectId, "teamId": teamId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}"
         query_params = {}
@@ -928,9 +827,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_app_card_item(
-        self, board_id, data=None, geometry=None, parent=None, position=None, style=None
-    ) -> Any:
+    async def create_app_card_item(self, board_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Creates a new app card on a specified board using the "POST" method, identified by the path "/v2/boards/{board_id}/app_cards".
 
@@ -1017,13 +914,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/app_cards"
         query_params = {}
@@ -1031,7 +922,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_app_card_item(self, board_id, item_id) -> Any:
+    async def get_app_card_item(self, board_id, item_id) -> Any:
         """
         Retrieves the details of an app card with the specified item ID from a board using the GET method.
 
@@ -1055,7 +946,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_app_card_item(self, board_id, item_id) -> Any:
+    async def delete_app_card_item(self, board_id, item_id) -> Any:
         """
         Deletes an app card item from the specified board using the DELETE method and returns a success status upon completion.
 
@@ -1079,16 +970,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_app_card_item(
-        self,
-        board_id,
-        item_id,
-        data=None,
-        geometry=None,
-        parent=None,
-        position=None,
-        style=None,
-    ) -> Any:
+    async def update_app_card_item(self, board_id, item_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Updates a specific app card on the specified board using partial modifications via the PATCH method.
 
@@ -1178,13 +1060,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/app_cards/{item_id}"
         query_params = {}
@@ -1192,9 +1068,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_card_item(
-        self, board_id, data=None, geometry=None, parent=None, position=None, style=None
-    ) -> Any:
+    async def create_card_item(self, board_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Creates a new card on the specified board using the provided data and returns the operation status upon success.
 
@@ -1240,13 +1114,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/cards"
         query_params = {}
@@ -1254,7 +1122,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_card_item(self, board_id, item_id) -> Any:
+    async def get_card_item(self, board_id, item_id) -> Any:
         """
         Retrieves a specific card from a board using its board ID and item ID, returning relevant details in the response.
 
@@ -1278,7 +1146,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_card_item(self, board_id, item_id) -> Any:
+    async def delete_card_item(self, board_id, item_id) -> Any:
         """
         Deletes a specific card item from a board by ID and returns a success status upon removal.
 
@@ -1302,16 +1170,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_card_item(
-        self,
-        board_id,
-        item_id,
-        data=None,
-        geometry=None,
-        parent=None,
-        position=None,
-        style=None,
-    ) -> Any:
+    async def update_card_item(self, board_id, item_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Updates specified fields of a card item on a board using partial modifications.
 
@@ -1360,13 +1219,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/cards/{item_id}"
         query_params = {}
@@ -1374,7 +1227,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_connectors(self, board_id, limit=None, cursor=None) -> Any:
+    async def get_connectors(self, board_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a list of connectors associated with a specific board, allowing optional filtering by limit and cursor parameters.
 
@@ -1392,22 +1245,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/connectors"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_connector(
-        self,
-        board_id,
-        captions=None,
-        endItem=None,
-        shape=None,
-        startItem=None,
-        style=None,
-    ) -> Any:
+    async def create_connector(self, board_id, captions=None, endItem=None, shape=None, startItem=None, style=None) -> Any:
         """
         Establishes a connection to a specific board by creating a new connector using the API at the path "/v2/boards/{board_id}/connectors" with the POST method.
 
@@ -1561,13 +1404,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "captions": captions,
-            "endItem": endItem,
-            "shape": shape,
-            "startItem": startItem,
-            "style": style,
-        }
+        request_body = {"captions": captions, "endItem": endItem, "shape": shape, "startItem": startItem, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/connectors"
         query_params = {}
@@ -1575,7 +1412,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_specific_connector(self, board_id, connector_id) -> Any:
+    async def get_specific_connector(self, board_id, connector_id) -> Any:
         """
         Retrieves a specific connector from a board using the provided board and connector identifiers.
 
@@ -1599,7 +1436,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_connector(self, board_id, connector_id) -> Any:
+    async def delete_connector(self, board_id, connector_id) -> Any:
         """
         Deletes a specific connector associated with a board, identified by the provided `board_id` and `connector_id`, removing it along with any related configurations.
 
@@ -1623,16 +1460,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_connector(
-        self,
-        board_id,
-        connector_id,
-        captions=None,
-        endItem=None,
-        shape=None,
-        startItem=None,
-        style=None,
-    ) -> Any:
+    async def update_connector(self, board_id, connector_id, captions=None, endItem=None, shape=None, startItem=None, style=None) -> Any:
         """
         Updates a connector on a specific board using the PATCH method, returning a status message upon successful modification.
 
@@ -1789,13 +1617,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if connector_id is None:
             raise ValueError("Missing required parameter 'connector_id'")
-        request_body = {
-            "captions": captions,
-            "endItem": endItem,
-            "shape": shape,
-            "startItem": startItem,
-            "style": style,
-        }
+        request_body = {"captions": captions, "endItem": endItem, "shape": shape, "startItem": startItem, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/connectors/{connector_id}"
         query_params = {}
@@ -1803,9 +1625,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_document_item_using_url(
-        self, board_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def create_document_item_using_url(self, board_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Adds a document to a specified board using the POST method and returns a status message.
 
@@ -1845,12 +1665,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/documents"
         query_params = {}
@@ -1858,7 +1673,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_document_item(self, board_id, item_id) -> Any:
+    async def get_document_item(self, board_id, item_id) -> Any:
         """
         Retrieves a specific document from a board using the provided board ID and item ID.
 
@@ -1882,7 +1697,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_document_item(self, board_id, item_id) -> Any:
+    async def delete_document_item(self, board_id, item_id) -> Any:
         """
         Deletes a specified document from a board using its unique identifier and returns a success status upon completion.
 
@@ -1906,9 +1721,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_document_item_using_url(
-        self, board_id, item_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def update_document_item_using_url(self, board_id, item_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Updates a specific document within a board using partial modifications and returns a success status.
 
@@ -1951,12 +1764,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/documents/{item_id}"
         query_params = {}
@@ -1964,9 +1772,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_embed_item(
-        self, board_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def create_embed_item(self, board_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Creates an embed associated with a specific board, returning the result upon successful creation.
 
@@ -2006,12 +1812,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/embeds"
         query_params = {}
@@ -2019,7 +1820,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_embed_item(self, board_id, item_id) -> Any:
+    async def get_embed_item(self, board_id, item_id) -> Any:
         """
         Retrieves an embedded item from a specified board using the provided board and item identifiers.
 
@@ -2043,7 +1844,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_embed_item(self, board_id, item_id) -> Any:
+    async def delete_embed_item(self, board_id, item_id) -> Any:
         """
         Deletes the specified embed item from the board by its ID and returns a success status upon removal.
 
@@ -2067,9 +1868,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_embed_item(
-        self, board_id, item_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def update_embed_item(self, board_id, item_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Updates an embedded item within a specified board and returns the updated result.
 
@@ -2112,12 +1911,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/embeds/{item_id}"
         query_params = {}
@@ -2125,9 +1919,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_image_item_using_url(
-        self, board_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def create_image_item_using_url(self, board_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Uploads an image to a specified board and returns success status upon completion.
 
@@ -2167,12 +1959,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/images"
         query_params = {}
@@ -2180,7 +1967,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_image_item(self, board_id, item_id) -> Any:
+    async def get_image_item(self, board_id, item_id) -> Any:
         """
         Retrieves a specific image item from a designated board using the provided identifiers.
 
@@ -2204,7 +1991,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_image_item(self, board_id, item_id) -> Any:
+    async def delete_image_item(self, board_id, item_id) -> Any:
         """
         Deletes a specific image from a specified board.
 
@@ -2228,9 +2015,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_image_item_using_url(
-        self, board_id, item_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def update_image_item_using_url(self, board_id, item_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Updates a specific image in a board using the PATCH method, applying partial modifications to the image's properties.
 
@@ -2273,12 +2058,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/images/{item_id}"
         query_params = {}
@@ -2286,7 +2066,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_items_on_board(self, board_id, limit=None, type=None, cursor=None) -> Any:
+    async def get_items_on_board(self, board_id, limit=None, type=None, cursor=None) -> Any:
         """
         Retrieves a paginated list of items from a specified board using query parameters for limit, type, and cursor-based pagination.
 
@@ -2305,16 +2085,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/items"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("type", type), ("cursor", cursor)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("type", type), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_specific_item_on_board(self, board_id, item_id) -> Any:
+    async def get_specific_item_on_board(self, board_id, item_id) -> Any:
         """
         Retrieves details of a specific item from a board using the GET method and returns the data in response.
 
@@ -2338,7 +2114,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_item(self, board_id, item_id) -> Any:
+    async def delete_item(self, board_id, item_id) -> Any:
         """
         Deletes a specific item from a board by its ID and returns a success status.
 
@@ -2362,9 +2138,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_item_position_or_parent(
-        self, board_id, item_id, parent=None, position=None
-    ) -> Any:
+    async def update_item_position_or_parent(self, board_id, item_id, parent=None, position=None) -> Any:
         """
         Partially updates an existing item on a board using the PATCH method, allowing for specific modifications to resource properties.
 
@@ -2396,10 +2170,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/items/{item_id}"
         query_params = {}
@@ -2407,14 +2178,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_items_within_frame(
-        self,
-        board_id_PlatformContainers,
-        parent_item_id=None,
-        limit=None,
-        type=None,
-        cursor=None,
-    ) -> Any:
+    async def get_items_within_frame(self, board_id_PlatformContainers, parent_item_id=None, limit=None, type=None, cursor=None) -> Any:
         """
         Retrieves a paginated list of items from a specified board, filtered by parent item ID and type, using cursor-based pagination.
 
@@ -2435,20 +2199,13 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id_PlatformContainers'")
         url = f"{self.base_url}/v2/boards/{board_id_PlatformContainers}/items"
         query_params = {
-            k: v
-            for k, v in [
-                ("parent_item_id", parent_item_id),
-                ("limit", limit),
-                ("type", type),
-                ("cursor", cursor),
-            ]
-            if v is not None
+            k: v for k, v in [("parent_item_id", parent_item_id), ("limit", limit), ("type", type), ("cursor", cursor)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_specific_item_on_board1(self, board_id, item_id) -> Any:
+    async def get_specific_item_on_board1(self, board_id, item_id) -> Any:
         """
         Retrieves a specific item from a board using the specified identifiers.
 
@@ -2472,7 +2229,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_item1(self, board_id, item_id) -> Any:
+    async def delete_item1(self, board_id, item_id) -> Any:
         """
         Deletes a specific item from a Miro board using the "DELETE" method.
 
@@ -2496,7 +2253,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_all_board_members(self, board_id, limit=None, offset=None) -> Any:
+    async def get_all_board_members(self, board_id, limit=None, offset=None) -> Any:
         """
         Retrieves a paginated list of board members using query parameters for limit and offset, returning a 200 status on success.
 
@@ -2514,14 +2271,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/members"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def share_board(self, board_id, emails=None, message=None, role=None) -> Any:
+    async def share_board(self, board_id, emails=None, message=None, role=None) -> Any:
         """
         Adds a new member to a board using the API at path "/v2/boards/{board_id}/members" and returns a successful status message upon completion.
 
@@ -2549,11 +2304,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "emails": emails,
-            "message": message,
-            "role": role,
-        }
+        request_body = {"emails": emails, "message": message, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/members"
         query_params = {}
@@ -2561,7 +2312,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_specific_board_member(self, board_id, board_member_id) -> Any:
+    async def get_specific_board_member(self, board_id, board_member_id) -> Any:
         """
         Retrieves information about a specific board member using the "GET" method, providing details associated with the member identified by `{board_member_id}` within the board identified by `{board_id}`.
 
@@ -2585,7 +2336,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_board_member(self, board_id, board_member_id) -> Any:
+    async def remove_board_member(self, board_id, board_member_id) -> Any:
         """
         Removes a user from a board using the Miro API and returns a successful response upon completion.
 
@@ -2609,7 +2360,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_board_member(self, board_id, board_member_id, role=None) -> Any:
+    async def update_board_member(self, board_id, board_member_id, role=None) -> Any:
         """
         Updates a board member's details for the specified board using the PATCH method.
 
@@ -2634,9 +2385,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if board_member_id is None:
             raise ValueError("Missing required parameter 'board_member_id'")
-        request_body = {
-            "role": role,
-        }
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/members/{board_member_id}"
         query_params = {}
@@ -2644,9 +2393,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_shape_item(
-        self, board_id, data=None, geometry=None, parent=None, position=None, style=None
-    ) -> Any:
+    async def create_shape_item(self, board_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Creates a new shape on a specified board using the provided data.
 
@@ -2700,13 +2447,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/shapes"
         query_params = {}
@@ -2714,7 +2455,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_shape_item(self, board_id, item_id) -> Any:
+    async def get_shape_item(self, board_id, item_id) -> Any:
         """
         Retrieves a specific shape from the specified board.
 
@@ -2738,7 +2479,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_shape_item(self, board_id, item_id) -> Any:
+    async def delete_shape_item(self, board_id, item_id) -> Any:
         """
         Deletes a specified shape from a board using the provided board and item identifiers.
 
@@ -2762,16 +2503,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_shape_item(
-        self,
-        board_id,
-        item_id,
-        data=None,
-        geometry=None,
-        parent=None,
-        position=None,
-        style=None,
-    ) -> Any:
+    async def update_shape_item(self, board_id, item_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Updates a specific shape on a board by its ID and returns a success status.
 
@@ -2828,13 +2560,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/shapes/{item_id}"
         query_params = {}
@@ -2842,9 +2568,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_sticky_note_item(
-        self, board_id, data=None, geometry=None, parent=None, position=None, style=None
-    ) -> Any:
+    async def create_sticky_note_item(self, board_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Creates a new sticky note on a specific board using the "POST" method and returns a successful status message when the operation is completed.
 
@@ -2889,13 +2613,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/sticky_notes"
         query_params = {}
@@ -2903,7 +2621,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_sticky_note_item(self, board_id, item_id) -> Any:
+    async def get_sticky_note_item(self, board_id, item_id) -> Any:
         """
         Retrieves a specific sticky note from a board using the provided board and item IDs.
 
@@ -2927,7 +2645,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_sticky_note_item(self, board_id, item_id) -> Any:
+    async def delete_sticky_note_item(self, board_id, item_id) -> Any:
         """
         Deletes a specific sticky note from a board using the DELETE method, returning a successful status message.
 
@@ -2951,16 +2669,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_sticky_note_item(
-        self,
-        board_id,
-        item_id,
-        data=None,
-        geometry=None,
-        parent=None,
-        position=None,
-        style=None,
-    ) -> Any:
+    async def update_sticky_note_item(self, board_id, item_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Updates a sticky note on the specified board using partial modifications and returns a success status.
 
@@ -3008,13 +2717,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/sticky_notes/{item_id}"
         query_params = {}
@@ -3022,9 +2725,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_text_item(
-        self, board_id, data=None, geometry=None, parent=None, position=None, style=None
-    ) -> Any:
+    async def create_text_item(self, board_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Creates a new text entry on a specified board and returns a success status.
 
@@ -3071,13 +2772,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/texts"
         query_params = {}
@@ -3085,7 +2780,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_text_item(self, board_id, item_id) -> Any:
+    async def get_text_item(self, board_id, item_id) -> Any:
         """
         Retrieves a specific text item from a board using the provided board and item identifiers.
 
@@ -3109,7 +2804,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_text_item(self, board_id, item_id) -> Any:
+    async def delete_text_item(self, board_id, item_id) -> Any:
         """
         Deletes a specific text item from a board using the provided board and item identifiers.
 
@@ -3133,16 +2828,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_text_item(
-        self,
-        board_id,
-        item_id,
-        data=None,
-        geometry=None,
-        parent=None,
-        position=None,
-        style=None,
-    ) -> Any:
+    async def update_text_item(self, board_id, item_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Updates a specific text item on a board using the PATCH method, allowing partial modifications of the item's properties.
 
@@ -3192,13 +2878,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/texts/{item_id}"
         query_params = {}
@@ -3206,7 +2886,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_items_in_bulk(self, board_id, items=None) -> Any:
+    async def create_items_in_bulk(self, board_id, items=None) -> Any:
         """
         Bulk updates or creates items on a specified board using the API endpoint "/v2/boards/{board_id}/items/bulk" via the POST method.
 
@@ -3221,7 +2901,6 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        # Use items array directly as request body
         request_body = items
         url = f"{self.base_url}/v2/boards/{board_id}/items/bulk"
         query_params = {}
@@ -3229,9 +2908,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_frame(
-        self, board_id, data=None, geometry=None, position=None, style=None
-    ) -> Any:
+    async def create_frame(self, board_id, data=None, geometry=None, position=None, style=None) -> Any:
         """
         Creates a new frame in the specified board using the API and returns a successful response.
 
@@ -3272,12 +2949,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/frames"
         query_params = {}
@@ -3285,7 +2957,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_frame(self, board_id, item_id) -> Any:
+    async def get_frame(self, board_id, item_id) -> Any:
         """
         Retrieves the details of a specific frame within a board using the "GET" method.
 
@@ -3309,7 +2981,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_frame(self, board_id, item_id) -> Any:
+    async def delete_frame(self, board_id, item_id) -> Any:
         """
         Deletes a frame with the specified item ID from a board with the given board ID.
 
@@ -3333,9 +3005,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_frame(
-        self, board_id, item_id, data=None, geometry=None, position=None, style=None
-    ) -> Any:
+    async def update_frame(self, board_id, item_id, data=None, geometry=None, position=None, style=None) -> Any:
         """
         Updates specific frame properties for a board using partial modifications and returns a success status.
 
@@ -3379,12 +3049,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/frames/{item_id}"
         query_params = {}
@@ -3392,7 +3057,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_app_metrics(self, app_id, startDate=None, endDate=None, period=None) -> Any:
+    async def get_app_metrics(self, app_id, startDate=None, endDate=None, period=None) -> Any:
         """
         Retrieves application metrics for a specified time period using the `startDate`, `endDate`, and `period` query parameters.
 
@@ -3411,20 +3076,12 @@ class MiroApp(APIApplication):
         if app_id is None:
             raise ValueError("Missing required parameter 'app_id'")
         url = f"{self.base_url}/v2-experimental/apps/{app_id}/metrics"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startDate", startDate),
-                ("endDate", endDate),
-                ("period", period),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("startDate", startDate), ("endDate", endDate), ("period", period)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_total_app_metrics(self, app_id) -> Any:
+    async def get_total_app_metrics(self, app_id) -> Any:
         """
         Retrieves total metrics for a specified application by its ID.
 
@@ -3445,9 +3102,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_webhook_subscription(
-        self, boardId=None, callbackUrl=None, status=None
-    ) -> Any:
+    async def create_webhook_subscription(self, boardId=None, callbackUrl=None, status=None) -> Any:
         """
         Creates a board subscription webhook and returns a success status upon configuration.
 
@@ -3470,11 +3125,7 @@ class MiroApp(APIApplication):
         Tags:
             Webhooks (experimental)
         """
-        request_body = {
-            "boardId": boardId,
-            "callbackUrl": callbackUrl,
-            "status": status,
-        }
+        request_body = {"boardId": boardId, "callbackUrl": callbackUrl, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2-experimental/webhooks/board_subscriptions"
         query_params = {}
@@ -3482,9 +3133,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_webhook_subscription(
-        self, subscription_id, callbackUrl=None, status=None
-    ) -> Any:
+    async def update_webhook_subscription(self, subscription_id, callbackUrl=None, status=None) -> Any:
         """
         Updates a webhook subscription for a board using the GitHub API and returns a success status.
 
@@ -3508,10 +3157,7 @@ class MiroApp(APIApplication):
         """
         if subscription_id is None:
             raise ValueError("Missing required parameter 'subscription_id'")
-        request_body = {
-            "callbackUrl": callbackUrl,
-            "status": status,
-        }
+        request_body = {"callbackUrl": callbackUrl, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2-experimental/webhooks/board_subscriptions/{subscription_id}"
         query_params = {}
@@ -3519,7 +3165,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhook_subscriptions(self, limit=None, cursor=None) -> Any:
+    async def get_webhook_subscriptions(self, limit=None, cursor=None) -> Any:
         """
         Retrieves a paginated list of webhook subscriptions using cursor-based pagination.
 
@@ -3534,14 +3180,12 @@ class MiroApp(APIApplication):
             Webhooks (experimental)
         """
         url = f"{self.base_url}/v2-experimental/webhooks/subscriptions"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_specific_webhook_subscription(self, subscription_id) -> Any:
+    async def get_specific_webhook_subscription(self, subscription_id) -> Any:
         """
         Retrieves details about a specific webhook subscription identified by the provided subscription ID using the GET method.
 
@@ -3556,15 +3200,13 @@ class MiroApp(APIApplication):
         """
         if subscription_id is None:
             raise ValueError("Missing required parameter 'subscription_id'")
-        url = (
-            f"{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}"
-        )
+        url = f"{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_webhook_subscription(self, subscription_id) -> Any:
+    async def delete_webhook_subscription(self, subscription_id) -> Any:
         """
         Deletes a webhook subscription by a specified `subscription_id`, stopping the delivery of notifications associated with that subscription.
 
@@ -3579,15 +3221,13 @@ class MiroApp(APIApplication):
         """
         if subscription_id is None:
             raise ValueError("Missing required parameter 'subscription_id'")
-        url = (
-            f"{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}"
-        )
+        url = f"{self.base_url}/v2-experimental/webhooks/subscriptions/{subscription_id}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_specific_mind_map_node(self, board_id, item_id) -> Any:
+    async def get_specific_mind_map_node(self, board_id, item_id) -> Any:
         """
         Retrieves a specific mind map node by ID from a specified board using the GET method.
 
@@ -3605,15 +3245,13 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = (
-            f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}"
-        )
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_mind_map_node(self, board_id, item_id) -> Any:
+    async def delete_mind_map_node(self, board_id, item_id) -> Any:
         """
         Deletes a specified mindmap node from a board using the experimental v2 API.
 
@@ -3631,15 +3269,13 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        url = (
-            f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}"
-        )
+        url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes/{item_id}"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_mind_map_nodes(self, board_id, limit=None, cursor=None) -> Any:
+    async def get_mind_map_nodes(self, board_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a paginated list of mindmap nodes from a specified Miro board, supporting limit and cursor parameters for result pagination.
 
@@ -3657,16 +3293,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_mind_map_node(
-        self, board_id, data=None, geometry=None, parent=None, position=None
-    ) -> Any:
+    async def create_mind_map_node(self, board_id, data=None, geometry=None, parent=None, position=None) -> Any:
         """
         Creates a new mind map node in a specified Miro board using the POST method and returns a response upon successful creation.
 
@@ -3707,12 +3339,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2-experimental/boards/{board_id}/mindmap_nodes"
         query_params = {}
@@ -3720,7 +3347,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_items_on_board1(self, board_id, limit=None, type=None, cursor=None) -> Any:
+    async def get_items_on_board1(self, board_id, limit=None, type=None, cursor=None) -> Any:
         """
         Retrieves a paginated list of items from a specified board, filtered by type and limited by cursor-based pagination.
 
@@ -3739,18 +3366,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2-experimental/boards/{board_id}/items"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("type", type), ("cursor", cursor)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("type", type), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_shape_item1(
-        self, board_id, data=None, geometry=None, parent=None, position=None, style=None
-    ) -> Any:
+    async def create_shape_item1(self, board_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Creates a new shape on a board with the specified `board_id` using the API.
 
@@ -3804,13 +3425,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2-experimental/boards/{board_id}/shapes"
         query_params = {}
@@ -3818,7 +3433,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_shape_item1(self, board_id, item_id) -> Any:
+    async def get_shape_item1(self, board_id, item_id) -> Any:
         """
         Retrieves shape details from a specific item within a board, identified by the board ID and item ID.
 
@@ -3842,7 +3457,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_shape_item1(self, board_id, item_id) -> Any:
+    async def delete_shape_item1(self, board_id, item_id) -> Any:
         """
         Deletes a specific shape from the specified board.
 
@@ -3866,16 +3481,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_shape_item1(
-        self,
-        board_id,
-        item_id,
-        data=None,
-        geometry=None,
-        parent=None,
-        position=None,
-        style=None,
-    ) -> Any:
+    async def update_shape_item1(self, board_id, item_id, data=None, geometry=None, parent=None, position=None, style=None) -> Any:
         """
         Updates a specific shape on a board and returns a status message.
 
@@ -3932,13 +3538,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'")
-        request_body = {
-            "data": data,
-            "geometry": geometry,
-            "parent": parent,
-            "position": position,
-            "style": style,
-        }
+        request_body = {"data": data, "geometry": geometry, "parent": parent, "position": position, "style": style}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2-experimental/boards/{board_id}/shapes/{item_id}"
         query_params = {}
@@ -3946,7 +3546,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_all_groups_on_aboard(self, board_id, limit=None, cursor=None) -> Any:
+    async def get_all_groups_on_aboard(self, board_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a list of groups associated with a specified board, allowing for pagination with optional limit and cursor parameters.
 
@@ -3964,14 +3564,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/groups"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_group(self, board_id, data=None) -> Any:
+    async def create_group(self, board_id, data=None) -> Any:
         """
         Creates a new group in the specified board using the provided board ID and returns a success status.
 
@@ -3998,9 +3596,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/groups"
         query_params = {}
@@ -4008,9 +3604,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_items_of_agroup_by_id(
-        self, board_id, limit=None, cursor=None, group_item_id=None
-    ) -> Any:
+    async def get_items_of_agroup_by_id(self, board_id, limit=None, cursor=None, group_item_id=None) -> Any:
         """
         Retrieves a paginated list of group items for a specific board, optionally filtered by group item ID, with cursor-based pagination support.
 
@@ -4029,20 +3623,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/groups/items"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("cursor", cursor),
-                ("group_item_id", group_item_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor), ("group_item_id", group_item_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_agroup_by_its_id(self, board_id, group_id) -> Any:
+    async def get_agroup_by_its_id(self, board_id, group_id) -> Any:
         """
         Retrieves a group associated with a specific board from the API.
 
@@ -4066,7 +3652,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def updates_agroup_with_new_items(self, board_id, group_id, data=None) -> Any:
+    async def updates_agroup_with_new_items(self, board_id, group_id, data=None) -> Any:
         """
         Updates a group on a specific board using the provided group ID and board ID.
 
@@ -4096,9 +3682,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/groups/{group_id}"
         query_params = {}
@@ -4106,7 +3690,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def ungroup_items(self, board_id, group_id, delete_items=None) -> Any:
+    async def ungroup_items(self, board_id, group_id, delete_items=None) -> Any:
         """
         Deletes a group from a specified board using the DELETE method, optionally allowing for the deletion of associated items.
 
@@ -4126,14 +3710,12 @@ class MiroApp(APIApplication):
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/groups/{group_id}"
-        query_params = {
-            k: v for k, v in [("delete_items", delete_items)] if v is not None
-        }
+        query_params = {k: v for k, v in [("delete_items", delete_items)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def deletes_the_group(self, board_id, delete_items=None) -> Any:
+    async def deletes_the_group(self, board_id, delete_items=None) -> Any:
         """
         Deletes a group from a specified board, with an option to delete associated items, and returns a success status.
 
@@ -4151,16 +3733,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/groups/<string>"
-        query_params = {
-            k: v for k, v in [("delete_items", delete_items)] if v is not None
-        }
+        query_params = {k: v for k, v in [("delete_items", delete_items)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def revoke_token_v2(
-        self, accessToken=None, clientId=None, clientSecret=None
-    ) -> Any:
+    async def revoke_token_v2(self, accessToken=None, clientId=None, clientSecret=None) -> Any:
         """
         Revokes an OAuth 2.0 access or refresh token at the authorization server's revocation endpoint and returns a successful status upon invalidation.
 
@@ -4183,11 +3761,7 @@ class MiroApp(APIApplication):
         Tags:
             OAuth
         """
-        request_body = {
-            "accessToken": accessToken,
-            "clientId": clientId,
-            "clientSecret": clientSecret,
-        }
+        request_body = {"accessToken": accessToken, "clientId": clientId, "clientSecret": clientSecret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/oauth/revoke"
         query_params = {}
@@ -4195,7 +3769,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags_from_item(self, board_id, item_id) -> Any:
+    async def get_tags_from_item(self, board_id, item_id) -> Any:
         """
         Retrieves tags associated with a specific item on a board using the API.
 
@@ -4219,7 +3793,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tags_from_board(self, board_id, limit=None, offset=None) -> Any:
+    async def get_tags_from_board(self, board_id, limit=None, offset=None) -> Any:
         """
         Retrieves a list of tags associated with a specific board, allowing for pagination control via limit and offset parameters.
 
@@ -4237,14 +3811,12 @@ class MiroApp(APIApplication):
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
         url = f"{self.base_url}/v2/boards/{board_id}/tags"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_tag(self, board_id, fillColor=None, title=None) -> Any:
+    async def create_tag(self, board_id, fillColor=None, title=None) -> Any:
         """
         Creates and adds new tags to a specific board using the provided board ID.
 
@@ -4268,10 +3840,7 @@ class MiroApp(APIApplication):
         """
         if board_id is None:
             raise ValueError("Missing required parameter 'board_id'")
-        request_body = {
-            "fillColor": fillColor,
-            "title": title,
-        }
+        request_body = {"fillColor": fillColor, "title": title}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/tags"
         query_params = {}
@@ -4279,7 +3848,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tag(self, board_id, tag_id) -> Any:
+    async def get_tag(self, board_id, tag_id) -> Any:
         """
         Retrieves information about a specific tag associated with a board, identified by the board ID and tag ID, using the GET method.
 
@@ -4303,7 +3872,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_tag(self, board_id, tag_id) -> Any:
+    async def delete_tag(self, board_id, tag_id) -> Any:
         """
         Deletes a tag from a specific board using the API and returns a successful status message.
 
@@ -4327,7 +3896,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_tag(self, board_id, tag_id, fillColor=None, title=None) -> Any:
+    async def update_tag(self, board_id, tag_id, fillColor=None, title=None) -> Any:
         """
         Updates a tag associated with a specific board by modifying its details using the specified `board_id` and `tag_id`.
 
@@ -4354,10 +3923,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'board_id'")
         if tag_id is None:
             raise ValueError("Missing required parameter 'tag_id'")
-        request_body = {
-            "fillColor": fillColor,
-            "title": title,
-        }
+        request_body = {"fillColor": fillColor, "title": title}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/boards/{board_id}/tags/{tag_id}"
         query_params = {}
@@ -4365,9 +3931,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_items_by_tag(
-        self, board_id_PlatformTags, limit=None, offset=None, tag_id=None
-    ) -> Any:
+    async def get_items_by_tag(self, board_id_PlatformTags, limit=None, offset=None, tag_id=None) -> Any:
         """
         Retrieves paginated items from a specific board's platform tags, optionally filtered by tag ID.
 
@@ -4386,16 +3950,12 @@ class MiroApp(APIApplication):
         if board_id_PlatformTags is None:
             raise ValueError("Missing required parameter 'board_id_PlatformTags'")
         url = f"{self.base_url}/v2/boards/{board_id_PlatformTags}/items"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("offset", offset), ("tag_id", tag_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("tag_id", tag_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def attach_tag_to_item(self, board_id_PlatformTags, item_id, tag_id=None) -> Any:
+    async def attach_tag_to_item(self, board_id_PlatformTags, item_id, tag_id=None) -> Any:
         """
         Adds an item to a board with specific platform tags using the POST method, optionally specifying a tag ID in the query parameters.
 
@@ -4420,7 +3980,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_tag_from_item(self, board_id_PlatformTags, item_id, tag_id=None) -> Any:
+    async def remove_tag_from_item(self, board_id_PlatformTags, item_id, tag_id=None) -> Any:
         """
         Deletes a specific item from a board's PlatformTags collection, requiring a tag_id parameter for identification.
 
@@ -4445,7 +4005,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_of_projects(self, org_id, team_id, limit=None, cursor=None) -> Any:
+    async def list_of_projects(self, org_id, team_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a list of projects for a specified team within an organization, allowing pagination via limit and cursor parameters.
 
@@ -4466,14 +4026,12 @@ class MiroApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_project(self, org_id, team_id, name=None) -> Any:
+    async def create_project(self, org_id, team_id, name=None) -> Any:
         """
         Assigns a project to a team within an organization using a POST request and returns a success status upon completion.
 
@@ -4498,9 +4056,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects"
         query_params = {}
@@ -4508,7 +4064,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project(self, org_id, team_id, project_id) -> Any:
+    async def get_project(self, org_id, team_id, project_id) -> Any:
         """
         Retrieves project details for a specific team within an organization.
 
@@ -4535,7 +4091,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project(self, org_id, team_id, project_id) -> Any:
+    async def delete_project(self, org_id, team_id, project_id) -> Any:
         """
         Deletes a specific organization's team project and returns a success message upon removal.
 
@@ -4562,7 +4118,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project(self, org_id, team_id, project_id, name=None) -> Any:
+    async def update_project(self, org_id, team_id, project_id, name=None) -> Any:
         """
         Updates project details within the specified team and organization using the PATCH method and returns a successful response upon completion.
 
@@ -4590,9 +4146,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}"
         query_params = {}
@@ -4600,7 +4154,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_settings(self, org_id, team_id, project_id) -> Any:
+    async def get_project_settings(self, org_id, team_id, project_id) -> Any:
         """
         Retrieves the settings for a specified organization's team project.
 
@@ -4627,9 +4181,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project_settings(
-        self, org_id, team_id, project_id, sharingPolicySettings=None
-    ) -> Any:
+    async def update_project_settings(self, org_id, team_id, project_id, sharingPolicySettings=None) -> Any:
         """
         Updates organization, team, and project settings for the specified project.
 
@@ -4659,9 +4211,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {
-            "sharingPolicySettings": sharingPolicySettings,
-        }
+        request_body = {"sharingPolicySettings": sharingPolicySettings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/settings"
         query_params = {}
@@ -4669,9 +4219,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_of_project_members(
-        self, org_id, team_id, project_id, limit=None, cursor=None
-    ) -> Any:
+    async def list_of_project_members(self, org_id, team_id, project_id, limit=None, cursor=None) -> Any:
         """
         Retrieves a list of members in a specific project within a team for an organization using the provided limit and cursor query parameters.
 
@@ -4695,16 +4243,12 @@ class MiroApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_member_in_aproject(
-        self, org_id, team_id, project_id, email=None, role=None
-    ) -> Any:
+    async def add_member_in_aproject(self, org_id, team_id, project_id, email=None, role=None) -> Any:
         """
         Adds a member to a specified project within a team and organization.
 
@@ -4734,10 +4278,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {
-            "email": email,
-            "role": role,
-        }
+        request_body = {"email": email, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members"
         query_params = {}
@@ -4745,7 +4286,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_member(self, org_id, team_id, project_id, member_id) -> Any:
+    async def get_project_member(self, org_id, team_id, project_id, member_id) -> Any:
         """
         Retrieves a specific member's details from a project team within an organization.
 
@@ -4775,7 +4316,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_project_member(self, org_id, team_id, project_id, member_id) -> Any:
+    async def remove_project_member(self, org_id, team_id, project_id, member_id) -> Any:
         """
         Deletes a member from a specific project within a team in an organization using the provided member ID.
 
@@ -4805,9 +4346,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project_member(
-        self, org_id, team_id, project_id, member_id, role=None
-    ) -> Any:
+    async def update_project_member(self, org_id, team_id, project_id, member_id, role=None) -> Any:
         """
         Updates team member information in an organization project using the "PATCH" method and returns a successful status response.
 
@@ -4838,9 +4377,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        request_body = {
-            "role": role,
-        }
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/projects/{project_id}/members/{member_id}"
         query_params = {}
@@ -4848,7 +4385,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_teams(self, org_id, limit=None, cursor=None, name=None) -> Any:
+    async def list_teams(self, org_id, limit=None, cursor=None, name=None) -> Any:
         """
         Retrieves a paginated list of teams for a specified organization with optional filtering by name.
 
@@ -4867,16 +4404,12 @@ class MiroApp(APIApplication):
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/teams"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("cursor", cursor), ("name", name)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor), ("name", name)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_team(self, org_id, name=None) -> Any:
+    async def create_team(self, org_id, name=None) -> Any:
         """
         Creates a new team within the specified organization using the POST method.
 
@@ -4898,9 +4431,7 @@ class MiroApp(APIApplication):
         """
         if org_id is None:
             raise ValueError("Missing required parameter 'org_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams"
         query_params = {}
@@ -4908,7 +4439,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team(self, org_id, team_id) -> Any:
+    async def get_team(self, org_id, team_id) -> Any:
         """
         Retrieves team details for the specified organization and team ID.
 
@@ -4932,7 +4463,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_team(self, org_id, team_id) -> Any:
+    async def delete_team(self, org_id, team_id) -> Any:
         """
         Deletes a team within an organization using the specified organization and team IDs.
 
@@ -4956,7 +4487,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_team(self, org_id, team_id, name=None) -> Any:
+    async def update_team(self, org_id, team_id, name=None) -> Any:
         """
         Updates specific properties of a team within an organization using partial modifications.
 
@@ -4981,9 +4512,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}"
         query_params = {}
@@ -4991,9 +4520,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_team_members(
-        self, org_id, team_id, limit=None, cursor=None, role=None
-    ) -> Any:
+    async def list_team_members(self, org_id, team_id, limit=None, cursor=None, role=None) -> Any:
         """
         Retrieves a paginated list of members for a specified team within an organization, optionally filtered by role.
 
@@ -5019,16 +4546,12 @@ class MiroApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("cursor", cursor), ("role", role)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor), ("role", role)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def invite_team_members(self, org_id, team_id, email=None, role=None) -> Any:
+    async def invite_team_members(self, org_id, team_id, email=None, role=None) -> Any:
         """
         Adds a member to a specific team within an organization using the API endpoint at "/v2/orgs/{org_id}/teams/{team_id}/members".
 
@@ -5055,10 +4578,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "email": email,
-            "role": role,
-        }
+        request_body = {"email": email, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members"
         query_params = {}
@@ -5066,7 +4586,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_member(self, org_id, team_id, member_id) -> Any:
+    async def get_team_member(self, org_id, team_id, member_id) -> Any:
         """
         Retrieves information about a specific team member using the provided organization, team, and member identifiers.
 
@@ -5093,7 +4613,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_team_member_from_team(self, org_id, team_id, member_id) -> Any:
+    async def delete_team_member_from_team(self, org_id, team_id, member_id) -> Any:
         """
         Removes a member from a specified team in an organization using the GitHub API.
 
@@ -5120,7 +4640,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_team_member(self, org_id, team_id, member_id, role=None) -> Any:
+    async def update_team_member(self, org_id, team_id, member_id, role=None) -> Any:
         """
         Updates the membership details of a team member in an organization using the GitHub API.
 
@@ -5148,9 +4668,7 @@ class MiroApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        request_body = {
-            "role": role,
-        }
+        request_body = {"role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/orgs/{org_id}/teams/{team_id}/members/{member_id}"
         query_params = {}
@@ -5158,7 +4676,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_default_team_settings(self, org_id) -> Any:
+    async def get_default_team_settings(self, org_id) -> Any:
         """
         Retrieves the default team settings for an organization via the GitHub API.
 
@@ -5179,7 +4697,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_settings1(self, org_id, team_id) -> Any:
+    async def get_team_settings1(self, org_id, team_id) -> Any:
         """
         Retrieves team settings for a specified team within an organization using the "GET" method.
 
@@ -5203,7 +4721,7 @@ class MiroApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_team_settings1(
+    async def update_team_settings1(
         self,
         org_id,
         team_id,

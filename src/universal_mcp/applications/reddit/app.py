@@ -1,5 +1,4 @@
 from typing import Any
-
 import httpx
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
@@ -38,13 +37,9 @@ class RedditApp(APIApplication):
         if "access_token" not in credentials:
             logger.error("Reddit credentials found but missing 'access_token'.")
             raise ValueError("Invalid Reddit credentials format.")
+        return {"Authorization": f"Bearer {credentials['access_token']}", "User-Agent": "agentr-reddit-app/0.1 by AgentR"}
 
-        return {
-            "Authorization": f"Bearer {credentials['access_token']}",
-            "User-Agent": "agentr-reddit-app/0.1 by AgentR",
-        }
-
-    def get_subreddit_posts(self, subreddit: str, limit: int = 5, timeframe: str = "day") -> dict[str, Any]:
+    async def get_subreddit_posts(self, subreddit: str, limit: int = 5, timeframe: str = "day") -> dict[str, Any]:
         """
         Fetches a specified number of top-rated posts from a particular subreddit, allowing results to be filtered by a specific timeframe (e.g., 'day', 'week'). This is a simplified version compared to `get_subreddit_top_posts`, which uses more complex pagination parameters instead of a direct time filter.
 
@@ -74,7 +69,7 @@ class RedditApp(APIApplication):
         response = self._get(url, params=params)
         return self._handle_response(response)
 
-    def search_subreddits(self, query: str, limit: int = 5, sort: str = "relevance") -> dict[str, Any]:
+    async def search_subreddits(self, query: str, limit: int = 5, sort: str = "relevance") -> dict[str, Any]:
         """
         Finds subreddits based on a query string, searching their names and descriptions.
         Results can be sorted by relevance or activity. This function is for discovering communities and does not search for posts or users, unlike the more general `search_reddit` function.
@@ -100,16 +95,12 @@ class RedditApp(APIApplication):
         if not 1 <= limit <= 100:
             return f"Error: Invalid limit '{limit}'. Please use a value between 1 and 100."
         url = f"{self.base_api_url}/subreddits/search"
-        params = {
-            "q": query,
-            "limit": limit,
-            "sort": sort,
-        }
+        params = {"q": query, "limit": limit, "sort": sort}
         logger.info(f"Searching for subreddits matching '{query}' (limit: {limit}, sort: {sort})")
         response = self._get(url, params=params)
         return self._handle_response(response)
 
-    def get_post_flairs(self, subreddit: str):
+    async def get_post_flairs(self, subreddit: str):
         """
         Fetches a list of available post flairs (tags) for a specified subreddit. This is primarily used to discover the correct `flair_id` needed to categorize a new submission when using the `create_post` function. It returns flair details or a message if none are available.
 
@@ -134,15 +125,7 @@ class RedditApp(APIApplication):
             return f"No post flairs available for r/{subreddit}."
         return flairs
 
-    def create_post(
-        self,
-        subreddit: str,
-        title: str,
-        kind: str = "self",
-        text: str = None,
-        url: str = None,
-        flair_id: str = None,
-    ):
+    async def create_post(self, subreddit: str, title: str, kind: str = "self", text: str = None, url: str = None, flair_id: str = None):
         """
         Creates a new Reddit post in a specified subreddit. It supports text ('self') or link posts, requiring a title and corresponding content (text or URL). An optional flair can be assigned. Returns the API response or a formatted error message on failure.
 
@@ -165,31 +148,24 @@ class RedditApp(APIApplication):
         """
         if kind not in ["self", "link"]:
             raise ValueError("Invalid post kind. Must be one of 'self' or 'link'.")
-        if kind == "self" and not text:
+        if kind == "self" and (not text):
             raise ValueError("Text content is required for text posts.")
-        if kind == "link" and not url:
+        if kind == "link" and (not url):
             raise ValueError("URL is required for link posts (including images).")
-        data = {
-            "sr": subreddit,
-            "title": title,
-            "kind": kind,
-            "text": text,
-            "url": url,
-            "flair_id": flair_id,
-        }
+        data = {"sr": subreddit, "title": title, "kind": kind, "text": text, "url": url, "flair_id": flair_id}
         data = {k: v for k, v in data.items() if v is not None}
         url_api = f"{self.base_api_url}/api/submit"
         logger.info(f"Submitting a new post to r/{subreddit}")
         response = self._post(url_api, data=data)
         response_json = response.json()
-        if response_json and "json" in response_json and "errors" in response_json["json"]:
+        if response_json and "json" in response_json and ("errors" in response_json["json"]):
             errors = response_json["json"]["errors"]
             if errors:
                 error_message = ", ".join([f"{code}: {message}" for code, message in errors])
                 return f"Reddit API error: {error_message}"
         return response_json
 
-    def get_comment_by_id(self, comment_id: str) -> dict:
+    async def get_comment_by_id(self, comment_id: str) -> dict:
         """
         Retrieves a single Reddit comment's data, such as author and score, using its unique 't1_' prefixed ID. Unlike `get_post_comments_details` which fetches all comments for a post, this function targets one specific comment directly, returning an error dictionary if it is not found.
 
@@ -215,7 +191,7 @@ class RedditApp(APIApplication):
         else:
             return {"error": "Comment not found."}
 
-    def post_comment(self, parent_id: str, text: str) -> dict:
+    async def post_comment(self, parent_id: str, text: str) -> dict:
         """
         Posts a new comment as a reply to a specified Reddit post or another comment. Using the parent's full ID and the desired text, it submits the comment via the API and returns the response containing the new comment's details.
 
@@ -234,15 +210,12 @@ class RedditApp(APIApplication):
             post, comment, social, reddit, api, important
         """
         url = f"{self.base_api_url}/api/comment"
-        data = {
-            "parent": parent_id,
-            "text": text,
-        }
+        data = {"parent": parent_id, "text": text}
         logger.info(f"Posting comment to {parent_id}")
         response = self._post(url, data=data)
         return response.json()
 
-    def edit_content(self, content_id: str, text: str) -> dict:
+    async def edit_content(self, content_id: str, text: str) -> dict:
         """
         Modifies the text of a specific Reddit post or comment via its unique ID. Unlike creation or deletion functions, this method specifically handles updates to existing user-generated content, submitting the new text to the API and returning a JSON response detailing the edited item.
 
@@ -261,15 +234,12 @@ class RedditApp(APIApplication):
             edit, update, content, reddit, api, important
         """
         url = f"{self.base_api_url}/api/editusertext"
-        data = {
-            "thing_id": content_id,
-            "text": text,
-        }
+        data = {"thing_id": content_id, "text": text}
         logger.info(f"Editing content {content_id}")
         response = self._post(url, data=data)
         return response.json()
 
-    def delete_content(self, content_id: str) -> dict:
+    async def delete_content(self, content_id: str) -> dict:
         """
         Deletes a specified Reddit post or comment using its full identifier (`content_id`). It sends a POST request to the `/api/del` endpoint for permanent removal, unlike `edit_content` which only modifies. On success, it returns a confirmation message.
 
@@ -287,15 +257,13 @@ class RedditApp(APIApplication):
             delete, content-management, api, reddit, important
         """
         url = f"{self.base_api_url}/api/del"
-        data = {
-            "id": content_id,
-        }
+        data = {"id": content_id}
         logger.info(f"Deleting content {content_id}")
         response = self._post(url, data=data)
         response.raise_for_status()
         return {"message": f"Content {content_id} deleted successfully."}
 
-    def get_current_user_info(self) -> Any:
+    async def get_current_user_info(self) -> Any:
         """
         Retrieves the full profile information for the currently authenticated user by making a GET request to the `/api/v1/me` Reddit API endpoint. This differs from `get_user_profile`, which requires a username, and `get_current_user_karma`, which specifically fetches karma data.
 
@@ -311,7 +279,7 @@ class RedditApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_current_user_karma(self) -> Any:
+    async def get_current_user_karma(self) -> Any:
         """
         Fetches the karma breakdown for the authenticated user from the Reddit API. This function specifically targets the `/api/v1/me/karma` endpoint, returning karma statistics per subreddit, which is more specific than `get_current_user_info` that retrieves general profile information.
 
@@ -327,7 +295,7 @@ class RedditApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_post_comments_details(self, post_id: str) -> Any:
+    async def get_post_comments_details(self, post_id: str) -> Any:
         """
         Fetches a specific Reddit post's details and its complete comment tree using the post's unique ID. This function returns the entire discussion, including the original post and all associated comments, providing broader context than `get_comment_by_id` which only retrieves a single comment.
 
@@ -340,20 +308,13 @@ class RedditApp(APIApplication):
         Tags:
             listings, comments, posts, important
         """
-
         url = f"{self.base_url}/comments/{post_id}.json"
         query_params = {}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_controversial_posts(
-        self,
-        after: str = None,
-        before: str = None,
-        count: int = None,
-        limit: int = None,
-        show: str = None,
-        sr_detail: str = None,
+    async def get_controversial_posts(
+        self, after: str = None, before: str = None, count: int = None, limit: int = None, show: str = None, sr_detail: str = None
     ) -> Any:
         """
         Fetches a global list of the most controversial posts from across all of Reddit, distinct from subreddit-specific queries. Optional parameters allow for pagination and customization of the results, returning the direct API response data with the post listings.
@@ -375,21 +336,14 @@ class RedditApp(APIApplication):
         url = f"{self.base_url}/controversial"
         query_params = {
             k: v
-            for k, v in [
-                ("after", after),
-                ("before", before),
-                ("count", count),
-                ("limit", limit),
-                ("show", show),
-                ("sr_detail", sr_detail),
-            ]
+            for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_hot_posts(
+    async def get_hot_posts(
         self,
         g: str = None,
         after: str = None,
@@ -435,14 +389,8 @@ class RedditApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_new_posts(
-        self,
-        after: str = None,
-        before: str = None,
-        count: int = None,
-        limit: int = None,
-        show: str = None,
-        sr_detail: str = None,
+    async def get_new_posts(
+        self, after: str = None, before: str = None, count: int = None, limit: int = None, show: str = None, sr_detail: str = None
     ) -> Any:
         """
         Fetches a list of the newest posts from across all of Reddit, not limited to a specific subreddit. This function supports optional pagination and filtering parameters to customize the API response, differentiating it from `get_subreddit_new_posts` which targets a single subreddit.
@@ -464,21 +412,14 @@ class RedditApp(APIApplication):
         url = f"{self.base_url}/new"
         query_params = {
             k: v
-            for k, v in [
-                ("after", after),
-                ("before", before),
-                ("count", count),
-                ("limit", limit),
-                ("show", show),
-                ("sr_detail", sr_detail),
-            ]
+            for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_subreddit_hot_posts(
+    async def get_subreddit_hot_posts(
         self,
         subreddit: str,
         g: str = None,
@@ -528,7 +469,7 @@ class RedditApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_subreddit_new_posts(
+    async def get_subreddit_new_posts(
         self,
         subreddit: str,
         after: str = None,
@@ -561,21 +502,14 @@ class RedditApp(APIApplication):
         url = f"{self.base_url}/r/{subreddit}/new"
         query_params = {
             k: v
-            for k, v in [
-                ("after", after),
-                ("before", before),
-                ("count", count),
-                ("limit", limit),
-                ("show", show),
-                ("sr_detail", sr_detail),
-            ]
+            for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_subreddit_top_posts(
+    async def get_subreddit_top_posts(
         self,
         subreddit: str,
         after: str = None,
@@ -608,28 +542,15 @@ class RedditApp(APIApplication):
         url = f"{self.base_url}/r/{subreddit}/top"
         query_params = {
             k: v
-            for k, v in [
-                ("after", after),
-                ("before", before),
-                ("count", count),
-                ("limit", limit),
-                ("show", show),
-                ("sr_detail", sr_detail),
-            ]
+            for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_rising_posts(
-        self,
-        after: str = None,
-        before: str = None,
-        count: int = None,
-        limit: int = None,
-        show: str = None,
-        sr_detail: str = None,
+    async def get_rising_posts(
+        self, after: str = None, before: str = None, count: int = None, limit: int = None, show: str = None, sr_detail: str = None
     ) -> Any:
         """
         Retrieves a list of rising posts from across all of Reddit. Unlike subreddit-specific listing functions (e.g., `get_subreddit_hot_posts`), this operates globally. It supports optional pagination and filtering parameters, such as `limit` and `after`, to customize the API response and navigate through results.
@@ -651,28 +572,15 @@ class RedditApp(APIApplication):
         url = f"{self.base_url}/rising"
         query_params = {
             k: v
-            for k, v in [
-                ("after", after),
-                ("before", before),
-                ("count", count),
-                ("limit", limit),
-                ("show", show),
-                ("sr_detail", sr_detail),
-            ]
+            for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_top_posts(
-        self,
-        after: str = None,
-        before: str = None,
-        count: int = None,
-        limit: int = None,
-        show: str = None,
-        sr_detail: str = None,
+    async def get_top_posts(
+        self, after: str = None, before: str = None, count: int = None, limit: int = None, show: str = None, sr_detail: str = None
     ) -> Any:
         """
         Fetches top-rated posts from across all of Reddit, distinct from `get_subreddit_top_posts`, which operates on a specific subreddit. The function supports standard API pagination parameters like `limit`, `after`, and `before` to navigate results, providing a broad, site-wide view of top content.
@@ -694,21 +602,14 @@ class RedditApp(APIApplication):
         url = f"{self.base_url}/top"
         query_params = {
             k: v
-            for k, v in [
-                ("after", after),
-                ("before", before),
-                ("count", count),
-                ("limit", limit),
-                ("show", show),
-                ("sr_detail", sr_detail),
-            ]
+            for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_reddit(
+    async def search_reddit(
         self,
         after: str = None,
         before: str = None,
@@ -772,7 +673,7 @@ class RedditApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_user_profile(self, username: str) -> Any:
+    async def get_user_profile(self, username: str) -> Any:
         """
         Retrieves public profile information for a specified Reddit user via the `/user/{username}/about` endpoint. Unlike `get_current_user_info`, which targets the authenticated user, this function fetches data like karma and account age for any user identified by their username.
 

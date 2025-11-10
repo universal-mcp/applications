@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class PosthogApp(APIApplication):
         super().__init__(name="posthog", integration=integration, **kwargs)
         self.base_url = "https://us.posthog.com"
 
-    def is_generating_demo_data_retrieve(self, organization_id, id) -> dict[str, Any]:
+    async def is_generating_demo_data_retrieve(self, organization_id, id) -> dict[str, Any]:
         """
         Checks if demo data is being generated for a specific project within an organization.
 
@@ -33,7 +32,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def reset_token_partial_update(
+    async def reset_token_partial_update(
         self,
         organization_id,
         id,
@@ -824,9 +823,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def proxy_records_list(
-        self, organization_id, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def proxy_records_list(self, organization_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of proxy records for a specified organization using query parameters for limit and offset.
 
@@ -844,24 +841,13 @@ class PosthogApp(APIApplication):
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def proxy_records_create(
-        self,
-        organization_id,
-        id,
-        domain,
-        target_cname,
-        status,
-        message,
-        created_at,
-        updated_at,
-        created_by,
+    async def proxy_records_create(
+        self, organization_id, id, domain, target_cname, status, message, created_at, updated_at, created_by
     ) -> dict[str, Any]:
         """
         Creates a proxy record for the specified organization using the provided organization ID.
@@ -902,7 +888,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def proxy_records_retrieve(self, organization_id, id) -> dict[str, Any]:
+    async def proxy_records_retrieve(self, organization_id, id) -> dict[str, Any]:
         """
         Retrieves a specific proxy record by its ID for a given organization using the PostHog API.
 
@@ -926,18 +912,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def proxy_records_update(
-        self,
-        organization_id,
-        id,
-        id_body,
-        domain,
-        target_cname,
-        status,
-        message,
-        created_at,
-        updated_at,
-        created_by,
+    async def proxy_records_update(
+        self, organization_id, id, id_body, domain, target_cname, status, message, created_at, updated_at, created_by
     ) -> dict[str, Any]:
         """
         Updates a specific proxy record within an organization using the provided identifier and returns a status upon success.
@@ -981,7 +957,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def proxy_records_partial_update(
+    async def proxy_records_partial_update(
         self,
         organization_id,
         id,
@@ -1036,7 +1012,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def proxy_records_destroy(self, organization_id, id) -> Any:
+    async def proxy_records_destroy(self, organization_id, id) -> Any:
         """
         Deletes a specific proxy record identified by `{id}` within an organization specified by `{organization_id}` using the `DELETE` method.
 
@@ -1060,7 +1036,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_list(self, organization_id, limit=None, offset=None) -> dict[str, Any]:
+    async def roles_list(self, organization_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of roles for a specified organization using the provided organization ID, with optional parameters to limit and offset the results.
 
@@ -1078,22 +1054,13 @@ class PosthogApp(APIApplication):
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def roles_create(
-        self,
-        organization_id,
-        id,
-        name,
-        created_at,
-        created_by,
-        members,
-        feature_flags_access_level=None,
+    async def roles_create(
+        self, organization_id, id, name, created_at, created_by, members, feature_flags_access_level=None
     ) -> dict[str, Any]:
         """
         Creates a new role within the specified organization and returns the created resource upon success.
@@ -1130,7 +1097,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_retrieve(self, organization_id, id) -> dict[str, Any]:
+    async def roles_retrieve(self, organization_id, id) -> dict[str, Any]:
         """
         Retrieves a specific role within an organization based on the role and organization identifiers.
 
@@ -1154,16 +1121,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_update(
-        self,
-        organization_id,
-        id,
-        id_body,
-        name,
-        created_at,
-        created_by,
-        members,
-        feature_flags_access_level=None,
+    async def roles_update(
+        self, organization_id, id, id_body, name, created_at, created_by, members, feature_flags_access_level=None
     ) -> dict[str, Any]:
         """
         Updates a specific role in an organization using the provided role ID and organization ID.
@@ -1203,16 +1162,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_partial_update(
-        self,
-        organization_id,
-        id,
-        id_body=None,
-        name=None,
-        feature_flags_access_level=None,
-        created_at=None,
-        created_by=None,
-        members=None,
+    async def roles_partial_update(
+        self, organization_id, id, id_body=None, name=None, feature_flags_access_level=None, created_at=None, created_by=None, members=None
     ) -> dict[str, Any]:
         """
         Updates the specified role within an organization using partial modifications via the PATCH method and returns a success response.
@@ -1252,7 +1203,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_destroy(self, organization_id, id) -> Any:
+    async def roles_destroy(self, organization_id, id) -> Any:
         """
         Removes a specific role from an organization by its ID using a DELETE request and returns a 204 No Content response upon success.
 
@@ -1276,9 +1227,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_role_memberships_list(
-        self, organization_id, role_id, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def roles_role_memberships_list(self, organization_id, role_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of role memberships for a specific role within an organization using query parameters for limit and offset.
 
@@ -1299,24 +1248,13 @@ class PosthogApp(APIApplication):
         if role_id is None:
             raise ValueError("Missing required parameter 'role_id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def roles_role_memberships_create(
-        self,
-        organization_id,
-        role_id,
-        id,
-        role_id_body,
-        organization_member,
-        user,
-        joined_at,
-        updated_at,
-        user_uuid,
+    async def roles_role_memberships_create(
+        self, organization_id, role_id, id, role_id_body, organization_member, user, joined_at, updated_at, user_uuid
     ) -> dict[str, Any]:
         """
         Assigns a role to an organization member by associating the role ID with the membership via a POST request.
@@ -1358,7 +1296,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def roles_role_memberships_destroy(self, organization_id, role_id, id) -> Any:
+    async def roles_role_memberships_destroy(self, organization_id, role_id, id) -> Any:
         """
         Removes a specific role membership from an organization role using the provided organization ID, role ID, and membership ID.
 
@@ -1385,9 +1323,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def actions_list(
-        self, project_id, format=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def actions_list(self, project_id, format=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of actions for a specified project using the "GET" method, allowing optional filtering by format, limit, and offset.
 
@@ -1406,16 +1342,12 @@ class PosthogApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/actions/"
-        query_params = {
-            k: v
-            for k, v in [("format", format), ("limit", limit), ("offset", offset)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("format", format), ("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def actions_create(
+    async def actions_create(
         self,
         project_id,
         format=None,
@@ -1498,16 +1430,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_list(
-        self,
-        project_id,
-        contains=None,
-        created_by=None,
-        date_from=None,
-        date_to=None,
-        limit=None,
-        offset=None,
-        user=None,
+    async def notebooks_list(
+        self, project_id, contains=None, created_by=None, date_from=None, date_to=None, limit=None, offset=None, user=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of notebooks for a specific project with optional filtering by content, creator, date range, and pagination parameters.
@@ -1548,7 +1472,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_create(
+    async def notebooks_create(
         self,
         project_id,
         id=None,
@@ -1614,7 +1538,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_retrieve(self, project_id, short_id) -> dict[str, Any]:
+    async def notebooks_retrieve(self, project_id, short_id) -> dict[str, Any]:
         """
         Retrieves the details of a specific notebook identified by its short ID within a given project.
 
@@ -1638,7 +1562,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_update(
+    async def notebooks_update(
         self,
         project_id,
         short_id,
@@ -1708,7 +1632,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_partial_update(
+    async def notebooks_partial_update(
         self,
         project_id,
         short_id,
@@ -1778,7 +1702,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_destroy(self, project_id, short_id) -> Any:
+    async def notebooks_destroy(self, project_id, short_id) -> Any:
         """
         Deletes a notebook specified by its short ID from a project identified by its project ID using the API.
 
@@ -1802,7 +1726,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_activity_retrieve_2(self, project_id, short_id) -> Any:
+    async def notebooks_activity_retrieve_2(self, project_id, short_id) -> Any:
         """
         Retrieves the activity history for a specific notebook within a project.
 
@@ -1820,15 +1744,13 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if short_id is None:
             raise ValueError("Missing required parameter 'short_id'")
-        url = (
-            f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/activity/"
-        )
+        url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/activity/"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def notebooks_activity_retrieve(self, project_id) -> Any:
+    async def notebooks_activity_retrieve(self, project_id) -> Any:
         """
         Retrieves activity information for a notebook within a specified project.
 
@@ -1849,7 +1771,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def notebooks_recording_comments_retrieve(self, project_id) -> Any:
+    async def notebooks_recording_comments_retrieve(self, project_id) -> Any:
         """
         Retrieves a list of recording comments associated with a specific project by its ID.
 
@@ -1870,16 +1792,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_list(
-        self,
-        project_id,
-        distinct_id=None,
-        email=None,
-        format=None,
-        limit=None,
-        offset=None,
-        properties=None,
-        search=None,
+    async def persons_list(
+        self, project_id, distinct_id=None, email=None, format=None, limit=None, offset=None, properties=None, search=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of persons associated with a specific project, optionally filtered by distinct ID, email, properties, or search criteria.
@@ -1920,7 +1834,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_retrieve(self, project_id, id, format=None) -> dict[str, Any]:
+    async def persons_retrieve(self, project_id, id, format=None) -> dict[str, Any]:
         """
         Retrieves a specific person's details from a project using their ID and allows optional response formatting.
 
@@ -1945,17 +1859,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_update(
-        self,
-        project_id,
-        id,
-        format=None,
-        id_body=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_update(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> dict[str, Any]:
         """
         Updates a specific person's details within a designated project and returns a success response upon completion.
@@ -1996,17 +1901,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_partial_update(
-        self,
-        project_id,
-        id,
-        format=None,
-        id_body=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_partial_update(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> dict[str, Any]:
         """
         Updates the details of a specific person associated with a project using the PATCH method, allowing for partial modification of the person's information.
@@ -2047,7 +1943,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_destroy(self, project_id, id, delete_events=None, format=None) -> Any:
+    async def persons_destroy(self, project_id, id, delete_events=None, format=None) -> Any:
         """
         Deletes a specific person within a project, optionally removing associated events, without returning content.
 
@@ -2068,16 +1964,12 @@ class PosthogApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
-        query_params = {
-            k: v
-            for k, v in [("delete_events", delete_events), ("format", format)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("delete_events", delete_events), ("format", format)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def persons_activity_retrieve_2(self, project_id, id, format=None) -> Any:
+    async def persons_activity_retrieve_2(self, project_id, id, format=None) -> Any:
         """
         Retrieves activity information for a specific person within a project using the "GET" method.
 
@@ -2102,17 +1994,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_delete_events_create(
-        self,
-        project_id,
-        id,
-        format=None,
-        id_body=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_delete_events_create(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> Any:
         """
         Deletes events associated with a person in a project using the POST method and returns a status message.
@@ -2153,18 +2036,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_delete_property_create(
-        self,
-        project_id,
-        id,
-        unset,
-        format=None,
-        id_body=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_delete_property_create(
+        self, project_id, id, unset, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> Any:
         """
         Removes a specified property from a person within a project using a POST request, returning a success status on completion.
@@ -2201,14 +2074,12 @@ class PosthogApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/delete_property/"
-        query_params = {
-            k: v for k, v in [("$unset", unset), ("format", format)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$unset", unset), ("format", format)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def persons_properties_timeline_retrieve(self, project_id, id, format=None) -> Any:
+    async def persons_properties_timeline_retrieve(self, project_id, id, format=None) -> Any:
         """
         Retrieves a timeline of property changes for a specific person in a project, optionally formatted.
 
@@ -2233,17 +2104,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_split_create(
-        self,
-        project_id,
-        id,
-        format=None,
-        id_body=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_split_create(
+        self, project_id, id, format=None, id_body=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> Any:
         """
         Splits a specified person into separate entities within a project and returns the operation result.
@@ -2284,7 +2146,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_update_property_create(
+    async def persons_update_property_create(
         self,
         project_id,
         id,
@@ -2334,16 +2196,12 @@ class PosthogApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/update_property/"
-        query_params = {
-            k: v
-            for k, v in [("format", format), ("key", key), ("value", value)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("format", format), ("key", key), ("value", value)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def persons_activity_retrieve(self, project_id, format=None) -> Any:
+    async def persons_activity_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves activity data for persons associated with a specific project in the requested format.
 
@@ -2365,7 +2223,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_bulk_delete_create(
+    async def persons_bulk_delete_create(
         self,
         project_id,
         delete_events=None,
@@ -2415,19 +2273,14 @@ class PosthogApp(APIApplication):
         url = f"{self.base_url}/api/projects/{project_id}/persons/bulk_delete/"
         query_params = {
             k: v
-            for k, v in [
-                ("delete_events", delete_events),
-                ("distinct_ids", distinct_ids),
-                ("format", format),
-                ("ids", ids),
-            ]
+            for k, v in [("delete_events", delete_events), ("distinct_ids", distinct_ids), ("format", format), ("ids", ids)]
             if v is not None
         }
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def persons_cohorts_retrieve(self, project_id, format=None) -> Any:
+    async def persons_cohorts_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves a list of person cohorts for a specified project using the provided project ID.
 
@@ -2449,7 +2302,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_funnel_retrieve(self, project_id, format=None) -> Any:
+    async def persons_funnel_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves a list of persons in a funnel for a specific project using the project ID and optionally formats the output.
 
@@ -2471,16 +2324,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_funnel_create(
-        self,
-        project_id,
-        format=None,
-        id=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_funnel_create(
+        self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> Any:
         """
         Tracks user funnel data for a specific project and returns formatted results.
@@ -2518,7 +2363,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_funnel_correlation_retrieve(self, project_id, format=None) -> Any:
+    async def persons_funnel_correlation_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves correlation data for persons in a project, identified by the project ID, and optionally formats the output based on the specified format parameter.
 
@@ -2540,16 +2385,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_funnel_correlation_create(
-        self,
-        project_id,
-        format=None,
-        id=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_funnel_correlation_create(
+        self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> Any:
         """
         Calculates and returns the correlation between funnel data for individuals within a specified project using the POST method.
@@ -2587,7 +2424,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_lifecycle_retrieve(self, project_id, format=None) -> Any:
+    async def persons_lifecycle_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves lifecycle information for persons associated with a project, identified by the specified project ID, allowing optional format specification.
 
@@ -2609,16 +2446,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_reset_person_distinct_id_create(
-        self,
-        project_id,
-        format=None,
-        id=None,
-        name=None,
-        distinct_ids=None,
-        properties=None,
-        created_at=None,
-        uuid=None,
+    async def persons_reset_person_distinct_id_create(
+        self, project_id, format=None, id=None, name=None, distinct_ids=None, properties=None, created_at=None, uuid=None
     ) -> Any:
         """
         Resets and unlinks a person's distinct identifier in the specified project, clearing associated user data across devices or sessions.
@@ -2656,7 +2485,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_stickiness_retrieve(self, project_id, format=None) -> Any:
+    async def persons_stickiness_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves stickiness data for persons associated with a specific project, optionally formatted.
 
@@ -2678,7 +2507,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_trends_retrieve(self, project_id, format=None) -> Any:
+    async def persons_trends_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves trends related to persons in a specified project using the GET method and returns the data in a requested format.
 
@@ -2700,7 +2529,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def persons_values_retrieve(self, project_id, format=None) -> Any:
+    async def persons_values_retrieve(self, project_id, format=None) -> Any:
         """
         Retrieves a list of person values for a specified project using the provided project ID.
 
@@ -2722,9 +2551,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def plugin_configs_logs_list(
-        self, project_id, plugin_config_id, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def plugin_configs_logs_list(self, project_id, plugin_config_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves and returns log entries for a specific plugin configuration within a project, allowing pagination through query parameters for limit and offset.
 
@@ -2745,14 +2572,12 @@ class PosthogApp(APIApplication):
         if plugin_config_id is None:
             raise ValueError("Missing required parameter 'plugin_config_id'")
         url = f"{self.base_url}/api/projects/{project_id}/plugin_configs/{plugin_config_id}/logs/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def property_definitions_list(
+    async def property_definitions_list(
         self,
         project_id,
         event_names=None,
@@ -2823,7 +2648,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def property_definitions_retrieve(self, project_id, id) -> dict[str, Any]:
+    async def property_definitions_retrieve(self, project_id, id) -> dict[str, Any]:
         """
         Retrieves a specific property definition by ID for a given project.
 
@@ -2847,16 +2672,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def property_definitions_update(
-        self,
-        project_id,
-        id,
-        id_body,
-        name,
-        is_seen_on_filtered_events,
-        is_numerical=None,
-        property_type=None,
-        tags=None,
+    async def property_definitions_update(
+        self, project_id, id, id_body, name, is_seen_on_filtered_events, is_numerical=None, property_type=None, tags=None
     ) -> dict[str, Any]:
         """
         Updates or replaces a specific property definition within a project using the PUT method, where the project and property definition are identified by their respective IDs.
@@ -2896,16 +2713,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def property_definitions_partial_update(
-        self,
-        project_id,
-        id,
-        id_body=None,
-        name=None,
-        is_numerical=None,
-        property_type=None,
-        tags=None,
-        is_seen_on_filtered_events=None,
+    async def property_definitions_partial_update(
+        self, project_id, id, id_body=None, name=None, is_numerical=None, property_type=None, tags=None, is_seen_on_filtered_events=None
     ) -> dict[str, Any]:
         """
         Updates a specific property definition for a project using the "PATCH" method, allowing partial modifications to the resource at "/api/projects/{project_id}/property_definitions/{id}/".
@@ -2945,7 +2754,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def property_definitions_destroy(self, project_id, id) -> Any:
+    async def property_definitions_destroy(self, project_id, id) -> Any:
         """
         Deletes a specified property definition from a project using the provided project ID and property definition ID.
 
@@ -2969,7 +2778,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def property_definitions_seen_together_retrieve(self, project_id) -> Any:
+    async def property_definitions_seen_together_retrieve(self, project_id) -> Any:
         """
         Retrieves property definitions that are commonly seen together for a specified project.
 
@@ -2990,15 +2799,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_create(
-        self,
-        project_id,
-        query,
-        async_=None,
-        client_query_id=None,
-        filters_override=None,
-        refresh=None,
-        variables_override=None,
+    async def query_create(
+        self, project_id, query, async_=None, client_query_id=None, filters_override=None, refresh=None, variables_override=None
     ) -> Any:
         """
         Submits a query to process or retrieve project-specific data and returns the results.
@@ -3051,7 +2853,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_retrieve(self, project_id, id) -> dict[str, Any]:
+    async def query_retrieve(self, project_id, id) -> dict[str, Any]:
         """
         Retrieves query details for a specific query within a project identified by the project ID and query ID.
 
@@ -3075,7 +2877,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_destroy(self, project_id, id) -> Any:
+    async def query_destroy(self, project_id, id) -> Any:
         """
         Deletes a query identified by the given ID within a specified project using the DELETE method and returns a successful response without content upon deletion.
 
@@ -3099,7 +2901,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_check_auth_for_async_create(self, project_id) -> Any:
+    async def query_check_auth_for_async_create(self, project_id) -> Any:
         """
         Checks authorization for asynchronous operations on a specified project and returns the result.
 
@@ -3120,7 +2922,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_draft_sql_retrieve(self, project_id) -> Any:
+    async def query_draft_sql_retrieve(self, project_id) -> Any:
         """
         Retrieves draft SQL queries for a specified project using the project's ID.
 
@@ -3141,9 +2943,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_list(
-        self, project_id, created_by=None, limit=None, offset=None, short_id=None
-    ) -> dict[str, Any]:
+    async def session_recording_playlists_list(self, project_id, created_by=None, limit=None, offset=None, short_id=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of session recording playlists for a specified project, filtered by creator, short ID, or other parameters.
 
@@ -3164,20 +2964,13 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/"
         query_params = {
-            k: v
-            for k, v in [
-                ("created_by", created_by),
-                ("limit", limit),
-                ("offset", offset),
-                ("short_id", short_id),
-            ]
-            if v is not None
+            k: v for k, v in [("created_by", created_by), ("limit", limit), ("offset", offset), ("short_id", short_id)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_create(
+    async def session_recording_playlists_create(
         self,
         project_id,
         id=None,
@@ -3246,9 +3039,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_retrieve(
-        self, project_id, short_id
-    ) -> dict[str, Any]:
+    async def session_recording_playlists_retrieve(self, project_id, short_id) -> dict[str, Any]:
         """
         Retrieves a session recording playlist by project ID and short ID using the GET method.
 
@@ -3272,7 +3063,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_update(
+    async def session_recording_playlists_update(
         self,
         project_id,
         short_id,
@@ -3345,7 +3136,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_partial_update(
+    async def session_recording_playlists_partial_update(
         self,
         project_id,
         short_id,
@@ -3418,7 +3209,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_destroy(self, project_id, short_id) -> Any:
+    async def session_recording_playlists_destroy(self, project_id, short_id) -> Any:
         """
         Deletes a session recording playlist in a specified project using its short identifier, returning a 405 status code (method not allowed for hard deletes).
 
@@ -3442,9 +3233,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_recordings_retrieve(
-        self, project_id, short_id
-    ) -> Any:
+    async def session_recording_playlists_recordings_retrieve(self, project_id, short_id) -> Any:
         """
         Retrieves a list of recordings associated with a specific session recording playlist in a project.
 
@@ -3468,7 +3257,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_recordings_create(
+    async def session_recording_playlists_recordings_create(
         self,
         project_id,
         short_id,
@@ -3545,9 +3334,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recording_playlists_recordings_destroy(
-        self, project_id, short_id, session_recording_id
-    ) -> Any:
+    async def session_recording_playlists_recordings_destroy(self, project_id, short_id, session_recording_id) -> Any:
         """
         Deletes a specific session recording from a session recording playlist in a project using the provided project, playlist, and recording identifiers.
 
@@ -3574,9 +3361,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_list(
-        self, project_id, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def session_recordings_list(self, project_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of session recordings for a specified project, allowing pagination through limit and offset parameters.
 
@@ -3594,14 +3379,12 @@ class PosthogApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_retrieve(self, project_id, id) -> dict[str, Any]:
+    async def session_recordings_retrieve(self, project_id, id) -> dict[str, Any]:
         """
         Retrieves a specific session recording for a project identified by project_id and session ID.
 
@@ -3625,7 +3408,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_update(
+    async def session_recordings_update(
         self,
         project_id,
         id,
@@ -3719,7 +3502,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_partial_update(
+    async def session_recordings_partial_update(
         self,
         project_id,
         id,
@@ -3813,7 +3596,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_destroy(self, project_id, id) -> Any:
+    async def session_recordings_destroy(self, project_id, id) -> Any:
         """
         Deletes a specific session recording using the provided project ID and session recording ID.
 
@@ -3837,7 +3620,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_analyze_similar_retrieve(self, project_id, id) -> Any:
+    async def session_recordings_analyze_similar_retrieve(self, project_id, id) -> Any:
         """
         Analyzes a session recording for similar recordings within a specific project using the provided project ID and session recording ID.
 
@@ -3861,7 +3644,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_sharing_list(self, project_id, recording_id) -> list[Any]:
+    async def session_recordings_sharing_list(self, project_id, recording_id) -> list[Any]:
         """
         Retrieves sharing details for a specific session recording within a project.
 
@@ -3885,7 +3668,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def session_recordings_ai_regex_create(
+    async def session_recordings_ai_regex_create(
         self,
         project_id,
         id=None,
@@ -3975,7 +3758,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def sessions_property_definitions_retrieve(self, project_id) -> Any:
+    async def sessions_property_definitions_retrieve(self, project_id) -> Any:
         """
         Retrieves property definitions associated with sessions for a specified project.
 
@@ -3990,15 +3773,13 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        url = (
-            f"{self.base_url}/api/projects/{project_id}/sessions/property_definitions/"
-        )
+        url = f"{self.base_url}/api/projects/{project_id}/sessions/property_definitions/"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def sessions_values_retrieve(self, project_id) -> Any:
+    async def sessions_values_retrieve(self, project_id) -> Any:
         """
         Retrieves session values for a specific project identified by its project_id.
 
@@ -4019,7 +3800,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def subscriptions_list(self, project_id, limit=None, offset=None) -> dict[str, Any]:
+    async def subscriptions_list(self, project_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of subscriptions for a specified project by project ID, allowing pagination through query parameters for limit and offset.
 
@@ -4037,14 +3818,12 @@ class PosthogApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def subscriptions_create(
+    async def subscriptions_create(
         self,
         project_id,
         id,
@@ -4133,7 +3912,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def subscriptions_retrieve(self, project_id, id) -> dict[str, Any]:
+    async def subscriptions_retrieve(self, project_id, id) -> dict[str, Any]:
         """
         Retrieves details about a specific subscription within a project.
 
@@ -4157,7 +3936,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def subscriptions_update(
+    async def subscriptions_update(
         self,
         project_id,
         id,
@@ -4250,7 +4029,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def subscriptions_partial_update(
+    async def subscriptions_partial_update(
         self,
         project_id,
         id,
@@ -4343,7 +4122,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def subscriptions_destroy(self, project_id, id) -> Any:
+    async def subscriptions_destroy(self, project_id, id) -> Any:
         """
         Deletes a specific subscription associated with a project by its identifier.
 
@@ -4367,9 +4146,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_list(
-        self, project_id, limit=None, offset=None, search=None
-    ) -> dict[str, Any]:
+    async def surveys_list(self, project_id, limit=None, offset=None, search=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of surveys for a specific project with optional search and pagination parameters.
 
@@ -4388,16 +4165,12 @@ class PosthogApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("offset", offset), ("search", search)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("search", search)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def surveys_create(
+    async def surveys_create(
         self,
         project_id,
         id,
@@ -4608,7 +4381,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_retrieve(self, project_id, id) -> dict[str, Any]:
+    async def surveys_retrieve(self, project_id, id) -> dict[str, Any]:
         """
         Retrieves details for a specific survey in a project using the provided ID.
 
@@ -4632,7 +4405,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_update(
+    async def surveys_update(
         self,
         project_id,
         id,
@@ -4838,7 +4611,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_partial_update(
+    async def surveys_partial_update(
         self,
         project_id,
         id,
@@ -5053,7 +4826,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_destroy(self, project_id, id) -> Any:
+    async def surveys_destroy(self, project_id, id) -> Any:
         """
         Deletes a survey identified by `{id}` within a project specified by `{project_id}` using the HTTP DELETE method.
 
@@ -5077,7 +4850,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_activity_retrieve_2(self, project_id, id) -> Any:
+    async def surveys_activity_retrieve_2(self, project_id, id) -> Any:
         """
         Retrieves the activity details for a specific survey within a project.
 
@@ -5101,7 +4874,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_stats_retrieve_2(self, project_id, id) -> Any:
+    async def surveys_stats_retrieve_2(self, project_id, id) -> Any:
         """
         Retrieves aggregated response statistics for a specific survey within a project.
 
@@ -5125,7 +4898,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_summarize_responses_create(
+    async def surveys_summarize_responses_create(
         self,
         project_id,
         id,
@@ -5340,7 +5113,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_activity_retrieve(self, project_id) -> Any:
+    async def surveys_activity_retrieve(self, project_id) -> Any:
         """
         Retrieves activity data for surveys associated with a specific project ID.
 
@@ -5361,7 +5134,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_responses_count_retrieve(self, project_id) -> Any:
+    async def surveys_responses_count_retrieve(self, project_id) -> Any:
         """
         Retrieves the count of survey responses for a specified project using the project ID.
 
@@ -5382,7 +5155,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def surveys_stats_retrieve(self, project_id) -> Any:
+    async def surveys_stats_retrieve(self, project_id) -> Any:
         """
         Retrieves aggregated response statistics across all surveys for a specified project, providing total counts and rates, using the "GET" method.
 
@@ -5403,9 +5176,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def web_experiments_list(
-        self, project_id, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def web_experiments_list(self, project_id, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of web experiments for a specified project using the Optimizely Web Experimentation API, allowing for pagination via optional limit and offset parameters.
 
@@ -5423,16 +5194,12 @@ class PosthogApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def web_experiments_create(
-        self, project_id, id, name, feature_flag_key, created_at=None, variants=None
-    ) -> dict[str, Any]:
+    async def web_experiments_create(self, project_id, id, name, feature_flag_key, created_at=None, variants=None) -> dict[str, Any]:
         """
         Creates a new web experiment within a specified project using the Optimizely Web Experimentation API and returns a successful creation status message.
 
@@ -5452,13 +5219,7 @@ class PosthogApp(APIApplication):
         """
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
-        request_body = {
-            "id": id,
-            "name": name,
-            "created_at": created_at,
-            "feature_flag_key": feature_flag_key,
-            "variants": variants,
-        }
+        request_body = {"id": id, "name": name, "created_at": created_at, "feature_flag_key": feature_flag_key, "variants": variants}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/"
         query_params = {}
@@ -5466,7 +5227,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def web_experiments_retrieve(self, project_id, id) -> dict[str, Any]:
+    async def web_experiments_retrieve(self, project_id, id) -> dict[str, Any]:
         """
         Retrieves details about a specific web experiment defined by its ID within a specified project using the Optimizely Web Experimentation API.
 
@@ -5490,15 +5251,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def web_experiments_update(
-        self,
-        project_id,
-        id,
-        id_body,
-        name,
-        feature_flag_key,
-        created_at=None,
-        variants=None,
+    async def web_experiments_update(
+        self, project_id, id, id_body, name, feature_flag_key, created_at=None, variants=None
     ) -> dict[str, Any]:
         """
         Updates a web experiment for a specified project using the provided ID and returns a success status upon completion.
@@ -5522,13 +5276,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id_body,
-            "name": name,
-            "created_at": created_at,
-            "feature_flag_key": feature_flag_key,
-            "variants": variants,
-        }
+        request_body = {"id": id_body, "name": name, "created_at": created_at, "feature_flag_key": feature_flag_key, "variants": variants}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
@@ -5536,15 +5284,8 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def web_experiments_partial_update(
-        self,
-        project_id,
-        id,
-        id_body=None,
-        name=None,
-        created_at=None,
-        feature_flag_key=None,
-        variants=None,
+    async def web_experiments_partial_update(
+        self, project_id, id, id_body=None, name=None, created_at=None, feature_flag_key=None, variants=None
     ) -> dict[str, Any]:
         """
         Updates specific properties of a web experiment in a project using the PATCH method, returning a successful response upon modification.
@@ -5568,13 +5309,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id_body,
-            "name": name,
-            "created_at": created_at,
-            "feature_flag_key": feature_flag_key,
-            "variants": variants,
-        }
+        request_body = {"id": id_body, "name": name, "created_at": created_at, "feature_flag_key": feature_flag_key, "variants": variants}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
@@ -5582,7 +5317,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def web_experiments_destroy(self, project_id, id) -> Any:
+    async def web_experiments_destroy(self, project_id, id) -> Any:
         """
         Deletes a web experiment associated with a specified project using the project ID and experiment ID.
 
@@ -5606,7 +5341,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_list(self, is_staff=None, limit=None, offset=None) -> dict[str, Any]:
+    async def users_list(self, is_staff=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of user records from the system, filtered by staff status, with optional pagination using limit and offset parameters.
 
@@ -5622,16 +5357,12 @@ class PosthogApp(APIApplication):
             users, users
         """
         url = f"{self.base_url}/api/users/"
-        query_params = {
-            k: v
-            for k, v in [("is_staff", is_staff), ("limit", limit), ("offset", offset)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("is_staff", is_staff), ("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def users_retrieve(self, uuid) -> dict[str, Any]:
+    async def users_retrieve(self, uuid) -> dict[str, Any]:
         """
         Retrieves user data for a specific user identified by the provided UUID using the GET method.
 
@@ -5652,7 +5383,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_update(
+    async def users_update(
         self,
         uuid,
         date_joined,
@@ -5779,7 +5510,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_partial_update(
+    async def users_partial_update(
         self,
         uuid,
         date_joined=None,
@@ -5906,7 +5637,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_hedgehog_config_retrieve(self, uuid) -> Any:
+    async def users_hedgehog_config_retrieve(self, uuid) -> Any:
         """
         Retrieves the hedgehog configuration for a user identified by the specified UUID.
 
@@ -5927,7 +5658,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_hedgehog_config_partial_update(
+    async def users_hedgehog_config_partial_update(
         self,
         uuid,
         date_joined=None,
@@ -6054,7 +5785,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_scene_personalisation_create(
+    async def users_scene_personalisation_create(
         self,
         uuid,
         date_joined,
@@ -6181,7 +5912,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_start_2fa_setup_retrieve(self, uuid) -> Any:
+    async def users_start_2fa_setup_retrieve(self, uuid) -> Any:
         """
         Starts the setup process for two-factor authentication (2FA) for a user identified by their UUID.
 
@@ -6202,7 +5933,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_two_factor_backup_codes_create(
+    async def users_two_factor_backup_codes_create(
         self,
         uuid,
         date_joined,
@@ -6329,7 +6060,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_two_factor_disable_create(
+    async def users_two_factor_disable_create(
         self,
         uuid,
         date_joined,
@@ -6456,7 +6187,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_two_factor_start_setup_retrieve(self, uuid) -> Any:
+    async def users_two_factor_start_setup_retrieve(self, uuid) -> Any:
         """
         Initiates two-factor authentication setup for a user identified by their UUID, facilitating an additional security layer beyond the primary login credentials.
 
@@ -6477,7 +6208,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_two_factor_status_retrieve(self, uuid) -> Any:
+    async def users_two_factor_status_retrieve(self, uuid) -> Any:
         """
         Retrieves the two-factor authentication status for a user identified by the specified UUID using the GET method.
 
@@ -6498,7 +6229,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_two_factor_validate_create(
+    async def users_two_factor_validate_create(
         self,
         uuid,
         date_joined,
@@ -6625,7 +6356,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_validate_2fa_create(
+    async def users_validate_2fa_create(
         self,
         uuid,
         date_joined,
@@ -6752,7 +6483,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_request_email_verification_create(
+    async def users_request_email_verification_create(
         self,
         date_joined,
         uuid,
@@ -6875,7 +6606,7 @@ class PosthogApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_verify_email_create(
+    async def users_verify_email_create(
         self,
         date_joined,
         uuid,

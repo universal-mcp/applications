@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class CodaApp(APIApplication):
         super().__init__(name="coda", integration=integration, **kwargs)
         self.base_url = "https://coda.io/apis/v1"
 
-    def list_categories(
-        self,
-    ) -> dict[str, Any]:
+    async def list_categories(self) -> dict[str, Any]:
         """
         Retrieves a dictionary of available categories from the API endpoint.
 
@@ -33,7 +30,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_docs(
+    async def list_docs(
         self,
         isOwner=None,
         isPublished=None,
@@ -91,9 +88,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_doc(
-        self, title=None, sourceDoc=None, timezone=None, folderId=None, initialPage=None
-    ) -> dict[str, Any]:
+    async def create_doc(self, title=None, sourceDoc=None, timezone=None, folderId=None, initialPage=None) -> dict[str, Any]:
         """
         Creates a new document with the specified properties and returns its metadata as a dictionary.
 
@@ -113,13 +108,7 @@ class CodaApp(APIApplication):
         Tags:
             create, document, api, management, important
         """
-        request_body = {
-            "title": title,
-            "sourceDoc": sourceDoc,
-            "timezone": timezone,
-            "folderId": folderId,
-            "initialPage": initialPage,
-        }
+        request_body = {"title": title, "sourceDoc": sourceDoc, "timezone": timezone, "folderId": folderId, "initialPage": initialPage}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs"
         query_params = {}
@@ -127,7 +116,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_doc(self, docId) -> dict[str, Any]:
+    async def get_doc(self, docId) -> dict[str, Any]:
         """
         Retrieves a document by its unique identifier from the remote service.
 
@@ -152,7 +141,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_doc(self, docId) -> dict[str, Any]:
+    async def delete_doc(self, docId) -> dict[str, Any]:
         """
         Deletes a document by its ID from the remote service.
 
@@ -177,7 +166,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_doc(self, docId, title=None, iconName=None) -> dict[str, Any]:
+    async def update_doc(self, docId, title=None, iconName=None) -> dict[str, Any]:
         """
         Updates the metadata of a document, such as its title and icon, using the provided document ID.
 
@@ -198,10 +187,7 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        request_body = {
-            "title": title,
-            "iconName": iconName,
-        }
+        request_body = {"title": title, "iconName": iconName}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}"
         query_params = {}
@@ -209,7 +195,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_sharing_metadata(self, docId) -> dict[str, Any]:
+    async def get_sharing_metadata(self, docId) -> dict[str, Any]:
         """
         Retrieves sharing metadata for the specified document by its ID.
 
@@ -234,7 +220,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_permissions(self, docId, limit=None, pageToken=None) -> dict[str, Any]:
+    async def get_permissions(self, docId, limit=None, pageToken=None) -> dict[str, Any]:
         """
         Retrieves the list of permissions for a specified document.
 
@@ -256,18 +242,12 @@ class CodaApp(APIApplication):
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/acl/permissions"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_permission(
-        self, docId, access, principal, suppressEmail=None
-    ) -> dict[str, Any]:
+    async def add_permission(self, docId, access, principal, suppressEmail=None) -> dict[str, Any]:
         """
         Adds a permission entry for a specified document, granting access to a principal with defined access level.
 
@@ -293,11 +273,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'access'")
         if principal is None:
             raise ValueError("Missing required parameter 'principal'")
-        request_body = {
-            "access": access,
-            "principal": principal,
-            "suppressEmail": suppressEmail,
-        }
+        request_body = {"access": access, "principal": principal, "suppressEmail": suppressEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/acl/permissions"
         query_params = {}
@@ -305,7 +281,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_permission(self, docId, permissionId) -> dict[str, Any]:
+    async def delete_permission(self, docId, permissionId) -> dict[str, Any]:
         """
         Deletes a specific permission from a document by its identifier.
 
@@ -333,7 +309,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_principals(self, docId, query=None) -> dict[str, Any]:
+    async def search_principals(self, docId, query=None) -> dict[str, Any]:
         """
         Searches for principals in the access control list of a specified document, optionally filtering results by a query string.
 
@@ -359,7 +335,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_acl_settings(self, docId) -> dict[str, Any]:
+    async def get_acl_settings(self, docId) -> dict[str, Any]:
         """
         Retrieves the access control settings for a specified document.
 
@@ -384,12 +360,8 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_acl_settings(
-        self,
-        docId,
-        allowEditorsToChangePermissions=None,
-        allowCopying=None,
-        allowViewersToRequestEditing=None,
+    async def update_acl_settings(
+        self, docId, allowEditorsToChangePermissions=None, allowCopying=None, allowViewersToRequestEditing=None
     ) -> dict[str, Any]:
         """
         Updates access control settings for a specific document.
@@ -424,15 +396,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def publish_doc(
-        self,
-        docId,
-        slug=None,
-        discoverable=None,
-        earnCredit=None,
-        categoryNames=None,
-        mode=None,
-    ) -> dict[str, Any]:
+    async def publish_doc(self, docId, slug=None, discoverable=None, earnCredit=None, categoryNames=None, mode=None) -> dict[str, Any]:
         """
         Publishes a document with the specified docId and optional publication settings.
 
@@ -456,13 +420,7 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        request_body = {
-            "slug": slug,
-            "discoverable": discoverable,
-            "earnCredit": earnCredit,
-            "categoryNames": categoryNames,
-            "mode": mode,
-        }
+        request_body = {"slug": slug, "discoverable": discoverable, "earnCredit": earnCredit, "categoryNames": categoryNames, "mode": mode}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/publish"
         query_params = {}
@@ -470,7 +428,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def unpublish_doc(self, docId) -> dict[str, Any]:
+    async def unpublish_doc(self, docId) -> dict[str, Any]:
         """
         Unpublishes a document by revoking its published status using the provided document ID.
 
@@ -495,7 +453,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pages(self, docId, limit=None, pageToken=None) -> dict[str, Any]:
+    async def list_pages(self, docId, limit=None, pageToken=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of pages for a specified document.
 
@@ -517,24 +475,13 @@ class CodaApp(APIApplication):
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/pages"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_page(
-        self,
-        docId,
-        name=None,
-        subtitle=None,
-        iconName=None,
-        imageUrl=None,
-        parentPageId=None,
-        pageContent=None,
+    async def create_page(
+        self, docId, name=None, subtitle=None, iconName=None, imageUrl=None, parentPageId=None, pageContent=None
     ) -> dict[str, Any]:
         """
         Creates a new page within a specified document and returns the page details.
@@ -575,7 +522,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page(self, docId, pageIdOrName) -> dict[str, Any]:
+    async def get_page(self, docId, pageIdOrName) -> dict[str, Any]:
         """
         Retrieves details of a specific page within a document by its ID or name.
 
@@ -603,16 +550,8 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_page(
-        self,
-        docId,
-        pageIdOrName,
-        name=None,
-        subtitle=None,
-        iconName=None,
-        imageUrl=None,
-        isHidden=None,
-        contentUpdate=None,
+    async def update_page(
+        self, docId, pageIdOrName, name=None, subtitle=None, iconName=None, imageUrl=None, isHidden=None, contentUpdate=None
     ) -> dict[str, Any]:
         """
         Updates properties of a specific page within a document, sending changes to the server and returning the updated page data.
@@ -656,7 +595,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_page(self, docId, pageIdOrName) -> dict[str, Any]:
+    async def delete_page(self, docId, pageIdOrName) -> dict[str, Any]:
         """
         Deletes a specific page from a document identified by docId and pageIdOrName.
 
@@ -684,9 +623,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def begin_page_content_export(
-        self, docId, pageIdOrName, outputFormat
-    ) -> dict[str, Any]:
+    async def begin_page_content_export(self, docId, pageIdOrName, outputFormat) -> dict[str, Any]:
         """
         Initiates an export of a specific page's content from a document in the specified format.
 
@@ -711,9 +648,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'pageIdOrName'")
         if outputFormat is None:
             raise ValueError("Missing required parameter 'outputFormat'")
-        request_body = {
-            "outputFormat": outputFormat,
-        }
+        request_body = {"outputFormat": outputFormat}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export"
         query_params = {}
@@ -721,9 +656,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_content_export_status(
-        self, docId, pageIdOrName, requestId
-    ) -> dict[str, Any]:
+    async def get_page_content_export_status(self, docId, pageIdOrName, requestId) -> dict[str, Any]:
         """
         Retrieves the export status of a specific page's content in a document by request ID.
 
@@ -754,9 +687,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_tables(
-        self, docId, limit=None, pageToken=None, sortBy=None, tableTypes=None
-    ) -> dict[str, Any]:
+    async def list_tables(self, docId, limit=None, pageToken=None, sortBy=None, tableTypes=None) -> dict[str, Any]:
         """
         Retrieves a list of tables from a specified document with optional filtering, pagination, and sorting.
 
@@ -781,22 +712,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/tables"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("sortBy", sortBy),
-                ("tableTypes", tableTypes),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy), ("tableTypes", tableTypes)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_table(
-        self, docId, tableIdOrName, useUpdatedTableLayouts=None
-    ) -> dict[str, Any]:
+    async def get_table(self, docId, tableIdOrName, useUpdatedTableLayouts=None) -> dict[str, Any]:
         """
         Retrieve table details from a document by table ID or name.
 
@@ -820,18 +742,12 @@ class CodaApp(APIApplication):
         if tableIdOrName is None:
             raise ValueError("Missing required parameter 'tableIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}"
-        query_params = {
-            k: v
-            for k, v in [("useUpdatedTableLayouts", useUpdatedTableLayouts)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("useUpdatedTableLayouts", useUpdatedTableLayouts)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_columns(
-        self, docId, tableIdOrName, limit=None, pageToken=None, visibleOnly=None
-    ) -> dict[str, Any]:
+    async def list_columns(self, docId, tableIdOrName, limit=None, pageToken=None, visibleOnly=None) -> dict[str, Any]:
         """
         Retrieves a list of columns for a specified table in a document, with optional filtering and pagination.
 
@@ -857,20 +773,12 @@ class CodaApp(APIApplication):
         if tableIdOrName is None:
             raise ValueError("Missing required parameter 'tableIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/columns"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("visibleOnly", visibleOnly),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("visibleOnly", visibleOnly)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_rows(
+    async def list_rows(
         self,
         docId,
         tableIdOrName,
@@ -931,9 +839,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def upsert_rows(
-        self, docId, tableIdOrName, rows, disableParsing=None, keyColumns=None
-    ) -> dict[str, Any]:
+    async def upsert_rows(self, docId, tableIdOrName, rows, disableParsing=None, keyColumns=None) -> dict[str, Any]:
         """
         Upserts (inserts or updates) multiple rows in a specified table within a document.
 
@@ -960,20 +866,15 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         if rows is None:
             raise ValueError("Missing required parameter 'rows'")
-        request_body = {
-            "rows": rows,
-            "keyColumns": keyColumns,
-        }
+        request_body = {"rows": rows, "keyColumns": keyColumns}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
-        query_params = {
-            k: v for k, v in [("disableParsing", disableParsing)] if v is not None
-        }
+        query_params = {k: v for k, v in [("disableParsing", disableParsing)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_rows(self, docId, tableIdOrName, rowIds) -> dict[str, Any]:
+    async def delete_rows(self, docId, tableIdOrName, rowIds) -> dict[str, Any]:
         """
         Deletes specified rows from a table within a given document.
 
@@ -998,9 +899,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         if rowIds is None:
             raise ValueError("Missing required parameter 'rowIds'")
-        request_body = {
-            "rowIds": rowIds,
-        }
+        request_body = {"rowIds": rowIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
         query_params = {}
@@ -1008,9 +907,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_row(
-        self, docId, tableIdOrName, rowIdOrName, useColumnNames=None, valueFormat=None
-    ) -> dict[str, Any]:
+    async def get_row(self, docId, tableIdOrName, rowIdOrName, useColumnNames=None, valueFormat=None) -> dict[str, Any]:
         """
         Retrieves a specific row from a table in a document using the provided identifiers.
 
@@ -1038,21 +935,12 @@ class CodaApp(APIApplication):
         if rowIdOrName is None:
             raise ValueError("Missing required parameter 'rowIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("useColumnNames", useColumnNames),
-                ("valueFormat", valueFormat),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("useColumnNames", useColumnNames), ("valueFormat", valueFormat)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_row(
-        self, docId, tableIdOrName, rowIdOrName, row, disableParsing=None
-    ) -> dict[str, Any]:
+    async def update_row(self, docId, tableIdOrName, rowIdOrName, row, disableParsing=None) -> dict[str, Any]:
         """
         Updates an existing row in a specified table within a document by sending the updated row data to the API.
 
@@ -1080,19 +968,15 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'rowIdOrName'")
         if row is None:
             raise ValueError("Missing required parameter 'row'")
-        request_body = {
-            "row": row,
-        }
+        request_body = {"row": row}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
-        query_params = {
-            k: v for k, v in [("disableParsing", disableParsing)] if v is not None
-        }
+        query_params = {k: v for k, v in [("disableParsing", disableParsing)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_row(self, docId, tableIdOrName, rowIdOrName) -> dict[str, Any]:
+    async def delete_row(self, docId, tableIdOrName, rowIdOrName) -> dict[str, Any]:
         """
         Deletes a specific row from a table in the given document.
 
@@ -1123,9 +1007,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def push_button(
-        self, docId, tableIdOrName, rowIdOrName, columnIdOrName
-    ) -> dict[str, Any]:
+    async def push_button(self, docId, tableIdOrName, rowIdOrName, columnIdOrName) -> dict[str, Any]:
         """
         Triggers a button action on a specified cell within a table row in a document and returns the result.
 
@@ -1159,9 +1041,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_formulas(
-        self, docId, limit=None, pageToken=None, sortBy=None
-    ) -> dict[str, Any]:
+    async def list_formulas(self, docId, limit=None, pageToken=None, sortBy=None) -> dict[str, Any]:
         """
         Retrieves a list of formulas for a specified document, supporting pagination and sorting options.
 
@@ -1184,16 +1064,12 @@ class CodaApp(APIApplication):
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/formulas"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_formula(self, docId, formulaIdOrName) -> dict[str, Any]:
+    async def get_formula(self, docId, formulaIdOrName) -> dict[str, Any]:
         """
         Retrieves details of a specific formula from a document by formula ID or name.
 
@@ -1221,9 +1097,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_controls(
-        self, docId, limit=None, pageToken=None, sortBy=None
-    ) -> dict[str, Any]:
+    async def list_controls(self, docId, limit=None, pageToken=None, sortBy=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of controls associated with a specific document.
 
@@ -1246,16 +1120,12 @@ class CodaApp(APIApplication):
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/controls"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_control(self, docId, controlIdOrName) -> dict[str, Any]:
+    async def get_control(self, docId, controlIdOrName) -> dict[str, Any]:
         """
         Retrieves details for a specific control in a document by its ID or name.
 
@@ -1283,7 +1153,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_custom_doc_domains(self, docId) -> dict[str, Any]:
+    async def list_custom_doc_domains(self, docId) -> dict[str, Any]:
         """
         Retrieve the list of custom domains associated with a specified document.
 
@@ -1308,7 +1178,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_custom_doc_domain(self, docId, customDocDomain) -> dict[str, Any]:
+    async def add_custom_doc_domain(self, docId, customDocDomain) -> dict[str, Any]:
         """
         Adds a custom document domain to a specified document.
 
@@ -1330,9 +1200,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if customDocDomain is None:
             raise ValueError("Missing required parameter 'customDocDomain'")
-        request_body = {
-            "customDocDomain": customDocDomain,
-        }
+        request_body = {"customDocDomain": customDocDomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/${docId}/domains"
         query_params = {}
@@ -1340,7 +1208,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_custom_doc_domain(self, docId, customDocDomain) -> dict[str, Any]:
+    async def delete_custom_doc_domain(self, docId, customDocDomain) -> dict[str, Any]:
         """
         Deletes a custom document domain for a specific document by sending a DELETE request to the API.
 
@@ -1368,7 +1236,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_doc_domain_provider(self, customDocDomain) -> dict[str, Any]:
+    async def get_custom_doc_domain_provider(self, customDocDomain) -> dict[str, Any]:
         """
         Retrieves provider information for a specified custom document domain.
 
@@ -1393,9 +1261,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def whoami(
-        self,
-    ) -> dict[str, Any]:
+    async def whoami(self) -> dict[str, Any]:
         """
         Retrieves information about the current authenticated user from the API.
 
@@ -1414,7 +1280,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def resolve_browser_link(self, url, degradeGracefully=None) -> dict[str, Any]:
+    async def resolve_browser_link(self, url, degradeGracefully=None) -> dict[str, Any]:
         """
         Resolves a browser link for the provided URL, optionally degrading gracefully, and returns the server's JSON response.
 
@@ -1435,16 +1301,12 @@ class CodaApp(APIApplication):
         if url is None:
             raise ValueError("Missing required parameter 'url'")
         url = f"{self.base_url}/resolveBrowserLink"
-        query_params = {
-            k: v
-            for k, v in [("url", url), ("degradeGracefully", degradeGracefully)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("url", url), ("degradeGracefully", degradeGracefully)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_mutation_status(self, requestId) -> dict[str, Any]:
+    async def get_mutation_status(self, requestId) -> dict[str, Any]:
         """
         Retrieves the mutation status for a given request ID.
 
@@ -1469,9 +1331,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def trigger_webhook_automation(
-        self, docId, ruleId, request_body=None
-    ) -> dict[str, Any]:
+    async def trigger_webhook_automation(self, docId, ruleId, request_body=None) -> dict[str, Any]:
         """
         Triggers a webhook automation for the specified document and rule.
 
@@ -1500,9 +1360,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_page_analytics(
-        self, docId, sinceDate=None, untilDate=None, pageToken=None, limit=None
-    ) -> dict[str, Any]:
+    async def list_page_analytics(self, docId, sinceDate=None, untilDate=None, pageToken=None, limit=None) -> dict[str, Any]:
         """
         Retrieves analytics data for the pages of a specific document, supporting optional filtering and pagination.
 
@@ -1528,21 +1386,14 @@ class CodaApp(APIApplication):
         url = f"{self.base_url}/analytics/docs/{docId}/pages"
         query_params = {
             k: v
-            for k, v in [
-                ("sinceDate", sinceDate),
-                ("untilDate", untilDate),
-                ("pageToken", pageToken),
-                ("limit", limit),
-            ]
+            for k, v in [("sinceDate", sinceDate), ("untilDate", untilDate), ("pageToken", pageToken), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_doc_analytics_summary(
-        self, isPublished=None, sinceDate=None, untilDate=None, workspaceId=None
-    ) -> dict[str, Any]:
+    async def list_doc_analytics_summary(self, isPublished=None, sinceDate=None, untilDate=None, workspaceId=None) -> dict[str, Any]:
         """
         Retrieves a summary of document analytics with optional filtering by publication status, date range, and workspace.
 
@@ -1564,19 +1415,14 @@ class CodaApp(APIApplication):
         url = f"{self.base_url}/analytics/docs/summary"
         query_params = {
             k: v
-            for k, v in [
-                ("isPublished", isPublished),
-                ("sinceDate", sinceDate),
-                ("untilDate", untilDate),
-                ("workspaceId", workspaceId),
-            ]
+            for k, v in [("isPublished", isPublished), ("sinceDate", sinceDate), ("untilDate", untilDate), ("workspaceId", workspaceId)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_pack_analytics(
+    async def list_pack_analytics(
         self,
         packIds=None,
         workspaceId=None,
@@ -1637,13 +1483,8 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_analytics_summary(
-        self,
-        packIds=None,
-        workspaceId=None,
-        isPublished=None,
-        sinceDate=None,
-        untilDate=None,
+    async def list_pack_analytics_summary(
+        self, packIds=None, workspaceId=None, isPublished=None, sinceDate=None, untilDate=None
     ) -> dict[str, Any]:
         """
         Retrieves a summary of analytics for one or more packs, optionally filtered by pack IDs, workspace, publication status, and date range.
@@ -1680,7 +1521,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_formula_analytics(
+    async def list_pack_formula_analytics(
         self,
         packId,
         packFormulaNames=None,
@@ -1740,9 +1581,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_analytics_last_updated(
-        self,
-    ) -> dict[str, Any]:
+    async def get_analytics_last_updated(self) -> dict[str, Any]:
         """
         Retrieves the timestamp indicating when analytics data was last updated from the analytics API endpoint.
 
@@ -1764,9 +1603,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_workspace_members(
-        self, workspaceId, includedRoles=None, pageToken=None
-    ) -> dict[str, Any]:
+    async def list_workspace_members(self, workspaceId, includedRoles=None, pageToken=None) -> dict[str, Any]:
         """
         Lists members of the specified workspace, optionally filtered by roles and paginated.
 
@@ -1788,16 +1625,12 @@ class CodaApp(APIApplication):
         if workspaceId is None:
             raise ValueError("Missing required parameter 'workspaceId'")
         url = f"{self.base_url}/workspaces/{workspaceId}/users"
-        query_params = {
-            k: v
-            for k, v in [("includedRoles", includedRoles), ("pageToken", pageToken)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includedRoles", includedRoles), ("pageToken", pageToken)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def change_user_role(self, workspaceId, email, newRole) -> dict[str, Any]:
+    async def change_user_role(self, workspaceId, email, newRole) -> dict[str, Any]:
         """
         Change the role of a user within a specific workspace.
 
@@ -1822,10 +1655,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         if newRole is None:
             raise ValueError("Missing required parameter 'newRole'")
-        request_body = {
-            "email": email,
-            "newRole": newRole,
-        }
+        request_body = {"email": email, "newRole": newRole}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspaceId}/users/role"
         query_params = {}
@@ -1833,7 +1663,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_workspace_role_activity(self, workspaceId) -> dict[str, Any]:
+    async def list_workspace_role_activity(self, workspaceId) -> dict[str, Any]:
         """
         Retrieves activity details and permissions for all roles within a specified workspace.
 
@@ -1858,7 +1688,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_packs(
+    async def list_packs(
         self,
         accessType=None,
         accessTypes=None,
@@ -1922,9 +1752,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_pack(
-        self, workspaceId=None, name=None, description=None, sourcePackId=None
-    ) -> dict[str, Any]:
+    async def create_pack(self, workspaceId=None, name=None, description=None, sourcePackId=None) -> dict[str, Any]:
         """
         Creates a new pack in the specified workspace, optionally cloning from an existing source pack.
 
@@ -1943,12 +1771,7 @@ class CodaApp(APIApplication):
         Tags:
             create, pack, management, api
         """
-        request_body = {
-            "workspaceId": workspaceId,
-            "name": name,
-            "description": description,
-            "sourcePackId": sourcePackId,
-        }
+        request_body = {"workspaceId": workspaceId, "name": name, "description": description, "sourcePackId": sourcePackId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs"
         query_params = {}
@@ -1956,7 +1779,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack(self, packId) -> dict[str, Any]:
+    async def get_pack(self, packId) -> dict[str, Any]:
         """
         Retrieves the details of a specific pack by its ID from the API.
 
@@ -1981,7 +1804,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_pack(
+    async def update_pack(
         self,
         packId,
         overallRateLimit=None,
@@ -2048,7 +1871,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_pack(self, packId) -> dict[str, Any]:
+    async def delete_pack(self, packId) -> dict[str, Any]:
         """
         Deletes a pack by its unique identifier and returns the response from the server.
 
@@ -2073,7 +1896,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_configuration_schema(self, packId) -> dict[str, Any]:
+    async def get_pack_configuration_schema(self, packId) -> dict[str, Any]:
         """
         Retrieves the configuration schema for a given pack by its identifier.
 
@@ -2098,7 +1921,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_versions(self, packId, limit=None, pageToken=None) -> dict[str, Any]:
+    async def list_pack_versions(self, packId, limit=None, pageToken=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of versions for the specified pack.
 
@@ -2120,18 +1943,12 @@ class CodaApp(APIApplication):
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/versions"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_next_pack_version(
-        self, packId, proposedMetadata, sdkVersion=None
-    ) -> dict[str, Any]:
+    async def get_next_pack_version(self, packId, proposedMetadata, sdkVersion=None) -> dict[str, Any]:
         """
         Determines the next available version for a given pack based on proposed metadata and optional SDK version.
 
@@ -2154,10 +1971,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if proposedMetadata is None:
             raise ValueError("Missing required parameter 'proposedMetadata'")
-        request_body = {
-            "proposedMetadata": proposedMetadata,
-            "sdkVersion": sdkVersion,
-        }
+        request_body = {"proposedMetadata": proposedMetadata, "sdkVersion": sdkVersion}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/nextVersion"
         query_params = {}
@@ -2165,9 +1979,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_version_diffs(
-        self, packId, basePackVersion, targetPackVersion
-    ) -> dict[str, Any]:
+    async def get_pack_version_diffs(self, packId, basePackVersion, targetPackVersion) -> dict[str, Any]:
         """
         Retrieves the differences between two specific versions of a given pack.
 
@@ -2198,7 +2010,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def register_pack_version(self, packId, packVersion, bundleHash) -> dict[str, Any]:
+    async def register_pack_version(self, packId, packVersion, bundleHash) -> dict[str, Any]:
         """
         Registers a new version of a pack with the given identifiers and bundle hash.
 
@@ -2223,9 +2035,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packVersion'")
         if bundleHash is None:
             raise ValueError("Missing required parameter 'bundleHash'")
-        request_body = {
-            "bundleHash": bundleHash,
-        }
+        request_body = {"bundleHash": bundleHash}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/register"
         query_params = {}
@@ -2233,9 +2043,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def pack_version_upload_complete(
-        self, packId, packVersion, notes=None, source=None, allowOlderSdkVersion=None
-    ) -> dict[str, Any]:
+    async def pack_version_upload_complete(self, packId, packVersion, notes=None, source=None, allowOlderSdkVersion=None) -> dict[str, Any]:
         """
         Marks a pack version upload as complete and notifies the server with optional metadata.
 
@@ -2260,11 +2068,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packVersion is None:
             raise ValueError("Missing required parameter 'packVersion'")
-        request_body = {
-            "notes": notes,
-            "source": source,
-            "allowOlderSdkVersion": allowOlderSdkVersion,
-        }
+        request_body = {"notes": notes, "source": source, "allowOlderSdkVersion": allowOlderSdkVersion}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/uploadComplete"
         query_params = {}
@@ -2272,9 +2076,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_pack_release(
-        self, packId, packVersion, releaseNotes=None
-    ) -> dict[str, Any]:
+    async def create_pack_release(self, packId, packVersion, releaseNotes=None) -> dict[str, Any]:
         """
         Creates a new release for the specified pack with the given version and optional release notes.
 
@@ -2297,10 +2099,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packVersion is None:
             raise ValueError("Missing required parameter 'packVersion'")
-        request_body = {
-            "packVersion": packVersion,
-            "releaseNotes": releaseNotes,
-        }
+        request_body = {"packVersion": packVersion, "releaseNotes": releaseNotes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/releases"
         query_params = {}
@@ -2308,7 +2107,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_releases(self, packId, limit=None, pageToken=None) -> dict[str, Any]:
+    async def list_pack_releases(self, packId, limit=None, pageToken=None) -> dict[str, Any]:
         """
         Retrieves a list of releases for a specified pack, supporting pagination.
 
@@ -2330,18 +2129,12 @@ class CodaApp(APIApplication):
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/releases"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_pack_release(
-        self, packId, packReleaseId, releaseNotes=None
-    ) -> dict[str, Any]:
+    async def update_pack_release(self, packId, packReleaseId, releaseNotes=None) -> dict[str, Any]:
         """
         Updates the release information for a specific pack, including optional release notes.
 
@@ -2364,9 +2157,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packReleaseId is None:
             raise ValueError("Missing required parameter 'packReleaseId'")
-        request_body = {
-            "releaseNotes": releaseNotes,
-        }
+        request_body = {"releaseNotes": releaseNotes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/releases/{packReleaseId}"
         query_params = {}
@@ -2374,9 +2165,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def set_pack_oauth_config(
-        self, packId, clientId=None, clientSecret=None, redirectUri=None
-    ) -> dict[str, Any]:
+    async def set_pack_oauth_config(self, packId, clientId=None, clientSecret=None, redirectUri=None) -> dict[str, Any]:
         """
         Configures or updates the OAuth settings for a specific pack by sending the provided client credentials and redirect URI to the server.
 
@@ -2398,11 +2187,7 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        request_body = {
-            "clientId": clientId,
-            "clientSecret": clientSecret,
-            "redirectUri": redirectUri,
-        }
+        request_body = {"clientId": clientId, "clientSecret": clientSecret, "redirectUri": redirectUri}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/oauthConfig"
         query_params = {}
@@ -2410,7 +2195,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_oauth_config(self, packId) -> dict[str, Any]:
+    async def get_pack_oauth_config(self, packId) -> dict[str, Any]:
         """
         Retrieves the OAuth configuration for a specific pack identified by packId.
 
@@ -2435,7 +2220,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def set_pack_system_connection(self, packId, credentials) -> dict[str, Any]:
+    async def set_pack_system_connection(self, packId, credentials) -> dict[str, Any]:
         """
         Sets the system connection for a specified pack using provided credentials.
 
@@ -2457,9 +2242,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if credentials is None:
             raise ValueError("Missing required parameter 'credentials'")
-        request_body = {
-            "credentials": credentials,
-        }
+        request_body = {"credentials": credentials}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/systemConnection"
         query_params = {}
@@ -2467,7 +2250,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_system_connection(self, packId) -> dict[str, Any]:
+    async def get_pack_system_connection(self, packId) -> dict[str, Any]:
         """
         Retrieves the system connection information for a specified pack by its ID.
 
@@ -2492,7 +2275,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_permissions(self, packId) -> dict[str, Any]:
+    async def get_pack_permissions(self, packId) -> dict[str, Any]:
         """
         Retrieves the permissions associated with the specified pack.
 
@@ -2517,7 +2300,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_pack_permission(self, packId, principal, access) -> dict[str, Any]:
+    async def add_pack_permission(self, packId, principal, access) -> dict[str, Any]:
         """
         Adds a permission for a specified principal to a pack.
 
@@ -2542,10 +2325,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'principal'")
         if access is None:
             raise ValueError("Missing required parameter 'access'")
-        request_body = {
-            "principal": principal,
-            "access": access,
-        }
+        request_body = {"principal": principal, "access": access}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/permissions"
         query_params = {}
@@ -2553,7 +2333,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_pack_permission(self, packId, permissionId) -> dict[str, Any]:
+    async def delete_pack_permission(self, packId, permissionId) -> dict[str, Any]:
         """
         Deletes a specific permission from a pack using the provided pack and permission IDs.
 
@@ -2581,7 +2361,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_makers(self, packId) -> dict[str, Any]:
+    async def list_pack_makers(self, packId) -> dict[str, Any]:
         """
         Retrieves a list of makers associated with the specified pack.
 
@@ -2606,7 +2386,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_pack_maker(self, packId, loginId) -> dict[str, Any]:
+    async def add_pack_maker(self, packId, loginId) -> dict[str, Any]:
         """
         Adds a maker to a specified pack using the provided login ID.
 
@@ -2628,9 +2408,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if loginId is None:
             raise ValueError("Missing required parameter 'loginId'")
-        request_body = {
-            "loginId": loginId,
-        }
+        request_body = {"loginId": loginId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/maker"
         query_params = {}
@@ -2638,7 +2416,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_pack_maker(self, packId, loginId) -> dict[str, Any]:
+    async def delete_pack_maker(self, packId, loginId) -> dict[str, Any]:
         """
         Deletes a maker from a specified pack using the provided pack and login IDs.
 
@@ -2666,7 +2444,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_categories(self, packId) -> dict[str, Any]:
+    async def list_pack_categories(self, packId) -> dict[str, Any]:
         """
         Retrieves the list of categories associated with a specific pack.
 
@@ -2691,7 +2469,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_pack_category(self, packId, categoryName) -> dict[str, Any]:
+    async def add_pack_category(self, packId, categoryName) -> dict[str, Any]:
         """
         Adds a new category to the specified pack by sending a POST request to the API.
 
@@ -2713,9 +2491,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if categoryName is None:
             raise ValueError("Missing required parameter 'categoryName'")
-        request_body = {
-            "categoryName": categoryName,
-        }
+        request_body = {"categoryName": categoryName}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/category"
         query_params = {}
@@ -2723,7 +2499,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_pack_category(self, packId, categoryName) -> dict[str, Any]:
+    async def delete_pack_category(self, packId, categoryName) -> dict[str, Any]:
         """
         Deletes a specific category from a pack by pack ID and category name.
 
@@ -2751,9 +2527,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def upload_pack_asset(
-        self, packId, packAssetType, imageHash, mimeType, filename
-    ) -> dict[str, Any]:
+    async def upload_pack_asset(self, packId, packAssetType, imageHash, mimeType, filename) -> dict[str, Any]:
         """
         Uploads an asset file to the specified pack and returns the server response.
 
@@ -2784,12 +2558,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'mimeType'")
         if filename is None:
             raise ValueError("Missing required parameter 'filename'")
-        request_body = {
-            "packAssetType": packAssetType,
-            "imageHash": imageHash,
-            "mimeType": mimeType,
-            "filename": filename,
-        }
+        request_body = {"packAssetType": packAssetType, "imageHash": imageHash, "mimeType": mimeType, "filename": filename}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/uploadAsset"
         query_params = {}
@@ -2797,9 +2566,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def upload_pack_source_code(
-        self, packId, payloadHash, filename, packVersion=None
-    ) -> dict[str, Any]:
+    async def upload_pack_source_code(self, packId, payloadHash, filename, packVersion=None) -> dict[str, Any]:
         """
         Uploads the source code for a specified pack by sending the provided file information and payload hash to the server.
 
@@ -2825,11 +2592,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'payloadHash'")
         if filename is None:
             raise ValueError("Missing required parameter 'filename'")
-        request_body = {
-            "payloadHash": payloadHash,
-            "filename": filename,
-            "packVersion": packVersion,
-        }
+        request_body = {"payloadHash": payloadHash, "filename": filename, "packVersion": packVersion}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/uploadSourceCode"
         query_params = {}
@@ -2837,9 +2600,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def pack_asset_upload_complete(
-        self, packId, packAssetId, packAssetType
-    ) -> dict[str, Any]:
+    async def pack_asset_upload_complete(self, packId, packAssetId, packAssetType) -> dict[str, Any]:
         """
         Marks an asset upload as complete for a given pack and asset type by sending a POST request to the server.
 
@@ -2870,9 +2631,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def pack_source_code_upload_complete(
-        self, packId, packVersion, filename, codeHash
-    ) -> dict[str, Any]:
+    async def pack_source_code_upload_complete(self, packId, packVersion, filename, codeHash) -> dict[str, Any]:
         """
         Marks the completion of a source code upload for a pack version by notifying the backend service.
 
@@ -2900,10 +2659,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'filename'")
         if codeHash is None:
             raise ValueError("Missing required parameter 'codeHash'")
-        request_body = {
-            "filename": filename,
-            "codeHash": codeHash,
-        }
+        request_body = {"filename": filename, "codeHash": codeHash}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode/uploadComplete"
         query_params = {}
@@ -2911,7 +2667,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_source_code(self, packId, packVersion) -> dict[str, Any]:
+    async def get_pack_source_code(self, packId, packVersion) -> dict[str, Any]:
         """
         Retrieves the source code for a specified pack version from the server.
 
@@ -2939,7 +2695,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_listings(
+    async def list_pack_listings(
         self,
         packAccessTypes=None,
         packIds=None,
@@ -3009,14 +2765,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pack_listing(
-        self,
-        packId,
-        workspaceId=None,
-        docId=None,
-        installContext=None,
-        releaseChannel=None,
-    ) -> dict[str, Any]:
+    async def get_pack_listing(self, packId, workspaceId=None, docId=None, installContext=None, releaseChannel=None) -> dict[str, Any]:
         """
         Retrieves the listing details for a specified pack, optionally filtered by workspace, document, install context, or release channel.
 
@@ -3054,7 +2803,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_logs(
+    async def list_pack_logs(
         self,
         packId,
         docId,
@@ -3115,7 +2864,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_ingestion_logs(
+    async def list_ingestion_logs(
         self,
         packId,
         organizationId,
@@ -3183,16 +2932,8 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_grouped_pack_logs(
-        self,
-        packId,
-        docId,
-        limit=None,
-        pageToken=None,
-        beforeTimestamp=None,
-        afterTimestamp=None,
-        order=None,
-        q=None,
+    async def list_grouped_pack_logs(
+        self, packId, docId, limit=None, pageToken=None, beforeTimestamp=None, afterTimestamp=None, order=None, q=None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated and filtered list of grouped logs for a specific pack and document.
@@ -3238,7 +2979,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_grouped_ingestion_logs(
+    async def list_grouped_ingestion_logs(
         self,
         packId,
         organizationId,
@@ -3300,7 +3041,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_ingestion_executions(
+    async def list_ingestion_executions(
         self,
         packId,
         organizationId,
@@ -3374,15 +3115,8 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_ingestion_execution_attempts(
-        self,
-        packId,
-        organizationId,
-        rootIngestionId,
-        ingestionExecutionId,
-        limit=None,
-        pageToken=None,
-        order=None,
+    async def list_ingestion_execution_attempts(
+        self, packId, organizationId, rootIngestionId, ingestionExecutionId, limit=None, pageToken=None, order=None
     ) -> dict[str, Any]:
         """
         Lists execution attempts for a specific ingestion execution within a pack and organization.
@@ -3415,18 +3149,12 @@ class CodaApp(APIApplication):
         if ingestionExecutionId is None:
             raise ValueError("Missing required parameter 'ingestionExecutionId'")
         url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/ingestionExecutionId/{ingestionExecutionId}/attempts"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("pageToken", pageToken), ("order", order)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("order", order)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_pack_log_details(
-        self, packId, organizationId, rootIngestionId, logId, detailsKey
-    ) -> dict[str, Any]:
+    async def get_pack_log_details(self, packId, organizationId, rootIngestionId, logId, detailsKey) -> dict[str, Any]:
         """
         Retrieves detailed log information for a specific pack ingestion process by querying the remote service.
 
@@ -3463,7 +3191,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pack_featured_docs(self, packId) -> dict[str, Any]:
+    async def list_pack_featured_docs(self, packId) -> dict[str, Any]:
         """
         Fetches the featured documents for a specified pack by its ID.
 
@@ -3487,7 +3215,7 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_pack_featured_docs(self, packId, items) -> dict[str, Any]:
+    async def update_pack_featured_docs(self, packId, items) -> dict[str, Any]:
         """
         Updates the featured documents for a specific pack by sending the provided items to the server.
 
@@ -3509,9 +3237,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if items is None:
             raise ValueError("Missing required parameter 'items'")
-        request_body = {
-            "items": items,
-        }
+        request_body = {"items": items}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/featuredDocs"
         query_params = {}
@@ -3519,14 +3245,8 @@ class CodaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_go_link(
-        self,
-        organizationId,
-        name,
-        destinationUrl,
-        description=None,
-        urlPattern=None,
-        creatorEmail=None,
+    async def add_go_link(
+        self, organizationId, name, destinationUrl, description=None, urlPattern=None, creatorEmail=None
     ) -> dict[str, Any]:
         """
         Creates a new Go Link resource for the specified organization.

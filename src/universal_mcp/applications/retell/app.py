@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class RetellApp(APIApplication):
         super().__init__(name="retell", integration=integration, **kwargs)
         self.base_url = "https://api.retellai.com"
 
-    def get_v2_get_call_by_call_id(self, call_id) -> dict[str, Any]:
+    async def get_v2_get_call_by_call_id(self, call_id) -> dict[str, Any]:
         """
         Retrieve detailed information about a specific call using its call ID.
 
@@ -34,13 +33,8 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v2_create_phone_call(
-        self,
-        from_number,
-        to_number,
-        override_agent_id=None,
-        metadata=None,
-        retell_llm_dynamic_variables=None,
+    async def post_v2_create_phone_call(
+        self, from_number, to_number, override_agent_id=None, metadata=None, retell_llm_dynamic_variables=None
     ) -> dict[str, Any]:
         """
         Initiates a phone call using a JSON payload with specified parameters.
@@ -79,9 +73,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v2_create_web_call(
-        self, agent_id, metadata=None, retell_llm_dynamic_variables=None
-    ) -> dict[str, Any]:
+    async def post_v2_create_web_call(self, agent_id, metadata=None, retell_llm_dynamic_variables=None) -> dict[str, Any]:
         """
         Creates a web call via a POST request to the v2 endpoint with specified agent ID and optional metadata or dynamic variables.
 
@@ -101,11 +93,7 @@ class RetellApp(APIApplication):
         """
         if agent_id is None:
             raise ValueError("Missing required parameter 'agent_id'")
-        request_body = {
-            "agent_id": agent_id,
-            "metadata": metadata,
-            "retell_llm_dynamic_variables": retell_llm_dynamic_variables,
-        }
+        request_body = {"agent_id": agent_id, "metadata": metadata, "retell_llm_dynamic_variables": retell_llm_dynamic_variables}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/create-web-call"
         query_params = {}
@@ -113,7 +101,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_get_voice_by_voice_id(self, voice_id) -> dict[str, Any]:
+    async def get_get_voice_by_voice_id(self, voice_id) -> dict[str, Any]:
         """
         Fetches voice details based on the provided voice ID.
 
@@ -137,9 +125,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_v2_list_calls(
-        self, filter_criteria=None, sort_order=None, limit=None, pagination_key=None
-    ) -> list[Any]:
+    async def post_v2_list_calls(self, filter_criteria=None, sort_order=None, limit=None, pagination_key=None) -> list[Any]:
         """
         Sends a POST request to list call records with optional filtering, sorting, pagination, and limits.
 
@@ -158,12 +144,7 @@ class RetellApp(APIApplication):
         Tags:
             list, calls, api, batch, management, important
         """
-        request_body = {
-            "filter_criteria": filter_criteria,
-            "sort_order": sort_order,
-            "limit": limit,
-            "pagination_key": pagination_key,
-        }
+        request_body = {"filter_criteria": filter_criteria, "sort_order": sort_order, "limit": limit, "pagination_key": pagination_key}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/list-calls"
         query_params = {}
@@ -171,9 +152,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_create_phone_number(
-        self, area_code, inbound_agent_id=None, outbound_agent_id=None, nickname=None
-    ) -> dict[str, Any]:
+    async def post_create_phone_number(self, area_code, inbound_agent_id=None, outbound_agent_id=None, nickname=None) -> dict[str, Any]:
         """
         Creates a phone number with the specified area code and optional parameters.
 
@@ -208,7 +187,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_get_phone_number_by_phone_number(self, phone_number) -> dict[str, Any]:
+    async def get_get_phone_number_by_phone_number(self, phone_number) -> dict[str, Any]:
         """
         Retrieves phone number details by making a GET request to the API endpoint using the provided phone number.
 
@@ -233,9 +212,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_list_phone_numbers(
-        self,
-    ) -> list[Any]:
+    async def get_list_phone_numbers(self) -> list[Any]:
         """
         Retrieves a list of phone numbers from the remote API.
 
@@ -257,7 +234,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def patch_update_phone_number_by_phone_number(
+    async def patch_update_phone_number_by_phone_number(
         self, phone_number, inbound_agent_id=None, outbound_agent_id=None, nickname=None
     ) -> dict[str, Any]:
         """
@@ -281,11 +258,7 @@ class RetellApp(APIApplication):
         """
         if phone_number is None:
             raise ValueError("Missing required parameter 'phone_number'")
-        request_body = {
-            "inbound_agent_id": inbound_agent_id,
-            "outbound_agent_id": outbound_agent_id,
-            "nickname": nickname,
-        }
+        request_body = {"inbound_agent_id": inbound_agent_id, "outbound_agent_id": outbound_agent_id, "nickname": nickname}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/update-phone-number/{phone_number}"
         query_params = {}
@@ -293,7 +266,7 @@ class RetellApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_delete_phone_number_by_phone_number(self, phone_number) -> Any:
+    async def delete_delete_phone_number_by_phone_number(self, phone_number) -> Any:
         """
         Deletes a phone number resource by its phone number identifier via an HTTP DELETE request.
 

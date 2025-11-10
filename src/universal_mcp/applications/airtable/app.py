@@ -1,18 +1,9 @@
 from collections.abc import Iterable
 from typing import Any
-
-# Import necessary components from pyairtable
 from pyairtable import Api
 from pyairtable.api.base import Base
 from pyairtable.api.table import Table
-from pyairtable.api.types import (
-    RecordDeletedDict,
-    RecordDict,
-    RecordId,
-    UpdateRecordDict,
-    UpsertResultDict,
-    WritableFields,
-)
+from pyairtable.api.types import RecordDeletedDict, RecordDict, RecordId, UpdateRecordDict, UpsertResultDict, WritableFields
 from pyairtable.formulas import Formula, to_formula_str
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -32,18 +23,12 @@ class AirtableApp(APIApplication):
         if not self.integration:
             raise ValueError("Integration is not set for AirtableApp.")
         credentials = self.integration.get_credentials()
-        api_key = (
-            credentials.get("api_key")
-            or credentials.get("apiKey")
-            or credentials.get("API_KEY")
-        )
+        api_key = credentials.get("api_key") or credentials.get("apiKey") or credentials.get("API_KEY")
         if not api_key:
             raise ValueError("Airtable API key is not configured in the integration.")
         return Api(api_key)
 
-    def _prepare_pyairtable_params(
-        self, collected_options: dict[str, Any]
-    ) -> dict[str, Any]:
+    def _prepare_pyairtable_params(self, collected_options: dict[str, Any]) -> dict[str, Any]:
         """
         Extracts the actual parameters for pyairtable from the collected options.
         If `collected_options` contains a key "options" whose value is a dictionary
@@ -53,10 +38,9 @@ class AirtableApp(APIApplication):
         nested_options = collected_options.get("options")
         if isinstance(nested_options, dict):
             return nested_options
-
         return collected_options
 
-    def list_bases(self) -> list[Base] | str:
+    async def list_bases(self) -> list[Base] | str:
         """
         Lists all bases accessible with the current API key.
 
@@ -73,7 +57,7 @@ class AirtableApp(APIApplication):
         except Exception as e:
             return f"Error listing bases: {type(e).__name__} - {e}"
 
-    def list_tables(self, base_id: str) -> list[Table] | str:
+    async def list_tables(self, base_id: str) -> list[Table] | str:
         """
         Lists all tables within a specified base.
 
@@ -92,13 +76,9 @@ class AirtableApp(APIApplication):
             base = client.base(base_id)
             return base.tables()
         except Exception as e:
-            return (
-                f"Error listing tables for base '{base_id}': {type(e).__name__} - {e}"
-            )
+            return f"Error listing tables for base '{base_id}': {type(e).__name__} - {e}"
 
-    def get_record(
-        self, base_id: str, table_id_or_name: str, record_id: RecordId, **options: Any
-    ) -> RecordDict | str:
+    async def get_record(self, base_id: str, table_id_or_name: str, record_id: RecordId, **options: Any) -> RecordDict | str:
         """
         Retrieves a single record by its ID from a specified table within a base.
 
@@ -125,9 +105,7 @@ class AirtableApp(APIApplication):
         except Exception as e:
             return f"Error getting record '{record_id}' from '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def list_records(
-        self, base_id: str, table_id_or_name: str, **options: Any
-    ) -> list[RecordDict] | str:
+    async def list_records(self, base_id: str, table_id_or_name: str, **options: Any) -> list[RecordDict] | str:
         """
         Lists records from a specified table within a base.
 
@@ -150,26 +128,13 @@ class AirtableApp(APIApplication):
             client = self._get_client()
             table = client.table(base_id, table_id_or_name)
             pyairtable_params = self._prepare_pyairtable_params(options)
-
-            # Convert Formula object to string if provided, after preparing params
-            if "formula" in pyairtable_params and isinstance(
-                pyairtable_params["formula"], Formula
-            ):
-                pyairtable_params["formula"] = to_formula_str(
-                    pyairtable_params["formula"]
-                )
-
+            if "formula" in pyairtable_params and isinstance(pyairtable_params["formula"], Formula):
+                pyairtable_params["formula"] = to_formula_str(pyairtable_params["formula"])
             return table.all(**pyairtable_params)
         except Exception as e:
             return f"Error listing records from '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def create_record(
-        self,
-        base_id: str,
-        table_id_or_name: str,
-        fields: WritableFields,
-        **options: Any,  # Captures typecast, use_field_ids etc.
-    ) -> RecordDict | str:
+    async def create_record(self, base_id: str, table_id_or_name: str, fields: WritableFields, **options: Any) -> RecordDict | str:
         """
         Creates a new record in a specified table within a base.
 
@@ -191,44 +156,20 @@ class AirtableApp(APIApplication):
         try:
             client = self._get_client()
             table = client.table(base_id, table_id_or_name)
-            # pyairtable's Table.create() takes typecast and use_field_ids as named args,
-            # not as **kwargs. We need to extract them or use defaults.
-
             prepared_options = self._prepare_pyairtable_params(options)
             prepared_options.get("typecast", False)
-            prepared_options.get(
-                "use_field_ids"
-            )  # Let pyairtable handle default if None
-
-            # Ensure only valid kwargs for pyairtable's `create` are passed if it doesn't use **kwargs for these
-            # For pyairtable.Table.create, it only takes `typecast` and `use_field_ids` as specific keyword args.
-            # The `**options` in `AirtableApp` could collect other things if the tool call sends them.
-            # The `pyairtable.Table.create` signature is:
-            # create(self, fields: WritableFields, typecast: bool = False, use_field_ids: Optional[bool] = None)
-            # It does NOT take a general **kwargs.
-
-            # So, we must call it with the specific parameters.
-            # `_prepare_pyairtable_params` helps if "options" is nested, but we still need to map.
-
+            prepared_options.get("use_field_ids")
             call_kwargs = {}
             if "typecast" in prepared_options:
                 call_kwargs["typecast"] = prepared_options["typecast"]
-            if (
-                "use_field_ids" in prepared_options
-            ):  # Pass it only if explicitly provided
+            if "use_field_ids" in prepared_options:
                 call_kwargs["use_field_ids"] = prepared_options["use_field_ids"]
-
             return table.create(fields=fields, **call_kwargs)
         except Exception as e:
             return f"Error creating record in '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def update_record(
-        self,
-        base_id: str,
-        table_id_or_name: str,
-        record_id: RecordId,
-        fields: WritableFields,
-        **options: Any,  # Captures replace, typecast, use_field_ids etc.
+    async def update_record(
+        self, base_id: str, table_id_or_name: str, record_id: RecordId, fields: WritableFields, **options: Any
     ) -> RecordDict | str:
         """
         Updates an existing record in a specified table within a base.
@@ -252,11 +193,6 @@ class AirtableApp(APIApplication):
         try:
             client = self._get_client()
             table = client.table(base_id, table_id_or_name)
-            # pyairtable.Table.update() signature:
-            # update(self, record_id: RecordId, fields: WritableFields, replace: bool = False,
-            #        typecast: bool = False, use_field_ids: Optional[bool] = None)
-            # It does NOT take a general **kwargs.
-
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
             if "replace" in prepared_options:
@@ -265,14 +201,11 @@ class AirtableApp(APIApplication):
                 call_kwargs["typecast"] = prepared_options["typecast"]
             if "use_field_ids" in prepared_options:
                 call_kwargs["use_field_ids"] = prepared_options["use_field_ids"]
-
             return table.update(record_id, fields=fields, **call_kwargs)
         except Exception as e:
             return f"Error updating record '{record_id}' in '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def delete_record(
-        self, base_id: str, table_id_or_name: str, record_id: RecordId
-    ) -> RecordDeletedDict | str:
+    async def delete_record(self, base_id: str, table_id_or_name: str, record_id: RecordId) -> RecordDeletedDict | str:
         """
         Deletes a record from a specified table within a base.
 
@@ -295,12 +228,8 @@ class AirtableApp(APIApplication):
         except Exception as e:
             return f"Error deleting record '{record_id}' from '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def batch_create_records(
-        self,
-        base_id: str,
-        table_id_or_name: str,
-        records: Iterable[WritableFields],
-        **options: Any,  # Captures typecast, use_field_ids etc.
+    async def batch_create_records(
+        self, base_id: str, table_id_or_name: str, records: Iterable[WritableFields], **options: Any
     ) -> list[RecordDict] | str:
         """
         Creates multiple records in batches in a specified table.
@@ -323,27 +252,18 @@ class AirtableApp(APIApplication):
         try:
             client = self._get_client()
             table = client.table(base_id, table_id_or_name)
-            # pyairtable.Table.batch_create() signature:
-            # batch_create(self, records: Iterable[WritableFields], typecast: bool = False, use_field_ids: Optional[bool] = None)
-            # It does NOT take a general **kwargs.
-
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
             if "typecast" in prepared_options:
                 call_kwargs["typecast"] = prepared_options["typecast"]
             if "use_field_ids" in prepared_options:
                 call_kwargs["use_field_ids"] = prepared_options["use_field_ids"]
-
             return table.batch_create(records, **call_kwargs)
         except Exception as e:
             return f"Error batch creating records in '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def batch_update_records(
-        self,
-        base_id: str,
-        table_id_or_name: str,
-        records: Iterable[UpdateRecordDict],
-        **options: Any,  # Captures replace, typecast, use_field_ids etc.
+    async def batch_update_records(
+        self, base_id: str, table_id_or_name: str, records: Iterable[UpdateRecordDict], **options: Any
     ) -> list[RecordDict] | str:
         """
         Updates multiple records in batches in a specified table.
@@ -366,11 +286,6 @@ class AirtableApp(APIApplication):
         try:
             client = self._get_client()
             table = client.table(base_id, table_id_or_name)
-            # pyairtable.Table.batch_update() signature:
-            # batch_update(self, records: Iterable[UpdateRecordDict], replace: bool = False,
-            #              typecast: bool = False, use_field_ids: Optional[bool] = None)
-            # It does NOT take a general **kwargs.
-
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
             if "replace" in prepared_options:
@@ -379,12 +294,11 @@ class AirtableApp(APIApplication):
                 call_kwargs["typecast"] = prepared_options["typecast"]
             if "use_field_ids" in prepared_options:
                 call_kwargs["use_field_ids"] = prepared_options["use_field_ids"]
-
             return table.batch_update(records, **call_kwargs)
         except Exception as e:
             return f"Error batch updating records in '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def batch_delete_records(
+    async def batch_delete_records(
         self, base_id: str, table_id_or_name: str, record_ids: Iterable[RecordId]
     ) -> list[RecordDeletedDict] | str:
         """
@@ -409,15 +323,8 @@ class AirtableApp(APIApplication):
         except Exception as e:
             return f"Error batch deleting records from '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"
 
-    def batch_upsert_records(
-        self,
-        base_id: str,
-        table_id_or_name: str,
-        records: Iterable[
-            dict[str, Any]
-        ],  # pyairtable expects Dict, not UpdateRecordDict here
-        key_fields: list[str],
-        **options: Any,  # Captures replace, typecast, use_field_ids etc.
+    async def batch_upsert_records(
+        self, base_id: str, table_id_or_name: str, records: Iterable[dict[str, Any]], key_fields: list[str], **options: Any
     ) -> UpsertResultDict | str:
         """
         Updates or creates records in batches in a specified table.
@@ -444,11 +351,6 @@ class AirtableApp(APIApplication):
         try:
             client = self._get_client()
             table = client.table(base_id, table_id_or_name)
-            # pyairtable.Table.batch_upsert() signature:
-            # batch_upsert(self, records: Iterable[Dict[str, Any]], key_fields: List[FieldName],
-            #              replace: bool = False, typecast: bool = False, use_field_ids: Optional[bool] = None)
-            # It does NOT take a general **kwargs.
-
             prepared_options = self._prepare_pyairtable_params(options)
             call_kwargs = {}
             if "replace" in prepared_options:
@@ -457,7 +359,6 @@ class AirtableApp(APIApplication):
                 call_kwargs["typecast"] = prepared_options["typecast"]
             if "use_field_ids" in prepared_options:
                 call_kwargs["use_field_ids"] = prepared_options["use_field_ids"]
-
             return table.batch_upsert(records, key_fields=key_fields, **call_kwargs)
         except Exception as e:
             return f"Error batch upserting records in '{table_id_or_name}' in '{base_id}': {type(e).__name__} - {e}"

@@ -32,9 +32,7 @@ class ListsApi(APISegmentBase):
             "name": name,
             "private": private,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/lists"
         query_params = {}
         response = self._post(
@@ -71,9 +69,7 @@ class ListsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_list_by_id(
-        self, id, list_fields=None, expansions=None, user_fields=None
-    ) -> dict[str, Any]:
+    def get_list_by_id(self, id, list_fields=None, expansions=None, user_fields=None) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific list by its ID. This function allows for response customization by specifying which list and user fields to return and supports expansions to include related objects like the owner's user data.
 
@@ -109,9 +105,7 @@ class ListsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def update_list(
-        self, id, description=None, name=None, private=None
-    ) -> dict[str, Any]:
+    def update_list(self, id, description=None, name=None, private=None) -> dict[str, Any]:
         """
         Modifies an existing Twitter list identified by its unique ID. This function updates the list's name, description, or privacy status by sending a PUT request to the API and returns the updated list data upon success.
 
@@ -139,9 +133,7 @@ class ListsApi(APISegmentBase):
             "name": name,
             "private": private,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/lists/{id}"
         query_params = {}
         response = self._put(
@@ -271,9 +263,7 @@ class ListsApi(APISegmentBase):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = {"user_id": user_id}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/lists/{id}/members"
         query_params = {}
         response = self._post(

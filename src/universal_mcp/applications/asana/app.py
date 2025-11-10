@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class AsanaApp(APIApplication):
         super().__init__(name="asana", integration=integration, **kwargs)
         self.base_url = "https://app.asana.com/api/1.0"
 
-    def get_an_allocation(
-        self, allocation_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_an_allocation(self, allocation_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details about an allocation by its GUID using the API endpoint "/allocations/{allocation_gid}" with optional fields and formatting controlled by query parameters "opt_fields" and "opt_pretty".
 
@@ -30,18 +27,12 @@ class AsanaApp(APIApplication):
         if allocation_gid is None:
             raise ValueError("Missing required parameter 'allocation_gid'")
         url = f"{self.base_url}/allocations/{allocation_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_an_allocation(
-        self, allocation_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_an_allocation(self, allocation_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates or creates a resource identified by the allocation GID at the "/allocations/{allocation_gid}" path using the PUT method.
 
@@ -77,21 +68,15 @@ class AsanaApp(APIApplication):
         """
         if allocation_gid is None:
             raise ValueError("Missing required parameter 'allocation_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/allocations/{allocation_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_an_allocation(self, allocation_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_an_allocation(self, allocation_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes the specified allocation by its global identifier and returns a status code indicating success or failure.
 
@@ -114,15 +99,8 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_allocations(
-        self,
-        parent=None,
-        assignee=None,
-        workspace=None,
-        limit=None,
-        offset=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_multiple_allocations(
+        self, parent=None, assignee=None, workspace=None, limit=None, offset=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of resource allocations filtered by parent, assignee, workspace, and pagination parameters.
@@ -164,9 +142,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_an_allocation(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_an_allocation(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new allocation using the API and returns a successful response upon completion, with optional fields and pretty printing available through query parameters.
 
@@ -199,23 +175,15 @@ class AsanaApp(APIApplication):
         Tags:
             Allocations
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/allocations"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_an_attachment(
-        self, attachment_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_an_attachment(self, attachment_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details for a specific attachment using its identifier, with optional fields and pretty-printed responses.
 
@@ -234,16 +202,12 @@ class AsanaApp(APIApplication):
         if attachment_gid is None:
             raise ValueError("Missing required parameter 'attachment_gid'")
         url = f"{self.base_url}/attachments/{attachment_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_an_attachment(self, attachment_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_an_attachment(self, attachment_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes an attachment identified by the attachment GID using the DELETE method.
 
@@ -266,7 +230,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachments_from_an_object(
+    async def get_attachments_from_an_object(
         self, limit=None, offset=None, parent=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
@@ -292,20 +256,14 @@ class AsanaApp(APIApplication):
         url = f"{self.base_url}/attachments"
         query_params = {
             k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("parent", parent),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
+            for k, v in [("limit", limit), ("offset", offset), ("parent", parent), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_audit_log_events(
+    async def get_audit_log_events(
         self,
         workspace_gid,
         start_at=None,
@@ -363,9 +321,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def submit_parallel_requests(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def submit_parallel_requests(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Processes a batch of API requests in a single call, allowing for efficient execution of multiple operations defined at the "/batch" path using the "POST" method.
 
@@ -422,23 +378,15 @@ class AsanaApp(APIApplication):
         Tags:
             Batch API
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/batch"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_acustom_field(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_acustom_field(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new custom field at the "/custom_fields" endpoint using the "POST" method, allowing for optional parameters to specify additional fields or formatting options.
 
@@ -530,23 +478,15 @@ class AsanaApp(APIApplication):
         Tags:
             Custom fields
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_acustom_field(
-        self, custom_field_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_acustom_field(self, custom_field_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves the details of a specific custom field using its unique identifier and supports optional query parameters for additional field data and formatted output.
 
@@ -565,18 +505,12 @@ class AsanaApp(APIApplication):
         if custom_field_gid is None:
             raise ValueError("Missing required parameter 'custom_field_gid'")
         url = f"{self.base_url}/custom_fields/{custom_field_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_acustom_field(
-        self, custom_field_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_acustom_field(self, custom_field_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates the specified custom field's configuration for the given object (e.g., project) and returns the modified resource.
 
@@ -671,21 +605,15 @@ class AsanaApp(APIApplication):
         """
         if custom_field_gid is None:
             raise ValueError("Missing required parameter 'custom_field_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields/{custom_field_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_acustom_field(self, custom_field_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_acustom_field(self, custom_field_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific custom field by its globally unique identifier (GID) and returns an empty response upon success.
 
@@ -708,7 +636,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_aworkspace_scustom_fields(
+    async def get_aworkspace_scustom_fields(
         self, workspace_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
@@ -735,22 +663,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}/custom_fields"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_an_enum_option(
-        self, custom_field_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_an_enum_option(self, custom_field_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new enum option for a custom field and allows specifying its position relative to existing options.
 
@@ -783,23 +702,15 @@ class AsanaApp(APIApplication):
         """
         if custom_field_gid is None:
             raise ValueError("Missing required parameter 'custom_field_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields/{custom_field_gid}/enum_options"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def reorder_acustom_field_senum(
-        self, custom_field_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def reorder_acustom_field_senum(self, custom_field_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Reorders the enum options for a custom field using the Asana API by inserting an enum option at a specified position, allowing customization of the options' order.
 
@@ -828,23 +739,15 @@ class AsanaApp(APIApplication):
         """
         if custom_field_gid is None:
             raise ValueError("Missing required parameter 'custom_field_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields/{custom_field_gid}/enum_options/insert"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_an_enum_option(
-        self, enum_option_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_an_enum_option(self, enum_option_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates an existing enum option's details in the custom field and returns the modified enum option.
 
@@ -875,23 +778,15 @@ class AsanaApp(APIApplication):
         """
         if enum_option_gid is None:
             raise ValueError("Missing required parameter 'enum_option_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/enum_options/{enum_option_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aproject_scustom_fields(
-        self, project_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_aproject_scustom_fields(self, project_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves custom field settings for a project using a specified project GID, allowing for optional filtering by fields, formatting, and pagination.
 
@@ -916,20 +811,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}/custom_field_settings"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aportfolio_scustom_fields(
+    async def get_aportfolio_scustom_fields(
         self, portfolio_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
@@ -956,22 +844,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'portfolio_gid'")
         url = f"{self.base_url}/portfolios/{portfolio_gid}/custom_field_settings"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_events_on_aresource(
-        self, opt_fields=None, resource=None, sync=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_events_on_aresource(self, opt_fields=None, resource=None, sync=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a list of events using the "GET" method at the "/events" endpoint, allowing optional filtering by fields, resource, synchronization status, and output format.
 
@@ -992,19 +871,14 @@ class AsanaApp(APIApplication):
         url = f"{self.base_url}/events"
         query_params = {
             k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("resource", resource),
-                ("sync", sync),
-                ("opt_pretty", opt_pretty),
-            ]
+            for k, v in [("opt_fields", opt_fields), ("resource", resource), ("sync", sync), ("opt_pretty", opt_pretty)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_agoal(self, goal_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def get_agoal(self, goal_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves information about a specific goal using the `GET` method at the path `/goals/{goal_gid}`, allowing optional parameters for customizing output fields and formatting.
 
@@ -1023,18 +897,12 @@ class AsanaApp(APIApplication):
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
         url = f"{self.base_url}/goals/{goal_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_agoal(
-        self, goal_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_agoal(self, goal_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates a specific goal identified by its GID using the PUT method at the path "/goals/{goal_gid}", optionally including query parameters for custom fields and formatting.
 
@@ -1074,21 +942,15 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_agoal(self, goal_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_agoal(self, goal_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific goal resource identified by the `goal_gid` at the path "/goals/{goal_gid}" using the HTTP DELETE method.
 
@@ -1111,7 +973,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_goals(
+    async def get_goals(
         self,
         portfolio=None,
         project=None,
@@ -1173,9 +1035,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_agoal(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_agoal(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new goal in the system and returns the created resource.
 
@@ -1214,23 +1074,15 @@ class AsanaApp(APIApplication):
         Tags:
             Goals
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_agoal_metric(
-        self, goal_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_agoal_metric(self, goal_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Sets a metric for a specific goal identified by `{goal_gid}` and returns the updated goal data.
 
@@ -1268,23 +1120,15 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/setMetric"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_agoal_metric(
-        self, goal_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_agoal_metric(self, goal_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Sets the current metric value for a specified goal using the "POST" method at the "/goals/{goal_gid}/setMetricCurrentValue" endpoint.
 
@@ -1313,23 +1157,15 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/setMetricCurrentValue"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_acollaborator_to_agoal(
-        self, goal_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_acollaborator_to_agoal(self, goal_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds followers to a specific goal using the "POST" method at the "/goals/{goal_gid}/addFollowers" endpoint and returns a status message based on the operation's success or failure.
 
@@ -1359,23 +1195,15 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/addFollowers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_acollaborator_from_agoal(
-        self, goal_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_acollaborator_from_agoal(self, goal_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes followers from a specified goal using the POST method at the "/goals/{goal_gid}/removeFollowers" path.
 
@@ -1405,23 +1233,15 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/removeFollowers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_parent_goals_from_agoal(
-        self, goal_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_parent_goals_from_agoal(self, goal_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves parent goals associated with a specific goal identified by its goal_gid.
 
@@ -1440,18 +1260,12 @@ class AsanaApp(APIApplication):
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
         url = f"{self.base_url}/goals/{goal_gid}/parentGoals"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_agoal_relationship(
-        self, goal_relationship_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_agoal_relationship(self, goal_relationship_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a goal relationship object by its GID, optionally including additional fields in the response, using the Asana API.
 
@@ -1470,18 +1284,12 @@ class AsanaApp(APIApplication):
         if goal_relationship_gid is None:
             raise ValueError("Missing required parameter 'goal_relationship_gid'")
         url = f"{self.base_url}/goal_relationships/{goal_relationship_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_agoal_relationship(
-        self, goal_relationship_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_agoal_relationship(self, goal_relationship_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates a goal relationship using the Asana API and returns a response indicating the outcome of the operation.
 
@@ -1526,28 +1334,16 @@ class AsanaApp(APIApplication):
         """
         if goal_relationship_gid is None:
             raise ValueError("Missing required parameter 'goal_relationship_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goal_relationships/{goal_relationship_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_goal_relationships(
-        self,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
-        supported_goal=None,
-        resource_subtype=None,
-        opt_fields=None,
+    async def get_goal_relationships(
+        self, opt_pretty=None, limit=None, offset=None, supported_goal=None, resource_subtype=None, opt_fields=None
     ) -> dict[str, Any]:
         """
         Retrieves compact goal relationship objects between goals, projects, or portfolios with optional filtering and field selection.
@@ -1587,9 +1383,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_asupporting_goal_relationship(
-        self, goal_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_asupporting_goal_relationship(self, goal_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a supporting relationship to a specified goal using the POST method at the "/goals/{goal_gid}/addSupportingRelationship" endpoint.
 
@@ -1619,23 +1413,15 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/addSupportingRelationship"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def removes_asupporting_goal_relationship(
-        self, goal_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def removes_asupporting_goal_relationship(self, goal_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes the supporting relationship from a specified goal and returns a status message.
 
@@ -1661,9 +1447,7 @@ class AsanaApp(APIApplication):
         """
         if goal_gid is None:
             raise ValueError("Missing required parameter 'goal_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/removeSupportingRelationship"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -1671,9 +1455,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_ajob_by_id(
-        self, job_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_ajob_by_id(self, job_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves job details using the specified job GID, with optional fields and formatting controls, via a GET request to the "/jobs/{job_gid}" endpoint.
 
@@ -1692,23 +1474,13 @@ class AsanaApp(APIApplication):
         if job_gid is None:
             raise ValueError("Missing required parameter 'job_gid'")
         url = f"{self.base_url}/jobs/{job_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_memberships(
-        self,
-        parent=None,
-        member=None,
-        limit=None,
-        offset=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_multiple_memberships(
+        self, parent=None, member=None, limit=None, offset=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves paginated membership records with optional parent, member, and field selection parameters.
@@ -1748,7 +1520,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_amembership(self, opt_pretty=None, data=None) -> dict[str, Any]:
+    async def create_amembership(self, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new membership by sending a POST request to the "/memberships" endpoint, potentially returning a newly created membership resource with a status code indicating successful creation.
 
@@ -1774,9 +1546,7 @@ class AsanaApp(APIApplication):
         Tags:
             Memberships
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/memberships"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -1784,9 +1554,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_amembership(
-        self, membership_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_amembership(self, membership_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves membership details for a specified membership ID, supporting optional field selection and formatted responses.
 
@@ -1805,18 +1573,12 @@ class AsanaApp(APIApplication):
         if membership_gid is None:
             raise ValueError("Missing required parameter 'membership_gid'")
         url = f"{self.base_url}/memberships/{membership_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_amembership(
-        self, membership_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_amembership(self, membership_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates an existing membership identified by `{membership_gid}` using the PUT method.
 
@@ -1842,9 +1604,7 @@ class AsanaApp(APIApplication):
         """
         if membership_gid is None:
             raise ValueError("Missing required parameter 'membership_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/memberships/{membership_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -1852,7 +1612,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_amembership(self, membership_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_amembership(self, membership_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a membership by its GUID using the API, removing the associated relationship between entities.
 
@@ -1875,9 +1635,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_an_organization_export_request(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_an_organization_export_request(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Initiates a request to export an organization's complete data in JSON format, returning a status response upon successful creation.
 
@@ -1901,23 +1659,15 @@ class AsanaApp(APIApplication):
         Tags:
             Organization exports
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organization_exports"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_details_on_an_org_export_request(
-        self, organization_export_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_details_on_an_org_export_request(self, organization_export_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves information about an organization export using the provided GID, allowing optional specification of additional fields and pretty-print formatting.
 
@@ -1936,23 +1686,13 @@ class AsanaApp(APIApplication):
         if organization_export_gid is None:
             raise ValueError("Missing required parameter 'organization_export_gid'")
         url = f"{self.base_url}/organization_exports/{organization_export_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_portfolios(
-        self,
-        limit=None,
-        offset=None,
-        workspace=None,
-        owner=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_multiple_portfolios(
+        self, limit=None, offset=None, workspace=None, owner=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of portfolios with optional filtering and field selection parameters.
@@ -1992,9 +1732,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_aportfolio(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aportfolio(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new portfolio and returns the result, optionally including specified fields and formatted output, using the Portfolio API.
 
@@ -2027,23 +1765,15 @@ class AsanaApp(APIApplication):
         Tags:
             Portfolios
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aportfolio(
-        self, portfolio_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aportfolio(self, portfolio_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details about a specific portfolio identified by `{portfolio_gid}` using the `GET` method, allowing optional fields (`opt_fields`) and pretty formatting (`opt_pretty`) in the query parameters.
 
@@ -2062,18 +1792,12 @@ class AsanaApp(APIApplication):
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
         url = f"{self.base_url}/portfolios/{portfolio_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_aportfolio(
-        self, portfolio_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_aportfolio(self, portfolio_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Replaces the entire portfolio resource with the provided data and returns the updated portfolio.
 
@@ -2109,21 +1833,15 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_aportfolio(self, portfolio_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_aportfolio(self, portfolio_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes the specified portfolio and returns a success status or error code.
 
@@ -2146,9 +1864,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_portfolio_items(
-        self, portfolio_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_portfolio_items(self, portfolio_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of items associated with a specified portfolio using a GET request, allowing for optional parameters to customize the response fields and pagination.
 
@@ -2173,22 +1889,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'portfolio_gid'")
         url = f"{self.base_url}/portfolios/{portfolio_gid}/items"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_aportfolio_item(
-        self, portfolio_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_aportfolio_item(self, portfolio_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds an item to a specified portfolio using a POST request, requiring item placement parameters.
 
@@ -2216,9 +1923,7 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/addItem"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -2226,9 +1931,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_aportfolio_item(
-        self, portfolio_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_aportfolio_item(self, portfolio_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes an item from a portfolio using the provided path "/portfolios/{portfolio_gid}/removeItem" via a POST request.
 
@@ -2254,9 +1957,7 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/removeItem"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -2264,9 +1965,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_acustom_field_to_aportfolio(
-        self, portfolio_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_acustom_field_to_aportfolio(self, portfolio_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a custom field to a specified portfolio by creating a custom field setting using the Asana API.
 
@@ -2295,9 +1994,7 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/addCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -2305,9 +2002,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_acustom_field_from_aportfolio(
-        self, portfolio_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_acustom_field_from_aportfolio(self, portfolio_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes a custom field setting from a portfolio and returns a success status.
 
@@ -2333,9 +2028,7 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/removeCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -2343,9 +2036,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_users_to_aportfolio(
-        self, portfolio_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_users_to_aportfolio(self, portfolio_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds specified users as members to a portfolio and returns the updated portfolio record.
 
@@ -2372,23 +2063,15 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/addMembers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_users_from_aportfolio(
-        self, portfolio_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_users_from_aportfolio(self, portfolio_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes members from a portfolio using the specified portfolio ID and returns a status message.
 
@@ -2415,29 +2098,16 @@ class AsanaApp(APIApplication):
         """
         if portfolio_gid is None:
             raise ValueError("Missing required parameter 'portfolio_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/removeMembers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_portfolio_memberships(
-        self,
-        opt_fields=None,
-        portfolio=None,
-        workspace=None,
-        user=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_multiple_portfolio_memberships(
+        self, opt_fields=None, portfolio=None, workspace=None, user=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves portfolio membership details in Asana, including associated users and workspaces, with optional filtering and output field selection.
@@ -2479,9 +2149,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_aportfolio_membership(
-        self, portfolio_membership_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aportfolio_membership(self, portfolio_membership_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details about a portfolio membership by its GID, optionally including additional fields and formatted output.
 
@@ -2500,23 +2168,13 @@ class AsanaApp(APIApplication):
         if portfolio_membership_gid is None:
             raise ValueError("Missing required parameter 'portfolio_membership_gid'")
         url = f"{self.base_url}/portfolio_memberships/{portfolio_membership_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_memberships_from_aportfolio(
-        self,
-        portfolio_gid,
-        opt_fields=None,
-        user=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_memberships_from_aportfolio(
+        self, portfolio_gid, opt_fields=None, user=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of portfolio memberships for a specific portfolio identified by its GID, allowing for optional filtering by user and customizing the response with additional fields.
@@ -2544,28 +2202,15 @@ class AsanaApp(APIApplication):
         url = f"{self.base_url}/portfolios/{portfolio_gid}/portfolio_memberships"
         query_params = {
             k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("user", user),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
+            for k, v in [("opt_fields", opt_fields), ("user", user), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_projects(
-        self,
-        limit=None,
-        offset=None,
-        workspace=None,
-        team=None,
-        archived=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_multiple_projects(
+        self, limit=None, offset=None, workspace=None, team=None, archived=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of projects using the specified parameters such as limit, offset, workspace, team, archived status, optional fields, and formatting options.
@@ -2607,9 +2252,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_aproject(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aproject(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new GitLab project with customizable fields and returns a success status upon completion.
 
@@ -2896,23 +2539,15 @@ class AsanaApp(APIApplication):
         Tags:
             Projects
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aproject(self, project_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific project's details using its unique identifier (project_gid) with options to customize the response fields and formatting.
 
@@ -2931,18 +2566,12 @@ class AsanaApp(APIApplication):
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates an existing project at the specified path, replacing its entire resource with the provided request content, using the PUT method.
 
@@ -3231,21 +2860,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_aproject(self, project_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_aproject(self, project_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a project identified by the project GID using the DELETE method at the path "/projects/{project_gid}", with optional support for pretty-printed output.
 
@@ -3268,9 +2891,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def duplicate_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def duplicate_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a duplicate of the specified project, including its structure and dependencies, while allowing optional field customization.
 
@@ -3304,23 +2925,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/duplicate"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_projects_atask_is_in(
-        self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_projects_atask_is_in(self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves the projects associated with a specific task using the GET method, allowing for optional customization of output fields and pagination.
 
@@ -3345,27 +2958,14 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/projects"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_ateam_sprojects(
-        self,
-        team_gid,
-        limit=None,
-        offset=None,
-        archived=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_ateam_sprojects(
+        self, team_gid, limit=None, offset=None, archived=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of projects associated with a specific team, supporting optional filtering for archived status and custom field selection.
@@ -3406,9 +3006,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_aproject_in_ateam(
-        self, team_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aproject_in_ateam(self, team_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a project to a team using the GitHub API and returns a success status.
 
@@ -3698,28 +3296,16 @@ class AsanaApp(APIApplication):
         """
         if team_gid is None:
             raise ValueError("Missing required parameter 'team_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}/projects"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_all_projects_in_aworkspace(
-        self,
-        workspace_gid,
-        limit=None,
-        offset=None,
-        archived=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_all_projects_in_aworkspace(
+        self, workspace_gid, limit=None, offset=None, archived=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of projects for a specified workspace, allowing customization through parameters such as limit, offset, archived status, and optional fields, using the GET method.
@@ -3760,9 +3346,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_aproject_in_aworkspace(
-        self, workspace_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aproject_in_aworkspace(self, workspace_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new project within the specified workspace using optional query parameters to control response fields and formatting.
 
@@ -4052,23 +3636,15 @@ class AsanaApp(APIApplication):
         """
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/projects"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_acustom_field_to_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_acustom_field_to_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a custom field setting to a specified project using the POST method via the API endpoint "/projects/{project_gid}/addCustomFieldSetting", allowing optional query parameters for field selection and response formatting.
 
@@ -4098,23 +3674,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/addCustomFieldSetting"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_acustom_field_from_aproject(
-        self, project_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_acustom_field_from_aproject(self, project_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes a custom field setting from a specified project using the Asana API by sending a POST request to the "/projects/{project_gid}/removeCustomFieldSetting" endpoint.
 
@@ -4140,9 +3708,7 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/removeCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -4150,9 +3716,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_task_count_of_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_task_count_of_aproject(self, project_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves task counts for a specified project using the Asana API, allowing users to obtain an object containing task count fields by opting in with the `opt_fields` parameter.
 
@@ -4171,18 +3735,12 @@ class AsanaApp(APIApplication):
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}/task_counts"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_users_to_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_users_to_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds members to a project specified by its project GID using the POST method.
 
@@ -4209,23 +3767,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/addMembers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_users_from_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_users_from_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes specified members from a project using their identifiers and returns an updated project object or error status.
 
@@ -4252,23 +3802,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/removeMembers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_followers_to_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_followers_to_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds specified users as followers to a project and returns a success or error status.
 
@@ -4295,23 +3837,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/addFollowers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_followers_from_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_followers_from_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes specified followers from a project identified by its GID, updating the project's record without affecting its membership status.
 
@@ -4338,23 +3872,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/removeFollowers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_aproject_template_from_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aproject_template_from_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Saves a project as a template using the POST method at "/projects/{project_gid}/saveAsTemplate," allowing for the creation of new projects with predefined structures based on existing projects.
 
@@ -4384,23 +3910,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/saveAsTemplate"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aproject_brief(
-        self, project_brief_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aproject_brief(self, project_brief_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific project brief identified by its unique identifier and returns its details, optionally including additional fields or formatted responses.
 
@@ -4419,18 +3937,12 @@ class AsanaApp(APIApplication):
         if project_brief_gid is None:
             raise ValueError("Missing required parameter 'project_brief_gid'")
         url = f"{self.base_url}/project_briefs/{project_brief_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_aproject_brief(
-        self, project_brief_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_aproject_brief(self, project_brief_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates or replaces a project brief with the specified ID and returns the modified resource.
 
@@ -4448,7 +3960,7 @@ class AsanaApp(APIApplication):
                     "html_text": "<body>This is a <strong>project brief</strong>.</body>",
                     "resource_type": "task",
                     "text": "This is a project brief.",
-                    "title": "Stuff to buy \u2014 Project Brief"
+                    "title": "Stuff to buy — Project Brief"
                   }
                 }
                 ```
@@ -4461,23 +3973,15 @@ class AsanaApp(APIApplication):
         """
         if project_brief_gid is None:
             raise ValueError("Missing required parameter 'project_brief_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/project_briefs/{project_brief_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_aproject_brief(
-        self, project_brief_gid, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def delete_aproject_brief(self, project_brief_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific project brief identified by its GID using the Asana API and returns an empty data record upon successful deletion.
 
@@ -4500,9 +4004,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_aproject_brief(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aproject_brief(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a project brief for the specified project using the provided data and returns the newly created brief.
 
@@ -4520,7 +4022,7 @@ class AsanaApp(APIApplication):
                     "html_text": "<body>This is a <strong>project brief</strong>.</body>",
                     "resource_type": "task",
                     "text": "This is a project brief.",
-                    "title": "Stuff to buy \u2014 Project Brief"
+                    "title": "Stuff to buy — Project Brief"
                   }
                 }
                 ```
@@ -4533,23 +4035,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/project_briefs"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aproject_membership(
-        self, project_membership_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aproject_membership(self, project_membership_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details of a specific project membership by its ID, including optional fields and formatted output.
 
@@ -4568,23 +4062,13 @@ class AsanaApp(APIApplication):
         if project_membership_gid is None:
             raise ValueError("Missing required parameter 'project_membership_gid'")
         url = f"{self.base_url}/project_memberships/{project_membership_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_memberships_from_aproject(
-        self,
-        project_gid,
-        opt_fields=None,
-        user=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_memberships_from_aproject(
+        self, project_gid, opt_fields=None, user=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of project memberships with optional query parameters for filtering and pagination.
@@ -4612,22 +4096,14 @@ class AsanaApp(APIApplication):
         url = f"{self.base_url}/projects/{project_gid}/project_memberships"
         query_params = {
             k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("user", user),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
+            for k, v in [("opt_fields", opt_fields), ("user", user), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aproject_status(
-        self, project_status_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aproject_status(self, project_status_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific project status by its GID using the "GET" method, allowing for optional fields and pretty-printing.
 
@@ -4646,18 +4122,12 @@ class AsanaApp(APIApplication):
         if project_status_gid is None:
             raise ValueError("Missing required parameter 'project_status_gid'")
         url = f"{self.base_url}/project_statuses/{project_status_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_aproject_status(
-        self, project_status_gid, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def delete_aproject_status(self, project_status_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific project status by its GID and returns an empty response upon success.
 
@@ -4680,9 +4150,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_statuses_from_aproject(
-        self, project_gid, opt_pretty=None, limit=None, offset=None, opt_fields=None
-    ) -> dict[str, Any]:
+    async def get_statuses_from_aproject(self, project_gid, opt_pretty=None, limit=None, offset=None, opt_fields=None) -> dict[str, Any]:
         """
         Retrieves a list of project statuses for a specified project and returns paginated results with optional field filtering.
 
@@ -4707,22 +4175,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}/project_statuses"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset), ("opt_fields", opt_fields)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_aproject_status(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_aproject_status(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new project status for the specified project and returns the created status, supporting optional field selection and pretty-printed responses.
 
@@ -4754,23 +4213,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/project_statuses"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aproject_template(
-        self, project_template_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aproject_template(self, project_template_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific project template by its unique identifier, providing configurable output fields and formatted responses.
 
@@ -4789,18 +4240,12 @@ class AsanaApp(APIApplication):
         if project_template_gid is None:
             raise ValueError("Missing required parameter 'project_template_gid'")
         url = f"{self.base_url}/project_templates/{project_template_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_aproject_template(
-        self, project_template_gid, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def delete_aproject_template(self, project_template_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes an existing project template using the Asana API and returns an empty data record.
 
@@ -4823,14 +4268,8 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_project_templates(
-        self,
-        workspace=None,
-        team=None,
-        limit=None,
-        offset=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_multiple_project_templates(
+        self, workspace=None, team=None, limit=None, offset=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of project templates, optionally filtered by workspace or team, with support for pagination and field selection.
@@ -4870,9 +4309,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_ateam_sproject_templates(
-        self, team_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_ateam_sproject_templates(self, team_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of project templates associated with a specific team, supporting optional filtering and field customization.
 
@@ -4897,20 +4334,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_gid'")
         url = f"{self.base_url}/teams/{team_gid}/project_templates"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def instantiate_aproject_from_aproject_template(
+    async def instantiate_aproject_from_aproject_template(
         self, project_template_gid, opt_fields=None, opt_pretty=None, data=None
     ) -> dict[str, Any]:
         """
@@ -4963,21 +4393,15 @@ class AsanaApp(APIApplication):
         """
         if project_template_gid is None:
             raise ValueError("Missing required parameter 'project_template_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/project_templates/{project_template_gid}/instantiateProject"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def trigger_arule(self, rule_trigger_gid, data=None) -> dict[str, Any]:
+    async def trigger_arule(self, rule_trigger_gid, data=None) -> dict[str, Any]:
         """
         Triggers the execution of a specific rule using the API defined at the path "/rule_triggers/{rule_trigger_gid}/run" via a POST request.
 
@@ -5005,9 +4429,7 @@ class AsanaApp(APIApplication):
         """
         if rule_trigger_gid is None:
             raise ValueError("Missing required parameter 'rule_trigger_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/rule_triggers/{rule_trigger_gid}/run"
         query_params = {}
@@ -5015,9 +4437,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_asection(
-        self, section_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_asection(self, section_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves information about a specific section using the "GET" method at the "/sections/{section_gid}" endpoint, optionally allowing customization with additional fields and pretty-printing.
 
@@ -5036,18 +4456,12 @@ class AsanaApp(APIApplication):
         if section_gid is None:
             raise ValueError("Missing required parameter 'section_gid'")
         url = f"{self.base_url}/sections/{section_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_asection(
-        self, section_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_asection(self, section_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates or replaces a specific section resource identified by its GID, returning relevant status messages based on success or failure, with optional parameters for customizing output fields and formatting.
 
@@ -5076,21 +4490,15 @@ class AsanaApp(APIApplication):
         """
         if section_gid is None:
             raise ValueError("Missing required parameter 'section_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/sections/{section_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_asection(self, section_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_asection(self, section_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes the specified section identified by its global ID and returns a success or error status.
 
@@ -5113,9 +4521,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_sections_in_aproject(
-        self, project_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_sections_in_aproject(self, project_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a list of sections associated with a specific project, supporting optional query parameters for pagination and field customization.
 
@@ -5140,22 +4546,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}/sections"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_asection_in_aproject(
-        self, project_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_asection_in_aproject(self, project_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new section in a specified project using the Asana API and returns a status message.
 
@@ -5184,23 +4581,15 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/sections"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_task_to_section(
-        self, section_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_task_to_section(self, section_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a task to the specified section using the POST method.
 
@@ -5228,9 +4617,7 @@ class AsanaApp(APIApplication):
         """
         if section_gid is None:
             raise ValueError("Missing required parameter 'section_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/sections/{section_gid}/addTask"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -5238,9 +4625,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def move_or_insert_sections(
-        self, project_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def move_or_insert_sections(self, project_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Inserts a new section into a specific project and returns the operation's status.
 
@@ -5268,9 +4653,7 @@ class AsanaApp(APIApplication):
         """
         if project_gid is None:
             raise ValueError("Missing required parameter 'project_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/sections/insert"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -5278,9 +4661,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_astatus_update(
-        self, status_update_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_astatus_update(self, status_update_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific status update's details and associated metadata based on the provided status update identifier.
 
@@ -5299,18 +4680,12 @@ class AsanaApp(APIApplication):
         if status_update_gid is None:
             raise ValueError("Missing required parameter 'status_update_gid'")
         url = f"{self.base_url}/status_updates/{status_update_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_astatus_update(
-        self, status_update_gid, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def delete_astatus_update(self, status_update_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific status update identified by its GID and returns a response based on the operation's success or failure.
 
@@ -5333,14 +4708,8 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_status_updates_from_an_object(
-        self,
-        parent=None,
-        created_since=None,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_status_updates_from_an_object(
+        self, parent=None, created_since=None, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves status updates with filtering options for parent, creation date, and other parameters, returning paginated results.
@@ -5380,9 +4749,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_astatus_update(
-        self, opt_fields=None, opt_pretty=None, limit=None, offset=None, data=None
-    ) -> dict[str, Any]:
+    async def create_astatus_update(self, opt_fields=None, opt_pretty=None, limit=None, offset=None, data=None) -> dict[str, Any]:
         """
         Creates a status update with optional fields, pagination controls, and returns success or error responses based on provided parameters.
 
@@ -5418,26 +4785,17 @@ class AsanaApp(APIApplication):
         Tags:
             Status updates
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/status_updates"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_astory(self, story_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def get_astory(self, story_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific story by its globally unique identifier (GID) with optional fields and formatting parameters.
 
@@ -5456,18 +4814,12 @@ class AsanaApp(APIApplication):
         if story_gid is None:
             raise ValueError("Missing required parameter 'story_gid'")
         url = f"{self.base_url}/stories/{story_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_astory(
-        self, story_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_astory(self, story_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates or creates a story at the specified path "/stories/{story_gid}" using the provided data.
 
@@ -5501,21 +4853,15 @@ class AsanaApp(APIApplication):
         """
         if story_gid is None:
             raise ValueError("Missing required parameter 'story_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/stories/{story_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_astory(self, story_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_astory(self, story_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific story identified by its story GID from the collection of stories.
 
@@ -5538,9 +4884,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_stories_from_atask(
-        self, task_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_stories_from_atask(self, task_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves the stories associated with a specific task using the task's unique identifier and supports optional query parameters for pagination and field selection.
 
@@ -5565,22 +4909,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/stories"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_astory_on_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_astory_on_atask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a story for a specific task using the "POST" method at the "/tasks/{task_gid}/stories" endpoint, allowing for optional fields and formatting through query parameters.
 
@@ -5614,23 +4949,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/stories"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_tags(
-        self, limit=None, offset=None, workspace=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_multiple_tags(self, limit=None, offset=None, workspace=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a list of tags using the "GET" method at the "/tags" endpoint, allowing customization with parameters for limit, offset, workspace, optional fields, and pretty formatting.
 
@@ -5667,9 +4994,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_atag(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_atag(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new tag entry with optional fields and formatted response.
 
@@ -5702,21 +5027,15 @@ class AsanaApp(APIApplication):
         Tags:
             Tags
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tags"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_atag(self, tag_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def get_atag(self, tag_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves information about a specific tag, identified by its GID, using the "GET" method at the path "/tags/{tag_gid}" with optional formatting and field selection.
 
@@ -5735,16 +5054,12 @@ class AsanaApp(APIApplication):
         if tag_gid is None:
             raise ValueError("Missing required parameter 'tag_gid'")
         url = f"{self.base_url}/tags/{tag_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_atag(self, tag_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def update_atag(self, tag_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Updates or replaces a Git tag with the specified GID and returns the operation status.
 
@@ -5763,16 +5078,12 @@ class AsanaApp(APIApplication):
         if tag_gid is None:
             raise ValueError("Missing required parameter 'tag_gid'")
         url = f"{self.base_url}/tags/{tag_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_atag(self, tag_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_atag(self, tag_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific tag from a repository using the API and returns relevant status messages, depending on the outcome of the deletion operation.
 
@@ -5795,9 +5106,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_atask_stags(
-        self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_atask_stags(self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves the tags associated with a specific task using the task's unique identifier and supports optional filtering/pagination through query parameters.
 
@@ -5822,22 +5131,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/tags"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_tags_in_aworkspace(
-        self, workspace_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_tags_in_aworkspace(self, workspace_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a list of tags associated with a specific workspace, with options to limit the response size and customize the output fields.
 
@@ -5862,22 +5162,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}/tags"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_atag_in_aworkspace(
-        self, workspace_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_atag_in_aworkspace(self, workspace_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds tags to a specified workspace using a POST request to the "/workspaces/{workspace_gid}/tags" endpoint.
 
@@ -5912,21 +5203,15 @@ class AsanaApp(APIApplication):
         """
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/tags"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_tasks(
+    async def get_multiple_tasks(
         self,
         limit=None,
         offset=None,
@@ -5992,9 +5277,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_atask(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_atask(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new task using the API and returns a status message, allowing optional fields and pretty-printing configurations through query parameters.
 
@@ -6152,21 +5435,15 @@ class AsanaApp(APIApplication):
         Tags:
             Tasks
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_atask(self, task_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def get_atask(self, task_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves task details using the Asana API and returns information about the specified task, with optional fields and formatting available through query parameters.
 
@@ -6185,18 +5462,12 @@ class AsanaApp(APIApplication):
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_atask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates an existing task specified by its ID using the PUT method, allowing for a complete replacement of the task resource.
 
@@ -6357,21 +5628,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_atask(self, task_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_atask(self, task_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes the specified task identified by the task_gid and returns an appropriate HTTP status code.
 
@@ -6394,9 +5659,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def duplicate_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def duplicate_atask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Duplicates a task using the Asana API and returns a job ID, requiring a subsequent update call to modify the new task's properties.
 
@@ -6424,28 +5687,16 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/duplicate"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_tasks_from_aproject(
-        self,
-        project_gid,
-        opt_fields=None,
-        completed_since=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_tasks_from_aproject(
+        self, project_gid, opt_fields=None, completed_since=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of tasks associated with a specific project, supporting optional filtering and pagination parameters.
@@ -6486,14 +5737,8 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tasks_from_asection(
-        self,
-        section_gid,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
-        completed_since=None,
+    async def get_tasks_from_asection(
+        self, section_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None, completed_since=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of tasks within a specified section using the Asana API and returns the data based on optional query parameters such as fields, formatting, limit, offset, and completion status.
@@ -6534,9 +5779,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tasks_from_atag(
-        self, tag_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_tasks_from_atag(self, tag_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of tasks associated with a specific tag, allowing for optional filtering by fields, formatting, and pagination using query parameters.
 
@@ -6561,27 +5804,14 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_gid'")
         url = f"{self.base_url}/tags/{tag_gid}/tasks"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_tasks_from_auser_task_list(
-        self,
-        user_task_list_gid,
-        opt_fields=None,
-        completed_since=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_tasks_from_auser_task_list(
+        self, user_task_list_gid, opt_fields=None, completed_since=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of tasks associated with a specific user task list, allowing optional filtering by completion status, custom fields, and pagination limits.
@@ -6622,9 +5852,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_subtasks_from_atask(
-        self, task_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_subtasks_from_atask(self, task_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a list of subtasks for a specified task using the GET method, allowing optional parameters for customizing the response.
 
@@ -6649,22 +5877,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/subtasks"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_asubtask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_asubtask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new subtask for the specified parent task and returns the created subtask details.
 
@@ -6825,23 +6044,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/subtasks"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def set_the_parent_of_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def set_the_parent_of_atask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Changes the parent task of a specified task by submitting a POST request to the "/tasks/{task_gid}/setParent" endpoint.
 
@@ -6870,23 +6081,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/setParent"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_dependencies_from_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_dependencies_from_atask(self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of dependencies for a task with the specified task GID, allowing customization with optional fields, pretty formatting, and pagination limits.
 
@@ -6911,22 +6114,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/dependencies"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def set_dependencies_for_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def set_dependencies_for_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds dependencies to a task using the task's GID and returns a status message, with optional pretty formatting.
 
@@ -6955,9 +6149,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addDependencies"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -6965,9 +6157,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def unlink_dependencies_from_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def unlink_dependencies_from_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes dependencies from a task using the "POST" method at the "/tasks/{task_gid}/removeDependencies" path.
 
@@ -6996,9 +6186,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeDependencies"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7006,9 +6194,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_dependents_from_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_dependents_from_atask(self, task_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of dependent tasks for a specified task using the GET method at "/tasks/{task_gid}/dependents," allowing for optional filtering with parameters such as `opt_fields`, `opt_pretty`, `limit`, and `offset`.
 
@@ -7033,22 +6219,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/dependents"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def set_dependents_for_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def set_dependents_for_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds dependent tasks to a specified task using the POST method.
 
@@ -7077,9 +6254,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addDependents"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7087,9 +6262,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def unlink_dependents_from_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def unlink_dependents_from_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes dependent tasks from the specified task using the POST method.
 
@@ -7118,9 +6291,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeDependents"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7128,9 +6299,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_aproject_to_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_aproject_to_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a project to a specific task using the "POST" method at the path "/tasks/{task_gid}/addProject".
 
@@ -7159,9 +6328,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addProject"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7169,9 +6336,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_aproject_from_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_aproject_from_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes the specified project from a task while retaining the task in the system.
 
@@ -7197,9 +6362,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeProject"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7207,7 +6370,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_atag_to_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
+    async def add_atag_to_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a tag to a specified task in the system using the provided task identifier and returns a status message.
 
@@ -7233,9 +6396,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addTag"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7243,9 +6404,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_atag_from_atask(
-        self, task_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_atag_from_atask(self, task_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes a tag from a task with the specified identifier using the "POST" method and returns a status message.
 
@@ -7271,9 +6430,7 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeTag"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -7281,9 +6438,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_followers_to_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_followers_to_atask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds followers to a specific task identified by its GID using the POST method, allowing optional fields and formatting for the response.
 
@@ -7313,23 +6468,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addFollowers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_followers_from_atask(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_followers_from_atask(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes specified followers from a task using the POST method, returning the updated task record.
 
@@ -7359,23 +6506,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeFollowers"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_atask_for_agiven_custom_id(
-        self, workspace_gid, custom_id
-    ) -> dict[str, Any]:
+    async def get_atask_for_agiven_custom_id(self, workspace_gid, custom_id) -> dict[str, Any]:
         """
         Retrieves a task by its custom ID from a specified workspace using the Asana API.
 
@@ -7399,7 +6538,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_tasks_in_aworkspace(
+    async def search_tasks_in_aworkspace(
         self,
         workspace_gid,
         opt_fields=None,
@@ -7591,9 +6730,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_task_templates(
-        self, limit=None, offset=None, project=None, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_multiple_task_templates(self, limit=None, offset=None, project=None, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a list of available task templates for standardized task creation, supporting optional filters like project, pagination (limit/offset), and field customization (opt_fields).
 
@@ -7617,22 +6754,14 @@ class AsanaApp(APIApplication):
         url = f"{self.base_url}/task_templates"
         query_params = {
             k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("project", project),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
+            for k, v in [("limit", limit), ("offset", offset), ("project", project), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_atask_template(
-        self, task_template_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_atask_template(self, task_template_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific task template in Asana using the "GET" method at the "/task_templates/{task_template_gid}" path.
 
@@ -7651,18 +6780,12 @@ class AsanaApp(APIApplication):
         if task_template_gid is None:
             raise ValueError("Missing required parameter 'task_template_gid'")
         url = f"{self.base_url}/task_templates/{task_template_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_atask_template(
-        self, task_template_gid, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def delete_atask_template(self, task_template_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific task template by making a DELETE request to the API endpoint, returning an empty response upon success.
 
@@ -7685,9 +6808,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def instantiate_atask_from_atask_template(
-        self, task_template_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def instantiate_atask_from_atask_template(self, task_template_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Instantiates a task from a specified task template using the Asana API, allowing for the creation of standardized and repeatable workflows by leveraging pre-defined templates.
 
@@ -7714,23 +6835,15 @@ class AsanaApp(APIApplication):
         """
         if task_template_gid is None:
             raise ValueError("Missing required parameter 'task_template_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task_templates/{task_template_gid}/instantiateTask"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_ateam(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_ateam(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new team resource using the API at the "/teams" path with the "POST" method.
 
@@ -7767,21 +6880,15 @@ class AsanaApp(APIApplication):
         Tags:
             Teams
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_ateam(self, team_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def get_ateam(self, team_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details for a specific GitHub team by its global ID, supporting optional query parameters to customize the response format and included fields.
 
@@ -7800,18 +6907,12 @@ class AsanaApp(APIApplication):
         if team_gid is None:
             raise ValueError("Missing required parameter 'team_gid'")
         url = f"{self.base_url}/teams/{team_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_ateam(
-        self, team_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_ateam(self, team_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates the details of a team with the specified GID using the provided parameters, returning a status response based on the operation's success or failure.
 
@@ -7851,23 +6952,15 @@ class AsanaApp(APIApplication):
         """
         if team_gid is None:
             raise ValueError("Missing required parameter 'team_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_teams_in_aworkspace(
-        self, workspace_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_teams_in_aworkspace(self, workspace_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of teams in a specified workspace using the GET method, allowing optional query parameters for customizing output fields, formatting, and pagination.
 
@@ -7892,27 +6985,14 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}/teams"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_teams_for_auser(
-        self,
-        user_gid,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
-        organization=None,
+    async def get_teams_for_auser(
+        self, user_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None, organization=None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of teams associated with a specific user, optionally filtered by organization, using query parameters for customization.
@@ -7953,9 +7033,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_auser_to_ateam(
-        self, team_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_auser_to_ateam(self, team_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a user to a team using the provided team ID, allowing for optional specification of additional fields and formatting preferences.
 
@@ -7982,23 +7060,15 @@ class AsanaApp(APIApplication):
         """
         if team_gid is None:
             raise ValueError("Missing required parameter 'team_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}/addUser"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_auser_from_ateam(
-        self, team_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_auser_from_ateam(self, team_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes a user from a specified team using a POST request and returns a success status upon completion.
 
@@ -8024,9 +7094,7 @@ class AsanaApp(APIApplication):
         """
         if team_gid is None:
             raise ValueError("Missing required parameter 'team_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}/removeUser"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -8034,9 +7102,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_ateam_membership(
-        self, team_membership_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_ateam_membership(self, team_membership_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific team membership using the "GET" method at "/team_memberships/{team_membership_gid}", allowing optional fields and formatting parameters to be specified.
 
@@ -8055,24 +7121,13 @@ class AsanaApp(APIApplication):
         if team_membership_gid is None:
             raise ValueError("Missing required parameter 'team_membership_gid'")
         url = f"{self.base_url}/team_memberships/{team_membership_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_team_memberships(
-        self,
-        team=None,
-        user=None,
-        workspace=None,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_team_memberships(
+        self, team=None, user=None, workspace=None, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves team membership information for a specified user within a team and workspace, allowing optional fields and pagination.
@@ -8114,9 +7169,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_memberships_from_ateam(
-        self, team_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_memberships_from_ateam(self, team_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves team memberships for a specified team using the GitHub API, returning details about members based on optional fields and pagination parameters.
 
@@ -8141,27 +7194,14 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_gid'")
         url = f"{self.base_url}/teams/{team_gid}/team_memberships"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_memberships_from_auser(
-        self,
-        user_gid,
-        workspace=None,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_memberships_from_auser(
+        self, user_gid, workspace=None, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of team memberships for a specified user, including optional filtering by workspace and customizable response fields.
@@ -8202,9 +7242,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_atime_period(
-        self, time_period_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_atime_period(self, time_period_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details about a specific time period, identified by its GID, using the "GET" method at the "/time_periods/{time_period_gid}" path.
 
@@ -8223,24 +7261,13 @@ class AsanaApp(APIApplication):
         if time_period_gid is None:
             raise ValueError("Missing required parameter 'time_period_gid'")
         url = f"{self.base_url}/time_periods/{time_period_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_time_periods(
-        self,
-        start_on=None,
-        end_on=None,
-        workspace=None,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_time_periods(
+        self, start_on=None, end_on=None, workspace=None, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of time periods filtered by start and end dates, workspace, and other optional parameters.
@@ -8282,7 +7309,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_time_tracking_entries_for_atask(
+    async def get_time_tracking_entries_for_atask(
         self, task_gid, limit=None, offset=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
@@ -8309,22 +7336,13 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}/time_tracking_entries"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_atime_tracking_entry(
-        self, task_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def create_atime_tracking_entry(self, task_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new time tracking entry for a specified task using the POST method, allowing for optional fields and formatting through query parameters.
 
@@ -8352,23 +7370,15 @@ class AsanaApp(APIApplication):
         """
         if task_gid is None:
             raise ValueError("Missing required parameter 'task_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/time_tracking_entries"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_atime_tracking_entry(
-        self, time_tracking_entry_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_atime_tracking_entry(self, time_tracking_entry_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific time tracking entry by its global ID, allowing optional field selection for the response.
 
@@ -8387,18 +7397,12 @@ class AsanaApp(APIApplication):
         if time_tracking_entry_gid is None:
             raise ValueError("Missing required parameter 'time_tracking_entry_gid'")
         url = f"{self.base_url}/time_tracking_entries/{time_tracking_entry_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_atime_tracking_entry(
-        self, time_tracking_entry_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_atime_tracking_entry(self, time_tracking_entry_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates an existing time tracking entry by its GID and returns the modified entry.
 
@@ -8426,23 +7430,15 @@ class AsanaApp(APIApplication):
         """
         if time_tracking_entry_gid is None:
             raise ValueError("Missing required parameter 'time_tracking_entry_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/time_tracking_entries/{time_tracking_entry_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_atime_tracking_entry(
-        self, time_tracking_entry_gid, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def delete_atime_tracking_entry(self, time_tracking_entry_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a specific time tracking entry identified by the `time_tracking_entry_gid` using the DELETE method and returns relevant status messages based on the success or failure of the operation.
 
@@ -8465,15 +7461,8 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_objects_via_typeahead(
-        self,
-        workspace_gid,
-        opt_fields=None,
-        resource_type=None,
-        type=None,
-        query=None,
-        count=None,
-        opt_pretty=None,
+    async def get_objects_via_typeahead(
+        self, workspace_gid, opt_fields=None, resource_type=None, type=None, query=None, count=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Queries a workspace for typeahead results using the specified parameters and returns relevant objects or suggestions.
@@ -8513,14 +7502,8 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_users(
-        self,
-        opt_fields=None,
-        workspace=None,
-        team=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_multiple_users(
+        self, opt_fields=None, workspace=None, team=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of users with optional filtering parameters and pagination support.
@@ -8560,7 +7543,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_auser(self, user_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
+    async def get_auser(self, user_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details for a specific user using their unique identifier (user_gid) and offers optional query parameters for customizing the returned data fields (opt_fields) and response formatting (opt_pretty).
 
@@ -8579,24 +7562,13 @@ class AsanaApp(APIApplication):
         if user_gid is None:
             raise ValueError("Missing required parameter 'user_gid'")
         url = f"{self.base_url}/users/{user_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_auser_sfavorites(
-        self,
-        user_gid,
-        opt_fields=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
-        resource_type=None,
-        workspace=None,
+    async def get_auser_sfavorites(
+        self, user_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None, resource_type=None, workspace=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of favorites for a user with the specified `user_gid`, allowing optional filtering by resource type and workspace, and customizable output through additional query parameters.
@@ -8639,9 +7611,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_users_in_ateam(
-        self, team_gid, opt_fields=None, opt_pretty=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_users_in_ateam(self, team_gid, opt_fields=None, opt_pretty=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of users associated with a specified team, supporting optional fields, pretty formatting, and offset parameters.
 
@@ -8663,22 +7633,12 @@ class AsanaApp(APIApplication):
         if team_gid is None:
             raise ValueError("Missing required parameter 'team_gid'")
         url = f"{self.base_url}/teams/{team_gid}/users"
-        query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("offset", offset),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_users_in_aworkspace_or_organization(
-        self, workspace_gid, opt_fields=None, opt_pretty=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_users_in_aworkspace_or_organization(self, workspace_gid, opt_fields=None, opt_pretty=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of users associated with the specified workspace, supporting optional fields, pagination, and response formatting.
 
@@ -8700,22 +7660,12 @@ class AsanaApp(APIApplication):
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}/users"
-        query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("offset", offset),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_auser_task_list(
-        self, user_task_list_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_auser_task_list(self, user_task_list_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves details of a user task list by its global ID, supporting optional query parameters for field selection and response formatting.
 
@@ -8734,18 +7684,12 @@ class AsanaApp(APIApplication):
         if user_task_list_gid is None:
             raise ValueError("Missing required parameter 'user_task_list_gid'")
         url = f"{self.base_url}/user_task_lists/{user_task_list_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_auser_stask_list(
-        self, user_gid, opt_fields=None, opt_pretty=None, workspace=None
-    ) -> dict[str, Any]:
+    async def get_auser_stask_list(self, user_gid, opt_fields=None, opt_pretty=None, workspace=None) -> dict[str, Any]:
         """
         Retrieves a list of tasks for a user identified by the user_gid parameter, allowing optional filtering by additional fields or workspace.
 
@@ -8766,26 +7710,14 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'user_gid'")
         url = f"{self.base_url}/users/{user_gid}/user_task_list"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("workspace", workspace),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("workspace", workspace)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_webhooks(
-        self,
-        limit=None,
-        offset=None,
-        workspace=None,
-        resource=None,
-        opt_fields=None,
-        opt_pretty=None,
+    async def get_multiple_webhooks(
+        self, limit=None, offset=None, workspace=None, resource=None, opt_fields=None, opt_pretty=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of webhooks, allowing for optional filtering by workspace, resource, and additional fields, with pagination options via limit and offset parameters.
@@ -8825,9 +7757,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def establish_awebhook(
-        self, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def establish_awebhook(self, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Creates a new webhook subscription to receive event notifications and returns the subscription details.
 
@@ -8874,23 +7804,15 @@ class AsanaApp(APIApplication):
         Tags:
             Webhooks
         """
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/webhooks"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_awebhook(
-        self, webhook_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_awebhook(self, webhook_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves information about a webhook with the specified ID using the "GET" method, allowing optional fields and pretty-print formatting.
 
@@ -8909,18 +7831,12 @@ class AsanaApp(APIApplication):
         if webhook_gid is None:
             raise ValueError("Missing required parameter 'webhook_gid'")
         url = f"{self.base_url}/webhooks/{webhook_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_awebhook(
-        self, webhook_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_awebhook(self, webhook_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates a webhook identified by its GID at the "/webhooks/{webhook_gid}" path, allowing modifications to existing webhook configurations.
 
@@ -8968,21 +7884,15 @@ class AsanaApp(APIApplication):
         """
         if webhook_gid is None:
             raise ValueError("Missing required parameter 'webhook_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/webhooks/{webhook_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_awebhook(self, webhook_gid, opt_pretty=None) -> dict[str, Any]:
+    async def delete_awebhook(self, webhook_gid, opt_pretty=None) -> dict[str, Any]:
         """
         Deletes a webhook identified by the `{webhook_gid}` and returns a status message, allowing for the removal of existing webhook configurations.
 
@@ -9005,9 +7915,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_multiple_workspaces(
-        self, opt_fields=None, opt_pretty=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def get_multiple_workspaces(self, opt_fields=None, opt_pretty=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of workspaces with optional filtering and formatting parameters.
 
@@ -9029,22 +7937,13 @@ class AsanaApp(APIApplication):
         """
         url = f"{self.base_url}/workspaces"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_aworkspace(
-        self, workspace_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aworkspace(self, workspace_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific workspace by its GID using the Asana API, optionally including additional fields and formatting options.
 
@@ -9063,18 +7962,12 @@ class AsanaApp(APIApplication):
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_aworkspace(
-        self, workspace_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def update_aworkspace(self, workspace_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Updates a specified workspace's properties and returns the modified workspace data.
 
@@ -9103,23 +7996,15 @@ class AsanaApp(APIApplication):
         """
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_auser_to_aworkspace_or_organization(
-        self, workspace_gid, opt_fields=None, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def add_auser_to_aworkspace_or_organization(self, workspace_gid, opt_fields=None, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Adds a user to a specified workspace and returns the full user record upon successful completion.
 
@@ -9146,23 +8031,15 @@ class AsanaApp(APIApplication):
         """
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/addUser"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def remove_auser_from_aworkspace_or_organization(
-        self, workspace_gid, opt_pretty=None, data=None
-    ) -> dict[str, Any]:
+    async def remove_auser_from_aworkspace_or_organization(self, workspace_gid, opt_pretty=None, data=None) -> dict[str, Any]:
         """
         Removes a user from a workspace using the specified POST API operation at the "/workspaces/{workspace_gid}/removeUser" path.
 
@@ -9188,9 +8065,7 @@ class AsanaApp(APIApplication):
         """
         if workspace_gid is None:
             raise ValueError("Missing required parameter 'workspace_gid'")
-        request_body = {
-            "data": data,
-        }
+        request_body = {"data": data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/removeUser"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
@@ -9198,9 +8073,7 @@ class AsanaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_aworkspace_membership(
-        self, workspace_membership_gid, opt_fields=None, opt_pretty=None
-    ) -> dict[str, Any]:
+    async def get_aworkspace_membership(self, workspace_membership_gid, opt_fields=None, opt_pretty=None) -> dict[str, Any]:
         """
         Retrieves a specific workspace membership entry by its global identifier (GID) with optional field filtering and formatted output.
 
@@ -9219,16 +8092,12 @@ class AsanaApp(APIApplication):
         if workspace_membership_gid is None:
             raise ValueError("Missing required parameter 'workspace_membership_gid'")
         url = f"{self.base_url}/workspace_memberships/{workspace_membership_gid}"
-        query_params = {
-            k: v
-            for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_workspace_memberships_for_auser(
+    async def get_workspace_memberships_for_auser(
         self, user_gid, opt_fields=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
@@ -9255,27 +8124,14 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'user_gid'")
         url = f"{self.base_url}/users/{user_gid}/workspace_memberships"
         query_params = {
-            k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
+            k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_the_workspace_memberships_for_aworkspace(
-        self,
-        workspace_gid,
-        opt_fields=None,
-        user=None,
-        opt_pretty=None,
-        limit=None,
-        offset=None,
+    async def get_the_workspace_memberships_for_aworkspace(
+        self, workspace_gid, opt_fields=None, user=None, opt_pretty=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of workspace memberships for a specified workspace, providing details about users and their roles within the workspace, allowing for optional filtering and customization of the response.
@@ -9303,13 +8159,7 @@ class AsanaApp(APIApplication):
         url = f"{self.base_url}/workspaces/{workspace_gid}/workspace_memberships"
         query_params = {
             k: v
-            for k, v in [
-                ("opt_fields", opt_fields),
-                ("user", user),
-                ("opt_pretty", opt_pretty),
-                ("limit", limit),
-                ("offset", offset),
-            ]
+            for k, v in [("opt_fields", opt_fields), ("user", user), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)]
             if v is not None
         }
         response = self._get(url, params=query_params)

@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -20,7 +19,6 @@ class SemrushApp(APIApplication):
         credentials = self.integration.get_credentials()
         if "api_key" in credentials:
             self.api_key = credentials["api_key"]
-        # Always return empty headers
         return {}
 
     @property
@@ -44,22 +42,17 @@ class SemrushApp(APIApplication):
         """
         Builds the parameters dictionary and makes a GET request to the Semrush API.
         """
-        params = {
-            "type": report_type,
-            "key": self.api_key,
-        }
+        params = {"type": report_type, "key": self.api_key}
         for key, value in kwargs.items():
             if value is not None:
                 params[key] = value
-
         url = self.base_url
         if "analytics" in report_type:
             url = f"{self.base_url}/analytics/v1"
-
         response = self._get(url, params=params)
         return self._handle_response(response)
 
-    def domain_ad_history(
+    async def domain_ad_history(
         self,
         domain: str,
         database: str = "us",
@@ -91,7 +84,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def domain_organic_pages(
+    async def domain_organic_pages(
         self,
         domain: str,
         database: str = "us",
@@ -123,7 +116,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def domain_organic_search_keywords(
+    async def domain_organic_search_keywords(
         self,
         domain: str,
         database: str = "us",
@@ -183,7 +176,7 @@ class SemrushApp(APIApplication):
             export_escape=export_escape,
         )
 
-    def domain_organic_subdomains(
+    async def domain_organic_subdomains(
         self,
         domain: str,
         database: str = "us",
@@ -213,7 +206,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def domain_paid_search_keywords(
+    async def domain_paid_search_keywords(
         self,
         domain: str,
         database: str = "us",
@@ -247,7 +240,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def domain_pla_search_keywords(
+    async def domain_pla_search_keywords(
         self,
         domain: str,
         database: str = "us",
@@ -277,7 +270,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def domain_vs_domain(
+    async def domain_vs_domain(
         self,
         domains: str,
         database: str = "us",
@@ -309,7 +302,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def backlinks(
+    async def backlinks(
         self,
         target: str,
         target_type: str,
@@ -335,7 +328,7 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def backlinks_overview(
+    async def backlinks_overview(
         self,
         target: str,
         target_type: str,
@@ -361,12 +354,8 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def keyword_difficulty(
-        self,
-        phrase: str,
-        database: str = "us",
-        export_columns: str | None = None,
-        export_escape: int | None = None,
+    async def keyword_difficulty(
+        self, phrase: str, database: str = "us", export_columns: str | None = None, export_escape: int | None = None
     ) -> dict[str, Any]:
         """
         Get keyword difficulty data to estimate ranking difficulty for organic search terms.
@@ -374,14 +363,10 @@ class SemrushApp(APIApplication):
         if not phrase:
             raise ValueError("Phrase parameter is required")
         return self._build_params_and_get(
-            "phrase_kdi",
-            phrase=phrase,
-            database=database,
-            export_columns=export_columns,
-            export_escape=export_escape,
+            "phrase_kdi", phrase=phrase, database=database, export_columns=export_columns, export_escape=export_escape
         )
 
-    def ads_copies(
+    async def ads_copies(
         self,
         domain: str,
         database: str = "us",
@@ -411,7 +396,7 @@ class SemrushApp(APIApplication):
             export_decode=export_decode,
         )
 
-    def anchors(
+    async def anchors(
         self,
         target: str,
         target_type: str,
@@ -435,24 +420,15 @@ class SemrushApp(APIApplication):
             display_offset=display_offset,
         )
 
-    def authority_score_profile(self, target: str, target_type: str) -> dict[str, Any]:
+    async def authority_score_profile(self, target: str, target_type: str) -> dict[str, Any]:
         """
         Get distribution of referring domains by Authority Score from 0 to 100.
         """
         if not target or not target_type:
             raise ValueError("Target and target_type parameters are required")
-        return self._build_params_and_get(
-            "backlinks_ascore_profile_analytics",
-            target=target,
-            target_type=target_type,
-        )
+        return self._build_params_and_get("backlinks_ascore_profile_analytics", target=target, target_type=target_type)
 
-    def batch_comparison(
-        self,
-        targets: list[str],
-        target_types: list[str],
-        export_columns: str | None = None,
-    ) -> dict[str, Any]:
+    async def batch_comparison(self, targets: list[str], target_types: list[str], export_columns: str | None = None) -> dict[str, Any]:
         """
         Compare backlink profiles and link-building progress across multiple competitors.
         """
@@ -461,17 +437,12 @@ class SemrushApp(APIApplication):
         if len(targets) > 200:
             raise ValueError("Maximum 200 targets allowed")
         if len(targets) != len(target_types):
-            raise ValueError(
-                "Targets and target_types arrays must have the same length"
-            )
+            raise ValueError("Targets and target_types arrays must have the same length")
         return self._build_params_and_get(
-            "backlinks_comparison_analytics",
-            targets=targets,
-            target_types=target_types,
-            export_columns=export_columns,
+            "backlinks_comparison_analytics", targets=targets, target_types=target_types, export_columns=export_columns
         )
 
-    def batch_keyword_overview(
+    async def batch_keyword_overview(
         self,
         phrase: str,
         database: str = "us",
@@ -495,7 +466,7 @@ class SemrushApp(APIApplication):
             export_columns=export_columns,
         )
 
-    def broad_match_keyword(
+    async def broad_match_keyword(
         self,
         phrase: str,
         database: str = "us",
@@ -525,22 +496,17 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def categories(
-        self, target: str, target_type: str, export_columns: str | None = None
-    ) -> dict[str, Any]:
+    async def categories(self, target: str, target_type: str, export_columns: str | None = None) -> dict[str, Any]:
         """
         Get list of categories that the queried domain belongs to with confidence ratings.
         """
         if not target or not target_type:
             raise ValueError("Target and target_type parameters are required")
         return self._build_params_and_get(
-            "backlinks_categories_analytics",
-            target=target,
-            target_type=target_type,
-            export_columns=export_columns,
+            "backlinks_categories_analytics", target=target, target_type=target_type, export_columns=export_columns
         )
 
-    def categories_profile(
+    async def categories_profile(
         self,
         target: str,
         target_type: str,
@@ -562,7 +528,7 @@ class SemrushApp(APIApplication):
             display_offset=display_offset,
         )
 
-    def competitors(
+    async def competitors(
         self,
         target: str,
         target_type: str,
@@ -584,7 +550,7 @@ class SemrushApp(APIApplication):
             display_offset=display_offset,
         )
 
-    def competitors_organic_search(
+    async def competitors_organic_search(
         self,
         domain: str,
         database: str = "us",
@@ -614,7 +580,7 @@ class SemrushApp(APIApplication):
             display_sort=display_sort,
         )
 
-    def competitors_paid_search(
+    async def competitors_paid_search(
         self,
         domain: str,
         database: str = "us",
@@ -644,7 +610,7 @@ class SemrushApp(APIApplication):
             display_sort=display_sort,
         )
 
-    def indexed_pages(
+    async def indexed_pages(
         self,
         target: str,
         target_type: str,
@@ -668,7 +634,7 @@ class SemrushApp(APIApplication):
             display_offset=display_offset,
         )
 
-    def keyword_ads_history(
+    async def keyword_ads_history(
         self,
         phrase: str,
         database: str = "us",
@@ -694,7 +660,7 @@ class SemrushApp(APIApplication):
             export_columns=export_columns,
         )
 
-    def keyword_overview_all_databases(
+    async def keyword_overview_all_databases(
         self,
         phrase: str,
         database: str | None = None,
@@ -716,7 +682,7 @@ class SemrushApp(APIApplication):
             export_columns=export_columns,
         )
 
-    def keyword_overview_one_database(
+    async def keyword_overview_one_database(
         self,
         phrase: str,
         database: str = "us",
@@ -740,7 +706,7 @@ class SemrushApp(APIApplication):
             export_columns=export_columns,
         )
 
-    def organic_results(
+    async def organic_results(
         self,
         phrase: str,
         database: str = "us",
@@ -770,7 +736,7 @@ class SemrushApp(APIApplication):
             positions_type=positions_type,
         )
 
-    def paid_results(
+    async def paid_results(
         self,
         phrase: str,
         database: str = "us",
@@ -798,7 +764,7 @@ class SemrushApp(APIApplication):
             export_columns=export_columns,
         )
 
-    def phrase_questions(
+    async def phrase_questions(
         self,
         phrase: str,
         database: str = "us",
@@ -828,7 +794,7 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def pla_competitors(
+    async def pla_competitors(
         self,
         domain: str,
         database: str = "us",
@@ -856,7 +822,7 @@ class SemrushApp(APIApplication):
             display_sort=display_sort,
         )
 
-    def pla_copies(
+    async def pla_copies(
         self,
         domain: str,
         database: str = "us",
@@ -886,7 +852,7 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def referring_domains(
+    async def referring_domains(
         self,
         target: str,
         target_type: str,
@@ -912,7 +878,7 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def referring_domains_by_country(
+    async def referring_domains_by_country(
         self,
         target: str,
         target_type: str,
@@ -936,7 +902,7 @@ class SemrushApp(APIApplication):
             display_offset=display_offset,
         )
 
-    def related_keywords(
+    async def related_keywords(
         self,
         phrase: str,
         database: str = "us",
@@ -966,7 +932,7 @@ class SemrushApp(APIApplication):
             display_filter=display_filter,
         )
 
-    def tlds_distribution(
+    async def tlds_distribution(
         self,
         target: str,
         target_type: str,
@@ -990,7 +956,7 @@ class SemrushApp(APIApplication):
             display_offset=display_offset,
         )
 
-    def url_organic_search_keywords(
+    async def url_organic_search_keywords(
         self,
         url: str,
         database: str = "us",
@@ -1020,7 +986,7 @@ class SemrushApp(APIApplication):
             display_sort=display_sort,
         )
 
-    def url_paid_search_keywords(
+    async def url_paid_search_keywords(
         self,
         url: str,
         database: str = "us",

@@ -7,9 +7,7 @@ class DmConversationsApi(APISegmentBase):
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
-    def create_dm_conversation(
-        self, conversation_type=None, message=None, participant_ids=None
-    ) -> dict[str, Any]:
+    def create_dm_conversation(self, conversation_type=None, message=None, participant_ids=None) -> dict[str, Any]:
         """
         Creates a new group Direct Message conversation with specified participants and sends an initial message. This function specifically handles the creation of new multi-participant conversations, distinct from other methods in this class that add messages to existing one-to-one or group DMs.
 
@@ -34,9 +32,7 @@ class DmConversationsApi(APISegmentBase):
             "message": message,
             "participant_ids": participant_ids,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/dm_conversations"
         query_params = {}
         response = self._post(
@@ -105,9 +101,7 @@ class DmConversationsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def send_dm_by_participant_id(
-        self, participant_id, attachments=None, text=None
-    ) -> dict[str, Any]:
+    def send_dm_by_participant_id(self, participant_id, attachments=None, text=None) -> dict[str, Any]:
         """
         Sends a direct message to a user specified by their participant ID. It creates a new one-on-one conversation or appends the message to an existing one. Unlike other functions, this method identifies the conversation using the participant's ID rather than a pre-existing conversation ID.
 
@@ -130,9 +124,7 @@ class DmConversationsApi(APISegmentBase):
             raise ValueError("Missing required parameter 'participant_id'.")
         request_body_data = None
         request_body_data = {"attachments": attachments, "text": text}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/dm_conversations/with/{participant_id}/messages"
         query_params = {}
         response = self._post(
@@ -144,9 +136,7 @@ class DmConversationsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def add_message_to_dm_conversation(
-        self, dm_conversation_id, attachments=None, text=None
-    ) -> dict[str, Any]:
+    def add_message_to_dm_conversation(self, dm_conversation_id, attachments=None, text=None) -> dict[str, Any]:
         """
         Sends a new message with optional text and attachments to an existing Direct Message conversation. The target conversation is specified by its `dm_conversation_id`, distinguishing it from functions that create new conversations or send one-to-one messages using a participant ID.
 
@@ -169,9 +159,7 @@ class DmConversationsApi(APISegmentBase):
             raise ValueError("Missing required parameter 'dm_conversation_id'.")
         request_body_data = None
         request_body_data = {"attachments": attachments, "text": text}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/dm_conversations/{dm_conversation_id}/messages"
         query_params = {}
         response = self._post(

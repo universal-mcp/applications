@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class BrazeApp(APIApplication):
         super().__init__(name="braze", integration=integration, **kwargs)
         self.base_url = "https://rest.iad-01.braze.com"
 
-    def update_email_template(
+    async def update_email_template(
         self,
         email_template_id: str | None = None,
         template_name: str | None = None,
@@ -51,30 +50,19 @@ class BrazeApp(APIApplication):
             "preheader": preheader,
             "tags": tags,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/templates/email/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def track_user_activity(
+    async def track_user_activity(
         self,
         attributes: list[dict[str, Any]] | None = None,
         events: list[dict[str, Any]] | None = None,
@@ -99,35 +87,20 @@ class BrazeApp(APIApplication):
             User Data
         """
         request_body_data = None
-        request_body_data = {
-            "attributes": attributes,
-            "events": events,
-            "purchases": purchases,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"attributes": attributes, "events": events, "purchases": purchases}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/track"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_catalog_by_name(self, catalog_name: str) -> dict[str, Any]:
+    async def delete_catalog_by_name(self, catalog_name: str) -> dict[str, Any]:
         """
         Delete Catalog
 
@@ -150,18 +123,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_catalogs(self) -> dict[str, Any]:
+    async def list_catalogs(self) -> dict[str, Any]:
         """
         List Catalogs
 
@@ -179,20 +148,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_catalog(
-        self, catalogs: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def create_catalog(self, catalogs: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Create Catalog
 
@@ -210,33 +173,20 @@ class BrazeApp(APIApplication):
             Catalogs > Catalog Management > Synchronous, important
         """
         request_body_data = None
-        request_body_data = {
-            "catalogs": catalogs,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"catalogs": catalogs}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_catalog_item(self, catalog_name: str) -> dict[str, Any]:
+    async def delete_catalog_item(self, catalog_name: str) -> dict[str, Any]:
         """
         Delete Multiple Catalog Items
 
@@ -259,20 +209,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def edit_catalog_item(
-        self, catalog_name: str, items: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def edit_catalog_item(self, catalog_name: str, items: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Edit Multiple Catalog Items
 
@@ -293,30 +237,20 @@ class BrazeApp(APIApplication):
         if catalog_name is None:
             raise ValueError("Missing required parameter 'catalog_name'.")
         request_body_data = None
-        request_body_data = {
-            "items": items,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"items": items}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_catalog_item(
-        self, catalog_name: str, items: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def create_catalog_item(self, catalog_name: str, items: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Create Multiple Catalog Items
 
@@ -337,35 +271,20 @@ class BrazeApp(APIApplication):
         if catalog_name is None:
             raise ValueError("Missing required parameter 'catalog_name'.")
         request_body_data = None
-        request_body_data = {
-            "items": items,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"items": items}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_catalog_items(
-        self, catalog_name: str, items: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def update_catalog_items(self, catalog_name: str, items: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Update Catalog Item
 
@@ -386,33 +305,20 @@ class BrazeApp(APIApplication):
         if catalog_name is None:
             raise ValueError("Missing required parameter 'catalog_name'.")
         request_body_data = None
-        request_body_data = {
-            "items": items,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"items": items}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_catalog_items(self, catalog_name: str) -> dict[str, Any]:
+    async def list_catalog_items(self, catalog_name: str) -> dict[str, Any]:
         """
         List Multiple Catalog Item Details
 
@@ -435,20 +341,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_catalog_item_by_id(
-        self, catalog_name: str, item_id: str
-    ) -> dict[str, Any]:
+    async def delete_catalog_item_by_id(self, catalog_name: str, item_id: str) -> dict[str, Any]:
         """
         Delete a Catalog Item
 
@@ -474,18 +374,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_item_detail(self, catalog_name: str, item_id: str) -> dict[str, Any]:
+    async def get_item_detail(self, catalog_name: str, item_id: str) -> dict[str, Any]:
         """
         List Catalog Item Details
 
@@ -511,23 +407,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_catalog_item_by_id(
-        self,
-        catalog_name: str,
-        item_id: str,
-        items: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
+    async def update_catalog_item_by_id(self, catalog_name: str, item_id: str, items: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Edit Catalog Items
 
@@ -551,33 +438,20 @@ class BrazeApp(APIApplication):
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'.")
         request_body_data = None
-        request_body_data = {
-            "items": items,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"items": items}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def add_catalog_item_by_id(
-        self,
-        catalog_name: str,
-        item_id: str,
-        items: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
+    async def add_catalog_item_by_id(self, catalog_name: str, item_id: str, items: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Create Catalog Item
 
@@ -601,38 +475,20 @@ class BrazeApp(APIApplication):
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'.")
         request_body_data = None
-        request_body_data = {
-            "items": items,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"items": items}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_catalog_item(
-        self,
-        catalog_name: str,
-        item_id: str,
-        items: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
+    async def update_catalog_item(self, catalog_name: str, item_id: str, items: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Update Catalog Item
 
@@ -656,33 +512,20 @@ class BrazeApp(APIApplication):
         if item_id is None:
             raise ValueError("Missing required parameter 'item_id'.")
         request_body_data = None
-        request_body_data = {
-            "items": items,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"items": items}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_hard_bounces(
+    async def list_hard_bounces(
         self,
         start_date: str | None = None,
         end_date: str | None = None,
@@ -713,29 +556,19 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/email/hard_bounces"
         query_params = {
             k: v
-            for k, v in [
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("limit", limit),
-                ("offset", offset),
-                ("email", email),
-            ]
+            for k, v in [("start_date", start_date), ("end_date", end_date), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_unsubscribes(
+    async def list_unsubscribes(
         self,
         start_date: str | None = None,
         end_date: str | None = None,
@@ -780,20 +613,14 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def post_email_status(
-        self, email: str | None = None, subscription_state: str | None = None
-    ) -> dict[str, Any]:
+    async def post_email_status(self, email: str | None = None, subscription_state: str | None = None) -> dict[str, Any]:
         """
         Change Email Subscription Status
 
@@ -812,34 +639,20 @@ class BrazeApp(APIApplication):
             Email Lists & Addresses
         """
         request_body_data = None
-        request_body_data = {
-            "email": email,
-            "subscription_state": subscription_state,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"email": email, "subscription_state": subscription_state}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/status"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_bounced_email(self, email: str | None = None) -> dict[str, Any]:
+    async def remove_bounced_email(self, email: str | None = None) -> dict[str, Any]:
         """
         Remove Hard Bounced Emails
 
@@ -857,33 +670,20 @@ class BrazeApp(APIApplication):
             Email Lists & Addresses
         """
         request_body_data = None
-        request_body_data = {
-            "email": email,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"email": email}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/bounce/remove"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_email_spam(self, email: str | None = None) -> dict[str, Any]:
+    async def remove_email_spam(self, email: str | None = None) -> dict[str, Any]:
         """
         Remove Email Addresses from Spam List
 
@@ -901,33 +701,20 @@ class BrazeApp(APIApplication):
             Email Lists & Addresses
         """
         request_body_data = None
-        request_body_data = {
-            "email": email,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"email": email}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/spam/remove"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def add_email_to_blocklist(self, email: list[str] | None = None) -> dict[str, Any]:
+    async def add_email_to_blocklist(self, email: list[str] | None = None) -> dict[str, Any]:
         """
         Blocklist Email Addresses
 
@@ -945,33 +732,20 @@ class BrazeApp(APIApplication):
             Email Lists & Addresses
         """
         request_body_data = None
-        request_body_data = {
-            "email": email,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"email": email}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/blocklist"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def add_to_blacklist(self, email: list[str] | None = None) -> dict[str, Any]:
+    async def add_to_blacklist(self, email: list[str] | None = None) -> dict[str, Any]:
         """
         Blacklist Email Addresses
 
@@ -989,37 +763,21 @@ class BrazeApp(APIApplication):
             Email Lists & Addresses
         """
         request_body_data = None
-        request_body_data = {
-            "email": email,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"email": email}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/blacklist"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_campaign_data_series(
-        self,
-        campaign_id: str | None = None,
-        length: int | None = None,
-        ending_at: str | None = None,
+    async def get_campaign_data_series(
+        self, campaign_id: str | None = None, length: int | None = None, ending_at: str | None = None
     ) -> dict[str, Any]:
         """
         Export Campaign Analytics
@@ -1040,29 +798,17 @@ class BrazeApp(APIApplication):
             Export > Campaign
         """
         url = f"{self.base_url}/campaigns/data_series"
-        query_params = {
-            k: v
-            for k, v in [
-                ("campaign_id", campaign_id),
-                ("length", length),
-                ("ending_at", ending_at),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("campaign_id", campaign_id), ("length", length), ("ending_at", ending_at)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_campaign_details(self, campaign_id: str | None = None) -> dict[str, Any]:
+    async def get_campaign_details(self, campaign_id: str | None = None) -> dict[str, Any]:
         """
         Export Campaign Details
 
@@ -1080,23 +826,17 @@ class BrazeApp(APIApplication):
             Export > Campaign
         """
         url = f"{self.base_url}/campaigns/details"
-        query_params = {
-            k: v for k, v in [("campaign_id", campaign_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("campaign_id", campaign_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_campaigns(
+    async def list_campaigns(
         self,
         page: int | None = None,
         include_archived: bool | None = None,
@@ -1136,23 +876,15 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_send_data_series(
-        self,
-        campaign_id: str | None = None,
-        send_id: str | None = None,
-        length: int | None = None,
-        ending_at: str | None = None,
+    async def get_send_data_series(
+        self, campaign_id: str | None = None, send_id: str | None = None, length: int | None = None, ending_at: str | None = None
     ) -> dict[str, Any]:
         """
         Export Send Analytics
@@ -1176,28 +908,19 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/sends/data_series"
         query_params = {
             k: v
-            for k, v in [
-                ("campaign_id", campaign_id),
-                ("send_id", send_id),
-                ("length", length),
-                ("ending_at", ending_at),
-            ]
+            for k, v in [("campaign_id", campaign_id), ("send_id", send_id), ("length", length), ("ending_at", ending_at)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_canvas_data_series(
+    async def get_canvas_data_series(
         self,
         canvas_id: str | None = None,
         ending_at: str | None = None,
@@ -1245,18 +968,14 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def fetch_canvas_data_summary(
+    async def fetch_canvas_data_summary(
         self,
         canvas_id: str | None = None,
         ending_at: str | None = None,
@@ -1305,23 +1024,19 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_canvas_details(self, canvas_id: str | None = None) -> dict[str, Any]:
+    async def get_canvas_details(self, canvas_id: str | None = None) -> dict[str, Any]:
         """
         Export Canvas Details
 
         Args:
-            canvas_id (string): (Required) String See [Canvas API Identifier]( Example: '{{canvas_identifier}}'.
+            canvas_id (string): (Required) String See\xa0[Canvas API Identifier]( Example: '{{canvas_identifier}}'.
 
         Returns:
             dict[str, Any]: Successful response
@@ -1337,18 +1052,14 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("canvas_id", canvas_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_canvas(
+    async def list_canvas(
         self,
         page: int | None = None,
         include_archived: bool | None = None,
@@ -1388,18 +1099,14 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_events(self, page: int | None = None) -> dict[str, Any]:
+    async def list_events(self, page: int | None = None) -> dict[str, Any]:
         """
         Export Custom Events List
 
@@ -1420,18 +1127,14 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def fetch_event_series_data(
+    async def fetch_event_series_data(
         self,
         event: str | None = None,
         length: int | None = None,
@@ -1476,22 +1179,15 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_new_user_kpi_series(
-        self,
-        length: int | None = None,
-        ending_at: str | None = None,
-        app_id: str | None = None,
+    async def list_new_user_kpi_series(
+        self, length: int | None = None, ending_at: str | None = None, app_id: str | None = None
     ) -> dict[str, Any]:
         """
         Export Daily New Users by Date
@@ -1512,33 +1208,18 @@ class BrazeApp(APIApplication):
             Export > KPI
         """
         url = f"{self.base_url}/kpi/new_users/data_series"
-        query_params = {
-            k: v
-            for k, v in [
-                ("length", length),
-                ("ending_at", ending_at),
-                ("app_id", app_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_daily_active_users_series(
-        self,
-        length: int | None = None,
-        ending_at: str | None = None,
-        app_id: str | None = None,
+    async def get_daily_active_users_series(
+        self, length: int | None = None, ending_at: str | None = None, app_id: str | None = None
     ) -> dict[str, Any]:
         """
         Export Daily Active Users by Date
@@ -1560,33 +1241,18 @@ class BrazeApp(APIApplication):
             Export > KPI
         """
         url = f"{self.base_url}/kpi/dau/data_series"
-        query_params = {
-            k: v
-            for k, v in [
-                ("length", length),
-                ("ending_at", ending_at),
-                ("app_id", app_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_kpimau_data_series(
-        self,
-        length: int | None = None,
-        ending_at: str | None = None,
-        app_id: str | None = None,
+    async def get_kpimau_data_series(
+        self, length: int | None = None, ending_at: str | None = None, app_id: str | None = None
     ) -> dict[str, Any]:
         """
         Export Monthly Active Users for Last 30 Days
@@ -1607,33 +1273,18 @@ class BrazeApp(APIApplication):
             Export > KPI
         """
         url = f"{self.base_url}/kpi/mau/data_series"
-        query_params = {
-            k: v
-            for k, v in [
-                ("length", length),
-                ("ending_at", ending_at),
-                ("app_id", app_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_kpi_uninstalls_data_series(
-        self,
-        length: int | None = None,
-        ending_at: str | None = None,
-        app_id: str | None = None,
+    async def get_kpi_uninstalls_data_series(
+        self, length: int | None = None, ending_at: str | None = None, app_id: str | None = None
     ) -> dict[str, Any]:
         """
         Export KPIs for Daily App Uninstalls by Date
@@ -1654,34 +1305,18 @@ class BrazeApp(APIApplication):
             Export > KPI
         """
         url = f"{self.base_url}/kpi/uninstalls/data_series"
-        query_params = {
-            k: v
-            for k, v in [
-                ("length", length),
-                ("ending_at", ending_at),
-                ("app_id", app_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_feed_data_series(
-        self,
-        card_id: str | None = None,
-        length: int | None = None,
-        unit: str | None = None,
-        ending_at: str | None = None,
+    async def get_feed_data_series(
+        self, card_id: str | None = None, length: int | None = None, unit: str | None = None, ending_at: str | None = None
     ) -> dict[str, Any]:
         """
         Export News Feed Card Analytics
@@ -1704,29 +1339,18 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/feed/data_series"
         query_params = {
-            k: v
-            for k, v in [
-                ("card_id", card_id),
-                ("length", length),
-                ("unit", unit),
-                ("ending_at", ending_at),
-            ]
-            if v is not None
+            k: v for k, v in [("card_id", card_id), ("length", length), ("unit", unit), ("ending_at", ending_at)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_feed_details(self, card_id: str | None = None) -> dict[str, Any]:
+    async def get_feed_details(self, card_id: str | None = None) -> dict[str, Any]:
         """
         Export News Feed Cards Details
 
@@ -1747,22 +1371,15 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("card_id", card_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_feed(
-        self,
-        page: int | None = None,
-        include_archived: bool | None = None,
-        sort_direction: str | None = None,
+    async def list_feed(
+        self, page: int | None = None, include_archived: bool | None = None, sort_direction: str | None = None
     ) -> dict[str, Any]:
         """
         Export News Feed Cards List
@@ -1785,28 +1402,18 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/feed/list"
         query_params = {
-            k: v
-            for k, v in [
-                ("page", page),
-                ("include_archived", include_archived),
-                ("sort_direction", sort_direction),
-            ]
-            if v is not None
+            k: v for k, v in [("page", page), ("include_archived", include_archived), ("sort_direction", sort_direction)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_products(self, page: int | None = None) -> dict[str, Any]:
+    async def list_products(self, page: int | None = None) -> dict[str, Any]:
         """
         Export Product IDs
 
@@ -1827,18 +1434,14 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("page", page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_purchase_quantity_series(
+    async def get_purchase_quantity_series(
         self,
         ending_at: str | None = None,
         length: int | None = None,
@@ -1874,29 +1477,19 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/purchases/quantity_series"
         query_params = {
             k: v
-            for k, v in [
-                ("ending_at", ending_at),
-                ("length", length),
-                ("unit", unit),
-                ("app_id", app_id),
-                ("product", product),
-            ]
+            for k, v in [("ending_at", ending_at), ("length", length), ("unit", unit), ("app_id", app_id), ("product", product)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_purchases_revenue_series(
+    async def get_purchases_revenue_series(
         self,
         ending_at: str | None = None,
         length: int | None = None,
@@ -1932,31 +1525,19 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/purchases/revenue_series"
         query_params = {
             k: v
-            for k, v in [
-                ("ending_at", ending_at),
-                ("length", length),
-                ("unit", unit),
-                ("app_id", app_id),
-                ("product", product),
-            ]
+            for k, v in [("ending_at", ending_at), ("length", length), ("unit", unit), ("app_id", app_id), ("product", product)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_segments(
-        self, page: int | None = None, sort_direction: str | None = None
-    ) -> dict[str, Any]:
+    async def list_segments(self, page: int | None = None, sort_direction: str | None = None) -> dict[str, Any]:
         """
         Export Segment List
 
@@ -1976,29 +1557,18 @@ class BrazeApp(APIApplication):
             Export > Segment
         """
         url = f"{self.base_url}/segments/list"
-        query_params = {
-            k: v
-            for k, v in [("page", page), ("sort_direction", sort_direction)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("sort_direction", sort_direction)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_segments_data_series(
-        self,
-        segment_id: str | None = None,
-        length: int | None = None,
-        ending_at: str | None = None,
+    async def get_segments_data_series(
+        self, segment_id: str | None = None, length: int | None = None, ending_at: str | None = None
     ) -> dict[str, Any]:
         """
         Export Segment Analytics
@@ -2019,29 +1589,17 @@ class BrazeApp(APIApplication):
             Export > Segment
         """
         url = f"{self.base_url}/segments/data_series"
-        query_params = {
-            k: v
-            for k, v in [
-                ("segment_id", segment_id),
-                ("length", length),
-                ("ending_at", ending_at),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("segment_id", segment_id), ("length", length), ("ending_at", ending_at)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_segment_details(self, segment_id: str | None = None) -> dict[str, Any]:
+    async def get_segment_details(self, segment_id: str | None = None) -> dict[str, Any]:
         """
         Export Segment Details
 
@@ -2062,18 +1620,14 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("segment_id", segment_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_sessions_data_series(
+    async def get_sessions_data_series(
         self,
         length: int | None = None,
         unit: str | None = None,
@@ -2104,29 +1658,19 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/sessions/data_series"
         query_params = {
             k: v
-            for k, v in [
-                ("length", length),
-                ("unit", unit),
-                ("ending_at", ending_at),
-                ("app_id", app_id),
-                ("segment_id", segment_id),
-            ]
+            for k, v in [("length", length), ("unit", unit), ("ending_at", ending_at), ("app_id", app_id), ("segment_id", segment_id)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def export_user_ids_by_post(
+    async def export_user_ids_by_post(
         self,
         external_ids: list[str] | None = None,
         user_aliases: list[dict[str, Any]] | None = None,
@@ -2168,30 +1712,19 @@ class BrazeApp(APIApplication):
             "phone": phone,
             "fields_to_export": fields_to_export,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/export/ids"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def export_users_by_segment_post(
+    async def export_users_by_segment_post(
         self,
         segment_id: str | None = None,
         callback_endpoint: str | None = None,
@@ -2224,34 +1757,20 @@ class BrazeApp(APIApplication):
             "fields_to_export": fields_to_export,
             "output_format": output_format,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/export/segment"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def export_global_control_group_users(
-        self,
-        callback_endpoint: str | None = None,
-        fields_to_export: list[str] | None = None,
-        output_format: str | None = None,
+    async def export_global_control_group_users(
+        self, callback_endpoint: str | None = None, fields_to_export: list[str] | None = None, output_format: str | None = None
     ) -> dict[str, Any]:
         """
         Export User Profile by Global Control Group
@@ -2272,35 +1791,20 @@ class BrazeApp(APIApplication):
             Export > Users
         """
         request_body_data = None
-        request_body_data = {
-            "callback_endpoint": callback_endpoint,
-            "fields_to_export": fields_to_export,
-            "output_format": output_format,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"callback_endpoint": callback_endpoint, "fields_to_export": fields_to_export, "output_format": output_format}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/export/global_control_group"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_live_activity_message(
+    async def update_live_activity_message(
         self,
         app_id: str | None = None,
         activity_id: str | None = None,
@@ -2342,30 +1846,19 @@ class BrazeApp(APIApplication):
             "stale_date": stale_date,
             "notification": notification,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/live_activity/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_scheduled_broadcasts(self, end_time: str | None = None) -> dict[str, Any]:
+    async def list_scheduled_broadcasts(self, end_time: str | None = None) -> dict[str, Any]:
         """
         List Upcoming Scheduled Campaigns and Canvases
 
@@ -2386,20 +1879,14 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("end_time", end_time)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_scheduled_message(
-        self, schedule_id: str | None = None
-    ) -> dict[str, Any]:
+    async def delete_scheduled_message(self, schedule_id: str | None = None) -> dict[str, Any]:
         """
         Delete Scheduled Messages
 
@@ -2417,35 +1904,20 @@ class BrazeApp(APIApplication):
             Messaging > Schedule Mesages
         """
         request_body_data = None
-        request_body_data = {
-            "schedule_id": schedule_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"schedule_id": schedule_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/schedule/delete"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def schedule_delete_canvas_trigger(
-        self, canvas_id: str | None = None, schedule_id: str | None = None
-    ) -> dict[str, Any]:
+    async def schedule_delete_canvas_trigger(self, canvas_id: str | None = None, schedule_id: str | None = None) -> dict[str, Any]:
         """
         Delete Scheduled API-Triggered Canvases
 
@@ -2464,36 +1936,20 @@ class BrazeApp(APIApplication):
             Messaging > Schedule Mesages
         """
         request_body_data = None
-        request_body_data = {
-            "canvas_id": canvas_id,
-            "schedule_id": schedule_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"canvas_id": canvas_id, "schedule_id": schedule_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/schedule/delete"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_campaign_schedule(
-        self, campaign_id: str | None = None, schedule_id: str | None = None
-    ) -> dict[str, Any]:
+    async def delete_campaign_schedule(self, campaign_id: str | None = None, schedule_id: str | None = None) -> dict[str, Any]:
         """
         Delete Scheduled API Triggered Campaigns
 
@@ -2512,34 +1968,20 @@ class BrazeApp(APIApplication):
             Messaging > Schedule Mesages
         """
         request_body_data = None
-        request_body_data = {
-            "campaign_id": campaign_id,
-            "schedule_id": schedule_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"campaign_id": campaign_id, "schedule_id": schedule_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/schedule/delete"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_scheduled_message(
+    async def create_scheduled_message(
         self,
         broadcast: bool | None = None,
         external_user_ids: str | None = None,
@@ -2593,30 +2035,19 @@ class BrazeApp(APIApplication):
             "schedule": schedule,
             "messages": messages,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/schedule/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_schedule(
+    async def create_schedule(
         self,
         campaign_id: str | None = None,
         send_id: str | None = None,
@@ -2658,30 +2089,19 @@ class BrazeApp(APIApplication):
             "trigger_properties": trigger_properties,
             "schedule": schedule,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/schedule/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_schedule_trigger(
+    async def create_schedule_trigger(
         self,
         canvas_id: str | None = None,
         recipients: list[dict[str, Any]] | None = None,
@@ -2720,34 +2140,20 @@ class BrazeApp(APIApplication):
             "canvas_entry_properties": canvas_entry_properties,
             "schedule": schedule,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/schedule/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def schedule_message_update(
-        self,
-        schedule_id: str | None = None,
-        schedule: dict[str, Any] | None = None,
-        messages: dict[str, Any] | None = None,
+    async def schedule_message_update(
+        self, schedule_id: str | None = None, schedule: dict[str, Any] | None = None, messages: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Update Scheduled Messages
@@ -2768,39 +2174,21 @@ class BrazeApp(APIApplication):
             Messaging > Schedule Mesages
         """
         request_body_data = None
-        request_body_data = {
-            "schedule_id": schedule_id,
-            "schedule": schedule,
-            "messages": messages,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"schedule_id": schedule_id, "schedule": schedule, "messages": messages}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/schedule/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_campaign_trigger_schedule(
-        self,
-        campaign_id: str | None = None,
-        schedule_id: str | None = None,
-        schedule: dict[str, Any] | None = None,
+    async def update_campaign_trigger_schedule(
+        self, campaign_id: str | None = None, schedule_id: str | None = None, schedule: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Update Scheduled API Triggered Campaigns
@@ -2821,39 +2209,21 @@ class BrazeApp(APIApplication):
             Messaging > Schedule Mesages
         """
         request_body_data = None
-        request_body_data = {
-            "campaign_id": campaign_id,
-            "schedule_id": schedule_id,
-            "schedule": schedule,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"campaign_id": campaign_id, "schedule_id": schedule_id, "schedule": schedule}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/schedule/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_canvas_trigger_schedule(
-        self,
-        canvas_id: str | None = None,
-        schedule_id: str | None = None,
-        schedule: dict[str, Any] | None = None,
+    async def update_canvas_trigger_schedule(
+        self, canvas_id: str | None = None, schedule_id: str | None = None, schedule: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Update Scheduled API Triggered Canvases
@@ -2874,37 +2244,20 @@ class BrazeApp(APIApplication):
             Messaging > Schedule Mesages
         """
         request_body_data = None
-        request_body_data = {
-            "canvas_id": canvas_id,
-            "schedule_id": schedule_id,
-            "schedule": schedule,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"canvas_id": canvas_id, "schedule_id": schedule_id, "schedule": schedule}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/schedule/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_send_by_id(
-        self, campaign_id: str | None = None, send_id: str | None = None
-    ) -> dict[str, Any]:
+    async def create_send_by_id(self, campaign_id: str | None = None, send_id: str | None = None) -> dict[str, Any]:
         """
         Create Send IDs For Message Send Tracking
 
@@ -2923,34 +2276,20 @@ class BrazeApp(APIApplication):
             Messaging > Send Messages
         """
         request_body_data = None
-        request_body_data = {
-            "campaign_id": campaign_id,
-            "send_id": send_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"campaign_id": campaign_id, "send_id": send_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/sends/id/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def send_message(
+    async def send_message(
         self,
         broadcast: str | None = None,
         external_user_ids: str | None = None,
@@ -3001,30 +2340,19 @@ class BrazeApp(APIApplication):
             "recipient_subscription_state": recipient_subscription_state,
             "messages": messages,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/send"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def send_campaign_transactional(
+    async def send_campaign_transactional(
         self,
         campaign_id: str,
         external_send_id: str | None = None,
@@ -3053,35 +2381,20 @@ class BrazeApp(APIApplication):
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'.")
         request_body_data = None
-        request_body_data = {
-            "external_send_id": external_send_id,
-            "trigger_properties": trigger_properties,
-            "recipient": recipient,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"external_send_id": external_send_id, "trigger_properties": trigger_properties, "recipient": recipient}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/transactional/v1/campaigns/{campaign_id}/send"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def send_campaign_trigger(
+    async def send_campaign_trigger(
         self,
         campaign_id: str | None = None,
         send_id: str | None = None,
@@ -3120,30 +2433,19 @@ class BrazeApp(APIApplication):
             "audience": audience,
             "recipients": recipients,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/send"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def send_canvas_trigger_post(
+    async def send_canvas_trigger_post(
         self,
         canvas_id: str | None = None,
         canvas_entry_properties: dict[str, Any] | None = None,
@@ -3179,35 +2481,20 @@ class BrazeApp(APIApplication):
             "audience": audience,
             "recipients": recipients,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/send"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_preference_center_url_by_user_id(
-        self,
-        PreferenceCenterExternalID: str,
-        UserID: str,
-        preference_center_api_id: str | None = None,
-        external_id: str | None = None,
+    async def get_preference_center_url_by_user_id(
+        self, PreferenceCenterExternalID: str, UserID: str, preference_center_api_id: str | None = None, external_id: str | None = None
     ) -> dict[str, Any]:
         """
         Generate Preference Center URL
@@ -3234,27 +2521,18 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'UserID'.")
         url = f"{self.base_url}/preference_center_v1/{PreferenceCenterExternalID}/url/{UserID}"
         query_params = {
-            k: v
-            for k, v in [
-                ("preference_center_api_id", preference_center_api_id),
-                ("external_id", external_id),
-            ]
-            if v is not None
+            k: v for k, v in [("preference_center_api_id", preference_center_api_id), ("external_id", external_id)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_preferences(self) -> dict[str, Any]:
+    async def list_preferences(self) -> dict[str, Any]:
         """
         List Preference Centers
 
@@ -3272,20 +2550,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_preference_center_by_id(
-        self, PreferenceCenterExternalID: str
-    ) -> dict[str, Any]:
+    async def get_preference_center_by_id(self, PreferenceCenterExternalID: str) -> dict[str, Any]:
         """
         View Details for Preference Center
 
@@ -3308,18 +2580,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_preference_center_by_id(
+    async def update_preference_center_by_id(
         self,
         PreferenceCenterExternalID: str,
         external_send_id: str | None = None,
@@ -3348,35 +2616,20 @@ class BrazeApp(APIApplication):
         if PreferenceCenterExternalID is None:
             raise ValueError("Missing required parameter 'PreferenceCenterExternalID'.")
         request_body_data = None
-        request_body_data = {
-            "external_send_id": external_send_id,
-            "trigger_properties": trigger_properties,
-            "recipient": recipient,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"external_send_id": external_send_id, "trigger_properties": trigger_properties, "recipient": recipient}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/preference_center/v1/{PreferenceCenterExternalID}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_preference_center_entry(
+    async def create_preference_center_entry(
         self,
         name: str | None = None,
         preference_center_title: str | None = None,
@@ -3415,30 +2668,19 @@ class BrazeApp(APIApplication):
             "state": state,
             "options": options,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/preference_center/v1"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_user_by_id(self, id: str) -> dict[str, Any]:
+    async def delete_user_by_id(self, id: str) -> dict[str, Any]:
         """
         Remove Dashboard User Account
 
@@ -3461,18 +2703,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_user_by_id(self, id: str) -> dict[str, Any]:
+    async def get_user_by_id(self, id: str) -> dict[str, Any]:
         """
         Look Up an Existing Dashboard User Account
 
@@ -3495,18 +2733,14 @@ class BrazeApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_user_by_id(
+    async def update_user_by_id(
         self,
         id: str,
         schemas: list[str] | None = None,
@@ -3537,36 +2771,20 @@ class BrazeApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "schemas": schemas,
-            "name": name,
-            "department": department,
-            "permissions": permissions,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"schemas": schemas, "name": name, "department": department, "permissions": permissions}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/scim/v2/Users/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_users(self, filter: str | None = None) -> dict[str, Any]:
+    async def list_users(self, filter: str | None = None) -> dict[str, Any]:
         """
         Search Existing Dashboard User by Email
 
@@ -3587,18 +2805,14 @@ class BrazeApp(APIApplication):
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_user(
+    async def create_user(
         self,
         schemas: list[str] | None = None,
         userName: str | None = None,
@@ -3627,37 +2841,20 @@ class BrazeApp(APIApplication):
             SCIM, important
         """
         request_body_data = None
-        request_body_data = {
-            "schemas": schemas,
-            "userName": userName,
-            "name": name,
-            "department": department,
-            "permissions": permissions,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"schemas": schemas, "userName": userName, "name": name, "department": department, "permissions": permissions}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/scim/v2/Users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_invalid_phone_numbers(
+    async def list_invalid_phone_numbers(
         self,
         start_date: str | None = None,
         end_date: str | None = None,
@@ -3702,20 +2899,14 @@ class BrazeApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_invalid_phone_numbers(
-        self, phone_numbers: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def remove_invalid_phone_numbers(self, phone_numbers: list[str] | None = None) -> dict[str, Any]:
         """
         Remove Invalid Phone Numbers
 
@@ -3733,37 +2924,21 @@ class BrazeApp(APIApplication):
             SMS
         """
         request_body_data = None
-        request_body_data = {
-            "phone_numbers": phone_numbers,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"phone_numbers": phone_numbers}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/sms/invalid_phone_numbers/remove"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_subscription_status(
-        self,
-        subscription_group_id: str | None = None,
-        external_id: str | None = None,
-        phone: str | None = None,
+    async def get_subscription_status(
+        self, subscription_group_id: str | None = None, external_id: str | None = None, phone: str | None = None
     ) -> dict[str, Any]:
         """
         List User's  Subscription Group Status - SMS
@@ -3786,32 +2961,20 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/subscription/status/get"
         query_params = {
             k: v
-            for k, v in [
-                ("subscription_group_id", subscription_group_id),
-                ("external_id", external_id),
-                ("phone", phone),
-            ]
+            for k, v in [("subscription_group_id", subscription_group_id), ("external_id", external_id), ("phone", phone)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_subscription_user_status(
-        self,
-        external_id: str | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
-        phone: str | None = None,
+    async def get_subscription_user_status(
+        self, external_id: str | None = None, limit: int | None = None, offset: int | None = None, phone: str | None = None
     ) -> dict[str, Any]:
         """
         List User's Subscription Group - SMS
@@ -3834,29 +2997,18 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/subscription/user/status"
         query_params = {
-            k: v
-            for k, v in [
-                ("external_id", external_id),
-                ("limit", limit),
-                ("offset", offset),
-                ("phone", phone),
-            ]
-            if v is not None
+            k: v for k, v in [("external_id", external_id), ("limit", limit), ("offset", offset), ("phone", phone)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def set_subscription_status(
+    async def set_subscription_status(
         self,
         subscription_group_id: str | None = None,
         subscription_state: str | None = None,
@@ -3889,32 +3041,19 @@ class BrazeApp(APIApplication):
             "external_id": external_id,
             "phone": phone,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscription/status/set"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def set_subscription_status_post(
-        self, subscription_groups: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def set_subscription_status_post(self, subscription_groups: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Update User's Subscription Group Status V2
 
@@ -3932,38 +3071,21 @@ class BrazeApp(APIApplication):
             Subscription Groups > SMS and WhatsApp
         """
         request_body_data = None
-        request_body_data = {
-            "subscription_groups": subscription_groups,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"subscription_groups": subscription_groups}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/subscription/status/set"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_content_blocks(
-        self,
-        modified_after: str | None = None,
-        modified_before: str | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
+    async def list_content_blocks(
+        self, modified_after: str | None = None, modified_before: str | None = None, limit: int | None = None, offset: int | None = None
     ) -> dict[str, Any]:
         """
         List Available Content Blocks
@@ -3987,31 +3109,20 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/content_blocks/list"
         query_params = {
             k: v
-            for k, v in [
-                ("modified_after", modified_after),
-                ("modified_before", modified_before),
-                ("limit", limit),
-                ("offset", offset),
-            ]
+            for k, v in [("modified_after", modified_after), ("modified_before", modified_before), ("limit", limit), ("offset", offset)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_info_content_block(
-        self,
-        content_block_id: str | None = None,
-        include_inclusion_data: bool | None = None,
+    async def get_info_content_block(
+        self, content_block_id: str | None = None, include_inclusion_data: bool | None = None
     ) -> dict[str, Any]:
         """
         See Content Block Information
@@ -4032,27 +3143,18 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/content_blocks/info"
         query_params = {
-            k: v
-            for k, v in [
-                ("content_block_id", content_block_id),
-                ("include_inclusion_data", include_inclusion_data),
-            ]
-            if v is not None
+            k: v for k, v in [("content_block_id", content_block_id), ("include_inclusion_data", include_inclusion_data)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_content_block(
+    async def create_content_block(
         self,
         name: str | None = None,
         description: str | None = None,
@@ -4081,37 +3183,20 @@ class BrazeApp(APIApplication):
             Templates > Content Blocks, important
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "description": description,
-            "content": content,
-            "state": state,
-            "tags": tags,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "description": description, "content": content, "state": state, "tags": tags}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/content_blocks/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_content_block(
+    async def update_content_block(
         self,
         content_block_id: str | None = None,
         name: str | None = None,
@@ -4150,35 +3235,20 @@ class BrazeApp(APIApplication):
             "state": state,
             "tags": tags,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/content_blocks/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_email_templates(
-        self,
-        modified_after: str | None = None,
-        modified_before: str | None = None,
-        limit: int | None = None,
-        offset: int | None = None,
+    async def list_email_templates(
+        self, modified_after: str | None = None, modified_before: str | None = None, limit: int | None = None, offset: int | None = None
     ) -> dict[str, Any]:
         """
         List Available Email Templates
@@ -4202,30 +3272,19 @@ class BrazeApp(APIApplication):
         url = f"{self.base_url}/templates/email/list"
         query_params = {
             k: v
-            for k, v in [
-                ("modified_after", modified_after),
-                ("modified_before", modified_before),
-                ("limit", limit),
-                ("offset", offset),
-            ]
+            for k, v in [("modified_after", modified_after), ("modified_before", modified_before), ("limit", limit), ("offset", offset)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_email_template_info(
-        self, email_template_id: str | None = None
-    ) -> dict[str, Any]:
+    async def get_email_template_info(self, email_template_id: str | None = None) -> dict[str, Any]:
         """
         See Email Template Information
 
@@ -4243,23 +3302,17 @@ class BrazeApp(APIApplication):
             Templates > Email Templates
         """
         url = f"{self.base_url}/templates/email/info"
-        query_params = {
-            k: v for k, v in [("email_template_id", email_template_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("email_template_id", email_template_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_email_template(
+    async def create_email_template(
         self,
         template_name: str | None = None,
         subject: str | None = None,
@@ -4298,32 +3351,19 @@ class BrazeApp(APIApplication):
             "preheader": preheader,
             "tags": tags,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/templates/email/create"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def rename_external_id(
-        self, external_id_renames: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def rename_external_id(self, external_id_renames: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Rename External ID
 
@@ -4341,35 +3381,20 @@ class BrazeApp(APIApplication):
             User Data > External ID Migration
         """
         request_body_data = None
-        request_body_data = {
-            "external_id_renames": external_id_renames,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"external_id_renames": external_id_renames}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/external_ids/rename"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_external_id(
-        self, external_ids: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def remove_external_id(self, external_ids: list[str] | None = None) -> dict[str, Any]:
         """
         Remove External ID
 
@@ -4387,35 +3412,20 @@ class BrazeApp(APIApplication):
             User Data > External ID Migration
         """
         request_body_data = None
-        request_body_data = {
-            "external_ids": external_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"external_ids": external_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/external_ids/remove"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_user_alias(
-        self, alias_updates: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def update_user_alias(self, alias_updates: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Update User Alias
 
@@ -4433,35 +3443,20 @@ class BrazeApp(APIApplication):
             User Data
         """
         request_body_data = None
-        request_body_data = {
-            "alias_updates": alias_updates,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"alias_updates": alias_updates}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/alias/update"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_user_alias_new(
-        self, user_aliases: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def create_user_alias_new(self, user_aliases: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Create New User Aliases
 
@@ -4479,37 +3474,21 @@ class BrazeApp(APIApplication):
             User Data
         """
         request_body_data = None
-        request_body_data = {
-            "user_aliases": user_aliases,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"user_aliases": user_aliases}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/alias/new"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_user(
-        self,
-        external_ids: list[str] | None = None,
-        braze_ids: list[str] | None = None,
-        user_aliases: list[dict[str, Any]] | None = None,
+    async def delete_user(
+        self, external_ids: list[str] | None = None, braze_ids: list[str] | None = None, user_aliases: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Delete Users
@@ -4530,37 +3509,20 @@ class BrazeApp(APIApplication):
             User Data
         """
         request_body_data = None
-        request_body_data = {
-            "external_ids": external_ids,
-            "braze_ids": braze_ids,
-            "user_aliases": user_aliases,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"external_ids": external_ids, "braze_ids": braze_ids, "user_aliases": user_aliases}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/delete"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def identify_user(
-        self, aliases_to_identify: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def identify_user(self, aliases_to_identify: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Identify Users
 
@@ -4578,35 +3540,20 @@ class BrazeApp(APIApplication):
             User Data
         """
         request_body_data = None
-        request_body_data = {
-            "aliases_to_identify": aliases_to_identify,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"aliases_to_identify": aliases_to_identify}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/identify"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def merge_users_post(
-        self, merge_updates: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def merge_users_post(self, merge_updates: list[dict[str, Any]] | None = None) -> dict[str, Any]:
         """
         Merge Users
 
@@ -4624,26 +3571,13 @@ class BrazeApp(APIApplication):
             User Data
         """
         request_body_data = None
-        request_body_data = {
-            "merge_updates": merge_updates,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"merge_updates": merge_updates}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/merge"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()

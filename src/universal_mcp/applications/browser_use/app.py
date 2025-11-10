@@ -18,11 +18,7 @@ class BrowserUseApp(APIApplication):
         if not self.integration:
             raise ValueError("Integration is required but not provided")
         credentials = self.integration.get_credentials()
-        api_key = (
-            credentials.get("api_key")
-            or credentials.get("API_KEY")
-            or credentials.get("apiKey")
-        )
+        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
         if not api_key:
             raise ValueError("API key not found in integration credentials")
         self._browser_client = BrowserUse(api_key=api_key)
@@ -45,9 +41,7 @@ class BrowserUseApp(APIApplication):
         Returns:
             dict: The result of the completed task, including output and other metadata.
         """
-        created_task = self.browser_client.tasks.create_task(
-            llm=llm, task=task, max_steps=max_steps
-        )
+        created_task = self.browser_client.tasks.create_task(llm=llm, task=task, max_steps=max_steps)
         result = created_task.complete()
         return result.model_dump()
 

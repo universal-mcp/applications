@@ -1,17 +1,13 @@
 from collections.abc import Callable
 from datetime import datetime
 from typing import Any
-
 from loguru import logger
 
 try:
     from twilio.rest import Client as TwilioClient
 except ImportError:
     TwilioClient = None
-    logger.error(
-        "Twilio SDK is not installed. Please install 'twilio' to use TwilioApp."
-    )
-
+    logger.error("Twilio SDK is not installed. Please install 'twilio' to use TwilioApp.")
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.exceptions import NotAuthorizedError, ToolError
 from universal_mcp.integrations import Integration
@@ -29,9 +25,7 @@ class TwilioApp(APIApplication):
         self._account_sid: str | None = None
         self._auth_token: str | None = None
         if TwilioClient is None:
-            logger.warning(
-                "Twilio SDK is not available. Twilio tools will not function."
-            )
+            logger.warning("Twilio SDK is not available. Twilio tools will not function.")
 
     @property
     def account_sid(self) -> str:
@@ -45,16 +39,9 @@ class TwilioApp(APIApplication):
                 credentials = self.integration.get_credentials()
             except Exception as e:
                 raise NotAuthorizedError(f"Failed to get Twilio credentials: {e}")
-
-            sid = (
-                credentials.get("account_sid")
-                or credentials.get("ACCOUNT_SID")
-                or credentials.get("TWILIO_ACCOUNT_SID")
-            )
+            sid = credentials.get("account_sid") or credentials.get("ACCOUNT_SID") or credentials.get("TWILIO_ACCOUNT_SID")
             if not sid:
-                raise NotAuthorizedError(
-                    "Twilio Account SID is missing. Please set it in the integration."
-                )
+                raise NotAuthorizedError("Twilio Account SID is missing. Please set it in the integration.")
             self._account_sid = sid
         return self._account_sid
 
@@ -70,16 +57,9 @@ class TwilioApp(APIApplication):
                 credentials = self.integration.get_credentials()
             except Exception as e:
                 raise NotAuthorizedError(f"Failed to get Twilio credentials: {e}")
-
-            token = (
-                credentials.get("auth_token")
-                or credentials.get("AUTH_TOKEN")
-                or credentials.get("TWILIO_AUTH_TOKEN")
-            )
+            token = credentials.get("auth_token") or credentials.get("AUTH_TOKEN") or credentials.get("TWILIO_AUTH_TOKEN")
             if not token:
-                raise NotAuthorizedError(
-                    "Twilio Auth Token is missing. Please set it in the integration."
-                )
+                raise NotAuthorizedError("Twilio Auth Token is missing. Please set it in the integration.")
             self._auth_token = token
         return self._auth_token
 
@@ -94,7 +74,7 @@ class TwilioApp(APIApplication):
             self._twilio_client = TwilioClient(self.account_sid, self.auth_token)
         return self._twilio_client
 
-    def create_message(self, from_: str, to: str, body: str) -> dict[str, Any]:
+    async def create_message(self, from_: str, to: str, body: str) -> dict[str, Any]:
         """
         Sends a new SMS or MMS message using Twilio.
 
@@ -114,12 +94,7 @@ class TwilioApp(APIApplication):
             create, message, sms, mms, send, twilio, api, important
         """
         try:
-            message = self.twilio_client.messages.create(
-                from_=from_,
-                to=to,
-                body=body,
-            )
-            # Convert the Twilio MessageInstance to a dict
+            message = self.twilio_client.messages.create(from_=from_, to=to, body=body)
             return {
                 "sid": message.sid,
                 "status": message.status,
@@ -137,7 +112,7 @@ class TwilioApp(APIApplication):
                 raise NotAuthorizedError(f"Twilio authentication failed: {e}")
             raise ToolError(f"Failed to send message: {e}")
 
-    def fetch_message(self, message_sid: str) -> dict[str, Any]:
+    async def fetch_message(self, message_sid: str) -> dict[str, Any]:
         """
         Fetches the details of a specific message by its SID.
 
@@ -173,11 +148,8 @@ class TwilioApp(APIApplication):
                 raise NotAuthorizedError(f"Twilio authentication failed: {e}")
             raise ToolError(f"Failed to fetch message: {e}")
 
-    def list_messages(
-        self,
-        limit: int = 20,
-        date_sent_before: datetime | None = None,
-        date_sent_after: datetime | None = None,
+    async def list_messages(
+        self, limit: int = 20, date_sent_before: datetime | None = None, date_sent_after: datetime | None = None
     ) -> list[dict[str, Any]]:
         """
         Lists messages from your Twilio account, optionally filtered by date.
@@ -198,14 +170,11 @@ class TwilioApp(APIApplication):
             list, message, sms, mms, read, twilio, api, important
         """
         try:
-            params = {
-                "limit": limit,
-            }
+            params = {"limit": limit}
             if date_sent_before:
                 params["date_sent_before"] = date_sent_before
             if date_sent_after:
                 params["date_sent_after"] = date_sent_after
-
             messages = self.twilio_client.messages.list(**params)
             result = []
             for msg in messages:
@@ -229,7 +198,7 @@ class TwilioApp(APIApplication):
                 raise NotAuthorizedError(f"Twilio authentication failed: {e}")
             raise ToolError(f"Failed to list messages: {e}")
 
-    def delete_message(self, message_sid: str) -> bool:
+    async def delete_message(self, message_sid: str) -> bool:
         """
         Deletes a specific message from your Twilio account.
 
@@ -261,9 +230,4 @@ class TwilioApp(APIApplication):
         Returns:
             A list of callable tool methods.
         """
-        return [
-            self.create_message,
-            self.fetch_message,
-            self.list_messages,
-            self.delete_message,
-        ]
+        return [self.create_message, self.fetch_message, self.list_messages, self.delete_message]

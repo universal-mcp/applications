@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -15,13 +14,9 @@ class NotionApp(APIApplication):
         credentials = self.integration.get_credentials()
         if "headers" in credentials:
             return credentials["headers"]
-        return {
-            "Authorization": f"Bearer {credentials['access_token']}",
-            "Accept": "application/json",
-            "Notion-Version": "2022-06-28",
-        }
+        return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/json", "Notion-Version": "2022-06-28"}
 
-    def retrieve_a_user(self, id, request_body=None) -> dict[str, Any]:
+    async def retrieve_a_user(self, id, request_body=None) -> dict[str, Any]:
         """
         Retrieves a user's details from the server using their unique identifier.
 
@@ -47,9 +42,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_all_users(
-        self,
-    ) -> dict[str, Any]:
+    async def list_all_users(self) -> dict[str, Any]:
         """
         Retrieves a complete list of users from the API endpoint.
 
@@ -72,9 +65,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_your_token_sbot_user(
-        self,
-    ) -> dict[str, Any]:
+    async def retrieve_your_token_sbot_user(self) -> dict[str, Any]:
         """
         Retrieves the current user's authentication token information from the SBOT service.
 
@@ -94,7 +85,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_database(self, id) -> dict[str, Any]:
+    async def retrieve_a_database(self, id) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific database using its unique identifier.
 
@@ -119,7 +110,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_database(self, id, request_body=None) -> dict[str, Any]:
+    async def update_a_database(self, id, request_body=None) -> dict[str, Any]:
         """
         Updates a database entry with the specified ID using a PATCH request.
 
@@ -145,7 +136,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_a_database(self, id, request_body=None) -> dict[str, Any]:
+    async def query_a_database(self, id, request_body=None) -> dict[str, Any]:
         """
         Executes a database query operation using a specified database ID and optional request parameters
 
@@ -171,7 +162,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_database(self, request_body=None) -> dict[str, Any]:
+    async def create_a_database(self, request_body=None) -> dict[str, Any]:
         """
         Creates a new database on the server by sending a POST request to the database endpoint.
 
@@ -195,7 +186,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_page(self, request_body=None) -> dict[str, Any]:
+    async def create_a_page(self, request_body=None) -> dict[str, Any]:
         """
         Creates a new page by sending a POST request to the API endpoint.
 
@@ -218,7 +209,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_page(self, id) -> dict[str, Any]:
+    async def retrieve_a_page(self, id) -> dict[str, Any]:
         """
         Retrieves a specific page's data from a remote server using its unique identifier.
 
@@ -243,7 +234,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_page_properties(self, id, request_body=None) -> dict[str, Any]:
+    async def update_page_properties(self, id, request_body=None) -> dict[str, Any]:
         """
         Updates the properties of a page with the specified ID using the provided request body.
 
@@ -270,7 +261,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_page_property_item(self, page_id, property_id) -> dict[str, Any]:
+    async def retrieve_a_page_property_item(self, page_id, property_id) -> dict[str, Any]:
         """
         Retrieves a specific property item from a Notion page using the page ID and property ID.
 
@@ -298,7 +289,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_block_children(self, id, page_size=None) -> dict[str, Any]:
+    async def retrieve_block_children(self, id, page_size=None) -> dict[str, Any]:
         """
         Retrieves all child blocks for a specified parent block using its ID via the API.
 
@@ -324,7 +315,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def append_block_children(self, id, request_body=None) -> dict[str, Any]:
+    async def append_block_children(self, id, request_body=None) -> dict[str, Any]:
         """
         Appends child elements to a specified block and returns the updated block data.
 
@@ -350,7 +341,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_block(self, id) -> dict[str, Any]:
+    async def retrieve_a_block(self, id) -> dict[str, Any]:
         """
         Retrieves a specific block of data from the API using its unique identifier.
 
@@ -375,7 +366,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_block(self, id) -> dict[str, Any]:
+    async def delete_a_block(self, id) -> dict[str, Any]:
         """
         Deletes a specified block by its ID and returns the server response.
 
@@ -400,7 +391,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_block(self, id, request_body=None) -> dict[str, Any]:
+    async def update_a_block(self, id, request_body=None) -> dict[str, Any]:
         """
         Updates a specific block resource via a PATCH request to the API endpoint
 
@@ -426,7 +417,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search(self, request_body=None) -> dict[str, Any]:
+    async def search(self, request_body=None) -> dict[str, Any]:
         """
         Executes a search operation by sending a POST request to the search endpoint and returns the results
 
@@ -449,9 +440,7 @@ class NotionApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_comments(
-        self, block_id=None, page_size=None, request_body=None
-    ) -> dict[str, Any]:
+    async def retrieve_comments(self, block_id=None, page_size=None, request_body=None) -> dict[str, Any]:
         """
         Retrieves comments from a remote server with optional block filtering and pagination support.
 
@@ -471,16 +460,12 @@ class NotionApp(APIApplication):
             retrieve, fetch, comments, api, pagination, http
         """
         url = f"{self.base_url}/v1/comments"
-        query_params = {
-            k: v
-            for k, v in [("block_id", block_id), ("page_size", page_size)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("block_id", block_id), ("page_size", page_size)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_comment_to_page(self, request_body=None) -> dict[str, Any]:
+    async def add_comment_to_page(self, request_body=None) -> dict[str, Any]:
         """
         Adds a comment to a page by making an HTTP POST request to the comments endpoint.
 

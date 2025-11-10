@@ -1,6 +1,5 @@
 from typing import Any
 from urllib.parse import parse_qs, urlparse
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -10,12 +9,8 @@ class OutlookApp(APIApplication):
         super().__init__(name="outlook", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
-    def reply_to_email(
-        self,
-        message_id: str,
-        comment: str,
-        user_id: str | None = None,
-        attachments: list[dict[str, Any]] | None = None,
+    async def reply_to_email(
+        self, message_id: str, comment: str, user_id: str | None = None, attachments: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Replies to a specific email message.
@@ -53,22 +48,14 @@ class OutlookApp(APIApplication):
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-
         request_body_data = {"comment": comment}
         if attachments:
             request_body_data["message"] = {"attachments": attachments}
-
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/reply"
-
-        response = self._post(
-            url,
-            data=request_body_data,
-            params={},
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params={}, content_type="application/json")
         return self._handle_response(response)
 
-    def send_email(
+    async def send_email(
         self,
         subject: str,
         body: str,
@@ -109,7 +96,6 @@ class OutlookApp(APIApplication):
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
-
         message = {
             "subject": subject,
             "body": {"contentType": body_content_type, "content": body},
@@ -121,23 +107,12 @@ class OutlookApp(APIApplication):
             message["bccRecipients"] = [{"emailAddress": {"address": email}} for email in bcc_recipients]
         if attachments:
             message["attachments"] = attachments
-
-        request_body_data = {
-            "message": message,
-            "saveToSentItems": save_to_sent_items,
-        }
-
+        request_body_data = {"message": message, "saveToSentItems": save_to_sent_items}
         url = f"{self.base_url}/users/{user_id}/sendMail"
-
-        response = self._post(
-            url,
-            data=request_body_data,
-            params={},
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params={}, content_type="application/json")
         return self._handle_response(response)
 
-    def get_email_folder(
+    async def get_email_folder(
         self,
         folder_id: str,
         user_id: str | None = None,
@@ -171,24 +146,16 @@ class OutlookApp(APIApplication):
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
         if not folder_id:
             raise ValueError("Missing required parameter 'folder_id'.")
-
         url = f"{self.base_url}/users/{user_id}/mailFolders/{folder_id}"
         select_str = ",".join(select) if select else None
         expand_str = ",".join(expand) if expand else None
-
         query_params = {
-            k: v
-            for k, v in [
-                ("includeHiddenFolders", include_hidden),
-                ("$select", select_str),
-                ("$expand", expand_str),
-            ]
-            if v is not None
+            k: v for k, v in [("includeHiddenFolders", include_hidden), ("$select", select_str), ("$expand", expand_str)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_emails(
+    async def list_emails(
         self,
         user_id: str | None = None,
         select: list[str] = ["bodyPreview"],
@@ -232,18 +199,15 @@ class OutlookApp(APIApplication):
                 raise ValueError("The 'search' parameter cannot be used with 'orderby'.")
             if skip:
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
-
         if user_id is None:
             user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
-
         url = f"{self.base_url}/users/{user_id}/messages"
         select_str = ",".join(select) if select else None
         orderby_str = ",".join(orderby) if orderby else None
         expand_str = ",".join(expand) if expand else None
-
         query_params = {
             k: v
             for k, v in [
@@ -259,11 +223,10 @@ class OutlookApp(APIApplication):
             ]
             if v is not None
         }
-
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_email(
+    async def get_email(
         self,
         message_id: str,
         user_id: str | None = None,
@@ -297,24 +260,16 @@ class OutlookApp(APIApplication):
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
         select_str = ",".join(select) if select else None
         expand_str = ",".join(expand) if expand else None
-
         query_params = {
-            k: v
-            for k, v in [
-                ("includeHiddenMessages", include_hidden),
-                ("$select", select_str),
-                ("$expand", expand_str),
-            ]
-            if v is not None
+            k: v for k, v in [("includeHiddenMessages", include_hidden), ("$select", select_str), ("$expand", expand_str)] if v is not None
         }
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_email(self, message_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def delete_email(self, message_id: str, user_id: str | None = None) -> dict[str, Any]:
         """
         Permanently deletes a specific email by its ID.
 
@@ -338,12 +293,11 @@ class OutlookApp(APIApplication):
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
         response = self._delete(url, params={})
         return self._handle_response(response)
 
-    def list_email_attachments(
+    async def list_email_attachments(
         self,
         message_id: str,
         user_id: str | None = None,
@@ -387,7 +341,6 @@ class OutlookApp(APIApplication):
                 raise ValueError("The 'search' parameter cannot be used with 'orderby'.")
             if skip:
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
-
         if user_id is None:
             user_info = self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
@@ -395,12 +348,10 @@ class OutlookApp(APIApplication):
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
         orderby_str = ",".join(orderby) if orderby else None
         select_str = ",".join(select) if select else None
         expand_str = ",".join(expand) if expand else None
-
         query_params = {
             k: v
             for k, v in [
@@ -418,12 +369,7 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_attachment(
-        self,
-        message_id: str,
-        attachment_id: str,
-        user_id: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_attachment(self, message_id: str, attachment_id: str, user_id: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific attachment from an email message and formats it as a dictionary.
 
@@ -448,17 +394,13 @@ class OutlookApp(APIApplication):
                 raise ValueError("Could not retrieve user ID.")
         if not message_id or not attachment_id:
             raise ValueError("Missing required parameter 'message_id' or 'attachment_id'.")
-
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments/{attachment_id}"
-
         response = self._get(url, params={})
         attachment_data = self._handle_response(response)
-
         content_type = attachment_data.get("contentType", "application/octet-stream")
         attachment_type = content_type.split("/")[0] if "/" in content_type else "file"
         if attachment_type not in ["image", "audio", "video", "text"]:
             attachment_type = "file"
-
         return {
             "type": attachment_type,
             "data": attachment_data.get("contentBytes"),
@@ -466,7 +408,7 @@ class OutlookApp(APIApplication):
             "file_name": attachment_data.get("name"),
         }
 
-    def get_my_profile(self) -> dict[str, Any]:
+    async def get_my_profile(self) -> dict[str, Any]:
         """
         Fetches the userPrincipalName for the currently authenticated user.
 
@@ -481,7 +423,7 @@ class OutlookApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_next_page_results(self, url: str) -> dict[str, Any]:
+    async def get_next_page_results(self, url: str) -> dict[str, Any]:
         """
         Retrieves the next page of results from a paginated API response.
 
@@ -500,12 +442,10 @@ class OutlookApp(APIApplication):
             raise ValueError("Missing required parameter 'url'.")
         if not url.startswith(self.base_url):
             raise ValueError(f"The provided URL must start with '{self.base_url}'.")
-
         relative_part = url[len(self.base_url) :]
         parsed_relative = urlparse(relative_part)
         path_only = parsed_relative.path
         params = {k: v[0] for k, v in parse_qs(parsed_relative.query).items()}
-
         response = self._get(path_only, params=params)
         return self._handle_response(response)
 

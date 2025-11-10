@@ -1,6 +1,5 @@
 from datetime import UTC, datetime, timedelta
 from typing import Any
-
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -24,34 +23,19 @@ class GoogleCalendarApp(APIApplication):
         """
         if not dt_string or dt_string == "Unknown":
             return "Unknown"
-
-        # Check if it's just a date (all-day event) or a datetime
         if "T" in dt_string:
-            # It's a datetime - parse and format it
             try:
-                # Handle Z (UTC) suffix by replacing with +00:00 timezone
                 if dt_string.endswith("Z"):
                     dt_string = dt_string.replace("Z", "+00:00")
-
-                # Parse the ISO datetime string
                 dt = datetime.fromisoformat(dt_string)
-
-                # Format to a more readable form
                 return dt.strftime("%Y-%m-%d %I:%M %p")
             except ValueError:
-                # In case of parsing error, return the original
                 logger.warning(f"Could not parse datetime string: {dt_string}")
                 return dt_string
         else:
-            # It's just a date (all-day event)
             return f"{dt_string} (All day)"
 
-    def get_upcoming_events(
-        self,
-        days: int = 1,
-        max_results: int | None = None,
-        time_zone: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_upcoming_events(self, days: int = 1, max_results: int | None = None, time_zone: str | None = None) -> dict[str, Any]:
         """
         Retrieves events for a specified number of days, starting from today. This function simplifies date-range queries by auto-calculating start/end times, unlike the more comprehensive `list_events` function, which offers granular control with explicit time filters, text search, and custom sorting.
 
@@ -74,12 +58,7 @@ class GoogleCalendarApp(APIApplication):
         time_min = f"{today.isoformat()}T00:00:00Z"
         time_max = f"{end_date.isoformat()}T00:00:00Z"
         url = f"{self.base_api_url}/events"
-        params = {
-            "timeMin": time_min,
-            "timeMax": time_max,
-            "singleEvents": "true",
-            "orderBy": "startTime",
-        }
+        params = {"timeMin": time_min, "timeMax": time_max, "singleEvents": "true", "orderBy": "startTime"}
         if max_results is not None:
             params["maxResults"] = str(max_results)
         if time_zone:
@@ -87,15 +66,9 @@ class GoogleCalendarApp(APIApplication):
         date_range = "today" if days == 1 else f"the next {days} days"
         logger.info(f"Retrieving calendar events for {date_range}")
         response = self._get(url, params=params)
-
         return self._handle_response(response)
 
-    def get_event_by_id(
-        self,
-        event_id: str,
-        max_attendees: int | None = None,
-        time_zone: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_event_by_id(self, event_id: str, max_attendees: int | None = None, time_zone: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific calendar event using its unique ID. Unlike `list_events`, which fetches multiple events based on date ranges or search queries, this function targets a single, known event. It can optionally limit attendees returned and specify a time zone for date formatting in the response.
 
@@ -124,7 +97,7 @@ class GoogleCalendarApp(APIApplication):
         response = self._get(url, params=params)
         return self._handle_response(response)
 
-    def list_events(
+    async def list_events(
         self,
         max_results: int = 10,
         time_min: str | None = None,
@@ -159,16 +132,11 @@ class GoogleCalendarApp(APIApplication):
             list, retrieve, calendar, events, pagination, api, important
         """
         url = f"{self.base_api_url}/events"
-        params = {
-            "maxResults": str(max_results),
-            "orderBy": order_by,
-            "singleEvents": str(single_events).lower(),
-        }
+        params = {"maxResults": str(max_results), "orderBy": order_by, "singleEvents": str(single_events).lower()}
         if time_min:
             params["timeMin"] = time_min
         else:
-            # Default to current time if not specified
-            now = datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
+            now = datetime.utcnow().isoformat() + "Z"
             params["timeMin"] = now
         if time_max:
             params["timeMax"] = time_max
@@ -180,10 +148,9 @@ class GoogleCalendarApp(APIApplication):
             params["pageToken"] = page_token
         logger.info(f"Retrieving calendar events with params: {params}")
         response = self._get(url, params=params)
-
         return self._handle_response(response)
 
-    def create_event(
+    async def create_event(
         self,
         start: dict[str, Any],
         end: dict[str, Any],
@@ -231,7 +198,6 @@ class GoogleCalendarApp(APIApplication):
         Tags:
             create, calendar, event, insert, recurring, important
         """
-
         request_body_data = {
             "start": start,
             "end": end,
@@ -241,19 +207,12 @@ class GoogleCalendarApp(APIApplication):
             "attendees": attendees,
             "recurrence": recurrence,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/calendars/{calendar_id}/events"
-
         response = self._post(url, data=request_body_data)
-
         return self._handle_response(response)
 
-    def create_event_from_text(
-        self, text: str, send_updates: str = "none"
-    ) -> dict[str, Any]:
+    async def create_event_from_text(self, text: str, send_updates: str = "none") -> dict[str, Any]:
         """
         Creates a calendar event by parsing a natural language string (e.g., "Meeting tomorrow at 10am"). This offers a user-friendly shortcut, contrasting with the structured `create_event` function which requires explicit fields like start and end times.
 
@@ -274,10 +233,9 @@ class GoogleCalendarApp(APIApplication):
         params = {"text": text, "sendUpdates": send_updates}
         logger.info(f"Creating event via quickAdd: '{text}'")
         response = self._post(url, data=None, params=params)
-
         return self._handle_response(response)
 
-    def list_recurring_event_instances(
+    async def list_recurring_event_instances(
         self,
         event_id: str,
         max_results: int = 25,
@@ -310,10 +268,7 @@ class GoogleCalendarApp(APIApplication):
             list, retrieve, calendar, events, recurring, pagination, api, important
         """
         url = f"{self.base_api_url}/events/{event_id}/instances"
-        params = {
-            "maxResults": str(max_results),
-            "showDeleted": str(show_deleted).lower(),
-        }
+        params = {"maxResults": str(max_results), "showDeleted": str(show_deleted).lower()}
         if time_min:
             params["timeMin"] = time_min
         if time_max:
@@ -324,10 +279,9 @@ class GoogleCalendarApp(APIApplication):
             params["pageToken"] = page_token
         logger.info(f"Retrieving instances of recurring event with ID: {event_id}")
         response = self._get(url, params=params)
-
         return self._handle_response(response)
 
-    def delete_event(
+    async def delete_event(
         self,
         calendarId,
         eventId,
@@ -386,7 +340,7 @@ class GoogleCalendarApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def replace_event(
+    async def replace_event(
         self,
         event_id: str,
         start: dict[str, Any],
@@ -443,21 +397,16 @@ class GoogleCalendarApp(APIApplication):
             "attendees": attendees,
             "recurrence": recurrence,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/calendars/{calendar_id}/events/{event_id}"
         params = {"sendUpdates": send_updates}
         if max_attendees is not None:
             params["maxAttendees"] = str(max_attendees)
-
         logger.info(f"Updating calendar event with ID: {event_id}")
         response = self._put(url, data=request_body_data, params=params)
-
         return self._handle_response(response)
 
-    def get_primary_calendar_details(self) -> dict[str, Any]:
+    async def get_primary_calendar_details(self) -> dict[str, Any]:
         """
         Retrieves metadata for the user's primary calendar, including its default timezone. This information is essential for creating new events with accurate, timezone-aware start and end times using other functions like `create_event`, preventing potential scheduling errors across different regions.
 
@@ -475,7 +424,7 @@ class GoogleCalendarApp(APIApplication):
         response = self._get(url)
         return self._handle_response(response)
 
-    def get_free_busy_info(
+    async def get_free_busy_info(
         self,
         alt=None,
         fields=None,
@@ -568,7 +517,6 @@ class GoogleCalendarApp(APIApplication):
             self.replace_event,
             self.list_recurring_event_instances,
             self.get_primary_calendar_details,
-            # Auto Generated from Openapi spec
             self.delete_event,
             self.get_free_busy_info,
         ]

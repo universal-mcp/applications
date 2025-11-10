@@ -1,5 +1,4 @@
 from typing import Any
-
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -17,12 +16,9 @@ class GithubApp(APIApplication):
         credentials = self.integration.get_credentials()
         if "headers" in credentials:
             return credentials["headers"]
-        return {
-            "Authorization": f"Bearer {credentials['access_token']}",
-            "Accept": "application/vnd.github.v3+json",
-        }
+        return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/vnd.github.v3+json"}
 
-    def star_repository(self, repo_full_name: str) -> str:
+    async def star_repository(self, repo_full_name: str) -> str:
         """
         Stars a GitHub repository for the authenticated user. This user-centric action takes the full repository name ('owner/repo') and returns a simple string message confirming the outcome, unlike other functions that list or create repository content like issues or pull requests.
 
@@ -49,7 +45,7 @@ class GithubApp(APIApplication):
             logger.error(response.text)
             return f"Error starring repository: {response.text}"
 
-    def list_recent_commits(self, repo_full_name: str) -> str:
+    async def list_recent_commits(self, repo_full_name: str) -> str:
         """
         Fetches and formats the 12 most recent commits from a repository. It returns a human-readable string summarizing each commit's hash, author, and message, providing a focused overview of recent code changes, unlike functions that list branches, issues, or pull requests.
 
@@ -74,15 +70,14 @@ class GithubApp(APIApplication):
         if not commits:
             return f"No commits found for repository {repo_full_name}"
         result = f"Recent commits for {repo_full_name}:\n\n"
-        for commit in commits[:12]:  # Limit to 12 commits
+        for commit in commits[:12]:
             sha = commit.get("sha", "")[:7]
             message = commit.get("commit", {}).get("message", "").split("\n")[0]
             author = commit.get("commit", {}).get("author", {}).get("name", "Unknown")
-
             result += f"- {sha}: {message} (by {author})\n"
         return result
 
-    def list_branches(self, repo_full_name: str) -> str:
+    async def list_branches(self, repo_full_name: str) -> str:
         """
         Fetches all branches for a specified GitHub repository and formats them into a human-readable string. This method is distinct from others like `search_issues`, as it returns a formatted list for display rather than raw JSON data for programmatic use.
 
@@ -112,7 +107,7 @@ class GithubApp(APIApplication):
             result += f"- {branch_name}\n"
         return result
 
-    def list_pull_requests(self, repo_full_name: str, state: str = "open") -> str:
+    async def list_pull_requests(self, repo_full_name: str, state: str = "open") -> str:
         """
         Fetches pull requests for a repository, filtered by state (e.g., 'open'). It returns a formatted string summarizing each PR's details, distinguishing it from `get_pull_request` (single PR) and `search_issues` (raw issue data).
 
@@ -143,20 +138,11 @@ class GithubApp(APIApplication):
             pr_number = pr.get("number", "Unknown")
             pr_state = pr.get("state", "Unknown")
             pr_user = pr.get("user", {}).get("login", "Unknown")
-
-            result += (
-                f"- PR #{pr_number}: {pr_title} (by {pr_user}, Status: {pr_state})\n"
-            )
+            result += f"- PR #{pr_number}: {pr_title} (by {pr_user}, Status: {pr_state})\n"
         return result
 
-    def search_issues(
-        self,
-        repo_full_name: str,
-        state: str = "open",
-        assignee: str = None,
-        labels: str = None,
-        per_page: int = 30,
-        page: int = 1,
+    async def search_issues(
+        self, repo_full_name: str, state: str = "open", assignee: str = None, labels: str = None, per_page: int = 30, page: int = 1
     ) -> list[dict[str, Any]]:
         """
         Fetches issues from a GitHub repository using specified filters (state, assignee, labels) and pagination. It returns the raw API response as a list of dictionaries, providing detailed issue data for programmatic processing, distinct from other methods that return formatted strings.
@@ -190,7 +176,7 @@ class GithubApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pull_request(self, repo_full_name: str, pull_number: int) -> str:
+    async def get_pull_request(self, repo_full_name: str, pull_number: int) -> str:
         """
         Fetches a specific pull request from a repository using its unique number. It returns a human-readable string summarizing the PR's title, creator, status, and description, unlike `list_pull_requests` which retrieves a list of multiple PRs.
 
@@ -218,15 +204,10 @@ class GithubApp(APIApplication):
         pr_state = pr.get("state", "Unknown")
         pr_user = pr.get("user", {}).get("login", "Unknown")
         pr_body = pr.get("body", "No description provided.")
-        result = (
-            f"Pull Request #{pr_number}: {pr_title}\n"
-            f"Created by: {pr_user}\n"
-            f"Status: {pr_state}\n"
-            f"Description: {pr_body}\n"
-        )
+        result = f"Pull Request #{pr_number}: {pr_title}\nCreated by: {pr_user}\nStatus: {pr_state}\nDescription: {pr_body}\n"
         return result
 
-    def create_pull_request(
+    async def create_pull_request(
         self,
         repo_full_name: str,
         head: str,
@@ -262,12 +243,7 @@ class GithubApp(APIApplication):
         """
         repo_full_name = repo_full_name.strip()
         url = f"{self.base_api_url}/{repo_full_name}/pulls"
-        pull_request_data = {
-            "head": head,
-            "base": base,
-            "maintainer_can_modify": maintainer_can_modify,
-            "draft": draft,
-        }
+        pull_request_data = {"head": head, "base": base, "maintainer_can_modify": maintainer_can_modify, "draft": draft}
         if issue is not None:
             pull_request_data["issue"] = issue
         else:
@@ -280,9 +256,7 @@ class GithubApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_issue(
-        self, repo_full_name: str, title: str, body: str = "", labels=None
-    ) -> str:
+    async def create_issue(self, repo_full_name: str, title: str, body: str = "", labels=None) -> str:
         """
         Creates a new issue in a GitHub repository using a title, body, and optional labels. It returns a formatted confirmation string with the new issue's number and URL, differing from `update_issue` which modifies existing issues and `search_issues` which returns raw API data.
 
@@ -306,9 +280,7 @@ class GithubApp(APIApplication):
         issue_data = {"title": title, "body": body}
         if labels:
             if isinstance(labels, str):
-                labels_list = [
-                    label.strip() for label in labels.split(",") if label.strip()
-                ]
+                labels_list = [label.strip() for label in labels.split(",") if label.strip()]
                 issue_data["labels"] = labels_list
             else:
                 issue_data["labels"] = labels
@@ -317,15 +289,9 @@ class GithubApp(APIApplication):
         issue = response.json()
         issue_number = issue.get("number", "Unknown")
         issue_url = issue.get("html_url", "")
-        return (
-            f"Successfully created issue #{issue_number}:\n"
-            f"Title: {title}\n"
-            f"URL: {issue_url}"
-        )
+        return f"Successfully created issue #{issue_number}:\nTitle: {title}\nURL: {issue_url}"
 
-    def list_repo_activities(
-        self, repo_full_name: str, direction: str = "desc", per_page: int = 30
-    ) -> str:
+    async def list_repo_activities(self, repo_full_name: str, direction: str = "desc", per_page: int = 30) -> str:
         """
         Fetches recent events for a GitHub repository and formats them into a human-readable string. It summarizes activities with actors and timestamps, providing a general event feed, unlike other `list_*` functions which retrieve specific resources like commits or issues.
 
@@ -354,17 +320,14 @@ class GithubApp(APIApplication):
             return f"No activities found for repository {repo_full_name}"
         result = f"Repository activities for {repo_full_name}:\n\n"
         for activity in activities:
-            # Extract common fields
             timestamp = activity.get("timestamp", "Unknown time")
             actor_name = "Unknown user"
             if "actor" in activity and activity["actor"]:
                 actor_name = activity["actor"].get("login", "Unknown user")
-
-            # Create a simple description of the activity
             result += f"- {actor_name} performed an activity at {timestamp}\n"
         return result
 
-    def update_issue(
+    async def update_issue(
         self,
         repo_full_name: str,
         issue_number: int,
