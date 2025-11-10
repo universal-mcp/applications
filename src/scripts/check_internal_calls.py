@@ -117,13 +117,10 @@ class InternalCallFinder(ast.NodeVisitor):
 
     def visit_Call(self, node):
         if self.current_function:
-            if isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name) and node.func.value.id == 'self':
+            if isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name) and node.func.value.id == "self":
                 called_func_name = node.func.attr
                 if called_func_name in self.tool_functions and called_func_name != self.current_function:
-                    self.internal_calls.append({
-                        'caller': self.current_function,
-                        'callee': called_func_name
-                    })
+                    self.internal_calls.append({"caller": self.current_function, "callee": called_func_name})
         self.generic_visit(node)
 
 
@@ -187,7 +184,7 @@ def main():
         print("Applications with internal tool function calls:")
         for app, calls in apps_with_internal_calls.items():
             print(f"- {app}:")
-            unique_calls = {(call['caller'], call['callee']) for call in calls}
+            unique_calls = {(call["caller"], call["callee"]) for call in calls}
             for caller, callee in sorted(list(unique_calls)):
                 print(f"  - '{caller}' calls '{callee}'")
     else:

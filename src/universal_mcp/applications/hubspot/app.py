@@ -349,5 +349,5 @@ class HubspotApp(APIApplication):
         ]
         all_tools.extend(self.crm.list_tools())
         all_tools.extend(self.marketing.list_tools())
-        
+
         return all_tools
