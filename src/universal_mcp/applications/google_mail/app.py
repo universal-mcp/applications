@@ -1,5 +1,5 @@
 import base64
-import concurrent.futures
+import asyncio
 from email.message import EmailMessage
 from typing import Any
 from loguru import logger
@@ -355,18 +355,16 @@ class GoogleMailApp(APIApplication):
         message_ids = [msg.get("id") for msg in messages if msg.get("id")]
         detailed_messages = []
         if message_ids:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                future_to_message_id = {executor.submit(self.get_message_details, message_id): message_id for message_id in message_ids}
-                for future in concurrent.futures.as_completed(future_to_message_id):
-                    message_id = future_to_message_id[future]
-                    try:
-                        result = future.result()
-                        detailed_messages.append(result)
-                    except Exception as e:
-                        logger.error(f"Error retrieving message {message_id}: {str(e)}")
+            tasks = [self.get_message_details(message_id) for message_id in message_ids]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    logger.error(f"Error retrieving message {message_ids[i]}: {str(result)}")
+                else:
+                    detailed_messages.append(result)
         return {"messages": detailed_messages, "next_page_token": data.get("nextPageToken")}
 
-    def get_email_thread(self, thread_id: str) -> dict[str, Any]:
+    async def get_email_thread(self, thread_id: str) -> dict[str, Any]:
         """
         Fetches a complete email conversation by its unique thread ID. Unlike `get_message_details`, which retrieves a single message, this returns all messages and metadata for the entire thread, providing the full context of the conversation.
 
@@ -1257,6 +1255,7 @@ class GoogleMailApp(APIApplication):
             self.list_drafts,
             self.get_message_details,
             self.list_messages,
+            self.get_email_thread,
             self.list_labels,
             self.create_label,
             self.get_profile,
