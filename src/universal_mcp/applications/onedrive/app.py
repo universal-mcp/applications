@@ -236,7 +236,7 @@ class OnedriveApp(APIApplication):
         Tags:
             create, folder, list, important
         """
-        self.create_folder(name=name, parent_id=parent_id)
+        await self.create_folder(name=name, parent_id=parent_id)
         return self._list_drive_items(item_id=parent_id)
 
     async def upload_text_file(self, content: str, parent_id: str = "root", file_name: str = "new_file.txt") -> dict[str, Any]:
@@ -280,7 +280,7 @@ class OnedriveApp(APIApplication):
         """
         if not item_id:
             raise ValueError("Missing required parameter 'item_id'.")
-        metadata = self.get_item_metadata(item_id=item_id)
+        metadata = await self.get_item_metadata(item_id=item_id)
         file_metadata = metadata.get("file")
         if not file_metadata:
             raise ValueError(f"Item with ID '{item_id}' is not a file.")

@@ -1117,7 +1117,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("min_columns must be at least 1")
         if not 0 <= min_confidence <= 1:
             raise ValueError("min_confidence must be between 0.0 and 1.0")
-        spreadsheet = self.get_spreadsheet_metadata(spreadsheetId)
+        spreadsheet = await self.get_spreadsheet_metadata(spreadsheetId)
         tables = []
         for sheet in spreadsheet.get("sheets", []):
             sheet_properties = sheet.get("properties", {})
@@ -1162,7 +1162,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("table_name cannot be empty")
         if not 1 <= sample_size <= 1000:
             raise ValueError("sample_size must be between 1 and 1000")
-        spreadsheet = self.get_spreadsheet_metadata(spreadsheetId)
+        spreadsheet = await self.get_spreadsheet_metadata(spreadsheetId)
         target_table = None
         for sheet in spreadsheet.get("sheets", []):
             sheet_properties = sheet.get("properties", {})

@@ -253,5 +253,5 @@ class FalaiApp(APIApplication):
         except Exception:
             raise
 
-    def list_tools(self) -> list[callable]:
+    def list_tools(self):
         return [self.run, self.submit, self.check_status, self.get_result, self.cancel, self.upload_file, self.run_image_generation]

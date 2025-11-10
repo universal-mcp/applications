@@ -42,7 +42,7 @@ class OutlookApp(APIApplication):
             important
         """
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -92,7 +92,7 @@ class OutlookApp(APIApplication):
             important
         """
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -140,7 +140,7 @@ class OutlookApp(APIApplication):
             important
         """
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -200,7 +200,7 @@ class OutlookApp(APIApplication):
             if skip:
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -254,7 +254,7 @@ class OutlookApp(APIApplication):
             important
         """
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -287,7 +287,7 @@ class OutlookApp(APIApplication):
             important
         """
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -342,7 +342,7 @@ class OutlookApp(APIApplication):
             if skip:
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID from get_my_profile response.")
@@ -388,7 +388,7 @@ class OutlookApp(APIApplication):
             important
         """
         if user_id is None:
-            user_info = self.get_my_profile()
+            user_info = await self.get_my_profile()
             user_id = user_info.get("userPrincipalName")
             if not user_id:
                 raise ValueError("Could not retrieve user ID.")

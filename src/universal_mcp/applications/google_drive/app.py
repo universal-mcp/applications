@@ -231,7 +231,7 @@ class GoogleDriveApp(APIApplication):
         metadata = {"name": folder_name, "mimeType": "application/vnd.google-apps.folder"}
         if parent_id:
             if not re.match("^[a-zA-Z0-9_-]{28,33}$", parent_id):
-                found_id = self.find_folder_id_by_name(parent_id)
+                found_id = await self.find_folder_id_by_name(parent_id)
                 if found_id:
                     metadata["parents"] = [found_id]
                 else:

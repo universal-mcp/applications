@@ -337,7 +337,7 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        if self.copy_object(source_bucket, source_key, dest_bucket, dest_key):
+        if await self.copy_object(source_bucket, source_key, dest_bucket, dest_key):
             return self.delete_object(source_bucket, source_key)
         return False
 
@@ -425,7 +425,7 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        all_objects = self.list_objects(bucket_name, prefix)
+        all_objects = await self.list_objects(bucket_name, prefix)
         filtered_objects = []
         for obj in all_objects:
             if name_pattern and name_pattern.lower() not in obj["name"].lower():
@@ -450,7 +450,7 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        objects = self.list_objects(bucket_name, prefix)
+        objects = await self.list_objects(bucket_name, prefix)
         total_size = sum((obj["size"] for obj in objects))
         object_count = len(objects)
         for unit in ["B", "KB", "MB", "GB", "TB"]:
