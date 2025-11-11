@@ -2,6 +2,7 @@ import json
 import os
 from typing import Any, Callable, Literal
 from loguru import logger
+import requests
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -82,6 +83,51 @@ class LinkedinApp(APIApplication):
         if items:
             return items[0]["id"]
         raise ValueError(f'Could not find a matching ID for {param_type}: "{keywords}"')
+
+    async def start_new_chat(
+            self,
+            provider_id: str,
+            text: str,
+        ) -> dict[str, Any]:
+            """
+            Starts a new chat conversation with a specified user by sending an initial message.
+            This function constructs a multipart/form-data request using the `files` parameter
+            to ensure correct formatting and headers, working around potential issues in the
+            underlying request method.
+
+            Args:
+                provider_id: The LinkedIn provider ID of the user to start the chat with.
+                            This is available in the response of the `retrieve_user_profile` tool.
+                text: The initial message content. For LinkedIn Recruiter accounts, this can include
+                    HTML tags like <strong>, <em>, <a>, <ul>, <ol>, and <li>.
+
+            Returns:
+                A dictionary containing the details of the newly created chat.
+
+            Raises:
+                httpx.HTTPError: If the API request fails.
+
+            Tags:
+                linkedin, chat, create, start, new, messaging, api, important
+            """
+            url = f"{self.base_url}/api/v1/chats"
+
+            form_payload = {
+                "account_id": (None, self.account_id),
+                "text": (None, text),
+                "attendees_ids": (None, provider_id),
+            }
+
+            api_key = os.getenv("UNIPILE_API_KEY")
+            if not api_key:
+                raise ValueError("UNIPILE_API_KEY environment variable is not set.")
+
+            headers = {
+                "x-api-key": api_key,
+            }
+            response = requests.post(url, files=form_payload, headers=headers)
+            response.raise_for_status()
+            return response.json()
 
     async def list_all_chats(
         self,
@@ -838,7 +884,7 @@ class LinkedinApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    def list_following(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
+    async def list_following(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all accounts that the current user is following. This function is the counterpart to `list_followers`, focusing on the user's outgoing connections rather than incoming ones.
 
@@ -866,6 +912,7 @@ class LinkedinApp(APIApplication):
 
     def list_tools(self) -> list[Callable]:
         return [
+            self.start_new_chat,
             self.list_all_chats,
             self.list_chat_messages,
             self.send_chat_message,
@@ -889,4 +936,5 @@ class LinkedinApp(APIApplication):
             self.list_received_invitations,
             self.handle_received_invitation,
             self.list_followers,
+            # self.list_following,      not implemented by unipile
         ]
