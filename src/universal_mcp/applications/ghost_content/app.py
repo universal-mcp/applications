@@ -1,6 +1,5 @@
 from collections.abc import Callable
 from typing import Any
-
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -26,8 +25,8 @@ class GhostContentApp(APIApplication):
         """
         super().__init__(name="ghost_content", integration=integration)
         self._base_url = None
-        self._api_key = None  # Cache the API key
-        self._version = None  # Cache the version
+        self._api_key = None
+        self._version = None
 
     @property
     def base_url(self) -> str:
@@ -39,13 +38,8 @@ class GhostContentApp(APIApplication):
             credentials = self.integration.get_credentials()
             ghost_url = credentials.get("url") or credentials.get("admin_domain")
             if not ghost_url:
-                logger.error(
-                    "GhostContentApp: Missing 'url' or 'admin_domain' in integration credentials."
-                )
-                raise ValueError(
-                    "Integration credentials must include 'url' or 'admin_domain' for the Ghost site."
-                )
-
+                logger.error("GhostContentApp: Missing 'url' or 'admin_domain' in integration credentials.")
+                raise ValueError("Integration credentials must include 'url' or 'admin_domain' for the Ghost site.")
             self._base_url = f"{ghost_url.rstrip('/')}/api/content/"
             logger.info(f"GhostContentApp: Constructed base URL as {self._base_url}")
         return self._base_url
@@ -70,18 +64,10 @@ class GhostContentApp(APIApplication):
         """
         if not self._api_key:
             credentials = self.integration.get_credentials()
-            api_key = (
-                credentials.get("key")
-                or credentials.get("api_key")
-                or credentials.get("API_KEY")
-            )
+            api_key = credentials.get("key") or credentials.get("api_key") or credentials.get("API_KEY")
             if not api_key:
-                logger.error(
-                    "GhostContentApp: Content API key ('key') not found in integration credentials."
-                )
-                raise ValueError(
-                    "Integration credentials must include the Ghost Content API 'key'."
-                )
+                logger.error("GhostContentApp: Content API key ('key') not found in integration credentials.")
+                raise ValueError("Integration credentials must include the Ghost Content API 'key'.")
             self._api_key = api_key
         return self._api_key
 
@@ -95,10 +81,8 @@ class GhostContentApp(APIApplication):
             credentials = self.integration.get_credentials()
             version = credentials.get("api_version")
             if not version:
-                logger.warning(
-                    "GhostContentApp: 'version' not found in integration credentials. Defaulting to 'v5.0'."
-                )
-                version = "v5.0"  # Default to a common version if not specified
+                logger.warning("GhostContentApp: 'version' not found in integration credentials. Defaulting to 'v5.0'.")
+                version = "v5.0"
             self._version = version
         return self._version
 
@@ -107,37 +91,32 @@ class GhostContentApp(APIApplication):
         Get the headers for Ghost Content API requests.
         Overrides the base class method to include the `Accept-Version` header.
         """
-        headers = super()._get_headers()  # Get base headers (e.g., Content-Type)
-
-        # Add the Accept-Version header as per Ghost Content API documentation
+        headers = super()._get_headers()
         headers["Accept-Version"] = self._get_version
-        logger.debug(
-            f"GhostContentApp: Using Accept-Version: {self._get_version} in headers."
-        )
+        logger.debug(f"GhostContentApp: Using Accept-Version: {self._get_version} in headers.")
         return headers
 
     def _build_common_params(
         self,
         include: list[str] | None = None,
         fields: list[str] | None = None,
-        filter: str | None = None,  # Changed from filter_str to filter
+        filter: str | None = None,
         limit: int | None = None,
         order: str | None = None,
         page: int | None = None,
-        formats: list[str] | None = None,  # Specific to posts/pages for content format
-        visibility: str | None = None,  # Specific to posts/pages/tiers for visibility
+        formats: list[str] | None = None,
+        visibility: str | None = None,
     ) -> dict[str, Any]:
         """
         Helper to build common query parameters for Ghost Content API requests,
         including the mandatory API key.
         """
         params: dict[str, Any] = {"key": self._get_api_key}
-
         if include:
             params["include"] = ",".join(include)
         if fields:
             params["fields"] = ",".join(fields)
-        if filter:  # Use 'filter' here
+        if filter:
             params["filter"] = filter
         if limit is not None:
             params["limit"] = limit
@@ -151,8 +130,7 @@ class GhostContentApp(APIApplication):
             params["visibility"] = visibility
         return params
 
-    # --- Posts Tools ---
-    def browse_posts(
+    async def browse_posts(
         self,
         include: list[str] | None = None,
         fields: list[str] | None = None,
@@ -161,7 +139,7 @@ class GhostContentApp(APIApplication):
         page: int | None = None,
         order: str | None = None,
         formats: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type to Dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Retrieves and browses posts from a data source based on provided parameters.
 
@@ -184,26 +162,15 @@ class GhostContentApp(APIApplication):
             browse, fetch, posts, management, important
         """
         url = f"{self.base_url}posts/"
-        # Removed 'visibility' from params as it's not in the method signature
         params = self._build_common_params(
-            include=include,
-            fields=fields,
-            filter=filter,
-            limit=limit,
-            page=page,
-            order=order,
-            formats=formats,
+            include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats
         )
         response = self._get(url, params=params)
         return response.json()
 
-    def read_post_by_id(
-        self,
-        id: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        formats: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_post_by_id(
+        self, id: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a post by its ID, optionally including additional data or specific fields.
 
@@ -223,19 +190,13 @@ class GhostContentApp(APIApplication):
             read, post, management
         """
         url = f"{self.base_url}posts/{id}/"
-        params = self._build_common_params(
-            include=include, fields=fields, formats=formats
-        )
+        params = self._build_common_params(include=include, fields=fields, formats=formats)
         response = self._get(url, params=params)
         return response.json()
 
-    def read_post_by_slug(
-        self,
-        slug: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        formats: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_post_by_slug(
+        self, slug: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Retrieves a post by its slug, with optional parameters to specify included data, select specific fields, or request particular data formats.
 
@@ -255,14 +216,11 @@ class GhostContentApp(APIApplication):
             read, post, fetch, management
         """
         url = f"{self.base_url}posts/slug/{slug}/"
-        params = self._build_common_params(
-            include=include, fields=fields, formats=formats
-        )
+        params = self._build_common_params(include=include, fields=fields, formats=formats)
         response = self._get(url, params=params)
         return response.json()
 
-    # --- Authors Tools ---
-    def browse_authors(
+    async def browse_authors(
         self,
         include: list[str] | None = None,
         fields: list[str] | None = None,
@@ -270,7 +228,7 @@ class GhostContentApp(APIApplication):
         limit: int | None = None,
         page: int | None = None,
         order: str | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    ) -> dict[str, Any]:
         """
         Browse authors using various filtering and pagination options.
 
@@ -292,23 +250,11 @@ class GhostContentApp(APIApplication):
             list, management, important
         """
         url = f"{self.base_url}authors/"
-        params = self._build_common_params(
-            include=include,
-            fields=fields,
-            filter=filter,
-            limit=limit,
-            page=page,
-            order=order,
-        )
+        params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
         response = self._get(url, params=params)
         return response.json()
 
-    def read_author_by_id(
-        self,
-        id: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_author_by_id(self, id: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
         """
         Read an author from the database by their unique ID.
 
@@ -331,12 +277,7 @@ class GhostContentApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    def read_author_by_slug(
-        self,
-        slug: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_author_by_slug(self, slug: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
         """
         Retrieve an author's information by their slug.
 
@@ -359,8 +300,7 @@ class GhostContentApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    # --- Tags Tools ---
-    def browse_tags(
+    async def browse_tags(
         self,
         include: list[str] | None = None,
         fields: list[str] | None = None,
@@ -368,7 +308,7 @@ class GhostContentApp(APIApplication):
         limit: int | None = None,
         page: int | None = None,
         order: str | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    ) -> dict[str, Any]:
         """
         Browse and retrieve tags based on specified parameters.
 
@@ -390,23 +330,11 @@ class GhostContentApp(APIApplication):
             browse, tags, management, important
         """
         url = f"{self.base_url}tags/"
-        params = self._build_common_params(
-            include=include,
-            fields=fields,
-            filter=filter,
-            limit=limit,
-            page=page,
-            order=order,
-        )
+        params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
         response = self._get(url, params=params)
         return response.json()
 
-    def read_tag_by_id(
-        self,
-        id: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_tag_by_id(self, id: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
         """
         Retrieves a tag's details by its unique identifier, optionally filtering by included and field sets.
 
@@ -429,12 +357,7 @@ class GhostContentApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    def read_tag_by_slug(
-        self,
-        slug: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_tag_by_slug(self, slug: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
         """
         Retrieve tag information identified by a unique slug, with optional inclusion of related data and selective fields.
 
@@ -457,8 +380,7 @@ class GhostContentApp(APIApplication):
         response = self._get(url, params=params)
         return response.json()
 
-    # --- Pages Tools ---
-    def browse_pages(
+    async def browse_pages(
         self,
         include: list[str] | None = None,
         fields: list[str] | None = None,
@@ -467,7 +389,7 @@ class GhostContentApp(APIApplication):
         page: int | None = None,
         order: str | None = None,
         formats: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    ) -> dict[str, Any]:
         """
         Retrieves a list of pages using optional filtering, pagination, and formatting parameters.
 
@@ -490,26 +412,15 @@ class GhostContentApp(APIApplication):
             browse, list, management, important
         """
         url = f"{self.base_url}pages/"
-        # Removed 'visibility' from params as it's not in the method signature
         params = self._build_common_params(
-            include=include,
-            fields=fields,
-            filter=filter,
-            limit=limit,
-            page=page,
-            order=order,
-            formats=formats,
+            include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats
         )
         response = self._get(url, params=params)
         return response.json()
 
-    def read_page_by_id(
-        self,
-        id: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        formats: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_page_by_id(
+        self, id: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Read a page by ID, allowing for optional inclusion of additional data, specific fields, and formats.
 
@@ -529,19 +440,13 @@ class GhostContentApp(APIApplication):
             read, page, data-retrieval
         """
         url = f"{self.base_url}pages/{id}/"
-        params = self._build_common_params(
-            include=include, fields=fields, formats=formats
-        )
+        params = self._build_common_params(include=include, fields=fields, formats=formats)
         response = self._get(url, params=params)
         return response.json()
 
-    def read_page_by_slug(
-        self,
-        slug: str,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        formats: list[str] | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    async def read_page_by_slug(
+        self, slug: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Retrieve a page's content and metadata by its slug identifier, optionally including related data, specific fields, and content formats.
 
@@ -561,14 +466,11 @@ class GhostContentApp(APIApplication):
             read, get, page, slug, http-request
         """
         url = f"{self.base_url}pages/slug/{slug}/"
-        params = self._build_common_params(
-            include=include, fields=fields, formats=formats
-        )
+        params = self._build_common_params(include=include, fields=fields, formats=formats)
         response = self._get(url, params=params)
         return response.json()
 
-    # --- Tiers Tool ---
-    def browse_tiers(
+    async def browse_tiers(
         self,
         include: list[str] | None = None,
         fields: list[str] | None = None,
@@ -576,7 +478,7 @@ class GhostContentApp(APIApplication):
         limit: int | None = None,
         page: int | None = None,
         order: str | None = None,
-    ) -> dict[str, Any]:  # Changed return type
+    ) -> dict[str, Any]:
         """
         Browse tiers based on optional filters and pagination.
 
@@ -598,20 +500,11 @@ class GhostContentApp(APIApplication):
             browse, pagination, filter, management, important
         """
         url = f"{self.base_url}tiers/"
-        # Removed 'visibility' from params as it's not in the method signature
-        params = self._build_common_params(
-            include=include,
-            fields=fields,
-            filter=filter,
-            limit=limit,
-            page=page,
-            order=order,
-        )
+        params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
         response = self._get(url, params=params)
         return response.json()
 
-    # --- Settings Tool ---
-    def browse_settings(self) -> dict[str, Any]:  # Changed return type
+    async def browse_settings(self) -> dict[str, Any]:
         """
         Fetches site settings by making a GET request to the settings endpoint.
 
@@ -628,9 +521,7 @@ class GhostContentApp(APIApplication):
             fetch, settings, management, important
         """
         url = f"{self.base_url}settings/"
-        params = (
-            self._build_common_params()
-        )  # Only the API key is needed for this endpoint via _build_common_params
+        params = self._build_common_params()
         response = self._get(url, params=params)
         return response.json()
 

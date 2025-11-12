@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class MsTeamsApp(APIApplication):
         super().__init__(name="ms_teams", integration=integration, **kwargs)
         self.base_url = "https://graph.microsoft.com/v1.0"
 
-    def get_user_chats(
+    async def get_user_chats(
         self,
         top: int | None = None,
         skip: int | None = None,
@@ -60,7 +59,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_joined_teams(self) -> list[dict[str, Any]]:
+    async def get_joined_teams(self) -> list[dict[str, Any]]:
         """
         Fetches all Microsoft Teams the authenticated user belongs to by querying the `/me/joinedTeams` Graph API endpoint. It returns a list of dictionaries, where each dictionary represents a single team's details, unlike functions that list channels or chats for a specific team.
 
@@ -76,10 +75,9 @@ class MsTeamsApp(APIApplication):
         url = f"{self.base_url}/me/joinedTeams"
         response = self._get(url)
         data = self._handle_response(response)
-        # The API returns the list of teams under the "value" key.
         return data.get("value", [])
 
-    def list_channels_for_team(
+    async def list_channels_for_team(
         self,
         team_id: str,
         top: int | None = None,
@@ -134,7 +132,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
+    async def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
         """
         Posts a new message to a specific Microsoft Teams chat using its unique ID. This function targets direct or group chats, distinguishing it from `send_channel_message`, which posts to public team channels, and `reply_to_chat_message`, which responds to existing messages.
 
@@ -156,9 +154,7 @@ class MsTeamsApp(APIApplication):
         response = self._post(url, data=payload)
         return self._handle_response(response)
 
-    def send_channel_message(
-        self, team_id: str, channel_id: str, content: str
-    ) -> dict[str, Any]:
+    async def send_channel_message(self, team_id: str, channel_id: str, content: str) -> dict[str, Any]:
         """
         Posts a new message to a specified team channel, initiating a new conversation thread. Unlike `reply_to_channel_message`, which replies to a message, this function starts a new topic. It's distinct from `send_chat_message`, which is for private or group chats, not team channels.
 
@@ -181,9 +177,7 @@ class MsTeamsApp(APIApplication):
         response = self._post(url, data=payload)
         return self._handle_response(response)
 
-    def reply_to_channel_message(
-        self, team_id: str, channel_id: str, message_id: str, content: str
-    ) -> dict[str, Any]:
+    async def reply_to_channel_message(self, team_id: str, channel_id: str, message_id: str, content: str) -> dict[str, Any]:
         """
         Posts a reply to a specific message within a Microsoft Teams channel. It uses the team, channel, and original message IDs to target an existing conversation thread, distinguishing it from `send_channel_message` which starts a new one.
 
@@ -207,7 +201,7 @@ class MsTeamsApp(APIApplication):
         response = self._post(url, data=payload)
         return self._handle_response(response)
 
-    def create_chat(
+    async def create_chat(
         self,
         id: str | None = None,
         chatType: str | None = None,
@@ -278,25 +272,13 @@ class MsTeamsApp(APIApplication):
             "pinnedMessages": pinnedMessages,
             "tabs": tabs,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_chat_details(
-        self,
-        chat_id: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> Any:
+    async def get_chat_details(self, chat_id: str, select: list[str] | None = None, expand: list[str] | None = None) -> Any:
         """
         Retrieves the properties and relationships of a specific chat conversation by its unique ID. Unlike `get_user_chats` which lists all chats, this targets one chat. Optional parameters can select specific fields or expand related entities like members or apps to customize the returned data.
 
@@ -317,13 +299,11 @@ class MsTeamsApp(APIApplication):
         if chat_id is None:
             raise ValueError("Missing required parameter 'chat-id'.")
         url = f"{self.base_url}/chats/{chat_id}"
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_chat_details(
+    async def update_chat_details(
         self,
         chat_id: str,
         id: str | None = None,
@@ -398,15 +378,13 @@ class MsTeamsApp(APIApplication):
             "pinnedMessages": pinnedMessages,
             "tabs": tabs,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats/{chat_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def list_installed_chat_apps(
+    async def list_installed_chat_apps(
         self,
         chat_id: str,
         top: int | None = None,
@@ -461,7 +439,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_chat_members(
+    async def list_chat_members(
         self,
         chat_id: str,
         top: int | None = None,
@@ -516,7 +494,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def add_member_to_chat(
+    async def add_member_to_chat(
         self,
         chat_id: str,
         id: str | None = None,
@@ -552,25 +530,14 @@ class MsTeamsApp(APIApplication):
             "roles": roles,
             "visibleHistoryStartDateTime": visibleHistoryStartDateTime,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats/{chat_id}/members"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_chat_member(
-        self,
-        chat_id: str,
-        conversationMember_id: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
+    async def get_chat_member(
+        self, chat_id: str, conversationMember_id: str, select: list[str] | None = None, expand: list[str] | None = None
     ) -> Any:
         """
         Retrieves detailed information for a specific member within a chat using their unique ID. This function targets a single individual, distinguishing it from `list_chat_members` which returns all members. The response can be customized by selecting specific properties or expanding related entities.
@@ -595,13 +562,11 @@ class MsTeamsApp(APIApplication):
         if conversationMember_id is None:
             raise ValueError("Missing required parameter 'conversationMember-id'.")
         url = f"{self.base_url}/chats/{chat_id}/members/{conversationMember_id}"
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def delete_chat_member(self, chat_id: str, conversationMember_id: str) -> Any:
+    async def delete_chat_member(self, chat_id: str, conversationMember_id: str) -> Any:
         """
         Removes a specific member from a chat using their unique ID and the chat's ID. This function sends a DELETE request to the Microsoft Graph API to permanently remove the user from the conversation, acting as the counterpart to `add_member_to_chat`.
 
@@ -627,7 +592,7 @@ class MsTeamsApp(APIApplication):
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def list_chat_messages(
+    async def list_chat_messages(
         self,
         chat_id: str,
         top: int | None = None,
@@ -682,12 +647,8 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def get_chat_message(
-        self,
-        chat_id: str,
-        chatMessage_id: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
+    async def get_chat_message(
+        self, chat_id: str, chatMessage_id: str, select: list[str] | None = None, expand: list[str] | None = None
     ) -> Any:
         """
         Retrieves the full details of a single message from a specific chat using both chat and message IDs. This function targets an individual message, differentiating it from `list_chat_messages`, which retrieves a collection. Optional parameters can customize the response by selecting specific properties or expanding entities.
@@ -712,13 +673,11 @@ class MsTeamsApp(APIApplication):
         if chatMessage_id is None:
             raise ValueError("Missing required parameter 'chatMessage-id'.")
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}"
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_chat_message_replies(
+    async def list_chat_message_replies(
         self,
         chat_id: str,
         chatMessage_id: str,
@@ -777,7 +736,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def reply_to_chat_message(
+    async def reply_to_chat_message(
         self,
         chat_id: str,
         chatMessage_id: str,
@@ -880,26 +839,14 @@ class MsTeamsApp(APIApplication):
             "hostedContents": hostedContents,
             "replies": replies,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}/replies"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_chat_reply_details(
-        self,
-        chat_id: str,
-        chatMessage_id: str,
-        chatMessage_id1: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
+    async def get_chat_reply_details(
+        self, chat_id: str, chatMessage_id: str, chatMessage_id1: str, select: list[str] | None = None, expand: list[str] | None = None
     ) -> Any:
         """
         Retrieves a specific reply from a chat message thread using the chat, parent message, and reply IDs. Unlike `list_chat_message_replies`, which fetches all replies, this function targets a single reply for detailed information, allowing for customized field selection.
@@ -927,13 +874,11 @@ class MsTeamsApp(APIApplication):
         if chatMessage_id1 is None:
             raise ValueError("Missing required parameter 'chatMessage-id1'.")
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}/replies/{chatMessage_id1}"
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_team_from_group(
+    async def create_team_from_group(
         self,
         group_id: str,
         id: str | None = None,
@@ -1047,20 +992,13 @@ class MsTeamsApp(APIApplication):
             "tags": tags,
             "template": template,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/groups/{group_id}/team"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def create_team(
+    async def create_team(
         self,
         id: str | None = None,
         classification: str | None = None,
@@ -1170,25 +1108,14 @@ class MsTeamsApp(APIApplication):
             "tags": tags,
             "template": template,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/teams"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_channel_details(
-        self,
-        team_id: str,
-        channel_id: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
+    async def get_channel_details(
+        self, team_id: str, channel_id: str, select: list[str] | None = None, expand: list[str] | None = None
     ) -> Any:
         """
         Retrieves detailed information for a specific channel within a Microsoft Teams team, identified by both team and channel IDs. Optional parameters can select specific properties or expand related entities in the response, distinguishing it from list_channels_for_team, which retrieves a collection of channels.
@@ -1213,13 +1140,11 @@ class MsTeamsApp(APIApplication):
         if channel_id is None:
             raise ValueError("Missing required parameter 'channel-id'.")
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}"
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_channel_message(
+    async def update_channel_message(
         self,
         team_id: str,
         channel_id: str,
@@ -1326,15 +1251,13 @@ class MsTeamsApp(APIApplication):
             "hostedContents": hostedContents,
             "replies": replies,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages/{chatMessage_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def update_channel_message_reply(
+    async def update_channel_message_reply(
         self,
         team_id: str,
         channel_id: str,
@@ -1445,15 +1368,13 @@ class MsTeamsApp(APIApplication):
             "hostedContents": hostedContents,
             "replies": replies,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages/{chatMessage_id}/replies/{chatMessage_id1}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def list_channel_tabs(
+    async def list_channel_tabs(
         self,
         team_id: str,
         channel_id: str,
@@ -1512,7 +1433,7 @@ class MsTeamsApp(APIApplication):
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def create_channel_tab(
+    async def create_channel_tab(
         self,
         team_id: str,
         channel_id: str,
@@ -1548,33 +1469,15 @@ class MsTeamsApp(APIApplication):
         if channel_id is None:
             raise ValueError("Missing required parameter 'channel-id'.")
         request_body_data = None
-        request_body_data = {
-            "id": id,
-            "configuration": configuration,
-            "displayName": displayName,
-            "webUrl": webUrl,
-            "teamsApp": teamsApp,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"id": id, "configuration": configuration, "displayName": displayName, "webUrl": webUrl, "teamsApp": teamsApp}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
-    def get_channel_tab_details(
-        self,
-        team_id: str,
-        channel_id: str,
-        teamsTab_id: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
+    async def get_channel_tab_details(
+        self, team_id: str, channel_id: str, teamsTab_id: str, select: list[str] | None = None, expand: list[str] | None = None
     ) -> Any:
         """
         Fetches properties for a single tab within a specific Microsoft Teams channel, identified by its team, channel, and tab IDs. Unlike `list_channel_tabs` which gets all tabs, this targets a specific one, with options to select fields or expand related entities in the response.
@@ -1601,16 +1504,12 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'channel-id'.")
         if teamsTab_id is None:
             raise ValueError("Missing required parameter 'teamsTab-id'.")
-        url = (
-            f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
-        )
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def update_channel_tab(
+    async def update_channel_tab(
         self,
         team_id: str,
         channel_id: str,
@@ -1650,26 +1549,14 @@ class MsTeamsApp(APIApplication):
         if teamsTab_id is None:
             raise ValueError("Missing required parameter 'teamsTab-id'.")
         request_body_data = None
-        request_body_data = {
-            "id": id,
-            "configuration": configuration,
-            "displayName": displayName,
-            "webUrl": webUrl,
-            "teamsApp": teamsApp,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
-        )
+        request_body_data = {"id": id, "configuration": configuration, "displayName": displayName, "webUrl": webUrl, "teamsApp": teamsApp}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         return self._handle_response(response)
 
-    def delete_channel_tab(
-        self, team_id: str, channel_id: str, teamsTab_id: str
-    ) -> Any:
+    async def delete_channel_tab(self, team_id: str, channel_id: str, teamsTab_id: str) -> Any:
         """
         Permanently removes a specific tab from a Microsoft Teams channel using its unique ID, along with the parent team and channel IDs. This function is the destructive counterpart to `create_channel_tab`, designed to delete a tab rather than create, list, or update one.
 
@@ -1693,19 +1580,12 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'channel-id'.")
         if teamsTab_id is None:
             raise ValueError("Missing required parameter 'teamsTab-id'.")
-        url = (
-            f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
-        )
+        url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
         query_params = {}
         response = self._delete(url, params=query_params)
         return self._handle_response(response)
 
-    def get_primary_team_channel(
-        self,
-        team_id: str,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> Any:
+    async def get_primary_team_channel(self, team_id: str, select: list[str] | None = None, expand: list[str] | None = None) -> Any:
         """
         Retrieves the primary channel (usually 'General') for a specified team using its ID. Unlike `get_channel_details`, this function directly accesses the team's default channel without requiring a specific channel ID. Optional parameters can select or expand properties in the returned data.
 
@@ -1726,13 +1606,11 @@ class MsTeamsApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team-id'.")
         url = f"{self.base_url}/teams/{team_id}/primaryChannel"
-        query_params = {
-            k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None
-        }
+        query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
         response = self._get(url, params=query_params)
         return self._handle_response(response)
 
-    def list_user_installed_apps(
+    async def list_user_installed_apps(
         self,
         user_id: str,
         top: int | None = None,

@@ -1,7 +1,6 @@
 import logging
 import urllib.parse
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -14,7 +13,7 @@ class GoogleSearchconsoleApp(APIApplication):
         self.webmasters_base_url = "https://www.googleapis.com/webmasters/v3"
         self.searchconsole_base_url = "https://searchconsole.googleapis.com/v1"
 
-    def delete_sitemap(self, siteUrl: str, feedpath: str) -> None:
+    async def delete_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
         Deletes a specific sitemap from a Google Search Console property using its URL (`feedpath`). This function is distinct from `delete_site`, which removes the entire site property, not just a single sitemap file. It issues an HTTP DELETE request to the specified API endpoint.
 
@@ -28,15 +27,13 @@ class GoogleSearchconsoleApp(APIApplication):
         Tags:
             sitemap_management
         """
-        # Encode URL parts used as path segments
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         feedpath_encoded = urllib.parse.quote(feedpath, safe="")
-
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
         response = self._delete(url)
         response.raise_for_status()
 
-    def get_sitemap(self, siteUrl: str, feedpath: str) -> dict[str, Any]:
+    async def get_sitemap(self, siteUrl: str, feedpath: str) -> dict[str, Any]:
         """
         Retrieves detailed information for a single sitemap from a specified Google Search Console property. Unlike `list_sitemaps` which fetches all sitemaps, this function targets one sitemap by its URL (`feedpath`) to return its resource details, including status and last processed date.
 
@@ -52,15 +49,12 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         feedpath_encoded = urllib.parse.quote(feedpath, safe="")
-
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
         response = self._get(url)
         response.raise_for_status()
         return response.json()
 
-    def list_sitemaps(
-        self, siteUrl: str, sitemapIndex: str | None = None
-    ) -> dict[str, Any]:
+    async def list_sitemaps(self, siteUrl: str, sitemapIndex: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of sitemaps for a specific site property. It can optionally list sitemaps contained within a specified sitemap index file. This function contrasts with `get_sitemap`, which fetches details for only a single, specified sitemap rather than a collection.
 
@@ -77,16 +71,14 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps"
-
         query_params = {}
         if sitemapIndex is not None:
             query_params["sitemapIndex"] = sitemapIndex
-
         response = self._get(url, params=query_params if query_params else None)
         response.raise_for_status()
         return response.json()
 
-    def submit_sitemap(self, siteUrl: str, feedpath: str) -> None:
+    async def submit_sitemap(self, siteUrl: str, feedpath: str) -> None:
         """
         Submits a sitemap to a specified Google Search Console property using its URL (feedpath). It notifies Google to crawl the sitemap's location, complementing other sitemap management functions (`list_sitemaps`, `delete_sitemap`) by adding or updating a sitemap's registration for a given site.
 
@@ -102,15 +94,11 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         feedpath_encoded = urllib.parse.quote(feedpath, safe="")
-
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
-        # PUT requests for submitting/notifying often don't have a body.
         response = self._put(url, data=None)
         response.raise_for_status()
 
-    # --- Sites ---
-
-    def add_site(self, siteUrl: str) -> dict[str, Any]:
+    async def add_site(self, siteUrl: str) -> dict[str, Any]:
         """
         Adds a site property to the user's Google Search Console account using its URL. This action requires subsequent ownership verification. Unlike `list_sites`, which only retrieves existing properties, this function creates a new entry and returns the corresponding site resource upon successful creation.
 
@@ -125,14 +113,11 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
-        # This specific PUT for adding a site generally does not require a body;
-        # the resource identifier is the siteUrl itself.
-        # Google API docs state it returns a site resource.
         response = self._put(url, data=None)
         response.raise_for_status()
         return response.json()
 
-    def delete_site(self, siteUrl: str) -> None:
+    async def delete_site(self, siteUrl: str) -> None:
         """
         Removes a website property from the user's Google Search Console account using its URL. Unlike `delete_sitemap`, which only targets a sitemap file, this function deletes the entire site property, revoking management access and removing it from the user's list of managed sites.
 
@@ -150,7 +135,7 @@ class GoogleSearchconsoleApp(APIApplication):
         response = self._delete(url)
         response.raise_for_status()
 
-    def get_site(self, siteUrl: str) -> dict[str, Any]:
+    async def get_site(self, siteUrl: str) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific site property from Google Search Console using its URL. Unlike `list_sites`, which fetches all properties associated with the user's account, this function targets and returns the resource for a single, known site.
 
@@ -169,7 +154,7 @@ class GoogleSearchconsoleApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_sites(self) -> dict[str, Any]:
+    async def list_sites(self) -> dict[str, Any]:
         """
         Retrieves all websites and domain properties the authenticated user manages in Google Search Console. While `get_site` fetches a single, specific property, this function returns a comprehensive list of all sites linked to the user's account, providing a complete overview of managed properties.
 
@@ -184,11 +169,7 @@ class GoogleSearchconsoleApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    # --- URL Inspection ---
-
-    def inspect_url(
-        self, inspectionUrl: str, siteUrl: str, languageCode: str | None = None
-    ) -> dict[str, Any]:
+    async def inspect_url(self, inspectionUrl: str, siteUrl: str, languageCode: str | None = None) -> dict[str, Any]:
         """
         Retrieves the Google Index status for a specified URL within a given Search Console property. This function queries the URL Inspection API to return detailed information about how Google sees the page, including its indexing eligibility and any detected issues.
 
@@ -205,21 +186,14 @@ class GoogleSearchconsoleApp(APIApplication):
             url_inspection, indexing
         """
         url = f"{self.searchconsole_base_url}/urlInspection/index:inspect"
-        request_body: dict[str, Any] = {
-            "inspectionUrl": inspectionUrl,
-            "siteUrl": siteUrl,
-        }
+        request_body: dict[str, Any] = {"inspectionUrl": inspectionUrl, "siteUrl": siteUrl}
         if languageCode is not None:
             request_body["languageCode"] = languageCode
-
-        # Assuming _post handles dict as JSON payload, similar to ExaApp
         response = self._post(url, data=request_body)
         response.raise_for_status()
         return response.json()
 
-    # --- Search Analytics ---
-
-    def query_search_analytics(
+    async def query_search_analytics(
         self,
         siteUrl: str,
         startDate: str,
@@ -230,7 +204,7 @@ class GoogleSearchconsoleApp(APIApplication):
         rowLimit: int | None = None,
         startRow: int | None = None,
         dataState: str | None = None,
-        search_type: str | None = None,  # 'type' is a reserved keyword in Python
+        search_type: str | None = None,
     ) -> dict[str, Any]:
         """
         Queries and retrieves search traffic data for a specified site within a given date range. Supports advanced filtering, grouping by various dimensions (e.g., query, page, device), and aggregation to customize the analytics report from the Google Search Console API.
@@ -272,14 +246,8 @@ class GoogleSearchconsoleApp(APIApplication):
             search_analytics, reporting
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
-        url = (
-            f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/searchAnalytics/query"
-        )
-
-        request_body: dict[str, Any] = {
-            "startDate": startDate,
-            "endDate": endDate,
-        }
+        url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/searchAnalytics/query"
+        request_body: dict[str, Any] = {"startDate": startDate, "endDate": endDate}
         if dimensions is not None:
             request_body["dimensions"] = dimensions
         if dimensionFilterGroups is not None:
@@ -293,8 +261,7 @@ class GoogleSearchconsoleApp(APIApplication):
         if dataState is not None:
             request_body["dataState"] = dataState
         if search_type is not None:
-            request_body["type"] = search_type  # API expects 'type'
-
+            request_body["type"] = search_type
         response = self._post(url, data=request_body)
         response.raise_for_status()
         return response.json()

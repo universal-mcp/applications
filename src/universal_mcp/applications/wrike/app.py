@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -19,7 +18,7 @@ class WrikeApp(APIApplication):
         super().__init__(name="wrike", integration=integration, **kwargs)
         self.base_url = "https://www.wrike.com/api/v4"
 
-    def get_contacts(self, deleted=None, fields=None, metadata=None) -> Any:
+    async def get_contacts(self, deleted=None, fields=None, metadata=None) -> Any:
         """
         Retrieves contacts from the server with optional deleted status filtering, field selection, and metadata inclusion.
 
@@ -38,20 +37,12 @@ class WrikeApp(APIApplication):
             retrieve, contacts, filter, api, important
         """
         url = f"{self.base_url}/contacts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("deleted", deleted),
-                ("fields", fields),
-                ("metadata", metadata),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("deleted", deleted), ("fields", fields), ("metadata", metadata)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_contacts_by_contactid(self, contactId, fields=None) -> Any:
+    async def get_contacts_by_contactid(self, contactId, fields=None) -> Any:
         """
         Retrieves contact information for a specific contact ID, optionally returning only specified fields.
 
@@ -76,15 +67,8 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_contacts_by_contactid(
-        self,
-        contactId,
-        metadata=None,
-        currentBillRate=None,
-        currentCostRate=None,
-        jobRoleId=None,
-        customFields=None,
-        fields=None,
+    async def put_contacts_by_contactid(
+        self, contactId, metadata=None, currentBillRate=None, currentCostRate=None, jobRoleId=None, customFields=None, fields=None
     ) -> Any:
         """
         Updates an existing contact using the specified contact ID with provided details including metadata, billing/cost rates, job role, and custom fields.
@@ -125,7 +109,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_users_by_userid(self, userId) -> Any:
+    async def get_users_by_userid(self, userId) -> Any:
         """
         Retrieves user information by ID from the API endpoint.
 
@@ -150,7 +134,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_users_by_userid(self, userId, profile=None) -> Any:
+    async def put_users_by_userid(self, userId, profile=None) -> Any:
         """
         Updates a user's profile information by user ID using a PUT request.
 
@@ -170,9 +154,7 @@ class WrikeApp(APIApplication):
         """
         if userId is None:
             raise ValueError("Missing required parameter 'userId'")
-        request_body = {
-            "profile": profile,
-        }
+        request_body = {"profile": profile}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/users/{userId}"
         query_params = {}
@@ -180,9 +162,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_groups(
-        self, metadata=None, pageSize=None, pageToken=None, fields=None
-    ) -> Any:
+    async def get_groups(self, metadata=None, pageSize=None, pageToken=None, fields=None) -> Any:
         """
         Retrieves a list of groups from the API, applying optional filtering and pagination parameters.
 
@@ -203,22 +183,13 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/groups"
         query_params = {
-            k: v
-            for k, v in [
-                ("metadata", metadata),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("fields", fields),
-            ]
-            if v is not None
+            k: v for k, v in [("metadata", metadata), ("pageSize", pageSize), ("pageToken", pageToken), ("fields", fields)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def post_groups(
-        self, title, members=None, parent=None, avatar=None, metadata=None
-    ) -> Any:
+    async def post_groups(self, title, members=None, parent=None, avatar=None, metadata=None) -> Any:
         """
         Creates a new group with the specified title and optional details via a POST request to the groups endpoint.
 
@@ -240,13 +211,7 @@ class WrikeApp(APIApplication):
         """
         if title is None:
             raise ValueError("Missing required parameter 'title'")
-        request_body = {
-            "title": title,
-            "members": members,
-            "parent": parent,
-            "avatar": avatar,
-            "metadata": metadata,
-        }
+        request_body = {"title": title, "members": members, "parent": parent, "avatar": avatar, "metadata": metadata}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/groups"
         query_params = {}
@@ -254,7 +219,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_groups_by_groupid(self, groupId, fields=None) -> Any:
+    async def get_groups_by_groupid(self, groupId, fields=None) -> Any:
         """
         Retrieves details for a specific group by its group ID, optionally returning only specified fields.
 
@@ -279,7 +244,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_groups_by_groupid(
+    async def put_groups_by_groupid(
         self,
         groupId,
         title=None,
@@ -333,7 +298,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_groups_by_groupid(self, groupId) -> Any:
+    async def delete_groups_by_groupid(self, groupId) -> Any:
         """
         Deletes a group resource identified by the provided groupId using an HTTP DELETE request.
 
@@ -357,7 +322,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_groups_bulk(self, members) -> Any:
+    async def put_groups_bulk(self, members) -> Any:
         """
         Updates multiple group memberships in bulk by sending a PUT request with the given member data.
 
@@ -375,9 +340,7 @@ class WrikeApp(APIApplication):
         """
         if members is None:
             raise ValueError("Missing required parameter 'members'")
-        request_body = {
-            "members": members,
-        }
+        request_body = {"members": members}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/groups_bulk"
         query_params = {}
@@ -385,9 +348,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_invitations(
-        self,
-    ) -> Any:
+    async def get_invitations(self) -> Any:
         """
         Retrieves all invitations from the server using a GET request.
 
@@ -409,16 +370,8 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_invitations(
-        self,
-        email,
-        firstName=None,
-        lastName=None,
-        role=None,
-        external=None,
-        subject=None,
-        message=None,
-        userTypeId=None,
+    async def post_invitations(
+        self, email, firstName=None, lastName=None, role=None, external=None, subject=None, message=None, userTypeId=None
     ) -> Any:
         """
         Sends an invitation email to a user with optional details such as name, role, and custom message.
@@ -461,9 +414,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_invitations_by_invitationid(
-        self, invitationId, resend=None, role=None, external=None, userTypeId=None
-    ) -> Any:
+    async def put_invitations_by_invitationid(self, invitationId, resend=None, role=None, external=None, userTypeId=None) -> Any:
         """
         Updates an existing invitation by its unique ID with optional parameters, handling conditional updates and API communication.
 
@@ -486,12 +437,7 @@ class WrikeApp(APIApplication):
         """
         if invitationId is None:
             raise ValueError("Missing required parameter 'invitationId'")
-        request_body = {
-            "resend": resend,
-            "role": role,
-            "external": external,
-            "userTypeId": userTypeId,
-        }
+        request_body = {"resend": resend, "role": role, "external": external, "userTypeId": userTypeId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/invitations/{invitationId}"
         query_params = {}
@@ -499,7 +445,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_invitations_by_invitationid(self, invitationId) -> Any:
+    async def delete_invitations_by_invitationid(self, invitationId) -> Any:
         """
         Deletes a specific invitation using its unique identifier
 
@@ -524,7 +470,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_a_ccount(self, fields=None) -> Any:
+    async def get_a_ccount(self, fields=None) -> Any:
         """
         Retrieves account information from the API, optionally including only specified fields.
 
@@ -546,7 +492,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_a_ccount(self, metadata=None) -> Any:
+    async def put_a_ccount(self, metadata=None) -> Any:
         """
         Sends a PUT request to update or create an account with the provided metadata and returns the server response as a JSON object.
 
@@ -562,9 +508,7 @@ class WrikeApp(APIApplication):
         Tags:
             put, account, metadata, async_job
         """
-        request_body = {
-            "metadata": metadata,
-        }
+        request_body = {"metadata": metadata}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/account"
         query_params = {}
@@ -572,9 +516,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_workflows(
-        self,
-    ) -> Any:
+    async def get_workflows(self) -> Any:
         """
         Retrieves all workflows from the server using a GET request.
 
@@ -596,7 +538,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_workflows(self, name=None, request_body=None) -> Any:
+    async def post_workflows(self, name=None, request_body=None) -> Any:
         """
         Creates a new workflow by sending a POST request to the workflows endpoint with optional name and request body.
 
@@ -619,9 +561,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_workflows_by_workflowid(
-        self, workflowId, name=None, hidden=None, request_body=None
-    ) -> Any:
+    async def put_workflows_by_workflowid(self, workflowId, name=None, hidden=None, request_body=None) -> Any:
         """
         Updates an existing workflow by workflow ID with optional name, hidden status, and request body data.
 
@@ -643,16 +583,12 @@ class WrikeApp(APIApplication):
         if workflowId is None:
             raise ValueError("Missing required parameter 'workflowId'")
         url = f"{self.base_url}/workflows/{workflowId}"
-        query_params = {
-            k: v for k, v in [("name", name), ("hidden", hidden)] if v is not None
-        }
+        query_params = {k: v for k, v in [("name", name), ("hidden", hidden)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_customfields(
-        self,
-    ) -> Any:
+    async def get_customfields(self) -> Any:
         """
         Retrieves all custom fields from the API and returns them as a parsed JSON object.
 
@@ -674,16 +610,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_customfields(
-        self,
-        title,
-        type,
-        spaceId=None,
-        sharing=None,
-        shareds=None,
-        settings=None,
-        request_body=None,
-    ) -> Any:
+    async def post_customfields(self, title, type, spaceId=None, sharing=None, shareds=None, settings=None, request_body=None) -> Any:
         """
         Creates a custom field by sending a POST request to the customfields endpoint with the specified parameters.
 
@@ -726,7 +653,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_customfields_by_customfieldid(self, customFieldId) -> Any:
+    async def get_customfields_by_customfieldid(self, customFieldId) -> Any:
         """
         Retrieves details for a custom field by its unique identifier from the API
 
@@ -750,7 +677,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_customfields_by_customfieldid(
+    async def put_customfields_by_customfieldid(
         self,
         customFieldId,
         title=None,
@@ -812,7 +739,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_customfields_by_customfieldid(self, customFieldId) -> Any:
+    async def delete_customfields_by_customfieldid(self, customFieldId) -> Any:
         """
         Deletes a custom field resource identified by its custom field ID.
 
@@ -836,7 +763,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folders(
+    async def get_folders(
         self,
         permalink=None,
         descendants=None,
@@ -906,7 +833,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folders_by_folderid_folders(
+    async def get_folders_by_folderid_folders(
         self,
         folderId,
         permalink=None,
@@ -977,7 +904,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_folders_by_folderid_folders(
+    async def post_folders_by_folderid_folders(
         self,
         folderId,
         title,
@@ -1045,7 +972,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_folders_by_folderid(self, folderId) -> Any:
+    async def delete_folders_by_folderid(self, folderId) -> Any:
         """
         Deletes a folder resource identified by its folder ID via an HTTP DELETE request.
 
@@ -1070,7 +997,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_folders_by_folderid(
+    async def put_folders_by_folderid(
         self,
         folderId,
         title=None,
@@ -1155,7 +1082,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tasks(
+    async def get_tasks(
         self,
         descendants=None,
         title=None,
@@ -1273,7 +1200,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tasks_by_taskid(self, taskId, fields=None) -> Any:
+    async def get_tasks_by_taskid(self, taskId, fields=None) -> Any:
         """
         Retrieves a task by its ID from the remote service, optionally returning only specified fields.
 
@@ -1298,7 +1225,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_tasks_by_taskid(
+    async def put_tasks_by_taskid(
         self,
         taskId,
         title=None,
@@ -1416,7 +1343,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_tasks_by_taskid(self, taskId) -> Any:
+    async def delete_tasks_by_taskid(self, taskId) -> Any:
         """
         Deletes a task identified by the given task ID via an HTTP DELETE request and returns the response as a JSON object.
 
@@ -1441,7 +1368,7 @@ class WrikeApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_folders_by_folderid_tasks(
+    async def post_folders_by_folderid_tasks(
         self,
         folderId,
         title,

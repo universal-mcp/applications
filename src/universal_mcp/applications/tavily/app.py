@@ -8,7 +8,7 @@ class TavilyApp(APIApplication):
         super().__init__(name=name, integration=integration)
         self.base_url = "https://api.tavily.com"
 
-    def search_and_summarize(self, query: str) -> str:
+    async def search_and_summarize(self, query: str) -> str:
         """
         Queries the Tavily API to perform a web search. It returns a direct AI-generated answer if available; otherwise, it provides a formatted summary of the top three search results, including their titles and snippets.
 

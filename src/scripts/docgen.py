@@ -28,9 +28,7 @@ from src.scripts.prompts import SYSTEM_PROMPT_TEMPLATE, USER_PROMPT_TEMPLATE
 class DescriptionOutput(BaseModel):
     """Structure for the generated description output."""
 
-    description: str = Field(
-        description="A clear, detailed description of what the function does"
-    )
+    description: str = Field(description="A clear, detailed description of what the function does")
     # suggested_name: Optional[str] = Field(None, description="A better name for the function, if applicable")
 
 
@@ -42,9 +40,7 @@ class FunctionExtractor(ast.NodeVisitor):
 
     def __init__(self, source_code: str):
         self.source_lines = source_code.splitlines(keepends=True)
-        self.functions: list[
-            tuple[str, str]
-        ] = []  # Store tuples of (function_name, function_source)
+        self.functions: list[tuple[str, str]] = []  # Store tuples of (function_name, function_source)
 
     def _get_source_segment(self, node: ast.AST) -> str | None:
         """Safely extracts the source segment for a node using ast.get_source_segment."""
@@ -181,11 +177,7 @@ def parse_existing_docstring(docstring: str | None) -> tuple[str, str]:
 
     for i, line in enumerate(lines):
         stripped_line = line.strip()
-        if (
-            not summary_done
-            and stripped_line
-            and not stripped_line.startswith(section_markers)
-        ):
+        if not summary_done and stripped_line and not stripped_line.startswith(section_markers):
             summary_lines.append(line.strip())
         elif not summary_done and not stripped_line and summary_lines:
             # This blank line marks the end of the summary
@@ -208,9 +200,7 @@ def parse_existing_docstring(docstring: str | None) -> tuple[str, str]:
     return summary, rest_of_docstring
 
 
-def generate_description(
-    function_code: str, file_content: str, model: str = "perplexity/sonar"
-) -> DescriptionOutput:
+def generate_description(function_code: str, file_content: str, model: str = "perplexity/sonar") -> DescriptionOutput:
     """
     Generate a high-quality description and suggest a name for a Python function.
 
@@ -242,9 +232,7 @@ def generate_description(
             try:
                 parsed_data = extract_json_from_text(response_text)
                 return DescriptionOutput(
-                    description=parsed_data.get(
-                        "description", "No description available."
-                    ),
+                    description=parsed_data.get("description", "No description available."),
                     # suggested_name=parsed_data.get("suggested_name"),
                 )
             except ValueError:
@@ -255,16 +243,12 @@ def generate_description(
                 delay = base_delay * (2**attempt)
                 time.sleep(delay)
             else:
-                return DescriptionOutput(
-                    description=f"Error generating description after {max_retries} retries: {e}"
-                )
+                return DescriptionOutput(description=f"Error generating description after {max_retries} retries: {e}")
 
         except Exception as e:
             return DescriptionOutput(description=f"An unexpected error occurred: {e}")
 
-    return DescriptionOutput(
-        description="Failed to generate description after all retries."
-    )
+    return DescriptionOutput(description="Failed to generate description after all retries.")
 
 
 def insert_docstring_into_function(function_code: str, docstring: str) -> str:
@@ -281,9 +265,7 @@ def insert_docstring_into_function(function_code: str, docstring: str) -> str:
     try:
         lines = function_code.splitlines(keepends=True)
         tree = ast.parse(function_code)
-        if not tree.body or not isinstance(
-            tree.body[0], (ast.FunctionDef, ast.AsyncFunctionDef)
-        ):
+        if not tree.body or not isinstance(tree.body[0], (ast.FunctionDef, ast.AsyncFunctionDef)):
             return function_code
 
         func_node = tree.body[0]
@@ -293,9 +275,7 @@ def insert_docstring_into_function(function_code: str, docstring: str) -> str:
         if func_node.body:
             # Use the indentation of the first statement in the body (e.g., the old docstring).
             first_body_line_str = lines[func_node.body[0].lineno - 1]
-            body_indent = first_body_line_str[
-                : len(first_body_line_str) - len(first_body_line_str.lstrip())
-            ]
+            body_indent = first_body_line_str[: len(first_body_line_str) - len(first_body_line_str.lstrip())]
         else:
             # Fallback for empty functions: calculate from the 'def' line.
             def_line = lines[func_node.lineno - 1]
@@ -305,9 +285,7 @@ def insert_docstring_into_function(function_code: str, docstring: str) -> str:
 
         # Format the new docstring with the determined indentation
         new_docstring_lines_formatted = [f'{body_indent}"""\n']
-        new_docstring_lines_formatted.extend(
-            [f"{body_indent}{line}\n" for line in docstring.splitlines()]
-        )
+        new_docstring_lines_formatted.extend([f"{body_indent}{line}\n" for line in docstring.splitlines()])
         new_docstring_lines_formatted.append(f'{body_indent}"""\n')
 
         # Check if the first statement is an existing docstring
@@ -321,9 +299,7 @@ def insert_docstring_into_function(function_code: str, docstring: str) -> str:
             existing_docstring_node = func_node.body[0]
 
         # Splice the code
-        insert_idx = (
-            func_node.body[0].lineno - 1 if func_node.body else func_node.lineno
-        )
+        insert_idx = func_node.body[0].lineno - 1 if func_node.body else func_node.lineno
         pre_insertion_lines = lines[:insert_idx]
 
         if existing_docstring_node:
@@ -331,9 +307,7 @@ def insert_docstring_into_function(function_code: str, docstring: str) -> str:
         else:
             post_insertion_lines = lines[insert_idx:]
 
-        output_lines = (
-            pre_insertion_lines + new_docstring_lines_formatted + post_insertion_lines
-        )
+        output_lines = pre_insertion_lines + new_docstring_lines_formatted + post_insertion_lines
 
         final_code = "".join(output_lines)
         ast.parse(final_code)  # Validate syntax
@@ -360,9 +334,7 @@ def rename_function_in_code(function_code: str, old_name: str, new_name: str) ->
     pattern = r"(async\s+def|def)\s+" + re.escape(old_name) + r"(\s*\()"
     replacement = r"\1 " + new_name + r"\2"
 
-    new_function_code, num_replacements = re.subn(
-        pattern, replacement, function_code, 1
-    )
+    new_function_code, num_replacements = re.subn(pattern, replacement, function_code, 1)
 
     if num_replacements == 0:
         return function_code
@@ -392,9 +364,7 @@ def update_list_tools_method(content: str, old_name: str, new_name: str) -> str:
     replacement = r"\1" + new_name
 
     # First, find the list_tools method definition to narrow the search area
-    list_tools_match = re.search(
-        r"def\s+list_tools\s*\([^)]*\):\s*return\s*\[[^\]]*\]", content, re.DOTALL
-    )
+    list_tools_match = re.search(r"def\s+list_tools\s*\([^)]*\):\s*return\s*\[[^\]]*\]", content, re.DOTALL)
 
     if not list_tools_match:
         return content
@@ -402,9 +372,7 @@ def update_list_tools_method(content: str, old_name: str, new_name: str) -> str:
     list_tools_code = list_tools_match.group(0)
 
     # Perform the replacement only within the found method block
-    updated_list_tools_code, num_replacements = re.subn(
-        pattern, replacement, list_tools_code
-    )
+    updated_list_tools_code, num_replacements = re.subn(pattern, replacement, list_tools_code)
 
     if num_replacements > 0:
         return content.replace(list_tools_code, updated_list_tools_code)
@@ -437,7 +405,6 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
     count = 0
 
     for function_name, function_code in functions:
-
         try:
             func_tree = ast.parse(function_code)
             func_node = func_tree.body[0]
@@ -467,15 +434,11 @@ def process_file(file_path: str, model: str = "perplexity/sonar") -> int:
         #     is_renamed = True
 
         # 4. Insert the new docstring back into the (potentially renamed) function code
-        updated_function_block = insert_docstring_into_function(
-            code_to_update, reconstructed_docstring
-        )
+        updated_function_block = insert_docstring_into_function(code_to_update, reconstructed_docstring)
 
         # 5. If any changes were made, update the main content
         if updated_function_block != function_code:
-            updated_content = updated_content.replace(
-                function_code, updated_function_block
-            )
+            updated_content = updated_content.replace(function_code, updated_function_block)
             count += 1
 
             # 6. If the function was renamed, also update the list_tools method

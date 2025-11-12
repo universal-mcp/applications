@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class AhrefsApp(APIApplication):
         super().__init__(name="ahrefs", integration=integration, **kwargs)
         self.base_url = "https://api.ahrefs.com/v3"
 
-    def crawler_ips(self, output=None) -> dict[str, Any]:
+    async def crawler_ips(self, output=None) -> dict[str, Any]:
         """
         Retrieve the list of public crawler IP addresses from the API.
 
@@ -31,7 +30,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def crawler_ip_ranges(self, output=None) -> dict[str, Any]:
+    async def crawler_ip_ranges(self, output=None) -> dict[str, Any]:
         """
         Fetches the current public crawler IP ranges from the API, optionally specifying output format.
 
@@ -53,7 +52,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def limits_and_usage(self, output=None) -> dict[str, Any]:
+    async def limits_and_usage(self, output=None) -> dict[str, Any]:
         """
         Retrieves current API subscription limits and usage statistics from the service.
 
@@ -75,15 +74,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def batch_analysis(
-        self,
-        select,
-        targets,
-        order_by=None,
-        country=None,
-        volume_mode=None,
-        output=None,
-    ) -> dict[str, Any]:
+    async def batch_analysis(self, select, targets, order_by=None, country=None, volume_mode=None, output=None) -> dict[str, Any]:
         """
         Submits a batch analysis request with specified parameters and returns the analysis results as a dictionary.
 
@@ -124,9 +115,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def serp_overview(
-        self, select, country, keyword, top_positions=None, date=None, output=None
-    ) -> dict[str, Any]:
+    async def serp_overview(self, select, country, keyword, top_positions=None, date=None, output=None) -> dict[str, Any]:
         """
         Retrieves a SERP (Search Engine Results Page) overview report based on specified selection, country, and keyword criteria.
 
@@ -171,7 +160,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def overview(
+    async def overview(
         self,
         select,
         date,
@@ -243,7 +232,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def competitors_overview(
+    async def competitors_overview(
         self,
         select,
         date,
@@ -316,7 +305,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def projects(self, output=None) -> dict[str, Any]:
+    async def projects(self, output=None) -> dict[str, Any]:
         """
         Retrieves a list of site audit projects from the configured base URL, optionally specifying an output format.
 
@@ -338,7 +327,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def domain_rating(self, target, date, protocol=None, output=None) -> dict[str, Any]:
+    async def domain_rating(self, target, date, protocol=None, output=None) -> dict[str, Any]:
         """
         Fetches the domain rating and related metrics for a specified target and date.
 
@@ -363,23 +352,12 @@ class AhrefsApp(APIApplication):
         if date is None:
             raise ValueError("Missing required parameter 'date'")
         url = f"{self.base_url}/site-explorer/domain-rating"
-        query_params = {
-            k: v
-            for k, v in [
-                ("protocol", protocol),
-                ("target", target),
-                ("date", date),
-                ("output", output),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("protocol", protocol), ("target", target), ("date", date), ("output", output)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def backlinks_stats(
-        self, target, date, protocol=None, mode=None, output=None
-    ) -> dict[str, Any]:
+    async def backlinks_stats(self, target, date, protocol=None, mode=None, output=None) -> dict[str, Any]:
         """
         Retrieves backlink statistics for a specified target and date, with optional filters for protocol, mode, and output format.
 
@@ -407,22 +385,14 @@ class AhrefsApp(APIApplication):
         url = f"{self.base_url}/site-explorer/backlinks-stats"
         query_params = {
             k: v
-            for k, v in [
-                ("protocol", protocol),
-                ("target", target),
-                ("mode", mode),
-                ("date", date),
-                ("output", output),
-            ]
+            for k, v in [("protocol", protocol), ("target", target), ("mode", mode), ("date", date), ("output", output)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def outlinks_stats(
-        self, target, protocol=None, mode=None, output=None
-    ) -> dict[str, Any]:
+    async def outlinks_stats(self, target, protocol=None, mode=None, output=None) -> dict[str, Any]:
         """
         Retrieves outbound link statistics for the specified target from the site explorer API.
 
@@ -445,30 +415,12 @@ class AhrefsApp(APIApplication):
         if target is None:
             raise ValueError("Missing required parameter 'target'")
         url = f"{self.base_url}/site-explorer/outlinks-stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("protocol", protocol),
-                ("mode", mode),
-                ("target", target),
-                ("output", output),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("protocol", protocol), ("mode", mode), ("target", target), ("output", output)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def metrics(
-        self,
-        target,
-        date,
-        volume_mode=None,
-        country=None,
-        protocol=None,
-        mode=None,
-        output=None,
-    ) -> dict[str, Any]:
+    async def metrics(self, target, date, volume_mode=None, country=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
         """
         Retrieves metrics data from the site explorer API endpoint.
 
@@ -513,15 +465,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def refdomains_history(
-        self,
-        date_from,
-        target,
-        history_grouping=None,
-        date_to=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def refdomains_history(
+        self, date_from, target, history_grouping=None, date_to=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Retrieves the historical data of reference domains from a specified site.
@@ -566,9 +511,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def domain_rating_history(
-        self, date_from, target, history_grouping=None, date_to=None, output=None
-    ) -> dict[str, Any]:
+    async def domain_rating_history(self, date_from, target, history_grouping=None, date_to=None, output=None) -> dict[str, Any]:
         """
         Retrieves historical domain rating data for a specified target within a given date range.
 
@@ -609,9 +552,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def url_rating_history(
-        self, date_from, target, history_grouping=None, date_to=None, output=None
-    ) -> dict[str, Any]:
+    async def url_rating_history(self, date_from, target, history_grouping=None, date_to=None, output=None) -> dict[str, Any]:
         """
         Retrieves URL rating history data for a specified target within a date range.
 
@@ -652,16 +593,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def pages_history(
-        self,
-        date_from,
-        target,
-        history_grouping=None,
-        date_to=None,
-        country=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def pages_history(
+        self, date_from, target, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Retrieves historical page data for a target using specified filters.
@@ -709,7 +642,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def metrics_history(
+    async def metrics_history(
         self,
         date_from,
         target,
@@ -771,17 +704,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def keywords_history(
-        self,
-        date_from,
-        target,
-        select=None,
-        history_grouping=None,
-        date_to=None,
-        country=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def keywords_history(
+        self, date_from, target, select=None, history_grouping=None, date_to=None, country=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Fetches the historical keyword rankings and performance data for a specified target within an optional date range and set of filters.
@@ -831,16 +755,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def metrics_by_country(
-        self,
-        target,
-        date,
-        volume_mode=None,
-        limit=None,
-        protocol=None,
-        mode=None,
-        output=None,
-    ) -> dict[str, Any]:
+    async def metrics_by_country(self, target, date, volume_mode=None, limit=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
         """
         Fetches site metrics grouped by country for a specified target and date.
 
@@ -885,15 +800,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def pages_by_traffic(
-        self,
-        target,
-        volume_mode=None,
-        country=None,
-        protocol=None,
-        mode=None,
-        output=None,
-    ) -> dict[str, Any]:
+    async def pages_by_traffic(self, target, volume_mode=None, country=None, protocol=None, mode=None, output=None) -> dict[str, Any]:
         """
         Retrieves a list of top pages for a specified target domain or URL, ranked by estimated organic search traffic.
 
@@ -934,7 +841,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def all_backlinks(
+    async def all_backlinks(
         self,
         select,
         target,
@@ -1003,7 +910,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def broken_backlinks(
+    async def broken_backlinks(
         self,
         select,
         target,
@@ -1069,7 +976,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def refdomains(
+    async def refdomains(
         self,
         select,
         target,
@@ -1135,7 +1042,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def anchors(
+    async def anchors(
         self,
         select,
         target,
@@ -1201,18 +1108,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def linkeddomains(
-        self,
-        select,
-        target,
-        timeout=None,
-        offset=None,
-        limit=None,
-        order_by=None,
-        where=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def linkeddomains(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Retrieves linked domains for a specified target using the site explorer API endpoint.
@@ -1264,18 +1161,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def linked_anchors_external(
-        self,
-        select,
-        target,
-        timeout=None,
-        offset=None,
-        limit=None,
-        order_by=None,
-        where=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def linked_anchors_external(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Fetch linked external anchor data for a specified target using provided selection and filtering criteria.
@@ -1327,18 +1214,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def linked_anchors_internal(
-        self,
-        select,
-        target,
-        timeout=None,
-        offset=None,
-        limit=None,
-        order_by=None,
-        where=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def linked_anchors_internal(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Fetches internal linked anchor data for a specified target from the site explorer API, applying optional filtering and query parameters.
@@ -1390,7 +1267,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def organic_keywords(
+    async def organic_keywords(
         self,
         select,
         target,
@@ -1469,7 +1346,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def organic_competitors(
+    async def organic_competitors(
         self,
         select,
         target,
@@ -1548,7 +1425,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def top_pages(
+    async def top_pages(
         self,
         select,
         target,
@@ -1625,7 +1502,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def paid_pages(
+    async def paid_pages(
         self,
         select,
         target,
@@ -1702,7 +1579,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def best_by_external_links(
+    async def best_by_external_links(
         self,
         select,
         target,
@@ -1768,18 +1645,8 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def best_by_internal_links(
-        self,
-        select,
-        target,
-        timeout=None,
-        offset=None,
-        limit=None,
-        order_by=None,
-        where=None,
-        protocol=None,
-        mode=None,
-        output=None,
+    async def best_by_internal_links(
+        self, select, target, timeout=None, offset=None, limit=None, order_by=None, where=None, protocol=None, mode=None, output=None
     ) -> dict[str, Any]:
         """
         Retrieves the best-performing internal links for a specified target using the site explorer API endpoint.
@@ -1831,7 +1698,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def total_search_volume_history(
+    async def total_search_volume_history(
         self,
         date_from,
         target,
@@ -1894,7 +1761,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def keyword_explorer_overview(
+    async def keyword_explorer_overview(
         self,
         select,
         country,
@@ -1969,7 +1836,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def volume_history(self, country, keyword, output=None) -> dict[str, Any]:
+    async def volume_history(self, country, keyword, output=None) -> dict[str, Any]:
         """
         Fetches the historical search volume for a given keyword in a specified country.
 
@@ -1993,18 +1860,12 @@ class AhrefsApp(APIApplication):
         if keyword is None:
             raise ValueError("Missing required parameter 'keyword'")
         url = f"{self.base_url}/keywords-explorer/volume-history"
-        query_params = {
-            k: v
-            for k, v in [("country", country), ("keyword", keyword), ("output", output)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("country", country), ("keyword", keyword), ("output", output)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def volume_by_country(
-        self, keyword, limit=None, search_engine=None, output=None
-    ) -> dict[str, Any]:
+    async def volume_by_country(self, keyword, limit=None, search_engine=None, output=None) -> dict[str, Any]:
         """
         Retrieves search volume by country for a given keyword.
 
@@ -2027,20 +1888,13 @@ class AhrefsApp(APIApplication):
             raise ValueError("Missing required parameter 'keyword'")
         url = f"{self.base_url}/keywords-explorer/volume-by-country"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("search_engine", search_engine),
-                ("keyword", keyword),
-                ("output", output),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("search_engine", search_engine), ("keyword", keyword), ("output", output)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def matching_terms(
+    async def matching_terms(
         self,
         select,
         country,
@@ -2112,7 +1966,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def related_terms(
+    async def related_terms(
         self,
         select,
         country,
@@ -2180,7 +2034,7 @@ class AhrefsApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_suggestions(
+    async def search_suggestions(
         self,
         select,
         country,

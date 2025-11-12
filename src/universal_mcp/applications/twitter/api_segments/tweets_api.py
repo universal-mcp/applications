@@ -111,9 +111,7 @@ class TweetsApi(APISegmentBase):
             "reply_settings": reply_settings,
             "text": text,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/tweets"
         query_params = {}
         response = self._post(
@@ -125,9 +123,7 @@ class TweetsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_tweets_compliance_stream(
-        self, partition, backfill_minutes=None, start_time=None, end_time=None
-    ) -> Any:
+    def get_tweets_compliance_stream(self, partition, backfill_minutes=None, start_time=None, end_time=None) -> Any:
         """
         Streams real-time compliance events for tweets, such as deletions and user updates, from a specified partition. Unlike other stream functions that return tweet content, this provides metadata about content and user status changes, supporting optional time-based filtering and backfilling.
 
@@ -569,9 +565,7 @@ class TweetsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def stream_labeled_tweets(
-        self, backfill_minutes=None, start_time=None, end_time=None
-    ) -> Any:
+    def stream_labeled_tweets(self, backfill_minutes=None, start_time=None, end_time=None) -> Any:
         """
         Streams real-time Tweet objects labeled for compliance reasons, such as withheld content. Unlike `get_tweets_compliance_stream`, which provides events, this returns the actual tweets. Supports filtering by a time window and backfilling missed data upon reconnection.
 
@@ -917,9 +911,7 @@ class TweetsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def get_filtered_stream_rules(
-        self, ids=None, max_results=None, pagination_token=None
-    ) -> dict[str, Any]:
+    def get_filtered_stream_rules(self, ids=None, max_results=None, pagination_token=None) -> dict[str, Any]:
         """
         Retrieves the active filtering rules for a Twitter API v2 filtered stream. It can fetch all rules or a subset specified by rule IDs, with support for pagination to manage large rule sets, complementing the `add_or_delete_rules` and `search_stream` functions.
 
@@ -952,9 +944,7 @@ class TweetsApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def update_stream_rules(
-        self, dry_run=None, delete_all=None, add=None, delete=None
-    ) -> dict[str, Any]:
+    def update_stream_rules(self, dry_run=None, delete_all=None, add=None, delete=None) -> dict[str, Any]:
         """
         Adds or removes filtering rules for a tweet stream. Supports a dry-run mode to validate rule syntax without application and an option to delete all existing rules. This function directly modifies the active rule set used by the `search_stream` function.
 
@@ -976,15 +966,9 @@ class TweetsApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"add": add, "delete": delete}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/tweets/search/stream/rules"
-        query_params = {
-            k: v
-            for k, v in [("dry_run", dry_run), ("delete_all", delete_all)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("dry_run", dry_run), ("delete_all", delete_all)] if v is not None}
         response = self._post(
             url,
             data=request_body_data,
@@ -1012,11 +996,7 @@ class TweetsApi(APISegmentBase):
             General
         """
         url = f"{self.main_app_client.base_url}/2/tweets/search/stream/rules/counts"
-        query_params = {
-            k: v
-            for k, v in [("rules_count.fields", rules_count_fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("rules_count.fields", rules_count_fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -1332,9 +1312,7 @@ class TweetsApi(APISegmentBase):
             raise ValueError("Missing required parameter 'tweet_id'.")
         request_body_data = None
         request_body_data = {"hidden": hidden}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/tweets/{tweet_id}/hidden"
         query_params = {}
         response = self._put(

@@ -26,11 +26,7 @@ class UsageApi(APISegmentBase):
             Usage
         """
         url = f"{self.main_app_client.base_url}/2/usage/tweets"
-        query_params = {
-            k: v
-            for k, v in [("days", days), ("usage.fields", usage_fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("days", days), ("usage.fields", usage_fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()

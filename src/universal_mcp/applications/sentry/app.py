@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class SentryApp(APIApplication):
         super().__init__(name="sentry", integration=integration, **kwargs)
         self.base_url = "https://us.sentry.io"
 
-    def list_your_organizations(
-        self, owner=None, cursor=None, query=None, sortBy=None
-    ) -> list[Any]:
+    async def list_your_organizations(self, owner=None, cursor=None, query=None, sortBy=None) -> list[Any]:
         """
         Retrieves a list of organizations using the "GET" method, allowing filtering by owner, query, and sorting, and requires authentication with admin, read, or write permissions.
 
@@ -28,23 +25,12 @@ class SentryApp(APIApplication):
             Users, important
         """
         url = f"{self.base_url}/api/0/organizations/"
-        query_params = {
-            k: v
-            for k, v in [
-                ("owner", owner),
-                ("cursor", cursor),
-                ("query", query),
-                ("sortBy", sortBy),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("owner", owner), ("cursor", cursor), ("query", query), ("sortBy", sortBy)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization(
-        self, organization_id_or_slug, detailed=None
-    ) -> dict[str, Any]:
+    async def retrieve_an_organization(self, organization_id_or_slug, detailed=None) -> dict[str, Any]:
         """
         Retrieves detailed information about a specified organization by its ID or slug, optionally including extended details, requiring appropriate organizational permissions.
 
@@ -66,7 +52,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_organization(
+    async def update_an_organization(
         self,
         organization_id_or_slug,
         slug=None,
@@ -165,7 +151,7 @@ class SentryApp(APIApplication):
         Below is an example of a payload for a set of advanced data scrubbing rules for masking credit card numbers from the log message (equivalent to `[Mask] [Credit card numbers] from [$message]` in the Sentry app) and removing a specific key called `foo` (equivalent to `[Remove] [Anything] from [extra.foo]` in the Sentry app):
         ```json
         {
-            relayPiiConfig: "{\"rules":{\"0\":{\"type\":\"creditcard\",\"redaction\":{\"method\":\"mask\"}},\"1\":{\"type\":\"anything\",\"redaction\":{\"method\":\"remove\"}}},\"applications\":{\"$message\":[\"0\"],\"extra.foo\":[\"1\"]}}"
+            relayPiiConfig: "{"rules":{"0":{"type":"creditcard","redaction":{"method":"mask"}},"1":{"type":"anything","redaction":{"method":"remove"}}},"applications":{"$message":["0"],"extra.foo":["1"]}}"
         }
         ```
 
@@ -240,9 +226,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_metric_alert_rules(
-        self, organization_id_or_slug
-    ) -> list[Any]:
+    async def list_an_organization_s_metric_alert_rules(self, organization_id_or_slug) -> list[Any]:
         """
         Retrieves the list of alert rules associated with the specified organization and requires appropriate read and organization permissions.
 
@@ -263,7 +247,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_organization_metric_alert_rule(
+    async def create_organization_metric_alert_rule(
         self,
         organization_id_or_slug,
         name,
@@ -391,9 +375,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_metric_alert_rule(
-        self, organization_id_or_slug, alert_rule_id
-    ) -> dict[str, Any]:
+    async def get_organization_metric_alert_rule(self, organization_id_or_slug, alert_rule_id) -> dict[str, Any]:
         """
         Retrieves an alert rule by its ID within a specified organization using the organization's ID or slug.
 
@@ -417,7 +399,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_metric_alert_rule(
+    async def update_a_metric_alert_rule(
         self,
         organization_id_or_slug,
         alert_rule_id,
@@ -550,7 +532,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_metric_alert_rule(self, organization_id_or_slug, alert_rule_id) -> Any:
+    async def delete_a_metric_alert_rule(self, organization_id_or_slug, alert_rule_id) -> Any:
         """
         Deletes the specified alert rule for the given organization using the alert rule identifier, returning a 202 Accepted status if the deletion is initiated.
 
@@ -574,9 +556,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_metric_alert_rule_activations(
-        self, organization_id_or_slug, alert_rule_id
-    ) -> list[Any]:
+    async def get_metric_alert_rule_activations(self, organization_id_or_slug, alert_rule_id) -> list[Any]:
         """
         Retrieves a list of activations for a specific alert rule within an organization.
 
@@ -600,9 +580,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_integration_provider_information(
-        self, organization_id_or_slug, providerKey=None
-    ) -> dict[str, Any]:
+    async def get_integration_provider_information(self, organization_id_or_slug, providerKey=None) -> dict[str, Any]:
         """
         Retrieves the list of configured integrations for a specified organization, optionally filtered by provider key, and returns integration details if found.
 
@@ -619,16 +597,12 @@ class SentryApp(APIApplication):
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/config/integrations/"
-        query_params = {
-            k: v for k, v in [("providerKey", providerKey)] if v is not None
-        }
+        query_params = {k: v for k, v in [("providerKey", providerKey)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_custom_dashboards(
-        self, organization_id_or_slug, per_page=None, cursor=None
-    ) -> list[Any]:
+    async def list_an_organization_s_custom_dashboards(self, organization_id_or_slug, per_page=None, cursor=None) -> list[Any]:
         """
         Retrieves a list of dashboards for a specified organization using pagination parameters.
 
@@ -645,19 +619,13 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        url = (
-            f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/"
-        )
-        query_params = {
-            k: v
-            for k, v in [("per_page", per_page), ("cursor", cursor)]
-            if v is not None
-        }
+        url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/"
+        query_params = {k: v for k, v in [("per_page", per_page), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_dashboard_for_an_organization(
+    async def create_a_new_dashboard_for_an_organization(
         self,
         organization_id_or_slug,
         title,
@@ -711,17 +679,13 @@ class SentryApp(APIApplication):
             "permissions": permissions,
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = (
-            f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/"
-        )
+        url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/"
         query_params = {}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization_s_custom_dashboard(
-        self, organization_id_or_slug, dashboard_id
-    ) -> dict[str, Any]:
+    async def retrieve_an_organization_s_custom_dashboard(self, organization_id_or_slug, dashboard_id) -> dict[str, Any]:
         """
         Retrieves details of a specific dashboard within an organization using its ID or slug and the dashboard ID.
 
@@ -745,7 +709,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def edit_an_organization_s_custom_dashboard(
+    async def edit_an_organization_s_custom_dashboard(
         self,
         organization_id_or_slug,
         dashboard_id,
@@ -809,9 +773,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_s_custom_dashboard(
-        self, organization_id_or_slug, dashboard_id
-    ) -> Any:
+    async def delete_an_organization_s_custom_dashboard(self, organization_id_or_slug, dashboard_id) -> Any:
         """
         Deletes a specific dashboard in an organization using the provided organization ID or slug and dashboard ID, requiring authentication with admin or write permissions.
 
@@ -835,13 +797,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_discover_saved_queries(
-        self,
-        organization_id_or_slug,
-        per_page=None,
-        cursor=None,
-        query=None,
-        sortBy=None,
+    async def list_an_organization_s_discover_saved_queries(
+        self, organization_id_or_slug, per_page=None, cursor=None, query=None, sortBy=None
     ) -> list[Any]:
         """
         Retrieves a list of saved discoveries for an organization, allowing filtering by query, sorting, and pagination.
@@ -863,20 +820,13 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/discover/saved/"
         query_params = {
-            k: v
-            for k, v in [
-                ("per_page", per_page),
-                ("cursor", cursor),
-                ("query", query),
-                ("sortBy", sortBy),
-            ]
-            if v is not None
+            k: v for k, v in [("per_page", per_page), ("cursor", cursor), ("query", query), ("sortBy", sortBy)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_saved_query(
+    async def create_a_new_saved_query(
         self,
         organization_id_or_slug,
         name,
@@ -969,9 +919,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization_s_discover_saved_query(
-        self, organization_id_or_slug, query_id
-    ) -> dict[str, Any]:
+    async def retrieve_an_organization_s_discover_saved_query(self, organization_id_or_slug, query_id) -> dict[str, Any]:
         """
         Retrieves saved discovery data for a specified query within an organization using the provided organization ID or slug and query ID.
 
@@ -995,7 +943,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def edit_organization_discover_saved_query(
+    async def edit_organization_discover_saved_query(
         self,
         organization_id_or_slug,
         query_id,
@@ -1092,9 +1040,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_organization_discover_saved_query(
-        self, organization_id_or_slug, query_id
-    ) -> Any:
+    async def delete_organization_discover_saved_query(self, organization_id_or_slug, query_id) -> Any:
         """
         Deletes a saved query for a specified organization and query ID, returning a 204 (No Content) on success.
 
@@ -1118,9 +1064,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_environments(
-        self, organization_id_or_slug, visibility=None
-    ) -> list[Any]:
+    async def list_an_organization_s_environments(self, organization_id_or_slug, visibility=None) -> list[Any]:
         """
         Lists all environments for a specified organization, optionally filtered by visibility, when authenticated with sufficient permissions.
 
@@ -1142,7 +1086,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_discover_events_in_table_format(
+    async def query_discover_events_in_table_format(
         self,
         organization_id_or_slug,
         field,
@@ -1198,15 +1142,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_an_external_user(
-        self,
-        organization_id_or_slug,
-        user_id,
-        external_name,
-        provider,
-        integration_id,
-        id,
-        external_id=None,
+    async def create_an_external_user(
+        self, organization_id_or_slug, user_id, external_name, provider, integration_id, id, external_id=None
     ) -> dict[str, Any]:
         """
         Links a user from an external provider to a Sentry user within the specified organization and returns the external user resource.
@@ -1250,16 +1187,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_external_user(
-        self,
-        organization_id_or_slug,
-        external_user_id,
-        user_id,
-        external_name,
-        provider,
-        integration_id,
-        id,
-        external_id=None,
+    async def update_an_external_user(
+        self, organization_id_or_slug, external_user_id, user_id, external_name, provider, integration_id, id, external_id=None
     ) -> dict[str, Any]:
         """
         Updates the details of a specified external user within an organization using the provided request body.
@@ -1306,7 +1235,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_external_user(self, organization_id_or_slug, external_user_id) -> Any:
+    async def delete_an_external_user(self, organization_id_or_slug, external_user_id) -> Any:
         """
         Removes an external user from an organization using the organization ID or slug and the external user ID.
 
@@ -1330,12 +1259,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_organization_available_integrations(
-        self,
-        organization_id_or_slug,
-        providerKey=None,
-        features=None,
-        includeConfig=None,
+    async def list_organization_available_integrations(
+        self, organization_id_or_slug, providerKey=None, features=None, includeConfig=None
     ) -> list[Any]:
         """
         Retrieves a list of integrations for a specified organization using the provided organization ID or slug, allowing optional filtering by provider key, features, and configuration inclusion.
@@ -1356,21 +1281,13 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/integrations/"
         query_params = {
-            k: v
-            for k, v in [
-                ("providerKey", providerKey),
-                ("features", features),
-                ("includeConfig", includeConfig),
-            ]
-            if v is not None
+            k: v for k, v in [("providerKey", providerKey), ("features", features), ("includeConfig", includeConfig)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_organization_integration(
-        self, organization_id_or_slug, integration_id
-    ) -> dict[str, Any]:
+    async def get_organization_integration(self, organization_id_or_slug, integration_id) -> dict[str, Any]:
         """
         Retrieves details for a specific integration within an organization using its ID or slug.
 
@@ -1394,9 +1311,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_organization_integration(
-        self, organization_id_or_slug, integration_id
-    ) -> Any:
+    async def delete_organization_integration(self, organization_id_or_slug, integration_id) -> Any:
         """
         Deletes an integration from an organization using the provided organization ID or slug and integration ID, returning a 204 status code upon successful deletion.
 
@@ -1420,7 +1335,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_members(self, organization_id_or_slug) -> list[Any]:
+    async def list_an_organization_s_members(self, organization_id_or_slug) -> list[Any]:
         """
         Retrieves a list of members belonging to a specified organization, with access controlled by member-specific permissions.
 
@@ -1441,14 +1356,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_a_member_to_an_organization(
-        self,
-        organization_id_or_slug,
-        email,
-        orgRole=None,
-        teamRoles=None,
-        sendInvite=None,
-        reinvite=None,
+    async def add_a_member_to_an_organization(
+        self, organization_id_or_slug, email, orgRole=None, teamRoles=None, sendInvite=None, reinvite=None
     ) -> dict[str, Any]:
         """
         Invites a new member to the specified organization by creating their membership with the provided details.
@@ -1483,13 +1392,7 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        request_body = {
-            "email": email,
-            "orgRole": orgRole,
-            "teamRoles": teamRoles,
-            "sendInvite": sendInvite,
-            "reinvite": reinvite,
-        }
+        request_body = {"email": email, "orgRole": orgRole, "teamRoles": teamRoles, "sendInvite": sendInvite, "reinvite": reinvite}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/"
         query_params = {}
@@ -1497,9 +1400,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization_member(
-        self, organization_id_or_slug, member_id
-    ) -> dict[str, Any]:
+    async def retrieve_an_organization_member(self, organization_id_or_slug, member_id) -> dict[str, Any]:
         """
         Retrieves information about a specific member in an organization using the provided organization ID or slug and member ID.
 
@@ -1523,7 +1424,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_organization_member_s_roles(
+    async def update_an_organization_member_s_roles(
         self, organization_id_or_slug, member_id, orgRole=None, teamRoles=None
     ) -> dict[str, Any]:
         """
@@ -1575,10 +1476,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        request_body = {
-            "orgRole": orgRole,
-            "teamRoles": teamRoles,
-        }
+        request_body = {"orgRole": orgRole, "teamRoles": teamRoles}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/"
         query_params = {}
@@ -1586,7 +1484,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_member(self, organization_id_or_slug, member_id) -> Any:
+    async def delete_an_organization_member(self, organization_id_or_slug, member_id) -> Any:
         """
         Deletes a member from an organization using the provided organization ID or slug and member ID.
 
@@ -1610,9 +1508,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_an_organization_member_to_a_team(
-        self, organization_id_or_slug, member_id, team_id_or_slug
-    ) -> dict[str, Any]:
+    async def add_an_organization_member_to_a_team(self, organization_id_or_slug, member_id, team_id_or_slug) -> dict[str, Any]:
         """
         Adds a member to a specified team within an organization.
 
@@ -1639,7 +1535,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_organization_member_s_team_role(
+    async def update_an_organization_member_s_team_role(
         self, organization_id_or_slug, member_id, team_id_or_slug, teamRole=None
     ) -> dict[str, Any]:
         """
@@ -1666,9 +1562,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
-        request_body = {
-            "teamRole": teamRole,
-        }
+        request_body = {"teamRole": teamRole}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/teams/{team_id_or_slug}/"
         query_params = {}
@@ -1676,9 +1570,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_member_from_a_team(
-        self, organization_id_or_slug, member_id, team_id_or_slug
-    ) -> dict[str, Any]:
+    async def delete_an_organization_member_from_a_team(self, organization_id_or_slug, member_id, team_id_or_slug) -> dict[str, Any]:
         """
         Removes a member from a specific team in an organization using the provided organization ID or slug, member ID, and team ID or slug.
 
@@ -1705,9 +1597,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_monitors_for_an_organization(
-        self, organization_id_or_slug, project=None, environment=None, owner=None
-    ) -> list[Any]:
+    async def retrieve_monitors_for_an_organization(self, organization_id_or_slug, project=None, environment=None, owner=None) -> list[Any]:
         """
         Retrieves a list of monitors for an organization using the provided organization ID or slug, with optional filtering by project, environment, and owner.
 
@@ -1726,28 +1616,13 @@ class SentryApp(APIApplication):
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/"
-        query_params = {
-            k: v
-            for k, v in [
-                ("project", project),
-                ("environment", environment),
-                ("owner", owner),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("project", project), ("environment", environment), ("owner", owner)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_a_monitor(
-        self,
-        organization_id_or_slug,
-        name,
-        type,
-        slug=None,
-        status=None,
-        owner=None,
-        is_muted=None,
+    async def create_a_monitor(
+        self, organization_id_or_slug, name, type, slug=None, status=None, owner=None, is_muted=None
     ) -> dict[str, Any]:
         """
         Creates a new monitor for an organization using the provided JSON body and returns a status message, requiring authentication with permissions to read or write within the organization.
@@ -1772,14 +1647,7 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        request_body = {
-            "name": name,
-            "type": type,
-            "slug": slug,
-            "status": status,
-            "owner": owner,
-            "is_muted": is_muted,
-        }
+        request_body = {"name": name, "type": type, "slug": slug, "status": status, "owner": owner, "is_muted": is_muted}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/"
         query_params = {}
@@ -1787,9 +1655,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_monitor(
-        self, organization_id_or_slug, monitor_id_or_slug, environment=None
-    ) -> dict[str, Any]:
+    async def retrieve_a_monitor(self, organization_id_or_slug, monitor_id_or_slug, environment=None) -> dict[str, Any]:
         """
         Retrieves details about a specific monitor in an organization based on the provided organization ID or slug and monitor ID or slug, optionally filtered by environment.
 
@@ -1809,23 +1675,13 @@ class SentryApp(APIApplication):
         if monitor_id_or_slug is None:
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/"
-        query_params = {
-            k: v for k, v in [("environment", environment)] if v is not None
-        }
+        query_params = {k: v for k, v in [("environment", environment)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_a_monitor(
-        self,
-        organization_id_or_slug,
-        monitor_id_or_slug,
-        name,
-        type,
-        slug=None,
-        status=None,
-        owner=None,
-        is_muted=None,
+    async def update_a_monitor(
+        self, organization_id_or_slug, monitor_id_or_slug, name, type, slug=None, status=None, owner=None, is_muted=None
     ) -> dict[str, Any]:
         """
         Updates the specified monitor within the given organization by replacing its configuration using the provided JSON data.
@@ -1853,14 +1709,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if monitor_id_or_slug is None:
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
-        request_body = {
-            "name": name,
-            "type": type,
-            "slug": slug,
-            "status": status,
-            "owner": owner,
-            "is_muted": is_muted,
-        }
+        request_body = {"name": name, "type": type, "slug": slug, "status": status, "owner": owner, "is_muted": is_muted}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {}
@@ -1868,9 +1717,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_monitor_or_monitor_environments(
-        self, organization_id_or_slug, monitor_id_or_slug, environment=None
-    ) -> Any:
+    async def delete_a_monitor_or_monitor_environments(self, organization_id_or_slug, monitor_id_or_slug, environment=None) -> Any:
         """
         Deletes a monitor from a specified organization in an API, identified by organization ID or slug and monitor ID or slug, with optional environment parameters.
 
@@ -1890,16 +1737,12 @@ class SentryApp(APIApplication):
         if monitor_id_or_slug is None:
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/"
-        query_params = {
-            k: v for k, v in [("environment", environment)] if v is not None
-        }
+        query_params = {k: v for k, v in [("environment", environment)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_check_ins_for_a_monitor(
-        self, organization_id_or_slug, monitor_id_or_slug
-    ) -> list[Any]:
+    async def retrieve_check_ins_for_a_monitor(self, organization_id_or_slug, monitor_id_or_slug) -> list[Any]:
         """
         Retrieves check-ins for a specific monitor within an organization using the provided organization ID or slug and monitor ID or slug.
 
@@ -1923,12 +1766,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_spike_protection_notifications(
-        self,
-        organization_id_or_slug,
-        project=None,
-        project_id_or_slug=None,
-        triggerType=None,
+    async def list_spike_protection_notifications(
+        self, organization_id_or_slug, project=None, project_id_or_slug=None, triggerType=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of notification actions available for the specified organization, optionally filtered by project or trigger type.
@@ -1950,18 +1789,14 @@ class SentryApp(APIApplication):
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/notifications/actions/"
         query_params = {
             k: v
-            for k, v in [
-                ("project", project),
-                ("project_id_or_slug", project_id_or_slug),
-                ("triggerType", triggerType),
-            ]
+            for k, v in [("project", project), ("project_id_or_slug", project_id_or_slug), ("triggerType", triggerType)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_spike_protection_notification(
+    async def create_spike_protection_notification(
         self,
         organization_id_or_slug,
         trigger_type,
@@ -2023,9 +1858,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_spike_protection_notification_action(
-        self, organization_id_or_slug, action_id
-    ) -> dict[str, Any]:
+    async def retrieve_a_spike_protection_notification_action(self, organization_id_or_slug, action_id) -> dict[str, Any]:
         """
         Retrieves information about a specific notification action for an organization using the provided organization identifier or slug and action ID.
 
@@ -2049,7 +1882,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_spike_protection_notification_action(
+    async def update_a_spike_protection_notification_action(
         self,
         organization_id_or_slug,
         action_id,
@@ -2115,9 +1948,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_spike_protection_notification_action(
-        self, organization_id_or_slug, action_id
-    ) -> Any:
+    async def delete_a_spike_protection_notification_action(self, organization_id_or_slug, action_id) -> Any:
         """
         Deletes a notification action by its ID for a specific organization identified by its ID or slug, using the provided authentication token with appropriate permissions.
 
@@ -2141,9 +1972,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_projects(
-        self, organization_id_or_slug, cursor=None
-    ) -> list[Any]:
+    async def list_an_organization_s_projects(self, organization_id_or_slug, cursor=None) -> list[Any]:
         """
         Retrieves a paginated list of projects within the specified organization identified by its ID or slug.
 
@@ -2165,9 +1994,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_trusted_relays(
-        self, organization_id_or_slug
-    ) -> list[Any]:
+    async def list_an_organization_s_trusted_relays(self, organization_id_or_slug) -> list[Any]:
         """
         Retrieves relay usage information for a specified organization using its ID or slug, requiring appropriate authentication tokens for administrative or read access.
 
@@ -2188,14 +2015,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_release_threshold_statuses(
-        self,
-        organization_id_or_slug,
-        start,
-        end,
-        environment=None,
-        projectSlug=None,
-        release=None,
+    async def get_release_threshold_statuses(
+        self, organization_id_or_slug, start, end, environment=None, projectSlug=None, release=None
     ) -> dict[str, Any]:
         """
         Retrieves the current statuses of release thresholds for a specified organization within a given time range, optionally filtered by environment, project, or release.
@@ -2219,20 +2040,14 @@ class SentryApp(APIApplication):
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/release-threshold-statuses/"
         query_params = {
             k: v
-            for k, v in [
-                ("start", start),
-                ("end", end),
-                ("environment", environment),
-                ("projectSlug", projectSlug),
-                ("release", release),
-            ]
+            for k, v in [("start", start), ("end", end), ("environment", environment), ("projectSlug", projectSlug), ("release", release)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization_s_release(
+    async def retrieve_an_organization_s_release(
         self,
         organization_id_or_slug,
         version,
@@ -2289,15 +2104,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_organization_s_release(
-        self,
-        organization_id_or_slug,
-        version,
-        ref=None,
-        url=None,
-        dateReleased=None,
-        commits=None,
-        refs=None,
+    async def update_an_organization_s_release(
+        self, organization_id_or_slug, version, ref=None, url=None, dateReleased=None, commits=None, refs=None
     ) -> dict[str, Any]:
         """
         Updates a specific release version within an organization using the provided JSON data and returns a status message.
@@ -2321,13 +2129,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if version is None:
             raise ValueError("Missing required parameter 'version'")
-        request_body = {
-            "ref": ref,
-            "url": url,
-            "dateReleased": dateReleased,
-            "commits": commits,
-            "refs": refs,
-        }
+        request_body = {"ref": ref, "url": url, "dateReleased": dateReleased, "commits": commits, "refs": refs}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/"
         query_params = {}
@@ -2335,7 +2137,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_s_release(self, organization_id_or_slug, version) -> Any:
+    async def delete_an_organization_s_release(self, organization_id_or_slug, version) -> Any:
         """
         Deletes a release version associated with an organization in the API, identified by the organization ID or slug and the version number, and returns a successful deletion status with a 204 response code.
 
@@ -2359,15 +2161,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_count_of_replays(
-        self,
-        organization_id_or_slug,
-        environment=None,
-        start=None,
-        end=None,
-        statsPeriod=None,
-        project=None,
-        query=None,
+    async def retrieve_a_count_of_replays(
+        self, organization_id_or_slug, environment=None, start=None, end=None, statsPeriod=None, project=None, query=None
     ) -> dict[str, Any]:
         """
         Retrieves the replay count for a specified organization, filtered by optional parameters such as environment, time range, project, and custom query.
@@ -2406,7 +2201,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_selectors(
+    async def list_an_organization_s_selectors(
         self,
         organization_id_or_slug,
         environment=None,
@@ -2462,7 +2257,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_replays(
+    async def list_an_organization_s_replays(
         self,
         organization_id_or_slug,
         statsPeriod=None,
@@ -2521,7 +2316,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_replay_instance(
+    async def retrieve_a_replay_instance(
         self,
         organization_id_or_slug,
         replay_id,
@@ -2584,13 +2379,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_paginated_teams(
-        self,
-        organization_id_or_slug,
-        startIndex=None,
-        count=None,
-        filter=None,
-        excludedAttributes=None,
+    async def list_an_organization_s_paginated_teams(
+        self, organization_id_or_slug, startIndex=None, count=None, filter=None, excludedAttributes=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of SCIM groups for a specified organization using query parameters such as startIndex, count, filter, and excludedAttributes.
@@ -2613,21 +2403,14 @@ class SentryApp(APIApplication):
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Groups"
         query_params = {
             k: v
-            for k, v in [
-                ("startIndex", startIndex),
-                ("count", count),
-                ("filter", filter),
-                ("excludedAttributes", excludedAttributes),
-            ]
+            for k, v in [("startIndex", startIndex), ("count", count), ("filter", filter), ("excludedAttributes", excludedAttributes)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def provision_a_new_team(
-        self, organization_id_or_slug, displayName
-    ) -> dict[str, Any]:
+    async def provision_a_new_team(self, organization_id_or_slug, displayName) -> dict[str, Any]:
         """
         Creates a new SCIM group for the specified organization using a POST request to the Groups endpoint, requiring organization details in the request body.
 
@@ -2643,9 +2426,7 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        request_body = {
-            "displayName": displayName,
-        }
+        request_body = {"displayName": displayName}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Groups"
         query_params = {}
@@ -2653,9 +2434,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_an_individual_team(
-        self, organization_id_or_slug, team_id
-    ) -> dict[str, Any]:
+    async def query_an_individual_team(self, organization_id_or_slug, team_id) -> dict[str, Any]:
         """
         Retrieves details about a specific team using its ID within an organization, returning relevant SCIM group information.
 
@@ -2679,9 +2458,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_team_s_attributes(
-        self, organization_id_or_slug, team_id, Operations
-    ) -> Any:
+    async def update_a_team_s_attributes(self, organization_id_or_slug, team_id, Operations) -> Any:
         """
         Modifies a specific group within an organization using SCIM 2.0, allowing updates to group attributes with the provided JSON payload.
 
@@ -2756,9 +2533,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "Operations": Operations,
-        }
+        request_body = {"Operations": Operations}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Groups/{team_id}"
         query_params = {}
@@ -2766,7 +2541,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_individual_team(self, organization_id_or_slug, team_id) -> Any:
+    async def delete_an_individual_team(self, organization_id_or_slug, team_id) -> Any:
         """
         Deletes a specific team from an organization using SCIM, identified by a team ID, and removes associated permissions and access.
 
@@ -2790,13 +2565,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_scim_members(
-        self,
-        organization_id_or_slug,
-        startIndex=None,
-        count=None,
-        filter=None,
-        excludedAttributes=None,
+    async def list_an_organization_s_scim_members(
+        self, organization_id_or_slug, startIndex=None, count=None, filter=None, excludedAttributes=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of users from the specified organization using SCIM 2.0, allowing pagination and filtering based on query parameters such as `startIndex`, `count`, and `filter`.
@@ -2819,21 +2589,14 @@ class SentryApp(APIApplication):
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Users"
         query_params = {
             k: v
-            for k, v in [
-                ("startIndex", startIndex),
-                ("count", count),
-                ("filter", filter),
-                ("excludedAttributes", excludedAttributes),
-            ]
+            for k, v in [("startIndex", startIndex), ("count", count), ("filter", filter), ("excludedAttributes", excludedAttributes)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def provision_a_new_organization_member(
-        self, organization_id_or_slug, userName, sentryOrgRole=None
-    ) -> dict[str, Any]:
+    async def provision_a_new_organization_member(self, organization_id_or_slug, userName, sentryOrgRole=None) -> dict[str, Any]:
         """
         Creates a new user in an organization using the SCIM API by sending a POST request to the specified Users endpoint.
 
@@ -2860,10 +2623,7 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        request_body = {
-            "userName": userName,
-            "sentryOrgRole": sentryOrgRole,
-        }
+        request_body = {"userName": userName, "sentryOrgRole": sentryOrgRole}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Users"
         query_params = {}
@@ -2871,9 +2631,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def query_an_individual_organization_member(
-        self, organization_id_or_slug, member_id
-    ) -> dict[str, Any]:
+    async def query_an_individual_organization_member(self, organization_id_or_slug, member_id) -> dict[str, Any]:
         """
         Retrieves a specific member's details within an organization using the SCIM API, based on the organization ID or slug and the member ID.
 
@@ -2897,9 +2655,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_organization_member_s_attributes(
-        self, organization_id_or_slug, member_id, Operations
-    ) -> Any:
+    async def update_an_organization_member_s_attributes(self, organization_id_or_slug, member_id, Operations) -> Any:
         """
         Updates specific attributes of a SCIM user within an organization using a PATCH request.
 
@@ -2929,9 +2685,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if member_id is None:
             raise ValueError("Missing required parameter 'member_id'")
-        request_body = {
-            "Operations": Operations,
-        }
+        request_body = {"Operations": Operations}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Users/{member_id}"
         query_params = {}
@@ -2939,9 +2693,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_member_via_scim(
-        self, organization_id_or_slug, member_id
-    ) -> Any:
+    async def delete_an_organization_member_via_scim(self, organization_id_or_slug, member_id) -> Any:
         """
         Deletes an organization member by ID using the SCIM API, requiring a valid admin token for authentication.
 
@@ -2965,7 +2717,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_release_health_session_statistics(
+    async def retrieve_release_health_session_statistics(
         self,
         organization_id_or_slug,
         field,
@@ -3033,7 +2785,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_events_count_by_project(
+    async def get_organization_events_count_by_project(
         self,
         organization_id_or_slug,
         field,
@@ -3092,7 +2844,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_organization_event_counts_v2(
+    async def get_organization_event_counts_v2(
         self,
         organization_id_or_slug,
         groupBy,
@@ -3151,9 +2903,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_teams(
-        self, organization_id_or_slug, detailed=None, cursor=None
-    ) -> list[Any]:
+    async def list_an_organization_s_teams(self, organization_id_or_slug, detailed=None, cursor=None) -> list[Any]:
         """
         Retrieves a list of teams associated with the specified organization, optionally with detailed information and pagination support.
 
@@ -3171,18 +2921,12 @@ class SentryApp(APIApplication):
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/teams/"
-        query_params = {
-            k: v
-            for k, v in [("detailed", detailed), ("cursor", cursor)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("detailed", detailed), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_team(
-        self, organization_id_or_slug, slug=None, name=None
-    ) -> dict[str, Any]:
+    async def create_a_new_team(self, organization_id_or_slug, slug=None, name=None) -> dict[str, Any]:
         """
         Creates a team within a specified organization using the provided JSON data and returns a status message upon successful creation.
 
@@ -3201,10 +2945,7 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        request_body = {
-            "slug": slug,
-            "name": name,
-        }
+        request_body = {"slug": slug, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/teams/"
         query_params = {}
@@ -3212,9 +2953,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_user_s_teams_for_an_organization(
-        self, organization_id_or_slug
-    ) -> list[Any]:
+    async def list_a_user_s_teams_for_an_organization(self, organization_id_or_slug) -> list[Any]:
         """
         Retrieves a list of user teams associated with the specified organization.
 
@@ -3229,17 +2968,13 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        url = (
-            f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/user-teams/"
-        )
+        url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/user-teams/"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_project(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> dict[str, Any]:
+    async def retrieve_a_project(self, organization_id_or_slug, project_id_or_slug) -> dict[str, Any]:
         """
         Retrieves details about a specific project within an organization using the organization ID or slug and project ID or slug.
 
@@ -3263,7 +2998,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_project(
+    async def update_a_project(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -3328,7 +3063,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_project(self, organization_id_or_slug, project_id_or_slug) -> Any:
+    async def delete_a_project(self, organization_id_or_slug, project_id_or_slug) -> Any:
         """
         Deletes a project identified by the specified organization ID or slug and project ID or slug using the DELETE method, requiring admin authentication.
 
@@ -3352,9 +3087,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_environments(
-        self, organization_id_or_slug, project_id_or_slug, visibility=None
-    ) -> list[Any]:
+    async def list_a_project_s_environments(self, organization_id_or_slug, project_id_or_slug, visibility=None) -> list[Any]:
         """
         Get a list of environments for a specified project within an organization, optionally filtered by visibility.
 
@@ -3379,9 +3112,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_project_environment(
-        self, organization_id_or_slug, project_id_or_slug, environment
-    ) -> dict[str, Any]:
+    async def retrieve_a_project_environment(self, organization_id_or_slug, project_id_or_slug, environment) -> dict[str, Any]:
         """
         Retrieves details for a specific environment within a project using the organization ID or slug, project ID or slug, and environment name.
 
@@ -3408,9 +3139,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_project_environment(
-        self, organization_id_or_slug, project_id_or_slug, environment, isHidden
-    ) -> dict[str, Any]:
+    async def update_a_project_environment(self, organization_id_or_slug, project_id_or_slug, environment, isHidden) -> dict[str, Any]:
         """
         Updates the environment settings for a specific project using the provided JSON data and returns a status message.
 
@@ -3432,9 +3161,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         if environment is None:
             raise ValueError("Missing required parameter 'environment'")
-        request_body = {
-            "isHidden": isHidden,
-        }
+        request_body = {"isHidden": isHidden}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/environments/{environment}/"
         query_params = {}
@@ -3442,13 +3169,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_error_events(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        cursor=None,
-        full=None,
-        sample=None,
+    async def list_a_project_s_error_events(
+        self, organization_id_or_slug, project_id_or_slug, cursor=None, full=None, sample=None
     ) -> list[Any]:
         """
         Retrieves a list of events for a specific project in an organization using the provided identifiers and optional query parameters for pagination and data filtering.
@@ -3471,22 +3193,13 @@ class SentryApp(APIApplication):
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/events/"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("full", full), ("sample", sample)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("full", full), ("sample", sample)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def debug_event_source_maps(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        event_id,
-        frame_idx,
-        exception_idx,
+    async def debug_event_source_maps(
+        self, organization_id_or_slug, project_id_or_slug, event_id, frame_idx, exception_idx
     ) -> dict[str, Any]:
         """
         Retrieves source map debug information for a specific event within a project, using the `GET` method and requiring an organization ID or slug, project ID or slug, event ID, frame index, and exception index.
@@ -3511,18 +3224,12 @@ class SentryApp(APIApplication):
         if event_id is None:
             raise ValueError("Missing required parameter 'event_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/events/{event_id}/source-map-debug/"
-        query_params = {
-            k: v
-            for k, v in [("frame_idx", frame_idx), ("exception_idx", exception_idx)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("frame_idx", frame_idx), ("exception_idx", exception_idx)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_data_filters(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> list[Any]:
+    async def list_a_project_s_data_filters(self, organization_id_or_slug, project_id_or_slug) -> list[Any]:
         """
         Retrieves a list of filters for a project in a specified organization using the provided organization ID or slug and project ID or slug.
 
@@ -3546,13 +3253,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_inbound_data_filter(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        filter_id,
-        active=None,
-        subfilters=None,
+    async def update_an_inbound_data_filter(
+        self, organization_id_or_slug, project_id_or_slug, filter_id, active=None, subfilters=None
     ) -> Any:
         """
         Updates a filter in a project using the organization ID or slug, project ID or slug, and filter ID, with the new filter details provided in the JSON body, requiring appropriate authentication for project administration or writing permissions.
@@ -3598,10 +3300,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         if filter_id is None:
             raise ValueError("Missing required parameter 'filter_id'")
-        request_body = {
-            "active": active,
-            "subfilters": subfilters,
-        }
+        request_body = {"active": active, "subfilters": subfilters}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/filters/{filter_id}/"
         query_params = {}
@@ -3609,9 +3308,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_client_keys(
-        self, organization_id_or_slug, project_id_or_slug, cursor=None, status=None
-    ) -> list[Any]:
+    async def list_a_project_s_client_keys(self, organization_id_or_slug, project_id_or_slug, cursor=None, status=None) -> list[Any]:
         """
         Retrieves a list of keys for a project, allowing optional filtering by status and pagination with a cursor.
 
@@ -3632,16 +3329,12 @@ class SentryApp(APIApplication):
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("status", status)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("status", status)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_client_key(
-        self, organization_id_or_slug, project_id_or_slug, name=None, rateLimit=None
-    ) -> dict[str, Any]:
+    async def create_a_new_client_key(self, organization_id_or_slug, project_id_or_slug, name=None, rateLimit=None) -> dict[str, Any]:
         """
         Create a new key for a specific project within an organization by providing the necessary details in the request body.
 
@@ -3670,10 +3363,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
-        request_body = {
-            "name": name,
-            "rateLimit": rateLimit,
-        }
+        request_body = {"name": name, "rateLimit": rateLimit}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/"
         query_params = {}
@@ -3681,9 +3371,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_client_key(
-        self, organization_id_or_slug, project_id_or_slug, key_id
-    ) -> dict[str, Any]:
+    async def retrieve_a_client_key(self, organization_id_or_slug, project_id_or_slug, key_id) -> dict[str, Any]:
         """
         Retrieves details about a specific project key using the organization ID or slug and project ID or slug.
 
@@ -3710,7 +3398,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_client_key(
+    async def update_a_client_key(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -3784,9 +3472,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_client_key(
-        self, organization_id_or_slug, project_id_or_slug, key_id
-    ) -> Any:
+    async def delete_a_client_key(self, organization_id_or_slug, project_id_or_slug, key_id) -> Any:
         """
         Deletes a specified API key within a project under an organization, requiring project admin authorization.
 
@@ -3813,9 +3499,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_organization_members(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> list[Any]:
+    async def list_a_project_s_organization_members(self, organization_id_or_slug, project_id_or_slug) -> list[Any]:
         """
         Retrieves a list of members for a specific project within an organization using the provided organization ID or slug and project ID or slug.
 
@@ -3839,9 +3523,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_monitor_for_a_project(
-        self, organization_id_or_slug, project_id_or_slug, monitor_id_or_slug
-    ) -> dict[str, Any]:
+    async def retrieve_a_monitor_for_a_project(self, organization_id_or_slug, project_id_or_slug, monitor_id_or_slug) -> dict[str, Any]:
         """
         Retrieves details for a specific monitor within a project and organization using their respective IDs or slugs.
 
@@ -3868,17 +3550,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_monitor_for_a_project(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        monitor_id_or_slug,
-        name,
-        type,
-        slug=None,
-        status=None,
-        owner=None,
-        is_muted=None,
+    async def update_a_monitor_for_a_project(
+        self, organization_id_or_slug, project_id_or_slug, monitor_id_or_slug, name, type, slug=None, status=None, owner=None, is_muted=None
     ) -> dict[str, Any]:
         """
         Updates a monitor in a project using the organization and project identifiers.
@@ -3909,14 +3582,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         if monitor_id_or_slug is None:
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
-        request_body = {
-            "name": name,
-            "type": type,
-            "slug": slug,
-            "status": status,
-            "owner": owner,
-            "is_muted": is_muted,
-        }
+        request_body = {"name": name, "type": type, "slug": slug, "status": status, "owner": owner, "is_muted": is_muted}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {}
@@ -3924,12 +3590,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_monitor_or_environments(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        monitor_id_or_slug,
-        environment=None,
+    async def delete_project_monitor_or_environments(
+        self, organization_id_or_slug, project_id_or_slug, monitor_id_or_slug, environment=None
     ) -> Any:
         """
         Deletes a specific monitor from a project in an organization and returns an HTTP status indicating the outcome.
@@ -3953,14 +3615,12 @@ class SentryApp(APIApplication):
         if monitor_id_or_slug is None:
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/monitors/{monitor_id_or_slug}/"
-        query_params = {
-            k: v for k, v in [("environment", environment)] if v is not None
-        }
+        query_params = {k: v for k, v in [("environment", environment)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_check_ins_for_a_monitor_by_project(
+    async def retrieve_check_ins_for_a_monitor_by_project(
         self, organization_id_or_slug, project_id_or_slug, monitor_id_or_slug
     ) -> list[Any]:
         """
@@ -3989,9 +3649,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_ownership_config(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> dict[str, Any]:
+    async def get_project_ownership_config(self, organization_id_or_slug, project_id_or_slug) -> dict[str, Any]:
         """
         Retrieves project ownership details for a specific project within an organization using the provided organization ID or slug and project ID or slug.
 
@@ -4015,14 +3673,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project_ownership_config(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        raw=None,
-        fallthrough=None,
-        autoAssignment=None,
-        codeownersAutoSync=None,
+    async def update_project_ownership_config(
+        self, organization_id_or_slug, project_id_or_slug, raw=None, fallthrough=None, autoAssignment=None, codeownersAutoSync=None
     ) -> dict[str, Any]:
         """
         Updates the ownership configuration for a specific project, allowing modification of ownership rules, fallthrough assignment, auto-assignment settings, and CODEOWNERS synchronization[1].
@@ -4048,12 +3700,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
-        request_body = {
-            "raw": raw,
-            "fallthrough": fallthrough,
-            "autoAssignment": autoAssignment,
-            "codeownersAutoSync": codeownersAutoSync,
-        }
+        request_body = {"raw": raw, "fallthrough": fallthrough, "autoAssignment": autoAssignment, "codeownersAutoSync": codeownersAutoSync}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/ownership/"
         query_params = {}
@@ -4061,9 +3708,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_replay_instance(
-        self, organization_id_or_slug, project_id_or_slug, replay_id
-    ) -> Any:
+    async def delete_a_replay_instance(self, organization_id_or_slug, project_id_or_slug, replay_id) -> Any:
         """
         Deletes a specified replay associated with a project and organization using its unique identifier.
 
@@ -4090,15 +3735,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_clicked_nodes(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        replay_id,
-        cursor=None,
-        environment=None,
-        per_page=None,
-        query=None,
+    async def list_clicked_nodes(
+        self, organization_id_or_slug, project_id_or_slug, replay_id, cursor=None, environment=None, per_page=None, query=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of user click events recorded during a specific replay session within a project and organization, with optional filtering and pagination.
@@ -4126,26 +3764,14 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'replay_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/replays/{replay_id}/clicks/"
         query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("environment", environment),
-                ("per_page", per_page),
-                ("query", query),
-            ]
-            if v is not None
+            k: v for k, v in [("cursor", cursor), ("environment", environment), ("per_page", per_page), ("query", query)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_recording_segments(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        replay_id,
-        cursor=None,
-        per_page=None,
+    async def list_recording_segments(
+        self, organization_id_or_slug, project_id_or_slug, replay_id, cursor=None, per_page=None
     ) -> list[Any]:
         """
         Retrieves a paginated list of recording segments for a specified replay within a project and organization.
@@ -4170,18 +3796,12 @@ class SentryApp(APIApplication):
         if replay_id is None:
             raise ValueError("Missing required parameter 'replay_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/replays/{replay_id}/recording-segments/"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("per_page", per_page)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("per_page", per_page)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_recording_segment(
-        self, organization_id_or_slug, project_id_or_slug, replay_id, segment_id
-    ) -> list[Any]:
+    async def retrieve_a_recording_segment(self, organization_id_or_slug, project_id_or_slug, replay_id, segment_id) -> list[Any]:
         """
         Retrieves a specific recording segment from a replay within a project using the organization ID or slug and project ID or slug.
 
@@ -4211,9 +3831,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_users_who_have_viewed_a_replay(
-        self, organization_id_or_slug, project_id_or_slug, replay_id
-    ) -> dict[str, Any]:
+    async def list_users_who_have_viewed_a_replay(self, organization_id_or_slug, project_id_or_slug, replay_id) -> dict[str, Any]:
         """
         Get a list of users who have viewed a specific replay in a project within an organization.
 
@@ -4240,9 +3858,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_issue_alert_rules(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> list[Any]:
+    async def list_a_project_s_issue_alert_rules(self, organization_id_or_slug, project_id_or_slug) -> list[Any]:
         """
         Retrieves the list of rules configured for a specified project within an organization.
 
@@ -4266,7 +3882,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_an_issue_alert_rule_for_a_project(
+    async def create_an_issue_alert_rule_for_a_project(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -4679,9 +4295,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_issue_alert_rule_for_a_project(
-        self, organization_id_or_slug, project_id_or_slug, rule_id
-    ) -> dict[str, Any]:
+    async def retrieve_an_issue_alert_rule_for_a_project(self, organization_id_or_slug, project_id_or_slug, rule_id) -> dict[str, Any]:
         """
         Retrieves information about a specific rule in a project using the organization ID or slug, project ID or slug, and rule ID.
 
@@ -4708,7 +4322,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_issue_alert_rule(
+    async def update_an_issue_alert_rule(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -4778,9 +4392,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_issue_alert_rule(
-        self, organization_id_or_slug, project_id_or_slug, rule_id
-    ) -> Any:
+    async def delete_an_issue_alert_rule(self, organization_id_or_slug, project_id_or_slug, rule_id) -> Any:
         """
         Deletes a specific rule from a project within an organization by rule ID.
 
@@ -4807,9 +4419,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_project_s_symbol_sources(
-        self, organization_id_or_slug, project_id_or_slug, id=None
-    ) -> list[Any]:
+    async def retrieve_a_project_s_symbol_sources(self, organization_id_or_slug, project_id_or_slug, id=None) -> list[Any]:
         """
         Retrieves a list of symbol sources for a specified project within an organization using the provided organization and project identifiers.
 
@@ -4834,7 +4444,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_a_symbol_source_to_a_project(
+    async def add_a_symbol_source_to_a_project(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -4955,7 +4565,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_project_s_symbol_source(
+    async def update_a_project_s_symbol_source(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -5078,9 +4688,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_symbol_source_from_a_project(
-        self, organization_id_or_slug, project_id_or_slug, id
-    ) -> Any:
+    async def delete_a_symbol_source_from_a_project(self, organization_id_or_slug, project_id_or_slug, id) -> Any:
         """
         Deletes symbol sources from a specific project identified by organization ID or slug and project ID or slug using the provided ID, requiring project admin authentication.
 
@@ -5105,9 +4713,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_teams(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> list[Any]:
+    async def list_a_project_s_teams(self, organization_id_or_slug, project_id_or_slug) -> list[Any]:
         """
         Retrieves a list of teams within a specified project using the provided organization and project identifiers.
 
@@ -5131,9 +4737,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_a_team_to_a_project(
-        self, organization_id_or_slug, project_id_or_slug, team_id_or_slug
-    ) -> dict[str, Any]:
+    async def add_a_team_to_a_project(self, organization_id_or_slug, project_id_or_slug, team_id_or_slug) -> dict[str, Any]:
         """
         Adds a specified team to a project within an organization and returns a response indicating successful creation.
 
@@ -5160,9 +4764,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_team_from_a_project(
-        self, organization_id_or_slug, project_id_or_slug, team_id_or_slug
-    ) -> dict[str, Any]:
+    async def delete_a_team_from_a_project(self, organization_id_or_slug, project_id_or_slug, team_id_or_slug) -> dict[str, Any]:
         """
         Deletes a team from a project within a specified organization using the API with appropriate permissions.
 
@@ -5189,9 +4791,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_team(
-        self, organization_id_or_slug, team_id_or_slug, expand=None, collapse=None
-    ) -> dict[str, Any]:
+    async def retrieve_a_team(self, organization_id_or_slug, team_id_or_slug, expand=None, collapse=None) -> dict[str, Any]:
         """
         Retrieves information about a team within an organization using the provided organization ID or slug and team ID or slug, allowing optional expansion or collapse of additional details.
 
@@ -5211,21 +4811,13 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
-        url = (
-            f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
-        )
-        query_params = {
-            k: v
-            for k, v in [("expand", expand), ("collapse", collapse)]
-            if v is not None
-        }
+        url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
+        query_params = {k: v for k, v in [("expand", expand), ("collapse", collapse)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_a_team(
-        self, organization_id_or_slug, team_id_or_slug, slug
-    ) -> dict[str, Any]:
+    async def update_a_team(self, organization_id_or_slug, team_id_or_slug, slug) -> dict[str, Any]:
         """
         Updates the details of a specified team within a given organization using the provided data and requires administrative or write permissions.
 
@@ -5244,19 +4836,15 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
-        request_body = {
-            "slug": slug,
-        }
+        request_body = {"slug": slug}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = (
-            f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
-        )
+        url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
         query_params = {}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_a_team(self, organization_id_or_slug, team_id_or_slug) -> Any:
+    async def delete_a_team(self, organization_id_or_slug, team_id_or_slug) -> Any:
         """
         Deletes a team from an organization using the provided organization ID or slug and team ID or slug, requiring the team admin authentication token for authorization.
 
@@ -5274,22 +4862,14 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
-        url = (
-            f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
-        )
+        url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_an_external_team(
-        self,
-        organization_id_or_slug,
-        team_id_or_slug,
-        external_name,
-        provider,
-        integration_id,
-        external_id=None,
+    async def create_an_external_team(
+        self, organization_id_or_slug, team_id_or_slug, external_name, provider, integration_id, external_id=None
     ) -> dict[str, Any]:
         """
         Create a new external team associated with a specified organization and team using the provided JSON data.
@@ -5319,12 +4899,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
-        request_body = {
-            "external_name": external_name,
-            "provider": provider,
-            "integration_id": integration_id,
-            "external_id": external_id,
-        }
+        request_body = {"external_name": external_name, "provider": provider, "integration_id": integration_id, "external_id": external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/external-teams/"
         query_params = {}
@@ -5332,15 +4907,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_external_team(
-        self,
-        organization_id_or_slug,
-        team_id_or_slug,
-        external_team_id,
-        external_name,
-        provider,
-        integration_id,
-        external_id=None,
+    async def update_an_external_team(
+        self, organization_id_or_slug, team_id_or_slug, external_team_id, external_name, provider, integration_id, external_id=None
     ) -> dict[str, Any]:
         """
         Updates an external team's details for a specified team and organization, requiring admin or write permissions, with the request body containing the updated data.
@@ -5373,12 +4941,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         if external_team_id is None:
             raise ValueError("Missing required parameter 'external_team_id'")
-        request_body = {
-            "external_name": external_name,
-            "provider": provider,
-            "integration_id": integration_id,
-            "external_id": external_id,
-        }
+        request_body = {"external_name": external_name, "provider": provider, "integration_id": integration_id, "external_id": external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/external-teams/{external_team_id}/"
         query_params = {}
@@ -5386,9 +4949,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_external_team(
-        self, organization_id_or_slug, team_id_or_slug, external_team_id
-    ) -> Any:
+    async def delete_an_external_team(self, organization_id_or_slug, team_id_or_slug, external_team_id) -> Any:
         """
         Deletes an external team association with the specified team in an organization using the provided organization identifier, team identifier, and external team ID.
 
@@ -5415,9 +4976,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_team_s_members(
-        self, organization_id_or_slug, team_id_or_slug, cursor=None
-    ) -> list[Any]:
+    async def list_a_team_s_members(self, organization_id_or_slug, team_id_or_slug, cursor=None) -> list[Any]:
         """
         Retrieves a list of members belonging to the specified team within the given organization, supporting pagination via a cursor parameter.
 
@@ -5442,9 +5001,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_team_s_projects(
-        self, organization_id_or_slug, team_id_or_slug, cursor=None
-    ) -> list[Any]:
+    async def list_a_team_s_projects(self, organization_id_or_slug, team_id_or_slug, cursor=None) -> list[Any]:
         """
         Retrieves a paginated list of projects associated with a specific team within an organization, using optional cursor-based pagination.
 
@@ -5469,14 +5026,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_project(
-        self,
-        organization_id_or_slug,
-        team_id_or_slug,
-        name,
-        slug=None,
-        platform=None,
-        default_rules=None,
+    async def create_a_new_project(
+        self, organization_id_or_slug, team_id_or_slug, name, slug=None, platform=None, default_rules=None
     ) -> dict[str, Any]:
         """
         Creates a new project within the specified team and organization using provided details and returns the project resource upon success.
@@ -5504,12 +5055,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
-        request_body = {
-            "name": name,
-            "slug": slug,
-            "platform": platform,
-            "default_rules": default_rules,
-        }
+        request_body = {"name": name, "slug": slug, "platform": platform, "default_rules": default_rules}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/projects/"
         query_params = {}
@@ -5517,7 +5063,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_user_emails(self, user_id) -> list[Any]:
+    async def list_user_emails(self, user_id) -> list[Any]:
         """
         Retrieves a list of email addresses associated with the specified user ID, requiring authentication.
 
@@ -5538,7 +5084,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_a_secondary_email_address(self, user_id, email) -> list[Any]:
+    async def add_a_secondary_email_address(self, user_id, email) -> list[Any]:
         """
         Adds a new email address for a specified user using the provided JSON data and returns a success message.
 
@@ -5554,9 +5100,7 @@ class SentryApp(APIApplication):
         """
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        request_body = {
-            "email": email,
-        }
+        request_body = {"email": email}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/users/{user_id}/emails/"
         query_params = {}
@@ -5564,7 +5108,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_primary_email_address(self, user_id, email) -> list[Any]:
+    async def update_a_primary_email_address(self, user_id, email) -> list[Any]:
         """
         Updates the email address of a user specified by the `user_id` using the provided JSON data in the request body.
 
@@ -5580,9 +5124,7 @@ class SentryApp(APIApplication):
         """
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        request_body = {
-            "email": email,
-        }
+        request_body = {"email": email}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/users/{user_id}/emails/"
         query_params = {}
@@ -5590,7 +5132,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_an_email_address(self, user_id) -> Any:
+    async def remove_an_email_address(self, user_id) -> Any:
         """
         Deletes a user's email configurations associated with the specified user ID using the DELETE method.
 
@@ -5611,14 +5153,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_event_counts_for_a_team(
-        self,
-        organization_id_or_slug,
-        team_id_or_slug,
-        stat=None,
-        since=None,
-        until=None,
-        resolution=None,
+    async def retrieve_event_counts_for_a_team(
+        self, organization_id_or_slug, team_id_or_slug, stat=None, since=None, until=None, resolution=None
     ) -> list[Any]:
         """
         Retrieves team statistics for a specified organization and team, allowing filtering by specific stat, date range, and resolution.
@@ -5642,21 +5178,12 @@ class SentryApp(APIApplication):
         if team_id_or_slug is None:
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/stats/"
-        query_params = {
-            k: v
-            for k, v in [
-                ("stat", stat),
-                ("since", since),
-                ("until", until),
-                ("resolution", resolution),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("stat", stat), ("since", since), ("until", until), ("resolution", resolution)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def resolve_an_event_id(self, organization_id_or_slug, event_id) -> dict[str, Any]:
+    async def resolve_an_event_id(self, organization_id_or_slug, event_id) -> dict[str, Any]:
         """
         Retrieves event details for a specific event within an organization identified by the provided organization ID or slug and event ID.
 
@@ -5680,7 +5207,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_repositories(self, organization_id_or_slug) -> list[Any]:
+    async def list_an_organization_s_repositories(self, organization_id_or_slug) -> list[Any]:
         """
         Retrieves a list of repositories for the specified organization identified by its ID or slug, requiring organization read authorization.
 
@@ -5701,9 +5228,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_repository_s_commits(
-        self, organization_id_or_slug, repo_id
-    ) -> list[Any]:
+    async def list_a_repository_s_commits(self, organization_id_or_slug, repo_id) -> list[Any]:
         """
         Retrieves a list of commits from a specified repository within an organization, requiring read access for authentication.
 
@@ -5727,7 +5252,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def resolve_a_short_id(self, organization_id_or_slug, short_id) -> dict[str, Any]:
+    async def resolve_a_short_id(self, organization_id_or_slug, short_id) -> dict[str, Any]:
         """
         Retrieves information for a specific short ID within an organization using the provided organization ID or slug.
 
@@ -5751,7 +5276,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_your_projects(self, cursor=None) -> list[Any]:
+    async def list_your_projects(self, cursor=None) -> list[Any]:
         """
         Get a list of projects accessible to the user, optionally paginated using a cursor.
 
@@ -5770,9 +5295,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_debug_files(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> Any:
+    async def list_project_debug_files(self, organization_id_or_slug, project_id_or_slug) -> Any:
         """
         Retrieves a list of dSYM files for a specific project within an organization using the provided organization ID or slug and project ID or slug.
 
@@ -5796,9 +5319,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project_debug_file(
-        self, organization_id_or_slug, project_id_or_slug, id
-    ) -> Any:
+    async def delete_project_debug_file(self, organization_id_or_slug, project_id_or_slug, id) -> Any:
         """
         Deletes a dSYM file from a project using its ID, requiring a write authorization token for the project.
 
@@ -5823,9 +5344,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_users(
-        self, organization_id_or_slug, project_id_or_slug, query=None
-    ) -> list[Any]:
+    async def list_a_project_s_users(self, organization_id_or_slug, project_id_or_slug, query=None) -> list[Any]:
         """
         Retrieves a list of users associated with a specified project within an organization, optionally filtered by a query parameter.
 
@@ -5850,9 +5369,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_tag_s_values(
-        self, organization_id_or_slug, project_id_or_slug, key
-    ) -> list[Any]:
+    async def list_a_tag_s_values(self, organization_id_or_slug, project_id_or_slug, key) -> list[Any]:
         """
         Retrieves a list of values for a specific tag key within a project, using the organization ID or slug and project ID or slug.
 
@@ -5879,14 +5396,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_event_counts_for_a_project(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        stat=None,
-        since=None,
-        until=None,
-        resolution=None,
+    async def retrieve_event_counts_for_a_project(
+        self, organization_id_or_slug, project_id_or_slug, stat=None, since=None, until=None, resolution=None
     ) -> list[Any]:
         """
         Retrieves statistics for a specific project within an organization, optionally filtered by stat type, time range, and resolution.
@@ -5910,23 +5421,12 @@ class SentryApp(APIApplication):
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/stats/"
-        query_params = {
-            k: v
-            for k, v in [
-                ("stat", stat),
-                ("since", since),
-                ("until", until),
-                ("resolution", resolution),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("stat", stat), ("since", since), ("until", until), ("resolution", resolution)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_user_feedback(
-        self, organization_id_or_slug, project_id_or_slug
-    ) -> list[Any]:
+    async def list_a_project_s_user_feedback(self, organization_id_or_slug, project_id_or_slug) -> list[Any]:
         """
         Retrieves a list of user feedback items for a specified project within an organization.
 
@@ -5950,14 +5450,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def submit_user_feedback(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        event_id=None,
-        name=None,
-        email=None,
-        comments=None,
+    async def submit_user_feedback(
+        self, organization_id_or_slug, project_id_or_slug, event_id=None, name=None, email=None, comments=None
     ) -> dict[str, Any]:
         """
         Submits user feedback for a specific project within an organization using the provided JSON body and authenticates via an authentication token with project write permissions.
@@ -5989,12 +5483,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
-        request_body = {
-            "event_id": event_id,
-            "name": name,
-            "email": email,
-            "comments": comments,
-        }
+        request_body = {"event_id": event_id, "name": name, "email": email, "comments": comments}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/user-feedback/"
         query_params = {}
@@ -6002,9 +5491,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_service_hooks(
-        self, organization_id_or_slug, project_id_or_slug, cursor=None
-    ) -> list[Any]:
+    async def list_a_project_s_service_hooks(self, organization_id_or_slug, project_id_or_slug, cursor=None) -> list[Any]:
         """
         Retrieves a list of hooks for a specific project within an organization using the project and organization identifiers.
 
@@ -6029,9 +5516,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def register_a_new_service_hook(
-        self, organization_id_or_slug, project_id_or_slug, url, events
-    ) -> dict[str, Any]:
+    async def register_a_new_service_hook(self, organization_id_or_slug, project_id_or_slug, url, events) -> dict[str, Any]:
         """
         Creates a new webhook for the specified project within an organization and returns a success status upon creation.
 
@@ -6061,10 +5546,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         if project_id_or_slug is None:
             raise ValueError("Missing required parameter 'project_id_or_slug'")
-        request_body = {
-            "url": url,
-            "events": events,
-        }
+        request_body = {"url": url, "events": events}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/"
         query_params = {}
@@ -6072,9 +5554,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_service_hook(
-        self, organization_id_or_slug, project_id_or_slug, hook_id
-    ) -> dict[str, Any]:
+    async def retrieve_a_service_hook(self, organization_id_or_slug, project_id_or_slug, hook_id) -> dict[str, Any]:
         """
         Retrieves a specific hook from a project using organization and project identifiers.
 
@@ -6101,14 +5581,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_service_hook(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        hook_id,
-        url=None,
-        events=None,
-    ) -> dict[str, Any]:
+    async def update_a_service_hook(self, organization_id_or_slug, project_id_or_slug, hook_id, url=None, events=None) -> dict[str, Any]:
         """
         Updates a specific hook in a project using the provided JSON payload and returns a success response upon completion.
 
@@ -6141,10 +5614,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         if hook_id is None:
             raise ValueError("Missing required parameter 'hook_id'")
-        request_body = {
-            "url": url,
-            "events": events,
-        }
+        request_body = {"url": url, "events": events}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/{hook_id}/"
         query_params = {}
@@ -6152,9 +5622,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_a_service_hook(
-        self, organization_id_or_slug, project_id_or_slug, hook_id
-    ) -> Any:
+    async def remove_a_service_hook(self, organization_id_or_slug, project_id_or_slug, hook_id) -> Any:
         """
         Deletes a webhook hook identified by the specified hook ID within a project, requiring administrative privileges for the project.
 
@@ -6181,9 +5649,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_event_for_a_project(
-        self, organization_id_or_slug, project_id_or_slug, event_id
-    ) -> dict[str, Any]:
+    async def retrieve_an_event_for_a_project(self, organization_id_or_slug, project_id_or_slug, event_id) -> dict[str, Any]:
         """
         Retrieves details for a specific event within a project using the organization ID or slug and project ID or slug.
 
@@ -6210,15 +5676,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_project_issues(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        statsPeriod=None,
-        shortIdLookup=None,
-        query=None,
-        hashes=None,
-        cursor=None,
+    async def list_project_issues(
+        self, organization_id_or_slug, project_id_or_slug, statsPeriod=None, shortIdLookup=None, query=None, hashes=None, cursor=None
     ) -> list[Any]:
         """
         Get a list of issues for a specified project within an organization, with optional filters for query, stats period, short ID lookup, hashes, and pagination.
@@ -6258,7 +5717,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def bulk_mutate_a_list_of_issues(
+    async def bulk_mutate_a_list_of_issues(
         self,
         organization_id_or_slug,
         project_id_or_slug,
@@ -6319,16 +5778,12 @@ class SentryApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/issues/"
-        query_params = {
-            k: v for k, v in [("id", id), ("status", status)] if v is not None
-        }
+        query_params = {k: v for k, v in [("id", id), ("status", status)] if v is not None}
         response = self._put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def bulk_remove_a_list_of_issues(
-        self, organization_id_or_slug, project_id_or_slug, id=None
-    ) -> Any:
+    async def bulk_remove_a_list_of_issues(self, organization_id_or_slug, project_id_or_slug, id=None) -> Any:
         """
         Deletes issues from a project by organization or project identifier using the "DELETE" method, requiring authentication as an event administrator.
 
@@ -6353,9 +5808,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_tag_s_values_related_to_an_issue(
-        self, organization_id_or_slug, issue_id, key
-    ) -> list[Any]:
+    async def list_a_tag_s_values_related_to_an_issue(self, organization_id_or_slug, issue_id, key) -> list[Any]:
         """
         Retrieves the available values for a specific tag key associated with an issue within the specified organization.
 
@@ -6382,9 +5835,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_issue_s_hashes(
-        self, organization_id_or_slug, issue_id, full=None, cursor=None
-    ) -> list[Any]:
+    async def list_an_issue_s_hashes(self, organization_id_or_slug, issue_id, full=None, cursor=None) -> list[Any]:
         """
         Retrieves hashes for a specific issue in an organization using the provided organization ID or slug and issue ID, optionally including additional details if the "full" query parameter is set.
 
@@ -6405,14 +5856,12 @@ class SentryApp(APIApplication):
         if issue_id is None:
             raise ValueError("Missing required parameter 'issue_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/issues/{issue_id}/hashes/"
-        query_params = {
-            k: v for k, v in [("full", full), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("full", full), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_issue(self, organization_id_or_slug, issue_id) -> dict[str, Any]:
+    async def retrieve_an_issue(self, organization_id_or_slug, issue_id) -> dict[str, Any]:
         """
         Retrieves details about a specific issue within an organization using the provided organization ID or slug and issue ID.
 
@@ -6436,7 +5885,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_issue(
+    async def update_an_issue(
         self,
         organization_id_or_slug,
         issue_id,
@@ -6494,7 +5943,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def remove_an_issue(self, organization_id_or_slug, issue_id) -> Any:
+    async def remove_an_issue(self, organization_id_or_slug, issue_id) -> Any:
         """
         Deletes an issue identified by `{issue_id}` within an organization specified by `{organization_id_or_slug}` using the DELETE method.
 
@@ -6518,9 +5967,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_releases(
-        self, organization_id_or_slug, query=None
-    ) -> list[Any]:
+    async def list_an_organization_s_releases(self, organization_id_or_slug, query=None) -> list[Any]:
         """
         Retrieves a list of releases for a specified organization using the provided organization ID or slug, with optional query filtering.
 
@@ -6542,16 +5989,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_release_for_an_organization(
-        self,
-        organization_id_or_slug,
-        version=None,
-        projects=None,
-        ref=None,
-        url=None,
-        dateReleased=None,
-        commits=None,
-        refs=None,
+    async def create_a_new_release_for_an_organization(
+        self, organization_id_or_slug, version=None, projects=None, ref=None, url=None, dateReleased=None, commits=None, refs=None
     ) -> dict[str, Any]:
         """
         Creates a new release for the specified organization using the provided release data.
@@ -6600,9 +6039,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_s_release_files(
-        self, organization_id_or_slug, version
-    ) -> list[Any]:
+    async def list_an_organization_s_release_files(self, organization_id_or_slug, version) -> list[Any]:
         """
         Retrieves a list of files associated with a specific release version within an organization using the provided organization ID or slug and version number.
 
@@ -6626,9 +6063,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_s_release_files(
-        self, organization_id_or_slug, project_id_or_slug, version
-    ) -> list[Any]:
+    async def list_a_project_s_release_files(self, organization_id_or_slug, project_id_or_slug, version) -> list[Any]:
         """
         Get a list of files associated with a specific release version for a project within an organization.
 
@@ -6655,9 +6090,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_organization_release_s_file(
-        self, organization_id_or_slug, version, file_id, download=None
-    ) -> dict[str, Any]:
+    async def retrieve_an_organization_release_s_file(self, organization_id_or_slug, version, file_id, download=None) -> dict[str, Any]:
         """
         Retrieves a file from a release in an organization using the provided organization ID or slug, version, and file ID, optionally allowing for file download.
 
@@ -6685,9 +6118,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_an_organization_release_file(
-        self, organization_id_or_slug, version, file_id, name=None, dist=None
-    ) -> dict[str, Any]:
+    async def update_an_organization_release_file(self, organization_id_or_slug, version, file_id, name=None, dist=None) -> dict[str, Any]:
         """
         Updates a file with the specified ID in a release of an organization using the provided JSON data.
 
@@ -6716,10 +6147,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         if file_id is None:
             raise ValueError("Missing required parameter 'file_id'")
-        request_body = {
-            "name": name,
-            "dist": dist,
-        }
+        request_body = {"name": name, "dist": dist}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {}
@@ -6727,9 +6155,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_organization_release_s_file(
-        self, organization_id_or_slug, version, file_id
-    ) -> Any:
+    async def delete_an_organization_release_s_file(self, organization_id_or_slug, version, file_id) -> Any:
         """
         Deletes a specific file associated with a release in an organization using the provided organization ID or slug, version, and file ID.
 
@@ -6756,13 +6182,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_a_project_release_s_file(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        version,
-        file_id,
-        download=None,
+    async def retrieve_a_project_release_s_file(
+        self, organization_id_or_slug, project_id_or_slug, version, file_id, download=None
     ) -> dict[str, Any]:
         """
         Retrieves a specific file from a project release using the "GET" method, requiring organization ID or slug, project ID or slug, version, and file ID, and optionally allows for a download option via query parameter.
@@ -6794,14 +6215,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_a_project_release_file(
-        self,
-        organization_id_or_slug,
-        project_id_or_slug,
-        version,
-        file_id,
-        name=None,
-        dist=None,
+    async def update_a_project_release_file(
+        self, organization_id_or_slug, project_id_or_slug, version, file_id, name=None, dist=None
     ) -> dict[str, Any]:
         """
         Updates a specific file associated with a project release using the provided JSON data.
@@ -6834,10 +6249,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         if file_id is None:
             raise ValueError("Missing required parameter 'file_id'")
-        request_body = {
-            "name": name,
-            "dist": dist,
-        }
+        request_body = {"name": name, "dist": dist}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {}
@@ -6845,9 +6257,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_a_project_release_s_file(
-        self, organization_id_or_slug, project_id_or_slug, version, file_id
-    ) -> Any:
+    async def delete_a_project_release_s_file(self, organization_id_or_slug, project_id_or_slug, version, file_id) -> Any:
         """
         Deletes a specific file from a release version in a project using the organization and project identifiers.
 
@@ -6877,9 +6287,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_organization_release_s_commits(
-        self, organization_id_or_slug, version
-    ) -> list[Any]:
+    async def list_an_organization_release_s_commits(self, organization_id_or_slug, version) -> list[Any]:
         """
         Retrieves a list of commits for a specific version within an organization using the provided organization ID or slug and version number.
 
@@ -6903,9 +6311,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_project_release_s_commits(
-        self, organization_id_or_slug, project_id_or_slug, version
-    ) -> list[Any]:
+    async def list_a_project_release_s_commits(self, organization_id_or_slug, project_id_or_slug, version) -> list[Any]:
         """
         Get the list of commits associated with a specific release version in a project within an organization.
 
@@ -6932,9 +6338,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_files_changed_in_a_release_s_commits(
-        self, organization_id_or_slug, version
-    ) -> Any:
+    async def retrieve_files_changed_in_a_release_s_commits(self, organization_id_or_slug, version) -> Any:
         """
         Retrieves a list of commit files for a specific release version within an organization, identified by its ID or slug.
 
@@ -6958,7 +6362,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_a_release_s_deploys(self, organization_id_or_slug, version) -> list[Any]:
+    async def list_a_release_s_deploys(self, organization_id_or_slug, version) -> list[Any]:
         """
         Retrieves deployment information for a specific release version within an organization.
 
@@ -6982,16 +6386,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_a_new_deploy_for_an_organization(
-        self,
-        organization_id_or_slug,
-        version,
-        environment=None,
-        url=None,
-        name=None,
-        projects=None,
-        dateStarted=None,
-        dateFinished=None,
+    async def create_a_new_deploy_for_an_organization(
+        self, organization_id_or_slug, version, environment=None, url=None, name=None, projects=None, dateStarted=None, dateFinished=None
     ) -> dict[str, Any]:
         """
         Records a new deployment of a specific release version for an organization identified by its ID or slug and returns status codes indicating success, conflict, or error.
@@ -7037,9 +6433,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_organization_integration_installations(
-        self, organization_id_or_slug
-    ) -> list[Any]:
+    async def list_organization_integration_installations(self, organization_id_or_slug) -> list[Any]:
         """
         Retrieves a list of Sentry app installations for a specified organization using the organization ID or slug.
 
@@ -7060,9 +6454,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_or_update_an_external_issue(
-        self, uuid, issueId, webUrl, project, identifier
-    ) -> dict[str, Any]:
+    async def create_or_update_an_external_issue(self, uuid, issueId, webUrl, project, identifier) -> dict[str, Any]:
         """
         Creates or updates an external issue linked to a Sentry issue using the integration platform integration specified by the `uuid` path parameter, requiring authentication with a token having the `event:write` scope.
 
@@ -7090,12 +6482,7 @@ class SentryApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {
-            "issueId": issueId,
-            "webUrl": webUrl,
-            "project": project,
-            "identifier": identifier,
-        }
+        request_body = {"issueId": issueId, "webUrl": webUrl, "project": project, "identifier": identifier}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/sentry-app-installations/{uuid}/external-issues/"
         query_params = {}
@@ -7103,7 +6490,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_an_external_issue(self, uuid, external_issue_id) -> Any:
+    async def delete_an_external_issue(self, uuid, external_issue_id) -> Any:
         """
         Deletes an external issue associated with a specific integration installation in Sentry, requiring authentication with the `event:admin` scope.
 
@@ -7127,7 +6514,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def enable_spike_protection(self, organization_id_or_slug, projects) -> Any:
+    async def enable_spike_protection(self, organization_id_or_slug, projects) -> Any:
         """
         Creates a new spike protection for an organization using the provided JSON data and returns a status message, requiring authentication with permissions to read, write, or administer projects.
 
@@ -7143,9 +6530,7 @@ class SentryApp(APIApplication):
         """
         if organization_id_or_slug is None:
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
-        request_body = {
-            "projects": projects,
-        }
+        request_body = {"projects": projects}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/spike-protections/"
         query_params = {}
@@ -7153,16 +6538,8 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_an_issue_s_events(
-        self,
-        issue_id,
-        start=None,
-        end=None,
-        statsPeriod=None,
-        environment=None,
-        full=None,
-        sample=None,
-        query=None,
+    async def list_an_issue_s_events(
+        self, issue_id, start=None, end=None, statsPeriod=None, environment=None, full=None, sample=None, query=None
     ) -> list[Any]:
         """
         Retrieves a list of events associated with a specific issue, optionally filtered by date range, environment, and other query parameters.
@@ -7203,9 +6580,7 @@ class SentryApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def retrieve_an_issue_event(
-        self, issue_id, event_id, environment=None
-    ) -> dict[str, Any]:
+    async def retrieve_an_issue_event(self, issue_id, event_id, environment=None) -> dict[str, Any]:
         """
         Retrieves event details for a specific event within an issue using the provided issue ID and event ID, optionally filtered by environment.
 
@@ -7225,14 +6600,12 @@ class SentryApp(APIApplication):
         if event_id is None:
             raise ValueError("Missing required parameter 'event_id'")
         url = f"{self.base_url}/api/0/issues/{issue_id}/events/{event_id}/"
-        query_params = {
-            k: v for k, v in [("environment", environment)] if v is not None
-        }
+        query_params = {k: v for k, v in [("environment", environment)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def retrieve_tag_details(self, issue_id, key, environment=None) -> dict[str, Any]:
+    async def retrieve_tag_details(self, issue_id, key, environment=None) -> dict[str, Any]:
         """
         Retrieves a tag for a specific issue based on the provided key, with optional filtering by environment.
 
@@ -7252,16 +6625,12 @@ class SentryApp(APIApplication):
         if key is None:
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/api/0/issues/{issue_id}/tags/{key}/"
-        query_params = {
-            k: v for k, v in [("environment", environment)] if v is not None
-        }
+        query_params = {k: v for k, v in [("environment", environment)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_a_tag_s_values_for_an_issue(
-        self, issue_id, key, sort=None, environment=None
-    ) -> list[Any]:
+    async def list_a_tag_s_values_for_an_issue(self, issue_id, key, sort=None, environment=None) -> list[Any]:
         """
         Retrieves a list of values for a specific tag key associated with an issue, allowing optional sorting and filtering by environment.
 
@@ -7282,11 +6651,7 @@ class SentryApp(APIApplication):
         if key is None:
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/api/0/issues/{issue_id}/tags/{key}/values/"
-        query_params = {
-            k: v
-            for k, v in [("sort", sort), ("environment", environment)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("sort", sort), ("environment", environment)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()

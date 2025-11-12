@@ -1,8 +1,7 @@
 import base64
-import concurrent.futures
+import asyncio
 from email.message import EmailMessage
 from typing import Any
-
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -14,14 +13,7 @@ class GoogleMailApp(APIApplication):
         self.base_api_url = "https://gmail.googleapis.com/gmail/v1/users/me"
         self.base_url = "https://gmail.googleapis.com"
 
-    def send_email(
-        self,
-        to: str,
-        subject: str,
-        body: str,
-        body_type: str = "plain",
-        thread_id: str | None = None,
-    ) -> dict[str, Any]:
+    async def send_email(self, to: str, subject: str, body: str, body_type: str = "plain", thread_id: str | None = None) -> dict[str, Any]:
         """
         Composes and immediately sends an email message via the Gmail API. It can function as a reply within an existing conversation if a `thread_id` is provided. This action is distinct from `send_draft`, which sends a previously saved draft message, or `create_draft`, which only saves an email.
 
@@ -43,17 +35,12 @@ class GoogleMailApp(APIApplication):
         Tags:
             send, email, api, communication, important, thread, reply, openWorldHint
         """
-
         url = f"{self.base_api_url}/messages/send"
         raw_message = self._create_message(to, subject, body, body_type)
         email_data = {"raw": raw_message}
-
-        # Add threadId to make it a proper reply if thread_id is provided
         if thread_id:
             email_data["threadId"] = thread_id
-
         response = self._post(url, email_data)
-
         return self._handle_response(response)
 
     def _create_message(self, to, subject, body, body_type="plain"):
@@ -69,13 +56,8 @@ class GoogleMailApp(APIApplication):
             logger.error(f"Error creating message: {str(e)}")
             raise
 
-    def create_draft(
-        self,
-        to: str,
-        subject: str,
-        body: str,
-        body_type: str = "plain",
-        thread_id: str | None = None,
+    async def create_draft(
+        self, to: str, subject: str, body: str, body_type: str = "plain", thread_id: str | None = None
     ) -> dict[str, Any]:
         """
         Saves a new email draft in Gmail with a specified recipient, subject, and body. An optional thread ID can create the draft as a reply within an existing conversation, distinguishing it from `send_email`, which sends immediately.
@@ -98,24 +80,16 @@ class GoogleMailApp(APIApplication):
         Tags:
             create, email, draft, gmail, api, important, thread, reply, html
         """
-
         url = f"{self.base_api_url}/drafts"
-
         raw_message = self._create_message(to, subject, body, body_type)
-
         draft_data = {"message": {"raw": raw_message}}
-
-        # Add threadId to make it a proper reply if thread_id is provided
         if thread_id:
             draft_data["message"]["threadId"] = thread_id
-
         logger.info(f"Creating draft email to {to}")
-
         response = self._post(url, draft_data)
-
         return self._handle_response(response)
 
-    def send_draft(self, draft_id: str) -> dict[str, Any]:
+    async def send_draft(self, draft_id: str) -> dict[str, Any]:
         """
         Sends a pre-existing Gmail draft identified by its unique ID. It posts to the `/drafts/send` endpoint, converting a saved draft into a sent message. This function acts on drafts from `create_draft` and differs from `send_email`, which composes and sends an email in one step.
 
@@ -133,18 +107,13 @@ class GoogleMailApp(APIApplication):
         Tags:
             send, email, api, communication, important, draft
         """
-
         url = f"{self.base_api_url}/drafts/send"
-
         draft_data = {"id": draft_id}
-
         logger.info(f"Sending draft email with ID: {draft_id}")
-
         response = self._post(url, draft_data)
-
         return self._handle_response(response)
 
-    def get_draft(self, draft_id: str, format: str = "full") -> dict[str, Any]:
+    async def get_draft(self, draft_id: str, format: str = "full") -> dict[str, Any]:
         """
         Retrieves a specific Gmail draft by its unique ID. This function allows specifying the output format (e.g., full, raw) to control the response detail. Unlike `list_drafts`, it fetches a single, known draft rather than a collection of multiple drafts.
 
@@ -163,24 +132,13 @@ class GoogleMailApp(APIApplication):
         Tags:
             retrieve, email, gmail, draft, api, format, important
         """
-
         url = f"{self.base_api_url}/drafts/{draft_id}"
-
-        # Add format parameter as query param
         params = {"format": format}
-
         logger.info(f"Retrieving draft with ID: {draft_id}")
-
         response = self._get(url, params=params)
-
         return self._handle_response(response)
 
-    def list_drafts(
-        self,
-        max_results: int = 20,
-        q: str | None = None,
-        include_spam_trash: bool = False,
-    ) -> dict[str, Any]:
+    async def list_drafts(self, max_results: int = 20, q: str | None = None, include_spam_trash: bool = False) -> dict[str, Any]:
         """
         Fetches a list of email drafts, allowing filtering by a search query and limiting results. It can optionally include drafts from spam and trash, returning a collection of draft objects. This is distinct from `get_draft`, which retrieves only a single, specific draft by its ID.
 
@@ -200,25 +158,17 @@ class GoogleMailApp(APIApplication):
         Tags:
             list, email, drafts, gmail, api, search, query, pagination, important
         """
-
         url = f"{self.base_api_url}/drafts"
-
-        # Build query parameters
         params: dict[str, Any] = {"maxResults": max_results}
-
         if q:
             params["q"] = q
-
         if include_spam_trash:
             params["includeSpamTrash"] = "true"
-
         logger.info(f"Retrieving drafts list with params: {params}")
-
         response = self._get(url, params=params)
-
         return self._handle_response(response)
 
-    def get_message_details(self, message_id: str) -> dict[str, Any]:
+    async def get_message_details(self, message_id: str) -> dict[str, Any]:
         """
         Retrieves a specific email from Gmail by its ID. It parses the API response to extract and format key details—including sender, subject, body, and attachments—into a structured dictionary. This function provides detailed data for a single message, distinguishing it from `list_messages` which fetches multiple messages.
 
@@ -234,25 +184,18 @@ class GoogleMailApp(APIApplication):
         url = f"{self.base_api_url}/messages/{message_id}"
         response = self._get(url)
         raw_data = self._handle_response(response)
-
-        # Extract headers
         headers = {}
         for header in raw_data.get("payload", {}).get("headers", []):
             name = header.get("name", "")
             value = header.get("value", "")
             headers[name] = value
-
-        # Extract body content
         body_content = self._extract_email_body(raw_data.get("payload", {}))
         if not body_content:
             if "snippet" in raw_data:
                 body_content = f"Preview: {raw_data['snippet']}"
             else:
                 body_content = "No content available"
-
-        # Extract attachments
         attachments = self._extract_attachments(raw_data.get("payload", {}))
-
         return {
             "message_id": message_id,
             "from_addr": headers.get("From", "Unknown sender"),
@@ -275,45 +218,30 @@ class GoogleMailApp(APIApplication):
             str: The email body content (plain text preferred, HTML as fallback)
         """
         try:
-            # Handle single part message
             if payload.get("body") and payload.get("body", {}).get("data"):
                 return self._decode_base64(payload["body"]["data"])
-
-            # Handle multipart message
             parts = payload.get("parts", [])
             if not parts:
                 return ""
-
             plain_text_body = ""
             html_body = ""
-
             for part in parts:
                 mime_type = part.get("mimeType", "")
-
-                # Extract plain text
                 if mime_type == "text/plain":
                     if part.get("body") and part.get("body", {}).get("data"):
                         plain_text_body = self._decode_base64(part["body"]["data"])
-
-                # Extract HTML content
                 elif mime_type == "text/html":
                     if part.get("body") and part.get("body", {}).get("data"):
                         html_body = self._decode_base64(part["body"]["data"])
-
-                # Handle nested multipart (recursive)
                 elif mime_type.startswith("multipart/") and part.get("parts"):
                     nested_body = self._extract_email_body(part)
-                    if nested_body and not plain_text_body:
+                    if nested_body and (not plain_text_body):
                         plain_text_body = nested_body
-
-            # Prefer plain text, fallback to HTML
             if plain_text_body:
                 return plain_text_body
             elif html_body:
                 return f"[HTML Content]\n{html_body}"
-
             return ""
-
         except Exception as e:
             logger.error(f"Error extracting email body: {str(e)}")
             return ""
@@ -329,7 +257,6 @@ class GoogleMailApp(APIApplication):
             list: List of attachment dictionaries with attachment_id, filename, mime_type, and size
         """
         attachments = []
-
         try:
             if payload.get("filename") and payload.get("body", {}).get("attachmentId"):
                 attachments.append(
@@ -340,7 +267,6 @@ class GoogleMailApp(APIApplication):
                         "size": payload.get("body", {}).get("size", 0),
                     }
                 )
-
             parts = payload.get("parts", [])
             for part in parts:
                 if part.get("filename") and part.get("body", {}).get("attachmentId"):
@@ -352,14 +278,11 @@ class GoogleMailApp(APIApplication):
                             "size": part.get("body", {}).get("size", 0),
                         }
                     )
-
                 elif part.get("parts"):
                     nested_attachments = self._extract_attachments(part)
                     attachments.extend(nested_attachments)
-
         except Exception as e:
             logger.error(f"Error extracting attachments: {str(e)}")
-
         return attachments
 
     def _decode_base64(self, data):
@@ -373,19 +296,14 @@ class GoogleMailApp(APIApplication):
             str: Decoded string content
         """
         try:
-            # Gmail API uses URL-safe base64 encoding
             decoded_bytes = base64.urlsafe_b64decode(data)
             return decoded_bytes.decode("utf-8")
         except Exception as e:
             logger.error(f"Error decoding base64 data: {str(e)}")
             return f"[Unable to decode content: {str(e)}]"
 
-    def list_messages(
-        self,
-        max_results: int = 10,
-        q: str | None = None,
-        include_spam_trash: bool = False,
-        page_token: str | None = None,
+    async def list_messages(
+        self, max_results: int = 10, q: str | None = None, include_spam_trash: bool = False, page_token: str | None = None
     ) -> dict[str, Any]:
         """
         Fetches a paginated list of detailed email messages using optional search queries. It concurrently retrieves full content (sender, subject, body) for each message, returning the results and a pagination token. This differs from `get_message_details`, which fetches only a single message.
@@ -423,54 +341,30 @@ class GoogleMailApp(APIApplication):
             list, messages, gmail, search, query, pagination, important
         """
         url = f"{self.base_api_url}/messages?format=metadata"
-
-        # Build query parameters
         params: dict[str, Any] = {"maxResults": max_results}
-
         if q:
             params["q"] = q
-
         if include_spam_trash:
             params["includeSpamTrash"] = "true"
-
         if page_token:
             params["pageToken"] = page_token
-
         logger.info(f"Retrieving messages list with params: {params}")
-
         response = self._get(url, params=params)
         data = self._handle_response(response)
-
-        # Extract message IDs
         messages = data.get("messages", [])
         message_ids = [msg.get("id") for msg in messages if msg.get("id")]
-
-        # Use ThreadPoolExecutor to get detailed information for each message in parallel
         detailed_messages = []
         if message_ids:
-            with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-                # Submit all get_message_details calls
-                future_to_message_id = {
-                    executor.submit(self.get_message_details, message_id): message_id
-                    for message_id in message_ids
-                }
+            tasks = [self.get_message_details(message_id) for message_id in message_ids]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    logger.error(f"Error retrieving message {message_ids[i]}: {str(result)}")
+                else:
+                    detailed_messages.append(result)
+        return {"messages": detailed_messages, "next_page_token": data.get("nextPageToken")}
 
-                # Collect results as they complete
-                for future in concurrent.futures.as_completed(future_to_message_id):
-                    message_id = future_to_message_id[future]
-                    try:
-                        result = future.result()
-                        detailed_messages.append(result)
-                    except Exception as e:
-                        logger.error(f"Error retrieving message {message_id}: {str(e)}")
-                        # Skip failed messages rather than including error strings
-
-        return {
-            "messages": detailed_messages,
-            "next_page_token": data.get("nextPageToken"),
-        }
-
-    def get_email_thread(self, thread_id: str) -> dict[str, Any]:
+    async def get_email_thread(self, thread_id: str) -> dict[str, Any]:
         """
         Fetches a complete email conversation by its unique thread ID. Unlike `get_message_details`, which retrieves a single message, this returns all messages and metadata for the entire thread, providing the full context of the conversation.
 
@@ -493,7 +387,7 @@ class GoogleMailApp(APIApplication):
         response = self._get(url)
         return self._handle_response(response)
 
-    def list_labels(self) -> dict[str, Any]:
+    async def list_labels(self) -> dict[str, Any]:
         """
         Fetches a complete list of all available labels from the user's Gmail account via the API. It retrieves both system-defined (e.g., INBOX) and user-created labels, returning their names and IDs, complementing management functions like `create_label` and `update_label`.
 
@@ -510,16 +404,12 @@ class GoogleMailApp(APIApplication):
         Tags:
             list, gmail, labels, fetch, organize, important, management
         """
-
         url = f"{self.base_api_url}/labels"
-
         logger.info("Retrieving Gmail labels")
-
         response = self._get(url)
-
         return self._handle_response(response)
 
-    def create_label(self, name: str) -> dict[str, Any]:
+    async def create_label(self, name: str) -> dict[str, Any]:
         """
         Creates a new Gmail label with a specified name, hardcoding its visibility to ensure it appears in both label and message lists. This function complements `update_label` and `delete_label` by adding new organizational tags to the user's account via the API.
 
@@ -536,23 +426,13 @@ class GoogleMailApp(APIApplication):
         Tags:
             create, label, gmail, management, important
         """
-
         url = f"{self.base_api_url}/labels"
-
-        # Create the label data with just the essential fields
-        label_data = {
-            "name": name,
-            "labelListVisibility": "labelShow",  # Show in label list
-            "messageListVisibility": "show",  # Show in message list
-        }
-
+        label_data = {"name": name, "labelListVisibility": "labelShow", "messageListVisibility": "show"}
         logger.info(f"Creating new Gmail label: {name}")
-
         response = self._post(url, label_data)
-
         return self._handle_response(response)
 
-    def get_profile(self) -> dict[str, Any]:
+    async def get_profile(self) -> dict[str, Any]:
         """
         Retrieves the authenticated user's Gmail profile from the API. The profile includes the user's email address, total message and thread counts, and the mailbox's history ID, offering a high-level summary of the account's state.
 
@@ -569,15 +449,12 @@ class GoogleMailApp(APIApplication):
         Tags:
             fetch, profile, gmail, user-info, api-request, important
         """
-
         url = f"{self.base_api_url}/profile"
-
         logger.info("Retrieving Gmail user profile")
-
         response = self._get(url)
         return self._handle_response(response)
 
-    def update_draft(
+    async def update_draft(
         self,
         userId,
         id,
@@ -670,10 +547,7 @@ class GoogleMailApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'")
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id,
-            "message": message,
-        }
+        request_body = {"id": id, "message": message}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/gmail/v1/users/{userId}/drafts/{id}"
         query_params = {
@@ -697,7 +571,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def trash_message(
+    async def trash_message(
         self,
         userId,
         id,
@@ -763,7 +637,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def untrash_message(
+    async def untrash_message(
         self,
         userId,
         id,
@@ -829,7 +703,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment(
+    async def get_attachment(
         self,
         userId,
         messageId,
@@ -899,7 +773,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_label(
+    async def update_label(
         self,
         userId,
         id,
@@ -1014,7 +888,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_label(
+    async def delete_label(
         self,
         userId,
         id,
@@ -1080,7 +954,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_filter(
+    async def get_filter(
         self,
         userId,
         id,
@@ -1146,7 +1020,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_filter(
+    async def delete_filter(
         self,
         userId,
         id,
@@ -1212,7 +1086,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_all_filters(
+    async def get_all_filters(
         self,
         userId,
         access_token=None,
@@ -1274,7 +1148,7 @@ class GoogleMailApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_filter(
+    async def create_filter(
         self,
         userId,
         access_token=None,
@@ -1348,11 +1222,7 @@ class GoogleMailApp(APIApplication):
         """
         if userId is None:
             raise ValueError("Missing required parameter 'userId'")
-        request_body = {
-            "action": action,
-            "criteria": criteria,
-            "id": id,
-        }
+        request_body = {"action": action, "criteria": criteria, "id": id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/gmail/v1/users/{userId}/settings/filters"
         query_params = {
@@ -1385,10 +1255,10 @@ class GoogleMailApp(APIApplication):
             self.list_drafts,
             self.get_message_details,
             self.list_messages,
+            self.get_email_thread,
             self.list_labels,
             self.create_label,
             self.get_profile,
-            # Auto Generated from openapi spec
             self.update_draft,
             self.trash_message,
             self.untrash_message,

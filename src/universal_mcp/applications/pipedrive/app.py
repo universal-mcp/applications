@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class PipedriveApp(APIApplication):
         super().__init__(name="pipedrive", integration=integration, **kwargs)
         self.base_url = "https://api.pipedrive.com/v1"
 
-    def oauth_request_authorization(
-        self, client_id: str, redirect_uri: str, state: str | None = None
-    ) -> Any:
+    async def oauth_request_authorization(self, client_id: str, redirect_uri: str, state: str | None = None) -> Any:
         """
         Redirects the user to an authorization server toassistant
 
@@ -33,31 +30,17 @@ class PipedriveApp(APIApplication):
             Oauth
         """
         url = f"{self.base_url}/oauth/authorize"
-        query_params = {
-            k: v
-            for k, v in [
-                ("client_id", client_id),
-                ("redirect_uri", redirect_uri),
-                ("state", state),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("client_id", client_id), ("redirect_uri", redirect_uri), ("state", state)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def oauth_refresh_token(
-        self, grant_type: str | None = None, refresh_token: str | None = None
-    ) -> dict[str, Any]:
+    async def oauth_refresh_token(self, grant_type: str | None = None, refresh_token: str | None = None) -> dict[str, Any]:
         """
         Issues OAuth 2.0 access tokens, ID tokens, and refresh tokens in response to authentication grants using the POST method.
 
@@ -76,34 +59,20 @@ class PipedriveApp(APIApplication):
             Oauth
         """
         request_body_data = None
-        request_body_data = {
-            "grant_type": grant_type,
-            "refresh_token": refresh_token,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"grant_type": grant_type, "refresh_token": refresh_token}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/oauth/token"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activities_delete_bulk(self, ids: str) -> dict[str, Any]:
+    async def activities_delete_bulk(self, ids: str) -> dict[str, Any]:
         """
         Deletes multiple activities by their IDs using query parameters and returns a success response upon completion.
 
@@ -124,18 +93,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activities_list_user_activities(
+    async def activities_list_user_activities(
         self,
         user_id: int | None = None,
         filter_id: int | None = None,
@@ -186,18 +151,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activities_add_new_activity(
+    async def activities_add_new_activity(
         self,
         due_date: str | None = None,
         due_time: str | None = None,
@@ -272,30 +233,19 @@ class PipedriveApp(APIApplication):
             "attendees": attendees,
             "done": done,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activities"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activities_get_all_activities(
+    async def activities_get_all_activities(
         self,
         cursor: str | None = None,
         limit: int | None = None,
@@ -343,18 +293,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activities_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def activities_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes the specified activity by its unique identifier.
 
@@ -377,18 +323,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activities_get_details(self, id: str) -> dict[str, Any]:
+    async def activities_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves details of an activity by its ID using the GET method.
 
@@ -411,18 +353,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_activity(
+    async def update_activity(
         self,
         id: str,
         due_date: str | None = None,
@@ -501,30 +439,19 @@ class PipedriveApp(APIApplication):
             "attendees": attendees,
             "done": done,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activities/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activity_fields_get_all(self) -> Any:
+    async def activity_fields_get_all(self) -> Any:
         """
         Retrieves all activity fields from the Pipedrive API using the "GET" method at the path "/activityFields".
 
@@ -542,18 +469,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_activity_types(self, ids: str) -> Any:
+    async def delete_activity_types(self, ids: str) -> Any:
         """
         Deletes specified activity types by IDs using their identifiers and returns a success status upon completion.
 
@@ -574,18 +497,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_activity_types(self) -> Any:
+    async def get_activity_types(self) -> Any:
         """
         Retrieves a list of available activity types with their details from the Fitbit activity database.
 
@@ -603,23 +522,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activity_types_add_new_type(
-        self,
-        name: str | None = None,
-        icon_key: str | None = None,
-        color: str | None = None,
-    ) -> Any:
+    async def activity_types_add_new_type(self, name: str | None = None, icon_key: str | None = None, color: str | None = None) -> Any:
         """
         Creates a new activity type using the specified data and returns a success status upon completion.
 
@@ -639,35 +549,20 @@ class PipedriveApp(APIApplication):
             ActivityTypes
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "icon_key": icon_key,
-            "color": color,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "icon_key": icon_key, "color": color}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activityTypes"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activity_types_mark_as_deleted(self, id: str) -> Any:
+    async def activity_types_mark_as_deleted(self, id: str) -> Any:
         """
         Deletes an activity type by its ID using the Pipedrive API.
 
@@ -690,24 +585,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activity_types_update_type(
-        self,
-        id: str,
-        name: str | None = None,
-        icon_key: str | None = None,
-        color: str | None = None,
-        order_nr: int | None = None,
+    async def activity_types_update_type(
+        self, id: str, name: str | None = None, icon_key: str | None = None, color: str | None = None, order_nr: int | None = None
     ) -> Any:
         """
         Updates an existing activity type by modifying its details using the API and returns a successful response.
@@ -732,36 +618,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "icon_key": icon_key,
-            "color": color,
-            "order_nr": order_nr,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "icon_key": icon_key, "color": color, "order_nr": order_nr}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activityTypes/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_addons(self) -> Any:
+    async def list_addons(self) -> Any:
         """
         Retrieves available addons for billing subscriptions, returning a list of additional features or services that can be added to a subscription plan.
 
@@ -779,18 +649,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def call_logs_add_new_log(
+    async def call_logs_add_new_log(
         self,
         user_id: int | None = None,
         activity_id: int | None = None,
@@ -853,32 +719,19 @@ class PipedriveApp(APIApplication):
             "lead_id": lead_id,
             "note": note,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/callLogs"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def call_logs_get_all_logs(
-        self, start: int | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    async def call_logs_get_all_logs(self, start: int | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a list of call logs based on specified query parameters, allowing users to view and manage call history by setting a start point and limiting the number of results returned.
 
@@ -897,23 +750,17 @@ class PipedriveApp(APIApplication):
             CallLogs
         """
         url = f"{self.base_url}/callLogs"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def call_logs_delete_log(self, id: str) -> dict[str, Any]:
+    async def call_logs_delete_log(self, id: str) -> dict[str, Any]:
         """
         Deletes a call log (including any attached audio recordings) without affecting related activities using the specified ID.
 
@@ -936,18 +783,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def call_logs_get_details(self, id: str) -> dict[str, Any]:
+    async def call_logs_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves a specific call log entry by its unique identifier.
 
@@ -970,20 +813,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def call_logs_attach_recording(
-        self, id: str, file: bytes | None = None
-    ) -> dict[str, Any]:
+    async def call_logs_attach_recording(self, id: str, file: bytes | None = None) -> dict[str, Any]:
         """
         Records a call log using the provided ID by sending a POST request to the specified API endpoint.
 
@@ -1014,26 +851,16 @@ class PipedriveApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/callLogs/{id}/recordings"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            files=files_data,
-            params=query_params,
-            content_type="multipart/form-data",
-        )
+        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def channels_create_new_channel(
+    async def channels_create_new_channel(
         self,
         name: str | None = None,
         provider_channel_id: str | None = None,
@@ -1069,30 +896,19 @@ class PipedriveApp(APIApplication):
             "template_support": template_support,
             "provider_type": provider_type,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/channels"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def channels_delete_channel_by_id(self, id: str) -> dict[str, Any]:
+    async def channels_delete_channel_by_id(self, id: str) -> dict[str, Any]:
         """
         Deletes a channel specified by the ID in the path and returns an empty response on success.
 
@@ -1115,18 +931,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def channels_receive_message(
+    async def channels_receive_message(
         self,
         id: str | None = None,
         channel_id: str | None = None,
@@ -1177,32 +989,19 @@ class PipedriveApp(APIApplication):
             "conversation_link": conversation_link,
             "attachments": attachments,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/channels/messages/receive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def channels_delete_conversation(
-        self, channel_id: str, conversation_id: str
-    ) -> dict[str, Any]:
+    async def channels_delete_conversation(self, channel_id: str, conversation_id: str) -> dict[str, Any]:
         """
         Deletes a specific conversation within a channel and returns a success status upon completion.
 
@@ -1228,18 +1027,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def currencies_get_all_supported(self, term: str | None = None) -> dict[str, Any]:
+    async def currencies_get_all_supported(self, term: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of currencies based on a search term using the "GET" method at the "/currencies" path.
 
@@ -1260,18 +1055,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("term", term)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_get_all_deals(
+    async def deals_get_all_deals(
         self,
         user_id: int | None = None,
         filter_id: int | None = None,
@@ -1322,18 +1113,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_create_deal(
+    async def deals_create_deal(
         self,
         title: str | None = None,
         value: str | None = None,
@@ -1408,30 +1195,19 @@ class PipedriveApp(APIApplication):
             "lost_reason": lost_reason,
             "visible_to": visible_to,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_delete_bulk(self, ids: str) -> dict[str, Any]:
+    async def deals_delete_bulk(self, ids: str) -> dict[str, Any]:
         """
         Deletes multiple deals by their comma-separated IDs and returns a success status.
 
@@ -1452,18 +1228,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def dealsget_all_deals(
+    async def dealsget_all_deals(
         self,
         cursor: str | None = None,
         limit: int | None = None,
@@ -1511,18 +1283,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_search_by_title_and_notes(
+    async def deals_search_by_title_and_notes(
         self,
         term: str,
         fields: str | None = None,
@@ -1576,23 +1344,15 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_get_summary(
-        self,
-        status: str | None = None,
-        filter_id: int | None = None,
-        user_id: int | None = None,
-        stage_id: int | None = None,
+    async def deals_get_summary(
+        self, status: str | None = None, filter_id: int | None = None, user_id: int | None = None, stage_id: int | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a summary of deals based on specified parameters such as status, filter ID, user ID, and stage ID using the GET method at the "/deals/summary" path.
@@ -1615,29 +1375,18 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/deals/summary"
         query_params = {
-            k: v
-            for k, v in [
-                ("status", status),
-                ("filter_id", filter_id),
-                ("user_id", user_id),
-                ("stage_id", stage_id),
-            ]
-            if v is not None
+            k: v for k, v in [("status", status), ("filter_id", filter_id), ("user_id", user_id), ("stage_id", stage_id)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_get_timeline_data(
+    async def deals_get_timeline_data(
         self,
         start_date: str,
         interval: str,
@@ -1691,18 +1440,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def deals_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes a deal by its ID using the "DELETE" method, removing the specified deal from the system.
 
@@ -1725,18 +1470,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_get_details(self, id: str) -> dict[str, Any]:
+    async def deals_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves details about a specific deal by its ID using the API endpoint "/deals/{id}" with the GET method.
 
@@ -1759,18 +1500,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_update_properties(
+    async def deals_update_properties(
         self,
         id: str,
         title: str | None = None,
@@ -1846,36 +1583,20 @@ class PipedriveApp(APIApplication):
             "lost_reason": lost_reason,
             "visible_to": visible_to,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_activities(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        done: float | None = None,
-        exclude: str | None = None,
+    async def deals_list_activities(
+        self, id: str, start: int | None = None, limit: int | None = None, done: float | None = None, exclude: str | None = None
     ) -> Any:
         """
         Retrieves a list of activities associated with a specific deal, optionally filtered by status and pagination parameters.
@@ -1900,30 +1621,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/activities"
-        query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("done", done),
-                ("exclude", exclude),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("done", done), ("exclude", exclude)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_duplicate_deal(self, id: str) -> dict[str, Any]:
+    async def deals_duplicate_deal(self, id: str) -> dict[str, Any]:
         """
         Creates a duplicate of the specified deal using its ID and returns the new deal in the response.
 
@@ -1945,31 +1653,16 @@ class PipedriveApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/deals/{id}/duplicate"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_deal_files(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        sort: str | None = None,
-    ) -> Any:
+    async def deals_list_deal_files(self, id: str, start: int | None = None, limit: int | None = None, sort: str | None = None) -> Any:
         """
         Retrieves a list of files associated with a specific deal by ID, allowing pagination and sorting of the results.
 
@@ -1992,31 +1685,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/files"
-        query_params = {
-            k: v
-            for k, v in [("start", start), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_deal_updates(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        all_changes: str | None = None,
-        items: str | None = None,
+    async def deals_list_deal_updates(
+        self, id: str, start: int | None = None, limit: int | None = None, all_changes: str | None = None, items: str | None = None
     ) -> Any:
         """
         Retrieves the workflow history and associated changes for a specific deal, optionally filtered by parameters like start time, limit, and item types.
@@ -2042,31 +1722,18 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/flow"
         query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("all_changes", all_changes),
-                ("items", items),
-            ]
-            if v is not None
+            k: v for k, v in [("start", start), ("limit", limit), ("all_changes", all_changes), ("items", items)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_participants_changelog(
-        self, id: str, limit: int | None = None, cursor: str | None = None
-    ) -> dict[str, Any]:
+    async def get_participants_changelog(self, id: str, limit: int | None = None, cursor: str | None = None) -> dict[str, Any]:
         """
         Retrieves paginated changelog data tracking participant-related modifications for a specific deal using cursor-based pagination.
 
@@ -2088,23 +1755,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/participantsChangelog"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_followers(self, id: str) -> Any:
+    async def deals_list_followers(self, id: str) -> Any:
         """
         Retrieves a list of users following a deal, identified by its ID, using the GET method at the "/deals/{id}/followers" path.
 
@@ -2127,18 +1788,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_add_follower(self, id: str, user_id: int | None = None) -> dict[str, Any]:
+    async def deals_add_follower(self, id: str, user_id: int | None = None) -> dict[str, Any]:
         """
         Adds followers to a specified deal and returns a success status.
 
@@ -2159,33 +1816,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "user_id": user_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"user_id": user_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/followers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_remove_follower(self, id: str, follower_id: str) -> dict[str, Any]:
+    async def deals_remove_follower(self, id: str, follower_id: str) -> dict[str, Any]:
         """
         Removes a specific follower from a deal using the "DELETE" method at the "/deals/{id}/followers/{follower_id}" endpoint.
 
@@ -2211,20 +1855,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_mail_messages(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def deals_list_mail_messages(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of mail messages associated with a specific deal identified by its ID, allowing pagination through optional start and limit parameters.
 
@@ -2246,25 +1884,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/mailMessages"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_merge_deals(
-        self, id: str, merge_with_id: int | None = None
-    ) -> dict[str, Any]:
+    async def deals_merge_deals(self, id: str, merge_with_id: int | None = None) -> dict[str, Any]:
         """
         Merges a specific deal identified by its ID with another deal and returns the merged result.
 
@@ -2285,35 +1915,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "merge_with_id": merge_with_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"merge_with_id": merge_with_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/merge"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_participants(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    async def deals_list_participants(self, id: str, start: int | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves participants associated with a specific deal, including their marketing status if applicable, and supports pagination parameters.
 
@@ -2335,25 +1950,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/participants"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_add_participant(
-        self, id: str, person_id: int | None = None
-    ) -> dict[str, Any]:
+    async def deals_add_participant(self, id: str, person_id: int | None = None) -> dict[str, Any]:
         """
         Lists participants associated with a specific deal in Pipedrive using the provided deal ID.
 
@@ -2374,35 +1981,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "person_id": person_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"person_id": person_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/participants"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_delete_participant(
-        self, id: str, deal_participant_id: str
-    ) -> dict[str, Any]:
+    async def deals_delete_participant(self, id: str, deal_participant_id: str) -> dict[str, Any]:
         """
         Removes a participant from a deal using the DELETE method at the endpoint "/deals/{id}/participants/{deal_participant_id}".
 
@@ -2428,18 +2020,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_permitted_users(self, id: str) -> Any:
+    async def deals_list_permitted_users(self, id: str) -> Any:
         """
         Retrieves the list of users with permission to access a specific deal in Pipedrive.
 
@@ -2462,20 +2050,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_persons_associated(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def deals_list_persons_associated(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of persons associated with a specific deal, optionally paginated using start and limit query parameters.
 
@@ -2497,28 +2079,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/persons"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_list_deal_products(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        include_product_data: float | None = None,
+    async def deals_list_deal_products(
+        self, id: str, start: int | None = None, limit: int | None = None, include_product_data: float | None = None
     ) -> Any:
         """
         Retrieves a list of products associated with a specific deal, optionally including product data and pagination support.
@@ -2543,28 +2115,18 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/products"
         query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("include_product_data", include_product_data),
-            ]
-            if v is not None
+            k: v for k, v in [("start", start), ("limit", limit), ("include_product_data", include_product_data)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_add_product_to_deal(
+    async def deals_add_product_to_deal(
         self,
         id: str,
         product_id: int | None = None,
@@ -2625,30 +2187,19 @@ class PipedriveApp(APIApplication):
             "tax_method": tax_method,
             "enabled_flag": enabled_flag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/products"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_update_product_attachment(
+    async def deals_update_product_attachment(
         self,
         id: str,
         product_attachment_id: str,
@@ -2713,32 +2264,19 @@ class PipedriveApp(APIApplication):
             "tax_method": tax_method,
             "enabled_flag": enabled_flag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/products/{product_attachment_id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deals_delete_attached_product(
-        self, id: str, product_attachment_id: str
-    ) -> dict[str, Any]:
+    async def deals_delete_attached_product(self, id: str, product_attachment_id: str) -> dict[str, Any]:
         """
         Deletes a specific product attachment associated with a deal identified by both IDs and returns a success status upon removal.
 
@@ -2764,20 +2302,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deal_fields_get_all_fields(
-        self, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def deal_fields_get_all_fields(self, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves all deal fields configuration with pagination support using start and limit parameters.
 
@@ -2796,23 +2328,17 @@ class PipedriveApp(APIApplication):
             DealFields
         """
         url = f"{self.base_url}/dealFields"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deal_fields_add_new_field(
+    async def deal_fields_add_new_field(
         self,
         name: str | None = None,
         options: list[dict[str, Any]] | None = None,
@@ -2839,36 +2365,20 @@ class PipedriveApp(APIApplication):
             DealFields
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "add_visible_flag": add_visible_flag,
-            "field_type": field_type,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "add_visible_flag": add_visible_flag, "field_type": field_type}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/dealFields"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deal_fields_delete_multiple_bulk(self, ids: str) -> Any:
+    async def deal_fields_delete_multiple_bulk(self, ids: str) -> Any:
         """
         Deletes multiple custom deal fields in Pipedrive by specifying their IDs via a DELETE request to the "/dealFields" endpoint.
 
@@ -2889,18 +2399,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deal_fields_get_one_field(self, id: str) -> Any:
+    async def deal_fields_get_one_field(self, id: str) -> Any:
         """
         Retrieves the details of a specific deal field by its ID, including schema and configuration.
 
@@ -2923,18 +2429,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deal_fields_mark_as_deleted(self, id: str) -> Any:
+    async def deal_fields_mark_as_deleted(self, id: str) -> Any:
         """
         Deletes a specific deal field by its ID using the Pipedrive API.
 
@@ -2957,23 +2459,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deal_fields_update_field(
-        self,
-        id: str,
-        name: str | None = None,
-        options: list[dict[str, Any]] | None = None,
-        add_visible_flag: bool | None = None,
+    async def deal_fields_update_field(
+        self, id: str, name: str | None = None, options: list[dict[str, Any]] | None = None, add_visible_flag: bool | None = None
     ) -> Any:
         """
         Updates an existing deal field's configuration by ID, modifying its properties and schema definition.
@@ -2997,40 +2491,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "add_visible_flag": add_visible_flag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "add_visible_flag": add_visible_flag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/dealFields/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_get_all_files(
-        self,
-        start: int | None = None,
-        limit: int | None = None,
-        sort: str | None = None,
-    ) -> dict[str, Any]:
+    async def files_get_all_files(self, start: int | None = None, limit: int | None = None, sort: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of files using the "GET" method, allowing optional filtering by start position, number of items, and sorting order.
 
@@ -3050,25 +2524,17 @@ class PipedriveApp(APIApplication):
             Files
         """
         url = f"{self.base_url}/files"
-        query_params = {
-            k: v
-            for k, v in [("start", start), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_upload_and_associate(
+    async def files_upload_and_associate(
         self,
         file: bytes | None = None,
         deal_id: int | None = None,
@@ -3123,26 +2589,16 @@ class PipedriveApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/files"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            files=files_data,
-            params=query_params,
-            content_type="multipart/form-data",
-        )
+        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_create_remote_file_and_link(
+    async def files_create_remote_file_and_link(
         self,
         title: str | None = None,
         file_type: str | None = None,
@@ -3178,35 +2634,20 @@ class PipedriveApp(APIApplication):
             "item_id": item_id,
             "remote_location": remote_location,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/remote"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_link_remote_file(
-        self,
-        item_type: str | None = None,
-        item_id: int | None = None,
-        remote_id: str | None = None,
-        remote_location: str | None = None,
+    async def files_link_remote_file(
+        self, item_type: str | None = None, item_id: int | None = None, remote_id: str | None = None, remote_location: str | None = None
     ) -> dict[str, Any]:
         """
         Creates a remote link for a file and returns a success status upon completion.
@@ -3228,36 +2669,20 @@ class PipedriveApp(APIApplication):
             Files
         """
         request_body_data = None
-        request_body_data = {
-            "item_type": item_type,
-            "item_id": item_id,
-            "remote_id": remote_id,
-            "remote_location": remote_location,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"item_type": item_type, "item_id": item_id, "remote_id": remote_id, "remote_location": remote_location}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/remoteLink"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def files_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes a specified file using the provided ID and returns a success status upon completion.
 
@@ -3280,18 +2705,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_get_one_file(self, id: str) -> dict[str, Any]:
+    async def files_get_one_file(self, id: str) -> dict[str, Any]:
         """
         Retrieves a file resource identified by the provided ID using the GET method.
 
@@ -3314,20 +2735,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_update_details(
-        self, id: str, description: str | None = None, name: str | None = None
-    ) -> dict[str, Any]:
+    async def files_update_details(self, id: str, description: str | None = None, name: str | None = None) -> dict[str, Any]:
         """
         Updates or replaces a file with the specified ID using the PUT method, returning a successful status upon completion.
 
@@ -3349,34 +2764,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"description": description, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def files_download_file(self, id: str) -> Any:
+    async def files_download_file(self, id: str) -> Any:
         """
         Downloads a file from the server using the provided ID and returns the file content upon success.
 
@@ -3399,18 +2800,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_delete_bulk(self, ids: str) -> Any:
+    async def filters_delete_bulk(self, ids: str) -> Any:
         """
         Deletes one or more filters identified by their IDs passed as query parameters.
 
@@ -3431,18 +2828,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_get_all(self, type: str | None = None) -> Any:
+    async def filters_get_all(self, type: str | None = None) -> Any:
         """
         Retrieves a list of filters based on the specified type.
 
@@ -3463,22 +2856,15 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("type", type)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_add_new_filter(
-        self,
-        name: str | None = None,
-        conditions: dict[str, Any] | None = None,
-        type: str | None = None,
+    async def filters_add_new_filter(
+        self, name: str | None = None, conditions: dict[str, Any] | None = None, type: str | None = None
     ) -> Any:
         """
         Applies filters using the API at the "/filters" endpoint via the POST method and returns a response.
@@ -3499,35 +2885,20 @@ class PipedriveApp(APIApplication):
             Filters
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "conditions": conditions,
-            "type": type,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "conditions": conditions, "type": type}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/filters"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_get_helpers(self) -> dict[str, Any]:
+    async def filters_get_helpers(self) -> dict[str, Any]:
         """
         Retrieves a list of filter helper resources.
 
@@ -3545,18 +2916,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_mark_as_deleted(self, id: str) -> Any:
+    async def filters_mark_as_deleted(self, id: str) -> Any:
         """
         Deletes the specified filter by its ID and returns a success response upon completion.
 
@@ -3579,18 +2946,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_get_details(self, id: str) -> Any:
+    async def filters_get_details(self, id: str) -> Any:
         """
         Retrieves a specific filter by its unique identifier from the API.
 
@@ -3613,23 +2976,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def filters_update_filter(
-        self,
-        id: str,
-        name: str | None = None,
-        conditions: dict[str, Any] | None = None,
-    ) -> Any:
+    async def filters_update_filter(self, id: str, name: str | None = None, conditions: dict[str, Any] | None = None) -> Any:
         """
         Updates a filter with a specified ID using the PUT method, allowing for modification of its properties.
 
@@ -3651,34 +3005,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "conditions": conditions,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "conditions": conditions}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/filters/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def goals_create_report(
+    async def goals_create_report(
         self,
         title: str | None = None,
         assignee: dict[str, Any] | None = None,
@@ -3717,30 +3057,19 @@ class PipedriveApp(APIApplication):
             "duration": duration,
             "interval": interval,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/goals"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def goals_get_by_criteria(
+    async def goals_get_by_criteria(
         self,
         type_name: str | None = None,
         title: str | None = None,
@@ -3806,18 +3135,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def goals_update_existing_goal(
+    async def goals_update_existing_goal(
         self,
         id: str,
         title: str | None = None,
@@ -3860,30 +3185,19 @@ class PipedriveApp(APIApplication):
             "duration": duration,
             "interval": interval,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/goals/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def goals_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def goals_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes a goal identified by its ID using the DELETE method.
 
@@ -3906,20 +3220,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def goals_get_result(
-        self, id: str, period_start: str, period_end: str
-    ) -> dict[str, Any]:
+    async def goals_get_result(self, id: str, period_start: str, period_end: str) -> dict[str, Any]:
         """
         Retrieves results for a specific goal using a goal ID, optionally filtered by start and end date periods.
 
@@ -3941,25 +3249,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/goals/{id}/results"
-        query_params = {
-            k: v
-            for k, v in [("period.start", period_start), ("period.end", period_end)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("period.start", period_start), ("period.end", period_end)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def item_search_search_multiple_items(
+    async def item_search_search_multiple_items(
         self,
         term: str,
         item_types: str | None = None,
@@ -4010,18 +3310,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def item_search_by_field_values(
+    async def item_search_by_field_values(
         self,
         term: str,
         field_type: str,
@@ -4069,18 +3365,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_get_all(
+    async def leads_get_all(
         self,
         limit: int | None = None,
         start: int | None = None,
@@ -4131,18 +3423,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_create_lead(
+    async def leads_create_lead(
         self,
         title: str | None = None,
         owner_id: int | None = None,
@@ -4190,30 +3478,19 @@ class PipedriveApp(APIApplication):
             "visible_to": visible_to,
             "was_seen": was_seen,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/leads"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_get_details(self, id: str) -> dict[str, Any]:
+    async def leads_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves a lead by its unique identifier from the system.
 
@@ -4236,18 +3513,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_update_lead_properties(
+    async def leads_update_lead_properties(
         self,
         id: str,
         title: str | None = None,
@@ -4303,25 +3576,19 @@ class PipedriveApp(APIApplication):
             "visible_to": visible_to,
             "was_seen": was_seen,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/leads/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_delete_lead(self, id: str) -> dict[str, Any]:
+    async def leads_delete_lead(self, id: str) -> dict[str, Any]:
         """
         Deletes a lead with the specified ID and removes all associated data from the system.
 
@@ -4344,18 +3611,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_list_permitted_users(self, id: str) -> Any:
+    async def leads_list_permitted_users(self, id: str) -> Any:
         """
         Retrieves a list of permitted users for a specific lead, identified by the provided lead ID, using the GET method on the "/leads/{id}/permittedUsers" endpoint.
 
@@ -4378,18 +3641,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def leads_search_leads(
+    async def leads_search_leads(
         self,
         term: str,
         fields: str | None = None,
@@ -4440,18 +3699,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def lead_labels_get_all(self) -> dict[str, Any]:
+    async def lead_labels_get_all(self) -> dict[str, Any]:
         """
         Retrieves a list of all lead labels from the Pipedrive API, allowing users to view and manage the labels used to categorize leads visually.
 
@@ -4469,20 +3724,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def lead_labels_add_new_label(
-        self, name: str | None = None, color: str | None = None
-    ) -> dict[str, Any]:
+    async def lead_labels_add_new_label(self, name: str | None = None, color: str | None = None) -> dict[str, Any]:
         """
         Creates a new lead label in Pipedrive with specified name and color.
 
@@ -4501,36 +3750,20 @@ class PipedriveApp(APIApplication):
             LeadLabels
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "color": color,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "color": color}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/leadLabels"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def lead_labels_update_properties(
-        self, id: str, name: str | None = None, color: str | None = None
-    ) -> dict[str, Any]:
+    async def lead_labels_update_properties(self, id: str, name: str | None = None, color: str | None = None) -> dict[str, Any]:
         """
         Updates one or more properties of a lead label using the Pipedrive API, allowing for partial modification of a label with the specified ID.
 
@@ -4552,29 +3785,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "color": color,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "color": color}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/leadLabels/{id}"
         query_params = {}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def lead_labels_delete_label(self, id: str) -> dict[str, Any]:
+    async def lead_labels_delete_label(self, id: str) -> dict[str, Any]:
         """
         Deletes a specific lead label by its unique identifier.
 
@@ -4597,18 +3821,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def lead_sources_get_all(self) -> dict[str, Any]:
+    async def lead_sources_get_all(self) -> dict[str, Any]:
         """
         Retrieves a list of available lead sources using the `GET` method at the `/leadSources` path.
 
@@ -4626,20 +3846,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_get_all_teams(
-        self, order_by: str | None = None, skip_users: float | None = None
-    ) -> Any:
+    async def legacy_teams_get_all_teams(self, order_by: str | None = None, skip_users: float | None = None) -> Any:
         """
         Retrieves a list of legacy teams within an organization using the GET method, allowing for optional sorting by specific fields and excluding user IDs from the response.
 
@@ -4658,30 +3872,18 @@ class PipedriveApp(APIApplication):
             LegacyTeams
         """
         url = f"{self.base_url}/legacyTeams"
-        query_params = {
-            k: v
-            for k, v in [("order_by", order_by), ("skip_users", skip_users)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("order_by", order_by), ("skip_users", skip_users)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_add_new_team(
-        self,
-        description: str | None = None,
-        name: str | None = None,
-        manager_id: int | None = None,
-        users: list[int] | None = None,
+    async def legacy_teams_add_new_team(
+        self, description: str | None = None, name: str | None = None, manager_id: int | None = None, users: list[int] | None = None
     ) -> Any:
         """
         Creates a new team within an organization using the Pipedrive API and returns the team details upon successful creation.
@@ -4703,36 +3905,20 @@ class PipedriveApp(APIApplication):
             LegacyTeams
         """
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "name": name,
-            "manager_id": manager_id,
-            "users": users,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"description": description, "name": name, "manager_id": manager_id, "users": users}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legacyTeams"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_get_data(self, id: str, skip_users: float | None = None) -> Any:
+    async def legacy_teams_get_data(self, id: str, skip_users: float | None = None) -> Any:
         """
         Retrieves data about a specific team identified by its ID, optionally excluding user information, using the Pipedrive Legacy Teams API.
 
@@ -4756,18 +3942,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("skip_users", skip_users)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_update_team_object(
+    async def legacy_teams_update_team_object(
         self,
         id: str,
         description: str | None = None,
@@ -4810,30 +3992,19 @@ class PipedriveApp(APIApplication):
             "active_flag": active_flag,
             "deleted_flag": deleted_flag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legacyTeams/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_get_all_users(self, id: str) -> Any:
+    async def legacy_teams_get_all_users(self, id: str) -> Any:
         """
         Retrieves the list of user IDs belonging to a specified legacy team by team ID.
 
@@ -4856,20 +4027,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_add_users_to_team(
-        self, id: str, users: list[int] | None = None
-    ) -> Any:
+    async def legacy_teams_add_users_to_team(self, id: str, users: list[int] | None = None) -> Any:
         """
         Adds users to an existing team in Pipedrive using the API endpoint "/legacyTeams/{id}/users" with the POST method.
 
@@ -4890,38 +4055,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "users": users,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"users": users}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legacyTeams/{id}/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def legacy_teams_get_user_teams(
-        self,
-        id: str,
-        order_by: str | None = None,
-        skip_users: float | None = None,
-    ) -> Any:
+    async def legacy_teams_get_user_teams(self, id: str, order_by: str | None = None, skip_users: float | None = None) -> Any:
         """
         Retrieves information about the team memberships of a specific user identified by `{id}` using the Pipedrive API, with options to customize the response by sorting teams and excluding user IDs.
 
@@ -4943,27 +4090,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/legacyTeams/user/{id}"
-        query_params = {
-            k: v
-            for k, v in [("order_by", order_by), ("skip_users", skip_users)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("order_by", order_by), ("skip_users", skip_users)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def mailbox_get_mail_message(
-        self, id: str, include_body: float | None = None
-    ) -> Any:
+    async def mailbox_get_mail_message(self, id: str, include_body: float | None = None) -> Any:
         """
         Retrieves details of a specific email message from the mailbox, optionally including the full message body.
 
@@ -4984,25 +4121,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/mailbox/mailMessages/{id}"
-        query_params = {
-            k: v for k, v in [("include_body", include_body)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_body", include_body)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def mailbox_get_mail_threads(
-        self, folder: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def mailbox_get_mail_threads(self, folder: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of email threads from a mailbox, filtered by a specified folder, starting from a certain position, and limited to a defined number of results.
 
@@ -5022,25 +4151,17 @@ class PipedriveApp(APIApplication):
             Mailbox
         """
         url = f"{self.base_url}/mailbox/mailThreads"
-        query_params = {
-            k: v
-            for k, v in [("folder", folder), ("start", start), ("limit", limit)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("folder", folder), ("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def mailbox_mark_thread_deleted(self, id: str) -> Any:
+    async def mailbox_mark_thread_deleted(self, id: str) -> Any:
         """
         Deletes a specific mail thread by its ID from the mailbox using the "DELETE" method.
 
@@ -5063,18 +4184,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def mailbox_get_mail_thread(self, id: str) -> Any:
+    async def mailbox_get_mail_thread(self, id: str) -> Any:
         """
         Retrieves a specific email thread from the mailbox by its ID using the Pipedrive API.
 
@@ -5097,18 +4214,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_mail_thread_by_id(
+    async def update_mail_thread_by_id(
         self,
         id: str,
         deal_id: int | None = None,
@@ -5148,30 +4261,19 @@ class PipedriveApp(APIApplication):
             "read_flag": read_flag,
             "archived_flag": archived_flag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/mailbox/mailThreads/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/x-www-form-urlencoded",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def mailbox_get_all_mail_messages(self, id: str) -> Any:
+    async def mailbox_get_all_mail_messages(self, id: str) -> Any:
         """
         Retrieves all email messages within a specified mail thread using the provided thread ID.
 
@@ -5194,18 +4296,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def meetings_link_user_provider(
+    async def meetings_link_user_provider(
         self,
         user_provider_id: str | None = None,
         user_id: int | None = None,
@@ -5238,30 +4336,19 @@ class PipedriveApp(APIApplication):
             "company_id": company_id,
             "marketplace_client_id": marketplace_client_id,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/meetings/userProviderLinks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_user_provider_link_by_id(self, id: str) -> dict[str, Any]:
+    async def delete_user_provider_link_by_id(self, id: str) -> dict[str, Any]:
         """
         Deletes a user provider link by the specified ID using the DELETE method.
 
@@ -5284,18 +4371,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_get_all(
+    async def notes_get_all(
         self,
         user_id: int | None = None,
         lead_id: str | None = None,
@@ -5364,18 +4447,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_create_note(
+    async def notes_create_note(
         self,
         content: str | None = None,
         lead_id: str | None = None,
@@ -5429,30 +4508,19 @@ class PipedriveApp(APIApplication):
             "pinned_to_organization_flag": pinned_to_organization_flag,
             "pinned_to_person_flag": pinned_to_person_flag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_delete_note(self, id: str) -> dict[str, Any]:
+    async def notes_delete_note(self, id: str) -> dict[str, Any]:
         """
         Deletes a note with the specified {id} from the collection of notes using the DELETE method.
 
@@ -5475,18 +4543,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_get_details(self, id: str) -> dict[str, Any]:
+    async def notes_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves a specific note by its ID using the "GET" method at "/notes/{id}".
 
@@ -5509,18 +4573,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_update_note(
+    async def notes_update_note(
         self,
         id: str,
         content: str | None = None,
@@ -5578,32 +4638,19 @@ class PipedriveApp(APIApplication):
             "pinned_to_organization_flag": pinned_to_organization_flag,
             "pinned_to_person_flag": pinned_to_person_flag,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_get_all_comments(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    async def notes_get_all_comments(self, id: str, start: int | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves comments for a specific note with pagination support using path and query parameters.
 
@@ -5625,25 +4672,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notes/{id}/comments"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_add_new_comment(
-        self, id: str, content: str | None = None
-    ) -> dict[str, Any]:
+    async def notes_add_new_comment(self, id: str, content: str | None = None) -> dict[str, Any]:
         """
         Adds a new comment to a note specified by its ID using the POST method.
 
@@ -5664,33 +4703,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "content": content,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"content": content}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes/{id}/comments"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_get_comment_details(self, id: str, commentId: str) -> dict[str, Any]:
+    async def notes_get_comment_details(self, id: str, commentId: str) -> dict[str, Any]:
         """
         Retrieves a specific comment from a note by its ID and comment ID using the API.
 
@@ -5716,20 +4742,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_update_comment(
-        self, id: str, commentId: str, content: str | None = None
-    ) -> dict[str, Any]:
+    async def notes_update_comment(self, id: str, commentId: str, content: str | None = None) -> dict[str, Any]:
         """
         Updates a specific comment for a note using the PUT method, allowing complete replacement of the comment's content identified by the note ID and comment ID.
 
@@ -5753,33 +4773,20 @@ class PipedriveApp(APIApplication):
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
         request_body_data = None
-        request_body_data = {
-            "content": content,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"content": content}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes/{id}/comments/{commentId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def notes_delete_comment(self, id: str, commentId: str) -> dict[str, Any]:
+    async def notes_delete_comment(self, id: str, commentId: str) -> dict[str, Any]:
         """
         Deletes a specific comment from a note using the provided comment identifier and note ID.
 
@@ -5805,18 +4812,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def note_fields_get_all_note_fields(self) -> Any:
+    async def note_fields_get_all_note_fields(self) -> Any:
         """
         Retrieves a list of note fields using the API endpoint at "/noteFields" via the GET method.
 
@@ -5834,18 +4837,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_organizations(self, ids: str) -> dict[str, Any]:
+    async def delete_organizations(self, ids: str) -> dict[str, Any]:
         """
         Deletes one or more organizations identified by their IDs using the "DELETE" method on the "/organizations" path.
 
@@ -5866,18 +4865,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_get_all(
+    async def organizations_get_all(
         self,
         user_id: int | None = None,
         filter_id: int | None = None,
@@ -5922,18 +4917,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_organization(
+    async def create_organization(
         self,
         name: str | None = None,
         add_time: str | None = None,
@@ -5962,37 +4953,20 @@ class PipedriveApp(APIApplication):
             Organizations
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "add_time": add_time,
-            "owner_id": owner_id,
-            "label": label,
-            "visible_to": visible_to,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "add_time": add_time, "owner_id": owner_id, "label": label, "visible_to": visible_to}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_organizations(
+    async def list_organizations(
         self,
         cursor: str | None = None,
         limit: int | None = None,
@@ -6037,24 +5011,15 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_search_by_criteria(
-        self,
-        term: str,
-        fields: str | None = None,
-        exact_match: bool | None = None,
-        start: int | None = None,
-        limit: int | None = None,
+    async def organizations_search_by_criteria(
+        self, term: str, fields: str | None = None, exact_match: bool | None = None, start: int | None = None, limit: int | None = None
     ) -> Any:
         """
         Retrieves a list of organizations based on a search term, allowing for customization by specifying fields, exact match, and pagination parameters using the "GET" method.
@@ -6079,29 +5044,19 @@ class PipedriveApp(APIApplication):
         url = f"{self.base_url}/organizations/search"
         query_params = {
             k: v
-            for k, v in [
-                ("term", term),
-                ("fields", fields),
-                ("exact_match", exact_match),
-                ("start", start),
-                ("limit", limit),
-            ]
+            for k, v in [("term", term), ("fields", fields), ("exact_match", exact_match), ("start", start), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_organization_by_id(self, id: str) -> dict[str, Any]:
+    async def delete_organization_by_id(self, id: str) -> dict[str, Any]:
         """
         Deletes an organization and disassociates all members from it using the specified organization ID in the path.
 
@@ -6124,18 +5079,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_get_details(self, id: str) -> Any:
+    async def organizations_get_details(self, id: str) -> Any:
         """
         Retrieves details of a specific organization by its unique identifier.
 
@@ -6158,24 +5109,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_update_properties(
-        self,
-        id: str,
-        name: str | None = None,
-        owner_id: int | None = None,
-        label: int | None = None,
-        visible_to: str | None = None,
+    async def organizations_update_properties(
+        self, id: str, name: str | None = None, owner_id: int | None = None, label: int | None = None, visible_to: str | None = None
     ) -> Any:
         """
         Updates the specified organization's details using the provided ID and returns a success status upon completion.
@@ -6200,42 +5142,21 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "owner_id": owner_id,
-            "label": label,
-            "visible_to": visible_to,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "owner_id": owner_id, "label": label, "visible_to": visible_to}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_list_activities(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        done: float | None = None,
-        exclude: str | None = None,
+    async def organizations_list_activities(
+        self, id: str, start: int | None = None, limit: int | None = None, done: float | None = None, exclude: str | None = None
     ) -> Any:
         """
         Retrieves a filtered list of activities for an organization including optional parameters for start time, result limits, completion status, and exclusions.
@@ -6260,30 +5181,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/activities"
-        query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("done", done),
-                ("exclude", exclude),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("done", done), ("exclude", exclude)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_list_deals(
+    async def organizations_list_deals(
         self,
         id: str,
         start: int | None = None,
@@ -6329,24 +5237,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_organization_files(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        sort: str | None = None,
-    ) -> Any:
+    async def get_organization_files(self, id: str, start: int | None = None, limit: int | None = None, sort: str | None = None) -> Any:
         """
         Retrieves a list of files associated with a specific organization, optionally filtered, paginated, and sorted by query parameters.
 
@@ -6369,31 +5267,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/files"
-        query_params = {
-            k: v
-            for k, v in [("start", start), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_list_updates_about(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        all_changes: str | None = None,
-        items: str | None = None,
+    async def organizations_list_updates_about(
+        self, id: str, start: int | None = None, limit: int | None = None, all_changes: str | None = None, items: str | None = None
     ) -> Any:
         """
         Retrieves flow-related data for a specific organization, optionally filtered by time range, item type, and pagination parameters.
@@ -6419,29 +5304,18 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/flow"
         query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("all_changes", all_changes),
-                ("items", items),
-            ]
-            if v is not None
+            k: v for k, v in [("start", start), ("limit", limit), ("all_changes", all_changes), ("items", items)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_list_followers(self, id: str) -> dict[str, Any]:
+    async def organizations_list_followers(self, id: str) -> dict[str, Any]:
         """
         Retrieves a list of followers for an organization with the specified ID using the GitHub API.
 
@@ -6464,20 +5338,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_add_follower(
-        self, id: str, user_id: int | None = None
-    ) -> dict[str, Any]:
+    async def organizations_add_follower(self, id: str, user_id: int | None = None) -> dict[str, Any]:
         """
         Adds a follower to a GitHub organization using the POST method at the "/organizations/{id}/followers" endpoint.
 
@@ -6498,35 +5366,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "user_id": user_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"user_id": user_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations/{id}/followers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_delete_follower(
-        self, id: str, follower_id: str
-    ) -> dict[str, Any]:
+    async def organizations_delete_follower(self, id: str, follower_id: str) -> dict[str, Any]:
         """
         Removes a follower from an organization with the specified ID and follower ID using the GitHub API.
 
@@ -6552,20 +5405,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_list_mail_messages(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def organizations_list_mail_messages(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of mail messages associated with an organization identified by the specified ID, allowing pagination through the start and limit parameters.
 
@@ -6587,25 +5434,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/mailMessages"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_merge_two(
-        self, id: str, merge_with_id: int | None = None
-    ) -> dict[str, Any]:
+    async def organizations_merge_two(self, id: str, merge_with_id: int | None = None) -> dict[str, Any]:
         """
         Configures merge settings for a GitHub organization using the provided organization ID and returns a success status upon completion.
 
@@ -6626,33 +5465,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "merge_with_id": merge_with_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"merge_with_id": merge_with_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations/{id}/merge"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_permitted_users_by_org_id(self, id: str) -> Any:
+    async def list_permitted_users_by_org_id(self, id: str) -> Any:
         """
         Retrieves a list of permitted users for a specified organization using the "GET" method at the "/organizations/{id}/permittedUsers" endpoint.
 
@@ -6675,20 +5501,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organizations_list_persons(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def organizations_list_persons(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of persons associated with an organization, identified by the organization ID, with optional pagination using start and limit parameters.
 
@@ -6710,25 +5530,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/persons"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_organization_fields(
-        self, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def list_organization_fields(self, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of organization fields, including custom fields, using the "GET" method at "/organizationFields", supporting query parameters like "start" and "limit" for pagination.
 
@@ -6747,23 +5559,17 @@ class PipedriveApp(APIApplication):
             OrganizationFields
         """
         url = f"{self.base_url}/organizationFields"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organization_fields_add_new_field(
+    async def organization_fields_add_new_field(
         self,
         name: str | None = None,
         options: list[dict[str, Any]] | None = None,
@@ -6790,36 +5596,20 @@ class PipedriveApp(APIApplication):
             OrganizationFields
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "add_visible_flag": add_visible_flag,
-            "field_type": field_type,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "add_visible_flag": add_visible_flag, "field_type": field_type}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationFields"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_organization_fields(self, ids: str) -> Any:
+    async def delete_organization_fields(self, ids: str) -> Any:
         """
         Deletes specified organization fields by their IDs and returns a success status upon completion.
 
@@ -6840,18 +5630,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_organization_field_by_id(self, id: str) -> Any:
+    async def get_organization_field_by_id(self, id: str) -> Any:
         """
         Retrieves data about a specific organization field based on the provided field ID using the Pipedrive API.
 
@@ -6874,18 +5660,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_organization_field_by_id(self, id: str) -> Any:
+    async def delete_organization_field_by_id(self, id: str) -> Any:
         """
         Deletes an organization field identified by the provided ID using the DELETE method.
 
@@ -6908,23 +5690,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def organization_fields_update_field(
-        self,
-        id: str,
-        name: str | None = None,
-        options: list[dict[str, Any]] | None = None,
-        add_visible_flag: bool | None = None,
+    async def organization_fields_update_field(
+        self, id: str, name: str | None = None, options: list[dict[str, Any]] | None = None, add_visible_flag: bool | None = None
     ) -> Any:
         """
         Updates an existing organization field by ID and returns the updated field data upon success.
@@ -6948,35 +5722,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "add_visible_flag": add_visible_flag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "add_visible_flag": add_visible_flag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationFields/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_organization_relationships(self, org_id: int) -> Any:
+    async def get_organization_relationships(self, org_id: int) -> Any:
         """
         Retrieves organization relationships based on the specified organization ID.
 
@@ -6997,23 +5756,15 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("org_id", org_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_organization_relationship(
-        self,
-        org_id: int | None = None,
-        type: str | None = None,
-        rel_owner_org_id: int | None = None,
-        rel_linked_org_id: int | None = None,
+    async def create_organization_relationship(
+        self, org_id: int | None = None, type: str | None = None, rel_owner_org_id: int | None = None, rel_linked_org_id: int | None = None
     ) -> Any:
         """
         Creates an organization relationship and returns a success confirmation upon completion.
@@ -7035,36 +5786,20 @@ class PipedriveApp(APIApplication):
             OrganizationRelationships
         """
         request_body_data = None
-        request_body_data = {
-            "org_id": org_id,
-            "type": type,
-            "rel_owner_org_id": rel_owner_org_id,
-            "rel_linked_org_id": rel_linked_org_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"org_id": org_id, "type": type, "rel_owner_org_id": rel_owner_org_id, "rel_linked_org_id": rel_linked_org_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationRelationships"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_org_relationship_by_id(self, id: str) -> Any:
+    async def delete_org_relationship_by_id(self, id: str) -> Any:
         """
         Deletes a specific organization relationship by its ID using the GitHub API.
 
@@ -7087,18 +5822,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_org_relationship_by_id(self, id: str, org_id: int | None = None) -> Any:
+    async def get_org_relationship_by_id(self, id: str, org_id: int | None = None) -> Any:
         """
         Retrieves a specific organization relationship by its ID along with calculated values for the base organization.
 
@@ -7122,18 +5853,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("org_id", org_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_org_relationship_by_id(
+    async def update_org_relationship_by_id(
         self,
         id: str,
         org_id: int | None = None,
@@ -7164,36 +5891,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "org_id": org_id,
-            "type": type,
-            "rel_owner_org_id": rel_owner_org_id,
-            "rel_linked_org_id": rel_linked_org_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"org_id": org_id, "type": type, "rel_owner_org_id": rel_owner_org_id, "rel_linked_org_id": rel_linked_org_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationRelationships/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def permission_sets_get_all(self, app: str | None = None) -> Any:
+    async def permission_sets_get_all(self, app: str | None = None) -> Any:
         """
         Retrieves all permission sets for a specified application using query parameters.
 
@@ -7214,18 +5925,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("app", app)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def permission_sets_get_one(self, id: str) -> Any:
+    async def permission_sets_get_one(self, id: str) -> Any:
         """
         Retrieves a specific permission set by its ID from the collection of permission sets using the GET method, returning detailed information about the set.
 
@@ -7248,20 +5955,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def permission_sets_list_assignments(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def permission_sets_list_assignments(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a paginated list of assignments associated with a specific permission set using the provided ID and query parameters for pagination.
 
@@ -7283,23 +5984,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/permissionSets/{id}/assignments"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_delete_multiple_bulk(self, ids: str) -> Any:
+    async def persons_delete_multiple_bulk(self, ids: str) -> Any:
         """
         Deletes one or more persons from a database by specifying their IDs in the query parameters.
 
@@ -7320,18 +6015,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_all_persons(
+    async def persons_list_all_persons(
         self,
         user_id: int | None = None,
         filter_id: int | None = None,
@@ -7376,18 +6067,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_create_new_person(
+    async def persons_create_new_person(
         self,
         name: str | None = None,
         owner_id: int | None = None,
@@ -7435,30 +6122,19 @@ class PipedriveApp(APIApplication):
             "marketing_status": marketing_status,
             "add_time": add_time,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_get_all(
+    async def persons_get_all(
         self,
         cursor: str | None = None,
         limit: int | None = None,
@@ -7503,18 +6179,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_search_by_criteria(
+    async def persons_search_by_criteria(
         self,
         term: str,
         fields: str | None = None,
@@ -7562,18 +6234,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_mark_as_deleted(self, id: str) -> Any:
+    async def persons_mark_as_deleted(self, id: str) -> Any:
         """
         Deletes a specific person by ID and returns a success status upon completion.
 
@@ -7596,18 +6264,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_get_person_details(self, id: str) -> Any:
+    async def persons_get_person_details(self, id: str) -> Any:
         """
         Retrieves details of a specific person by their unique identifier.
 
@@ -7630,18 +6294,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_update_properties(
+    async def persons_update_properties(
         self,
         id: str,
         name: str | None = None,
@@ -7693,36 +6353,20 @@ class PipedriveApp(APIApplication):
             "marketing_status": marketing_status,
             "add_time": add_time,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_activities(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        done: float | None = None,
-        exclude: str | None = None,
+    async def persons_list_activities(
+        self, id: str, start: int | None = None, limit: int | None = None, done: float | None = None, exclude: str | None = None
     ) -> Any:
         """
         Retrieves a list of activities for a person identified by `{id}`, allowing optional filtering by start time, activity limit, completion status, and exclusions.
@@ -7747,36 +6391,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/activities"
-        query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("done", done),
-                ("exclude", exclude),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("done", done), ("exclude", exclude)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_deals(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        status: str | None = None,
-        sort: str | None = None,
+    async def persons_list_deals(
+        self, id: str, start: int | None = None, limit: int | None = None, status: str | None = None, sort: str | None = None
     ) -> Any:
         """
         Retrieves a list of deals associated with a person, filtered by status, sorted as specified, and paginated based on the provided start and limit parameters.
@@ -7801,36 +6427,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/deals"
-        query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("status", status),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("status", status), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_person_files(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        sort: str | None = None,
-    ) -> Any:
+    async def persons_list_person_files(self, id: str, start: int | None = None, limit: int | None = None, sort: str | None = None) -> Any:
         """
         Retrieves a list of files associated with a specific person ID, optionally filtered by start date, size limit, and sorting parameters.
 
@@ -7853,31 +6460,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/files"
-        query_params = {
-            k: v
-            for k, v in [("start", start), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_updates_about(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        all_changes: str | None = None,
-        items: str | None = None,
+    async def persons_list_updates_about(
+        self, id: str, start: int | None = None, limit: int | None = None, all_changes: str | None = None, items: str | None = None
     ) -> Any:
         """
         Retrieves a workflow or process flow associated with a specific person ID, optionally filtered by start time, result limit, inclusion of all changes, and specific items.
@@ -7903,29 +6497,18 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/flow"
         query_params = {
-            k: v
-            for k, v in [
-                ("start", start),
-                ("limit", limit),
-                ("all_changes", all_changes),
-                ("items", items),
-            ]
-            if v is not None
+            k: v for k, v in [("start", start), ("limit", limit), ("all_changes", all_changes), ("items", items)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_followers(self, id: str) -> Any:
+    async def persons_list_followers(self, id: str) -> Any:
         """
         Retrieves a list of followers associated with the specified person ID.
 
@@ -7948,18 +6531,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_add_follower(self, id: str, user_id: int | None = None) -> Any:
+    async def persons_add_follower(self, id: str, user_id: int | None = None) -> Any:
         """
         Adds followers to a person with the specified ID using the API.
 
@@ -7980,33 +6559,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "user_id": user_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"user_id": user_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons/{id}/followers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_delete_follower(self, id: str, follower_id: str) -> Any:
+    async def persons_delete_follower(self, id: str, follower_id: str) -> Any:
         """
         Removes a specific follower from a person's followers list using the "DELETE" method.
 
@@ -8032,20 +6598,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_mail_messages(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def persons_list_mail_messages(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves mail messages associated with a specific person ID, with pagination support via start and limit parameters.
 
@@ -8067,23 +6627,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/mailMessages"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_merge_two(self, id: str, merge_with_id: int | None = None) -> Any:
+    async def persons_merge_two(self, id: str, merge_with_id: int | None = None) -> Any:
         """
         Merges user data by updating the specified person's record using the provided ID in the path.
 
@@ -8104,33 +6658,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "merge_with_id": merge_with_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"merge_with_id": merge_with_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons/{id}/merge"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_permitted_users(self, id: str) -> Any:
+    async def persons_list_permitted_users(self, id: str) -> Any:
         """
         Retrieves a list of users permitted to access or interact with the specified person's data or resources.
 
@@ -8153,18 +6694,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_delete_picture(self, id: str) -> Any:
+    async def persons_delete_picture(self, id: str) -> Any:
         """
         Deletes the profile picture associated with the specified person ID and returns a success status.
 
@@ -8187,18 +6724,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_add_picture(
+    async def persons_add_picture(
         self,
         id: str,
         file: bytes | None = None,
@@ -8249,28 +6782,16 @@ class PipedriveApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/persons/{id}/picture"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            files=files_data,
-            params=query_params,
-            content_type="multipart/form-data",
-        )
+        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def persons_list_products(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def persons_list_products(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of products associated with a person identified by their ID, with optional filtering by start index and limit.
 
@@ -8292,25 +6813,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/products"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def person_fields_get_all_fields(
-        self, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def person_fields_get_all_fields(self, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves data about all person fields associated with the authorized user's company using the Pipedrive API, returning a schema that includes custom fields.
 
@@ -8329,23 +6842,17 @@ class PipedriveApp(APIApplication):
             PersonFields
         """
         url = f"{self.base_url}/personFields"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def person_fields_add_new_field(
+    async def person_fields_add_new_field(
         self,
         name: str | None = None,
         options: list[dict[str, Any]] | None = None,
@@ -8372,36 +6879,20 @@ class PipedriveApp(APIApplication):
             PersonFields
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "add_visible_flag": add_visible_flag,
-            "field_type": field_type,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "add_visible_flag": add_visible_flag, "field_type": field_type}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/personFields"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_person_fields(self, ids: str) -> Any:
+    async def delete_person_fields(self, ids: str) -> Any:
         """
         Deletes one or more person fields in Pipedrive by specifying their IDs using the `ids` parameter in the API request.
 
@@ -8422,18 +6913,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def person_fields_get_specific_field(self, id: str) -> Any:
+    async def person_fields_get_specific_field(self, id: str) -> Any:
         """
         Retrieves specific details about a person field using the "GET" method at the path "/personFields/{id}".
 
@@ -8456,18 +6943,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def person_fields_mark_as_deleted(self, id: str) -> Any:
+    async def person_fields_mark_as_deleted(self, id: str) -> Any:
         """
         Deletes a custom person field in Pipedrive using the specified field ID.
 
@@ -8490,23 +6973,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def person_fields_update_field(
-        self,
-        id: str,
-        name: str | None = None,
-        options: list[dict[str, Any]] | None = None,
-        add_visible_flag: bool | None = None,
+    async def person_fields_update_field(
+        self, id: str, name: str | None = None, options: list[dict[str, Any]] | None = None, add_visible_flag: bool | None = None
     ) -> Any:
         """
         Updates a specific person's fields identified by `{id}` using the PUT method.
@@ -8530,35 +7005,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "add_visible_flag": add_visible_flag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "add_visible_flag": add_visible_flag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/personFields/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def pipelines_get_all(self) -> dict[str, Any]:
+    async def pipelines_get_all(self) -> dict[str, Any]:
         """
         Retrieves a list of pipelines and returns them in the response.
 
@@ -8576,23 +7036,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def pipelines_create_new_pipeline(
-        self,
-        name: str | None = None,
-        deal_probability: Any | None = None,
-        order_nr: int | None = None,
-        active: Any | None = None,
+    async def pipelines_create_new_pipeline(
+        self, name: str | None = None, deal_probability: Any | None = None, order_nr: int | None = None, active: Any | None = None
     ) -> dict[str, Any]:
         """
         Creates a new pipeline using the POST method and returns a response upon successful creation.
@@ -8614,36 +7066,20 @@ class PipedriveApp(APIApplication):
             Pipelines
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "deal_probability": deal_probability,
-            "order_nr": order_nr,
-            "active": active,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "deal_probability": deal_probability, "order_nr": order_nr, "active": active}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/pipelines"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def pipelines_delete_pipeline(self, id: str) -> dict[str, Any]:
+    async def pipelines_delete_pipeline(self, id: str) -> dict[str, Any]:
         """
         Deletes a pipeline with the specified ID using the DELETE method.
 
@@ -8666,20 +7102,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_pipeline_by_id(
-        self, id: str, totals_convert_currency: str | None = None
-    ) -> dict[str, Any]:
+    async def get_pipeline_by_id(self, id: str, totals_convert_currency: str | None = None) -> dict[str, Any]:
         """
         Retrieves details for a specific pipeline identified by its ID, optionally converting totals to a specified currency.
 
@@ -8700,31 +7130,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}"
-        query_params = {
-            k: v
-            for k, v in [("totals_convert_currency", totals_convert_currency)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("totals_convert_currency", totals_convert_currency)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def pipelines_update_properties(
-        self,
-        id: str,
-        name: str | None = None,
-        deal_probability: Any | None = None,
-        order_nr: int | None = None,
-        active: Any | None = None,
+    async def pipelines_update_properties(
+        self, id: str, name: str | None = None, deal_probability: Any | None = None, order_nr: int | None = None, active: Any | None = None
     ) -> dict[str, Any]:
         """
         Updates a pipeline by its ID using the specified data and returns a successful response upon completion.
@@ -8749,36 +7166,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "deal_probability": deal_probability,
-            "order_nr": order_nr,
-            "active": active,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "deal_probability": deal_probability, "order_nr": order_nr, "active": active}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/pipelines/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_conversion_stats_for_pipeline(
+    async def get_conversion_stats_for_pipeline(
         self, id: str, start_date: str, end_date: str, user_id: int | None = None
     ) -> dict[str, Any]:
         """
@@ -8803,29 +7204,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}/conversion_statistics"
-        query_params = {
-            k: v
-            for k, v in [
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("user_id", user_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("user_id", user_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def pipelines_list_deals(
+    async def pipelines_list_deals(
         self,
         id: str,
         filter_id: int | None = None,
@@ -8880,20 +7269,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_pipeline_movement_stats(
-        self, id: str, start_date: str, end_date: str, user_id: int | None = None
-    ) -> dict[str, Any]:
+    async def get_pipeline_movement_stats(self, id: str, start_date: str, end_date: str, user_id: int | None = None) -> dict[str, Any]:
         """
         Retrieves movement statistics for a specific pipeline identified by `{id}`, allowing users to filter the data by `start_date`, `end_date`, and `user_id`.
 
@@ -8916,29 +7299,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}/movement_statistics"
-        query_params = {
-            k: v
-            for k, v in [
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("user_id", user_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("user_id", user_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_get_all_products(
+    async def products_get_all_products(
         self,
         user_id: int | None = None,
         filter_id: int | None = None,
@@ -8986,18 +7357,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_create_product(
+    async def products_create_product(
         self,
         name: str | None = None,
         code: str | None = None,
@@ -9045,30 +7412,19 @@ class PipedriveApp(APIApplication):
             "owner_id": owner_id,
             "prices": prices,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/products"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_search_by_fields(
+    async def products_search_by_fields(
         self,
         term: str,
         fields: str | None = None,
@@ -9113,18 +7469,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def products_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes the specified product by its ID and returns a success status upon completion.
 
@@ -9147,18 +7499,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_get_details(self, id: str) -> dict[str, Any]:
+    async def products_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves product details by ID.
 
@@ -9181,18 +7529,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_update_product_data(
+    async def products_update_product_data(
         self,
         id: str,
         name: str | None = None,
@@ -9244,36 +7588,19 @@ class PipedriveApp(APIApplication):
             "owner_id": owner_id,
             "prices": prices,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/products/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_get_deals(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        status: str | None = None,
-    ) -> Any:
+    async def products_get_deals(self, id: str, start: int | None = None, limit: int | None = None, status: str | None = None) -> Any:
         """
         Retrieves a list of deals associated with a specific product, identified by its ID, using the "GET" method at the "/products/{id}/deals" path.
 
@@ -9296,30 +7623,18 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/deals"
-        query_params = {
-            k: v
-            for k, v in [("start", start), ("limit", limit), ("status", status)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("status", status)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_list_product_files(
-        self,
-        id: str,
-        start: int | None = None,
-        limit: int | None = None,
-        sort: str | None = None,
+    async def products_list_product_files(
+        self, id: str, start: int | None = None, limit: int | None = None, sort: str | None = None
     ) -> Any:
         """
         Retrieves a list of files for a specific product by ID, with options to filter using start index, limit results, and sort order.
@@ -9343,27 +7658,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/files"
-        query_params = {
-            k: v
-            for k, v in [("start", start), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_list_product_followers(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def products_list_product_followers(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of followers for a specific product identified by `{id}`, allowing optional filtering by pagination parameters `start` and `limit`.
 
@@ -9385,25 +7690,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/followers"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_add_follower(
-        self, id: str, user_id: int | None = None
-    ) -> dict[str, Any]:
+    async def products_add_follower(self, id: str, user_id: int | None = None) -> dict[str, Any]:
         """
         Adds a follower to a product using the provided product ID and returns a success status upon addition.
 
@@ -9424,33 +7721,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "user_id": user_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"user_id": user_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/products/{id}/followers"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_delete_follower(self, id: str, follower_id: str) -> dict[str, Any]:
+    async def products_delete_follower(self, id: str, follower_id: str) -> dict[str, Any]:
         """
         Deletes a follower from a product, specified by the product's ID and the follower's ID.
 
@@ -9476,18 +7760,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def products_list_permitted_users(self, id: str) -> Any:
+    async def products_list_permitted_users(self, id: str) -> Any:
         """
         Retrieves a list of permitted users for a specific product identified by its ID using the "GET" method.
 
@@ -9510,18 +7790,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_product_fields_by_ids(self, ids: str) -> dict[str, Any]:
+    async def delete_product_fields_by_ids(self, ids: str) -> dict[str, Any]:
         """
         Deletes product fields by ID using the DELETE method at the "/productFields" path.
 
@@ -9542,20 +7818,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def product_fields_get_all_fields(
-        self, start: int | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    async def product_fields_get_all_fields(self, start: int | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of product fields, supporting optional start and limit parameters for result filtering.
 
@@ -9574,27 +7844,18 @@ class PipedriveApp(APIApplication):
             ProductFields
         """
         url = f"{self.base_url}/productFields"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def product_fields_add_new_field(
-        self,
-        name: str | None = None,
-        options: list[dict[str, Any]] | None = None,
-        field_type: str | None = None,
+    async def product_fields_add_new_field(
+        self, name: str | None = None, options: list[dict[str, Any]] | None = None, field_type: str | None = None
     ) -> dict[str, Any]:
         """
         Adds a new product field using the "POST" method at the "/productFields" endpoint, allowing customization of product data fields for integration purposes.
@@ -9615,35 +7876,20 @@ class PipedriveApp(APIApplication):
             ProductFields
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-            "field_type": field_type,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options, "field_type": field_type}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/productFields"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def product_fields_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def product_fields_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes a specific product field by its ID via the Pipedrive API.
 
@@ -9666,18 +7912,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def product_fields_get_one_field(self, id: str) -> dict[str, Any]:
+    async def product_fields_get_one_field(self, id: str) -> dict[str, Any]:
         """
         Retrieves specific product fields by ID using the "GET" method at the "/productFields/{id}" endpoint.
 
@@ -9700,22 +7942,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def product_fields_update_field(
-        self,
-        id: str,
-        name: str | None = None,
-        options: list[dict[str, Any]] | None = None,
+    async def product_fields_update_field(
+        self, id: str, name: str | None = None, options: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Updates a product field by replacing its entire record with a new version, specified by the ID provided in the path.
@@ -9738,34 +7973,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "options": options,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "options": options}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/productFields/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_all_projects(
+    async def projects_get_all_projects(
         self,
         cursor: str | None = None,
         limit: int | None = None,
@@ -9810,18 +8031,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_create_project(
+    async def projects_create_project(
         self,
         title: str | None = None,
         board_id: float | None = None,
@@ -9881,30 +8098,19 @@ class PipedriveApp(APIApplication):
             "labels": labels,
             "template_id": template_id,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_details(self, id: str) -> dict[str, Any]:
+    async def projects_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves a project by its specified ID using the GET method and returns the associated data.
 
@@ -9927,18 +8133,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_update_project(
+    async def projects_update_project(
         self,
         id: str,
         title: str | None = None,
@@ -9999,30 +8201,19 @@ class PipedriveApp(APIApplication):
             "person_id": person_id,
             "labels": labels,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_mark_as_deleted(self, id: str) -> dict[str, Any]:
+    async def projects_mark_as_deleted(self, id: str) -> dict[str, Any]:
         """
         Deletes a project by its ID using the specified DELETE method.
 
@@ -10045,18 +8236,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_archive_project(self, id: str) -> dict[str, Any]:
+    async def projects_archive_project(self, id: str) -> dict[str, Any]:
         """
         Archives a project using the provided project ID and returns a status message.
 
@@ -10078,25 +8265,16 @@ class PipedriveApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/projects/{id}/archive"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_project_plan(self, id: str) -> dict[str, Any]:
+    async def projects_get_project_plan(self, id: str) -> dict[str, Any]:
         """
         Retrieves the plan details for a specific project identified by its unique ID.
 
@@ -10119,23 +8297,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_project_plan_activity(
-        self,
-        id: str,
-        activityId: str,
-        phase_id: float | None = None,
-        group_id: float | None = None,
+    async def update_project_plan_activity(
+        self, id: str, activityId: str, phase_id: float | None = None, group_id: float | None = None
     ) -> dict[str, Any]:
         """
         Updates a project activity using the PUT method, specifying the project and activity IDs in the path.
@@ -10161,39 +8331,21 @@ class PipedriveApp(APIApplication):
         if activityId is None:
             raise ValueError("Missing required parameter 'activityId'.")
         request_body_data = None
-        request_body_data = {
-            "phase_id": phase_id,
-            "group_id": group_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"phase_id": phase_id, "group_id": group_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects/{id}/plan/activities/{activityId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_update_plan_task(
-        self,
-        id: str,
-        taskId: str,
-        phase_id: float | None = None,
-        group_id: float | None = None,
+    async def projects_update_plan_task(
+        self, id: str, taskId: str, phase_id: float | None = None, group_id: float | None = None
     ) -> dict[str, Any]:
         """
         Updates a specific task in a project plan and returns the updated task details.
@@ -10219,34 +8371,20 @@ class PipedriveApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {
-            "phase_id": phase_id,
-            "group_id": group_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"phase_id": phase_id, "group_id": group_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects/{id}/plan/tasks/{taskId}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_groups(self, id: str) -> dict[str, Any]:
+    async def projects_get_groups(self, id: str) -> dict[str, Any]:
         """
         Retrieves a list of groups associated with a specific project based on the provided project ID.
 
@@ -10269,18 +8407,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_project_tasks(self, id: str) -> dict[str, Any]:
+    async def projects_get_project_tasks(self, id: str) -> dict[str, Any]:
         """
         Retrieves a list of tasks for a specific project using the project ID.
 
@@ -10303,18 +8437,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_project_activities(self, id: str) -> dict[str, Any]:
+    async def projects_get_project_activities(self, id: str) -> dict[str, Any]:
         """
         Retrieves a list of activities for a specific project identified by the path parameter "id" using the "GET" method.
 
@@ -10337,18 +8467,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_all_boards(self) -> dict[str, Any]:
+    async def projects_get_all_boards(self) -> dict[str, Any]:
         """
         Retrieves a list of project boards using the GET method.
 
@@ -10366,18 +8492,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_project_board_by_id(self, id: str) -> dict[str, Any]:
+    async def get_project_board_by_id(self, id: str) -> dict[str, Any]:
         """
         Retrieves a specific project board by its ID using the "GET" method at the "/projects/boards/{id}" endpoint.
 
@@ -10400,18 +8522,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def projects_get_phases(self, board_id: int) -> dict[str, Any]:
+    async def projects_get_phases(self, board_id: int) -> dict[str, Any]:
         """
         Retrieves a list of project phases filtered by board_id.
 
@@ -10432,18 +8550,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("board_id", board_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_project_phase_by_id(self, id: str) -> dict[str, Any]:
+    async def get_project_phase_by_id(self, id: str) -> dict[str, Any]:
         """
         Retrieves a specific project phase by its unique identifier.
 
@@ -10466,20 +8580,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_project_templates(
-        self, cursor: str | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    async def list_project_templates(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a list of project templates using the "GET" method at the "/projectTemplates" path, allowing pagination via optional query parameters for cursor and limit.
 
@@ -10498,23 +8606,17 @@ class PipedriveApp(APIApplication):
             ProjectTemplates
         """
         url = f"{self.base_url}/projectTemplates"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def project_templates_get_details(self, id: str) -> dict[str, Any]:
+    async def project_templates_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves the details of a specific project template by its ID.
 
@@ -10537,23 +8639,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def recents_get_changes_after(
-        self,
-        since_timestamp: str,
-        items: str | None = None,
-        start: int | None = None,
-        limit: int | None = None,
+    async def recents_get_changes_after(
+        self, since_timestamp: str, items: str | None = None, start: int | None = None, limit: int | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a paginated list of recent items filtered by timestamp and quantity parameters.
@@ -10576,31 +8670,18 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/recents"
         query_params = {
-            k: v
-            for k, v in [
-                ("since_timestamp", since_timestamp),
-                ("items", items),
-                ("start", start),
-                ("limit", limit),
-            ]
-            if v is not None
+            k: v for k, v in [("since_timestamp", since_timestamp), ("items", items), ("start", start), ("limit", limit)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_get_all_roles(
-        self, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def roles_get_all_roles(self, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of roles with optional pagination parameters (start and limit) for managing or displaying role-based data.
 
@@ -10619,25 +8700,17 @@ class PipedriveApp(APIApplication):
             Roles
         """
         url = f"{self.base_url}/roles"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_create_role(
-        self, name: str | None = None, parent_role_id: int | None = None
-    ) -> Any:
+    async def roles_create_role(self, name: str | None = None, parent_role_id: int | None = None) -> Any:
         """
         Creates a new role using the API by sending a POST request to the "/roles" endpoint.
 
@@ -10656,34 +8729,20 @@ class PipedriveApp(APIApplication):
             Roles
         """
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "parent_role_id": parent_role_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"name": name, "parent_role_id": parent_role_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_mark_as_deleted(self, id: str) -> Any:
+    async def roles_mark_as_deleted(self, id: str) -> Any:
         """
         Deletes a role by its unique identifier and returns a success status upon removal.
 
@@ -10706,18 +8765,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_get_one_role(self, id: str) -> Any:
+    async def roles_get_one_role(self, id: str) -> Any:
         """
         Retrieves role details by ID using the GET method from the "/roles/{id}" endpoint.
 
@@ -10740,20 +8795,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_update_role_details(
-        self, id: str, parent_role_id: int | None = None, name: str | None = None
-    ) -> Any:
+    async def roles_update_role_details(self, id: str, parent_role_id: int | None = None, name: str | None = None) -> Any:
         """
         Updates an existing role identified by the specified ID using the PUT method.
 
@@ -10775,36 +8824,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "parent_role_id": parent_role_id,
-            "name": name,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"parent_role_id": parent_role_id, "name": name}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_list_role_assignments(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def roles_list_role_assignments(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of assignments for a role identified by `{id}`, allowing optional pagination with `start` and `limit` query parameters.
 
@@ -10826,23 +8859,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/roles/{id}/assignments"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_assign_user(self, id: str, user_id: int | None = None) -> Any:
+    async def roles_assign_user(self, id: str, user_id: int | None = None) -> Any:
         """
         Assigns roles to specific resources using the "POST" method at the path "/roles/{id}/assignments".
 
@@ -10863,33 +8890,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "user_id": user_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"user_id": user_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}/assignments"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_get_role_settings(self, id: str) -> Any:
+    async def roles_get_role_settings(self, id: str) -> Any:
         """
         Retrieves the settings for a specific role identified by the provided ID.
 
@@ -10912,20 +8926,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_add_or_update_setting(
-        self, id: str, setting_key: str | None = None, value: int | None = None
-    ) -> Any:
+    async def roles_add_or_update_setting(self, id: str, setting_key: str | None = None, value: int | None = None) -> Any:
         """
         Updates the settings for a specific role identified by the ID and returns a success status.
 
@@ -10947,36 +8955,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "setting_key": setting_key,
-            "value": value,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"setting_key": setting_key, "value": value}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}/settings"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_list_pipeline_visibility(
-        self, id: str, visible: bool | None = None
-    ) -> Any:
+    async def roles_list_pipeline_visibility(self, id: str, visible: bool | None = None) -> Any:
         """
         Retrieves a list of pipelines for a role identified by `{id}` using the `GET` method, allowing optional filtering by visibility.
 
@@ -11000,20 +8992,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("visible", visible)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def roles_update_pipeline_visibility(
-        self, id: str, visible_pipeline_ids: dict[str, Any] | None = None
-    ) -> Any:
+    async def roles_update_pipeline_visibility(self, id: str, visible_pipeline_ids: dict[str, Any] | None = None) -> Any:
         """
         Updates or creates a pipeline for a specific role identified by the "id" parameter using the PUT method.
 
@@ -11034,33 +9020,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "visible_pipeline_ids": visible_pipeline_ids,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"visible_pipeline_ids": visible_pipeline_ids}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}/pipelines"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_delete_bulk(self, ids: str) -> dict[str, Any]:
+    async def stages_delete_bulk(self, ids: str) -> dict[str, Any]:
         """
         Deletes a specified stage in Amazon API Gateway, which removes the stage resource and may impact API usability if it's the only stage associated with a deployment.
 
@@ -11081,23 +9054,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_get_all(
-        self,
-        pipeline_id: int | None = None,
-        start: int | None = None,
-        limit: int | None = None,
-    ) -> dict[str, Any]:
+    async def stages_get_all(self, pipeline_id: int | None = None, start: int | None = None, limit: int | None = None) -> dict[str, Any]:
         """
         Retrieves a list of stages filtered by pipeline, paginated with start and limit parameters.
 
@@ -11117,29 +9081,17 @@ class PipedriveApp(APIApplication):
             Stages
         """
         url = f"{self.base_url}/stages"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pipeline_id", pipeline_id),
-                ("start", start),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("pipeline_id", pipeline_id), ("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_create_new_stage(
+    async def stages_create_new_stage(
         self,
         name: str | None = None,
         pipeline_id: int | None = None,
@@ -11175,30 +9127,19 @@ class PipedriveApp(APIApplication):
             "rotten_flag": rotten_flag,
             "rotten_days": rotten_days,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/stages"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_delete_stage(self, id: str) -> dict[str, Any]:
+    async def stages_delete_stage(self, id: str) -> dict[str, Any]:
         """
         Deletes a stage by its ID using the DELETE method at the "/stages/{id}" path.
 
@@ -11221,20 +9162,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_get_one_stage(
-        self, id: str, everyone: float | None = None
-    ) -> dict[str, Any]:
+    async def stages_get_one_stage(self, id: str, everyone: float | None = None) -> dict[str, Any]:
         """
         Retrieves specific stage details by ID, optionally filtering by visibility using the "everyone" query parameter.
 
@@ -11258,18 +9193,14 @@ class PipedriveApp(APIApplication):
         query_params = {k: v for k, v in [("everyone", everyone)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_update_details(
+    async def stages_update_details(
         self,
         id: str,
         name: str | None = None,
@@ -11312,30 +9243,19 @@ class PipedriveApp(APIApplication):
             "rotten_days": rotten_days,
             "order_nr": order_nr,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/stages/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def stages_get_stage_deals(
+    async def stages_get_stage_deals(
         self,
         id: str,
         filter_id: int | None = None,
@@ -11370,29 +9290,19 @@ class PipedriveApp(APIApplication):
         url = f"{self.base_url}/stages/{id}/deals"
         query_params = {
             k: v
-            for k, v in [
-                ("filter_id", filter_id),
-                ("user_id", user_id),
-                ("everyone", everyone),
-                ("start", start),
-                ("limit", limit),
-            ]
+            for k, v in [("filter_id", filter_id), ("user_id", user_id), ("everyone", everyone), ("start", start), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def subscriptions_get_details(self, id: str) -> Any:
+    async def subscriptions_get_details(self, id: str) -> Any:
         """
         Retrieves the subscription details for the specified subscription ID.
 
@@ -11415,18 +9325,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def subscriptions_delete_marked(self, id: str) -> Any:
+    async def subscriptions_delete_marked(self, id: str) -> Any:
         """
         Deletes a specific subscription using its identifier.
 
@@ -11449,18 +9355,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def subscriptions_find_by_deal_id(self, dealId: str) -> Any:
+    async def subscriptions_find_by_deal_id(self, dealId: str) -> Any:
         """
         Retrieves subscription details for a specific deal using the provided deal ID.
 
@@ -11483,18 +9385,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def subscriptions_get_payments(self, id: str) -> Any:
+    async def subscriptions_get_payments(self, id: str) -> Any:
         """
         Retrieves payment details for a specific subscription identified by its ID.
 
@@ -11517,18 +9415,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def subscriptions_add_recurring(
+    async def subscriptions_add_recurring(
         self,
         description: str | None = None,
         deal_id: int | None = None,
@@ -11579,30 +9473,19 @@ class PipedriveApp(APIApplication):
             "payments": payments,
             "update_deal_value": update_deal_value,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/recurring"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_installment_plan(
+    async def create_installment_plan(
         self,
         deal_id: int | None = None,
         currency: str | None = None,
@@ -11629,36 +9512,20 @@ class PipedriveApp(APIApplication):
             Subscriptions
         """
         request_body_data = None
-        request_body_data = {
-            "deal_id": deal_id,
-            "currency": currency,
-            "payments": payments,
-            "update_deal_value": update_deal_value,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"deal_id": deal_id, "currency": currency, "payments": payments, "update_deal_value": update_deal_value}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/installment"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def subscriptions_update_recurring(
+    async def subscriptions_update_recurring(
         self,
         id: str,
         description: str | None = None,
@@ -11698,34 +9565,20 @@ class PipedriveApp(APIApplication):
             "update_deal_value": update_deal_value,
             "effective_date": effective_date,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/recurring/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_installment_subscription(
-        self,
-        id: str,
-        payments: list[dict[str, Any]] | None = None,
-        update_deal_value: bool | None = None,
+    async def update_installment_subscription(
+        self, id: str, payments: list[dict[str, Any]] | None = None, update_deal_value: bool | None = None
     ) -> Any:
         """
         Updates an installment subscription by modifying its details using the provided ID.
@@ -11748,36 +9601,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "payments": payments,
-            "update_deal_value": update_deal_value,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"payments": payments, "update_deal_value": update_deal_value}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/installment/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cancel_recurring_subscription(
-        self, id: str, end_date: str | None = None
-    ) -> Any:
+    async def cancel_recurring_subscription(self, id: str, end_date: str | None = None) -> Any:
         """
         Cancels a recurring subscription by ID using the specified HTTP PUT method and returns a success status upon successful cancellation.
 
@@ -11798,33 +9635,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "end_date": end_date,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"end_date": end_date}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/recurring/{id}/cancel"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tasks_list_all_tasks(
+    async def tasks_list_all_tasks(
         self,
         cursor: str | None = None,
         limit: int | None = None,
@@ -11869,18 +9693,14 @@ class PipedriveApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tasks_create_task(
+    async def tasks_create_task(
         self,
         title: str | None = None,
         project_id: float | None = None,
@@ -11922,30 +9742,19 @@ class PipedriveApp(APIApplication):
             "done": done,
             "due_date": due_date,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/tasks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tasks_get_details(self, id: str) -> dict[str, Any]:
+    async def tasks_get_details(self, id: str) -> dict[str, Any]:
         """
         Retrieves a specific task by its unique identifier.
 
@@ -11968,18 +9777,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tasks_update_task(
+    async def tasks_update_task(
         self,
         id: str,
         title: str | None = None,
@@ -12025,30 +9830,19 @@ class PipedriveApp(APIApplication):
             "done": done,
             "due_date": due_date,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/tasks/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def tasks_delete_task(self, id: str) -> dict[str, Any]:
+    async def tasks_delete_task(self, id: str) -> dict[str, Any]:
         """
         Deletes the specified task by its unique identifier and returns a success status upon completion.
 
@@ -12071,18 +9865,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_get_all(self) -> Any:
+    async def users_get_all(self) -> Any:
         """
         Retrieves a list of users using the "GET" method at the "/users" path.
 
@@ -12100,22 +9890,15 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_add_new_user(
-        self,
-        email: str | None = None,
-        access: list[dict[str, Any]] | None = None,
-        active_flag: bool | None = None,
+    async def users_add_new_user(
+        self, email: str | None = None, access: list[dict[str, Any]] | None = None, active_flag: bool | None = None
     ) -> Any:
         """
         Creates a new user account using the POST method and returns a success message upon completion.
@@ -12137,37 +9920,20 @@ class PipedriveApp(APIApplication):
             Users
         """
         request_body_data = None
-        request_body_data = {
-            "email": email,
-            "access": access,
-            "active_flag": active_flag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"email": email, "access": access, "active_flag": active_flag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_find_by_name(
-        self, term: str, search_by_email: float | None = None
-    ) -> Any:
+    async def users_find_by_name(self, term: str, search_by_email: float | None = None) -> Any:
         """
         Searches for users by specified criteria or email and returns matching results.
 
@@ -12186,25 +9952,17 @@ class PipedriveApp(APIApplication):
             Users
         """
         url = f"{self.base_url}/users/find"
-        query_params = {
-            k: v
-            for k, v in [("term", term), ("search_by_email", search_by_email)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("term", term), ("search_by_email", search_by_email)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_get_current_user_data(self) -> Any:
+    async def users_get_current_user_data(self) -> Any:
         """
         Retrieves information about the currently authenticated user using the API.
 
@@ -12222,18 +9980,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_get_user(self, id: str) -> Any:
+    async def users_get_user(self, id: str) -> Any:
         """
         Retrieves a specific user's details by their unique identifier.
 
@@ -12256,18 +10010,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_update_details(self, id: str, active_flag: bool | None = None) -> Any:
+    async def users_update_details(self, id: str, active_flag: bool | None = None) -> Any:
         """
         Updates a user's information by replacing the entire resource at the specified ID using the PUT method, returning success or error status codes based on the operation's outcome.
 
@@ -12288,33 +10038,20 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "active_flag": active_flag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"active_flag": active_flag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{id}"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_list_followers(self, id: str) -> Any:
+    async def users_list_followers(self, id: str) -> Any:
         """
         Retrieves the list of followers for a specified user.
 
@@ -12337,18 +10074,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_list_permissions(self, id: str) -> Any:
+    async def users_list_permissions(self, id: str) -> Any:
         """
         Retrieves the permissions associated with a specific user identified by their unique ID.
 
@@ -12371,20 +10104,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_list_role_assignments(
-        self, id: str, start: int | None = None, limit: int | None = None
-    ) -> Any:
+    async def users_list_role_assignments(self, id: str, start: int | None = None, limit: int | None = None) -> Any:
         """
         Retrieves a list of role assignments for a specified user, allowing pagination with optional start and limit query parameters.
 
@@ -12406,23 +10133,17 @@ class PipedriveApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/users/{id}/roleAssignments"
-        query_params = {
-            k: v for k, v in [("start", start), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def users_list_role_settings(self, id: str) -> Any:
+    async def users_list_role_settings(self, id: str) -> Any:
         """
         Retrieves the role settings for a specific user identified by the `id` path parameter.
 
@@ -12445,18 +10166,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_user_connections(self) -> Any:
+    async def get_user_connections(self) -> Any:
         """
         Retrieves user connections using the "GET" method and returns relevant data.
 
@@ -12474,18 +10191,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_user_settings(self) -> Any:
+    async def get_user_settings(self) -> Any:
         """
         Retrieves user settings metadata including available endpoints for managing user configurations.
 
@@ -12503,18 +10216,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def webhooks_get_all(self) -> Any:
+    async def webhooks_get_all(self) -> Any:
         """
         Retrieves information about existing webhooks, returning details about registered endpoints and event triggers.
 
@@ -12532,18 +10241,14 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def webhooks_create_new_webhook(
+    async def webhooks_create_new_webhook(
         self,
         version: str | None = None,
         subscription_url: str | None = None,
@@ -12585,30 +10290,19 @@ class PipedriveApp(APIApplication):
             "http_auth_user": http_auth_user,
             "http_auth_password": http_auth_password,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/webhooks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def webhooks_delete_existing_webhook(self, id: str) -> Any:
+    async def webhooks_delete_existing_webhook(self, id: str) -> Any:
         """
         Deletes a webhook endpoint by its ID and returns a confirmation or error message.
 
@@ -12631,11 +10325,7 @@ class PipedriveApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()

@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class ExaApp(APIApplication):
         super().__init__(name="exa", integration=integration, **kwargs)
         self.base_url = "https://api.exa.ai"
 
-    def search_with_filters(
+    async def search_with_filters(
         self,
         query,
         useAutoprompt=None,
@@ -74,7 +73,7 @@ class ExaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def find_similar_by_url(
+    async def find_similar_by_url(
         self,
         url,
         numResults=None,
@@ -130,7 +129,7 @@ class ExaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def fetch_page_content(
+    async def fetch_page_content(
         self,
         urls,
         ids=None,
@@ -188,7 +187,7 @@ class ExaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def answer(self, query, stream=None, text=None, model=None) -> dict[str, Any]:
+    async def answer(self, query, stream=None, text=None, model=None) -> dict[str, Any]:
         """
         Retrieves a direct, synthesized answer for a given query by calling the Exa `/answer` API endpoint. Unlike `search`, which returns web results, this function provides a conclusive response. It supports streaming, including source text, and selecting a search model.
 
@@ -204,12 +203,7 @@ class ExaApp(APIApplication):
         Tags:
             important
         """
-        request_body = {
-            "query": query,
-            "stream": stream,
-            "text": text,
-            "model": model,
-        }
+        request_body = {"query": query, "stream": stream, "text": text, "model": model}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/answer"
         query_params = {}
@@ -218,9 +212,4 @@ class ExaApp(APIApplication):
         return response.json()
 
     def list_tools(self):
-        return [
-            self.search_with_filters,
-            self.find_similar_by_url,
-            self.fetch_page_content,
-            self.answer,
-        ]
+        return [self.search_with_filters, self.find_similar_by_url, self.fetch_page_content, self.answer]

@@ -8,9 +8,7 @@ from .api import api
 # Resources
 
 
-def get_players_resource(
-    name_filter: str | None = None, team_filter: str | None = None
-) -> list[dict[str, Any]]:
+def get_players_resource(name_filter: str | None = None, team_filter: str | None = None) -> list[dict[str, Any]]:
     """
     Format player data for the MCP resource.
 
@@ -83,9 +81,7 @@ def get_players_resource(
             # Expected stats (if available)
             "expected_goals": player.get("expected_goals", "N/A"),
             "expected_assists": player.get("expected_assists", "N/A"),
-            "expected_goal_involvements": player.get(
-                "expected_goal_involvements", "N/A"
-            ),
+            "expected_goal_involvements": player.get("expected_goal_involvements", "N/A"),
             "expected_goals_conceded": player.get("expected_goals_conceded", "N/A"),
             # Ownership & transfers
             "selected_by_percent": player["selected_by_percent"],
@@ -281,17 +277,10 @@ def find_players_by_name(name: str, limit: int = 5) -> list[dict[str, Any]]:
             scored_players.append((total_score, player))
 
     # Sort by score (highest first)
-    sorted_players = [
-        player for _, player in sorted(scored_players, key=lambda x: x[0], reverse=True)
-    ]
+    sorted_players = [player for _, player in sorted(scored_players, key=lambda x: x[0], reverse=True)]
     # If no matches with good confidence, fall back to simple contains match
     if not sorted_players or (sorted_players and scored_players[0][0] < 30):
-        fallback_players = [
-            p
-            for p in all_players
-            if search_term in p["name"].lower()
-            or search_term in p.get("web_name", "").lower()
-        ]
+        fallback_players = [p for p in all_players if search_term in p["name"].lower() or search_term in p.get("web_name", "").lower()]
         # Sort fallback by points
         fallback_players.sort(key=lambda p: float(p["points"]), reverse=True)
 
@@ -338,9 +327,7 @@ def get_current_gameweek_resource() -> dict[str, Any]:
 
     # Format deadline time to be more readable
     try:
-        deadline = datetime.datetime.strptime(
-            current_gw["deadline_time"], "%Y-%m-%dT%H:%M:%SZ"
-        )
+        deadline = datetime.datetime.strptime(current_gw["deadline_time"], "%Y-%m-%dT%H:%M:%SZ")
         gw_data["deadline_formatted"] = deadline.strftime("%A, %d %B %Y at %H:%M UTC")
 
         # Calculate time until deadline
@@ -419,9 +406,7 @@ def get_player_fixtures(player_id: int, num_fixtures: int = 5) -> list[dict[str,
     Returns:
         List of upcoming fixtures for the player
     """
-    logger.info(
-        f"Getting player fixtures (player_id={player_id}, num_fixtures={num_fixtures})"
-    )
+    logger.info(f"Getting player fixtures (player_id={player_id}, num_fixtures={num_fixtures})")
 
     # Get player data to find their team
     players_data = api.get_players()
@@ -500,9 +485,7 @@ def get_player_fixtures(player_id: int, num_fixtures: int = 5) -> list[dict[str,
         opponent_team = team_map.get(opponent_id, {})
 
         # Determine difficulty - higher is more difficult
-        difficulty = fixture.get(
-            "team_h_difficulty" if is_home else "team_a_difficulty", 3
-        )
+        difficulty = fixture.get("team_h_difficulty" if is_home else "team_a_difficulty", 3)
 
         formatted_fixture = {
             "gameweek": fixture.get("event"),
@@ -518,9 +501,7 @@ def get_player_fixtures(player_id: int, num_fixtures: int = 5) -> list[dict[str,
     return formatted_fixtures
 
 
-def get_player_gameweek_history(
-    player_ids: list[int], num_gameweeks: int = 5
-) -> dict[str, Any]:
+def get_player_gameweek_history(player_ids: list[int], num_gameweeks: int = 5) -> dict[str, Any]:
     """Get recent gameweek history for multiple players.
 
     Args:
@@ -531,9 +512,7 @@ def get_player_gameweek_history(
         Dictionary mapping player IDs to their gameweek histories
     """
     logger = logging.getLogger(__name__)
-    logger.info(
-        f"Getting gameweek history for {len(player_ids)} players, {num_gameweeks} gameweeks"
-    )
+    logger.info(f"Getting gameweek history for {len(player_ids)} players, {num_gameweeks} gameweeks")
 
     # Get current gameweek to determine range
     gameweeks = api.get_gameweeks()
@@ -594,28 +573,18 @@ def get_player_gameweek_history(
                             # Added additional stats as requested
                             "expected_goals": entry.get("expected_goals", 0),
                             "expected_assists": entry.get("expected_assists", 0),
-                            "expected_goal_involvements": entry.get(
-                                "expected_goal_involvements", 0
-                            ),
-                            "expected_goals_conceded": entry.get(
-                                "expected_goals_conceded", 0
-                            ),
+                            "expected_goal_involvements": entry.get("expected_goal_involvements", 0),
+                            "expected_goals_conceded": entry.get("expected_goals_conceded", 0),
                             "transfers_in": entry.get("transfers_in", 0),
                             "transfers_out": entry.get("transfers_out", 0),
                             "selected": entry.get("selected", 0),
-                            "value": entry.get("value", 0) / 10.0
-                            if "value" in entry
-                            else 0,
+                            "value": entry.get("value", 0) / 10.0 if "value" in entry else 0,
                             "team_score": entry.get(
-                                "team_h_score"
-                                if entry.get("was_home")
-                                else "team_a_score",
+                                "team_h_score" if entry.get("was_home") else "team_a_score",
                                 0,
                             ),
                             "opponent_score": entry.get(
-                                "team_a_score"
-                                if entry.get("was_home")
-                                else "team_h_score",
+                                "team_a_score" if entry.get("was_home") else "team_h_score",
                                 0,
                             ),
                         }
@@ -738,11 +707,7 @@ def get_player_info(
     # Include gameweek history if requested
     if include_history and "history" in player:
         # Filter history by gameweek range
-        filtered_history = [
-            gw
-            for gw in player.get("history", [])
-            if start_gameweek <= gw.get("round", 0) <= end_gameweek
-        ]
+        filtered_history = [gw for gw in player.get("history", []) if start_gameweek <= gw.get("round", 0) <= end_gameweek]
 
         # Get detailed gameweek history
         player_id_value = player.get("id")
@@ -765,11 +730,7 @@ def get_player_info(
                     gw_num = gw_data.get("round")
                     # Find matching detailed gameweek
                     matching_detailed = next(
-                        (
-                            gw
-                            for gw in detailed_history
-                            if gw.get("round") == gw_num or gw.get("gameweek") == gw_num
-                        ),
+                        (gw for gw in detailed_history if gw.get("round") == gw_num or gw.get("gameweek") == gw_num),
                         None,
                     )
 
@@ -825,11 +786,7 @@ def get_player_info(
 
             # Calculate average fixture difficulty
             difficulty_values = [f.get("difficulty", 3) for f in fixtures_data]
-            avg_difficulty = (
-                sum(difficulty_values) / len(difficulty_values)
-                if difficulty_values
-                else 3
-            )
+            avg_difficulty = sum(difficulty_values) / len(difficulty_values) if difficulty_values else 3
 
             # Convert to a 1-10 scale where 10 is best (easiest fixtures)
             fixture_score = (6 - avg_difficulty) * 2
@@ -837,18 +794,12 @@ def get_player_info(
             result["fixture_analysis"] = {
                 "difficulty_score": round(fixture_score, 1),
                 "fixtures_analyzed": len(fixtures_data),
-                "home_matches": sum(
-                    1 for f in fixtures_data if f.get("location") == "home"
-                ),
-                "away_matches": sum(
-                    1 for f in fixtures_data if f.get("location") == "away"
-                ),
+                "home_matches": sum(1 for f in fixtures_data if f.get("location") == "home"),
+                "away_matches": sum(1 for f in fixtures_data if f.get("location") == "away"),
             }
 
             # Add fixture difficulty assessment
-            if "fixture_analysis" in result and isinstance(
-                result["fixture_analysis"], dict
-            ):
+            if "fixture_analysis" in result and isinstance(result["fixture_analysis"], dict):
                 fixture_analysis = result["fixture_analysis"]
                 if fixture_score >= 8:
                     fixture_analysis["assessment"] = "Excellent fixtures"
@@ -862,9 +813,7 @@ def get_player_info(
     return result
 
 
-def search_players(
-    query: str, position: str | None = None, team: str | None = None, limit: int = 5
-) -> dict[str, Any]:
+def search_players(query: str, position: str | None = None, team: str | None = None, limit: int = 5) -> dict[str, Any]:
     """
     Search for players by name with optional filtering by position and team.
 
@@ -881,9 +830,7 @@ def search_players(
     logger.info(f"Searching players: query={query}, position={position}, team={team}")
 
     # Find players by name
-    matches = find_players_by_name(
-        query, limit=limit * 2
-    )  # Get more than needed for filtering
+    matches = find_players_by_name(query, limit=limit * 2)  # Get more than needed for filtering
 
     # Apply position filter if specified
     if position and matches:
@@ -891,12 +838,7 @@ def search_players(
 
     # Apply team filter if specified
     if team and matches:
-        matches = [
-            p
-            for p in matches
-            if team.lower() in p.get("team", "").lower()
-            or team.lower() in p.get("team_short", "").lower()
-        ]
+        matches = [p for p in matches if team.lower() in p.get("team", "").lower() or team.lower() in p.get("team_short", "").lower()]
 
     # Limit results
     matches = matches[:limit]
@@ -965,18 +907,12 @@ def get_team_by_name(name: str) -> dict[str, Any] | None:
 
     # Try exact match first
     for team in teams:
-        if (
-            team["name"].lower() == name_lower
-            or team["short_name"].lower() == name_lower
-        ):
+        if team["name"].lower() == name_lower or team["short_name"].lower() == name_lower:
             return team
 
     # Then try partial match
     for team in teams:
-        if (
-            name_lower in team["name"].lower()
-            or name_lower in team["short_name"].lower()
-        ):
+        if name_lower in team["name"].lower() or name_lower in team["short_name"].lower():
             return team
 
     return None

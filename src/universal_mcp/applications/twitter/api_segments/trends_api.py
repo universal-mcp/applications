@@ -28,9 +28,7 @@ class TrendsApi(APISegmentBase):
         if woeid is None:
             raise ValueError("Missing required parameter 'woeid'.")
         url = f"{self.main_app_client.base_url}/2/trends/by/woeid/{woeid}"
-        query_params = {
-            k: v for k, v in [("trend.fields", trend_fields)] if v is not None
-        }
+        query_params = {k: v for k, v in [("trend.fields", trend_fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()

@@ -1,5 +1,4 @@
 from typing import Any
-
 import yfinance as yf
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -14,7 +13,7 @@ class YahooFinanceApp(APIApplication):
     def __init__(self, integration: Integration | None = None, **kwargs) -> None:
         super().__init__(name="yahoo_finance", integration=integration, **kwargs)
 
-    def get_stock_info(self, symbol: str) -> dict[str, Any]:
+    async def get_stock_info(self, symbol: str) -> dict[str, Any]:
         """
         Gets real-time stock information including current price, market cap, financial ratios, and company details.
 
@@ -34,23 +33,15 @@ class YahooFinanceApp(APIApplication):
         """
         if not symbol:
             raise ValueError("Stock symbol cannot be empty")
-
         symbol = symbol.upper().strip()
         ticker = yf.Ticker(symbol)
-
         info = ticker.info
         if not info or info.get("regularMarketPrice") is None:
             raise KeyError(f"Stock symbol '{symbol}' not found or invalid")
-
         return info
 
-    def get_stock_history(
-        self,
-        symbol: str,
-        period: str = "1mo",
-        interval: str = "1d",
-        start_date: str | None = None,
-        end_date: str | None = None,
+    async def get_stock_history(
+        self, symbol: str, period: str = "1mo", interval: str = "1d", start_date: str | None = None, end_date: str | None = None
     ) -> dict:
         """
         Gets historical price data for a stock with OHLCV data, dividends, and stock splits.
@@ -70,21 +61,16 @@ class YahooFinanceApp(APIApplication):
         """
         if not symbol:
             raise ValueError("Stock symbol cannot be empty")
-
         symbol = symbol.upper().strip()
         ticker = yf.Ticker(symbol)
-
-        df = ticker.history(
-            period=period, interval=interval, start=start_date, end=end_date
-        )
-        
+        df = ticker.history(period=period, interval=interval, start=start_date, end=end_date)
         try:
-            data = df.to_dict("index")  # type: ignore
+            data = df.to_dict("index")
             if data:
                 converted_data = {}
                 for key, value in data.items():
-                    if hasattr(key, 'strftime'):
-                        converted_key = key.strftime('%Y-%m-%d')
+                    if hasattr(key, "strftime"):
+                        converted_key = key.strftime("%Y-%m-%d")
                     else:
                         converted_key = str(key)
                     converted_data[converted_key] = value
@@ -93,7 +79,7 @@ class YahooFinanceApp(APIApplication):
         except:
             return {}
 
-    def get_stock_news(self, symbol: str, limit: int = 10) -> list[Any]:
+    async def get_stock_news(self, symbol: str, limit: int = 10) -> list[Any]:
         """
         Gets latest news articles for a stock from Yahoo Finance.
 
@@ -109,16 +95,12 @@ class YahooFinanceApp(APIApplication):
         """
         if not symbol:
             raise ValueError("Stock symbol cannot be empty")
-
         symbol = symbol.upper().strip()
         ticker = yf.Ticker(symbol)
-
         news = ticker.news
         return news[:limit] if news else []
 
-    def get_financial_statements(
-        self, symbol: str, statement_type: str = "income"
-    ) -> dict:
+    async def get_financial_statements(self, symbol: str, statement_type: str = "income") -> dict:
         """
         Gets financial statements for a stock from Yahoo Finance.
 
@@ -134,10 +116,8 @@ class YahooFinanceApp(APIApplication):
         """
         if not symbol:
             raise ValueError("Stock symbol cannot be empty")
-
         symbol = symbol.upper().strip()
         ticker = yf.Ticker(symbol)
-
         if statement_type == "income":
             df = ticker.income_stmt
         elif statement_type == "balance":
@@ -148,14 +128,13 @@ class YahooFinanceApp(APIApplication):
             df = ticker.earnings
         else:
             df = ticker.income_stmt
-
         try:
-            data = df.to_dict("dict")  # type: ignore
+            data = df.to_dict("dict")
             if data:
                 converted_data = {}
                 for key, value in data.items():
-                    if hasattr(key, 'strftime'):
-                        converted_key = key.strftime('%Y-%m-%d')
+                    if hasattr(key, "strftime"):
+                        converted_key = key.strftime("%Y-%m-%d")
                     else:
                         converted_key = str(key)
                     converted_data[converted_key] = value
@@ -164,9 +143,7 @@ class YahooFinanceApp(APIApplication):
         except:
             return {}
 
-    def get_stock_recommendations(
-        self, symbol: str, rec_type: str = "recommendations"
-    ) -> list[dict]:
+    async def get_stock_recommendations(self, symbol: str, rec_type: str = "recommendations") -> list[dict]:
         """
         Gets analyst recommendations for a stock from Yahoo Finance.
 
@@ -182,27 +159,18 @@ class YahooFinanceApp(APIApplication):
         """
         if not symbol:
             raise ValueError("Stock symbol cannot be empty")
-
         symbol = symbol.upper().strip()
         ticker = yf.Ticker(symbol)
-
         if rec_type == "upgrades_downgrades":
             df = ticker.upgrades_downgrades
         else:
             df = ticker.recommendations
-
         try:
-            return df.to_dict("records")  # type: ignore
+            return df.to_dict("records")
         except:
             return []
 
-    def search(
-        self,
-        query: str,
-        max_results: int = 10,
-        news_count: int = 5,
-        include_research: bool = False,
-    ) -> dict[str, Any]:
+    async def search(self, query: str, max_results: int = 10, news_count: int = 5, include_research: bool = False) -> dict[str, Any]:
         """
         Search Yahoo Finance for quotes, news, and research using yfinance Search.
 
@@ -220,14 +188,7 @@ class YahooFinanceApp(APIApplication):
         """
         if not query:
             raise ValueError("Search query cannot be empty")
-
-        search = yf.Search(
-            query,
-            max_results=max_results,
-            news_count=news_count,
-            include_research=include_research,
-        )
-
+        search = yf.Search(query, max_results=max_results, news_count=news_count, include_research=include_research)
         result = {}
         for attr in dir(search):
             if not attr.startswith("_"):
@@ -237,12 +198,9 @@ class YahooFinanceApp(APIApplication):
                         result[attr] = value
                 except:
                     continue
-
         return result
 
-    def lookup_ticker(
-        self, query: str, lookup_type: str = "all", count: int = 25
-    ) -> list[dict]:
+    async def lookup_ticker(self, query: str, lookup_type: str = "all", count: int = 25) -> list[dict]:
         """
         Look up ticker symbols by type using yfinance Lookup.
 
@@ -259,10 +217,8 @@ class YahooFinanceApp(APIApplication):
         """
         if not query:
             raise ValueError("Lookup query cannot be empty")
-
         try:
             lookup = yf.Lookup(query)
-
             if lookup_type == "stock":
                 results = lookup.get_stock(count=count)
             elif lookup_type == "mutualfund":
@@ -277,14 +233,12 @@ class YahooFinanceApp(APIApplication):
                 results = lookup.get_currency(count=count)
             elif lookup_type == "cryptocurrency":
                 results = lookup.get_cryptocurrency(count=count)
-            else:  # default to 'all'
+            else:
                 results = lookup.get_all(count=count)
-
             try:
-                return results.to_dict("records")  # type: ignore
+                return results.to_dict("records")
             except:
                 return []
-
         except Exception as e:
             return [{"query": query, "error": f"Lookup failed: {str(e)}"}]
 

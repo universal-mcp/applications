@@ -7,9 +7,7 @@ class ComplianceApi(APISegmentBase):
     def __init__(self, main_app_client: Any):
         super().__init__(main_app_client)
 
-    def list_batch_compliance_jobs(
-        self, type, status=None, compliance_job_fields=None
-    ) -> dict[str, Any]:
+    def list_batch_compliance_jobs(self, type, status=None, compliance_job_fields=None) -> dict[str, Any]:
         """
         Retrieves a list of compliance jobs, requiring a job `type` ('tweets' or 'users') and allowing optional filtering by `status`. This function fetches multiple jobs, distinguishing it from `get_batch_compliance_job` which retrieves a single job by its unique ID.
 
@@ -42,9 +40,7 @@ class ComplianceApi(APISegmentBase):
         response.raise_for_status()
         return response.json()
 
-    def create_batch_compliance_job(
-        self, type, name=None, resumable=None
-    ) -> dict[str, Any]:
+    def create_batch_compliance_job(self, type, name=None, resumable=None) -> dict[str, Any]:
         """
         Creates a new batch compliance job for a specified type ('tweets' or 'users'). A custom name can be provided, and resumable uploads can be enabled. This initiates the job creation process, differing from functions that list or retrieve existing jobs.
 
@@ -65,9 +61,7 @@ class ComplianceApi(APISegmentBase):
         """
         request_body_data = None
         request_body_data = {"name": name, "resumable": resumable, "type": type}
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.main_app_client.base_url}/2/compliance/jobs"
         query_params = {}
         response = self._post(
@@ -100,11 +94,7 @@ class ComplianceApi(APISegmentBase):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.main_app_client.base_url}/2/compliance/jobs/{id}"
-        query_params = {
-            k: v
-            for k, v in [("compliance_job.fields", compliance_job_fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("compliance_job.fields", compliance_job_fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()

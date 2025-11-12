@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -11,14 +10,9 @@ class ShortcutApp(APIApplication):
 
     def _get_headers(self) -> dict[str, Any]:
         api_key = self.integration.get_credentials().get("api_key")
-        return {
-            "Shortcut-Token": f"{api_key}",
-            "Content-Type": "application/json",
-        }
+        return {"Shortcut-Token": f"{api_key}", "Content-Type": "application/json"}
 
-    def list_categories(
-        self,
-    ) -> list[Any]:
+    async def list_categories(self) -> list[Any]:
         """
         Retrieves a list of categories from the API.
 
@@ -40,9 +34,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_category(
-        self, name, color=None, external_id=None, type=None
-    ) -> dict[str, Any]:
+    async def create_category(self, name, color=None, external_id=None, type=None) -> dict[str, Any]:
         """
         Creates a new category with the specified parameters.
 
@@ -64,12 +56,7 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-            "color": color,
-            "external_id": external_id,
-            "type": type,
-        }
+        request_body = {"name": name, "color": color, "external_id": external_id, "type": type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/categories"
         query_params = {}
@@ -77,7 +64,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_category(self, category_public_id) -> dict[str, Any]:
+    async def get_category(self, category_public_id) -> dict[str, Any]:
         """
         Fetches a category by its public ID.
 
@@ -101,9 +88,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_category(
-        self, category_public_id, name=None, color=None, archived=None
-    ) -> dict[str, Any]:
+    async def update_category(self, category_public_id, name=None, color=None, archived=None) -> dict[str, Any]:
         """
         Updates a category with the specified attributes.
 
@@ -125,11 +110,7 @@ class ShortcutApp(APIApplication):
         """
         if category_public_id is None:
             raise ValueError("Missing required parameter 'category-public-id'")
-        request_body = {
-            "name": name,
-            "color": color,
-            "archived": archived,
-        }
+        request_body = {"name": name, "color": color, "archived": archived}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/categories/{category_public_id}"
         query_params = {}
@@ -137,7 +118,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_category(self, category_public_id) -> Any:
+    async def delete_category(self, category_public_id) -> Any:
         """
         Deletes a category by its public ID.
 
@@ -162,7 +143,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_category_milestones(self, category_public_id) -> list[Any]:
+    async def list_category_milestones(self, category_public_id) -> list[Any]:
         """
         Lists all milestones associated with a specified category.
 
@@ -187,7 +168,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_category_objectives(self, category_public_id) -> list[Any]:
+    async def list_category_objectives(self, category_public_id) -> list[Any]:
         """
         Fetches and lists objectives for a given category based on its public ID.
 
@@ -211,9 +192,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_custom_fields(
-        self,
-    ) -> list[Any]:
+    async def list_custom_fields(self) -> list[Any]:
         """
         Retrieves a list of custom fields from the API.
 
@@ -235,7 +214,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_field(self, custom_field_public_id) -> dict[str, Any]:
+    async def get_custom_field(self, custom_field_public_id) -> dict[str, Any]:
         """
         Retrieves a custom field by its public ID.
 
@@ -260,7 +239,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_custom_field(
+    async def update_custom_field(
         self,
         custom_field_public_id,
         enabled=None,
@@ -312,7 +291,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_custom_field(self, custom_field_public_id) -> Any:
+    async def delete_custom_field(self, custom_field_public_id) -> Any:
         """
         Deletes a custom field specified by its public identifier.
 
@@ -337,9 +316,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_entity_templates(
-        self,
-    ) -> list[Any]:
+    async def list_entity_templates(self) -> list[Any]:
         """
         Retrieves a list of entity templates from an API endpoint.
 
@@ -361,9 +338,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_entity_template(
-        self, name, story_contents, author_id=None
-    ) -> dict[str, Any]:
+    async def create_entity_template(self, name, story_contents, author_id=None) -> dict[str, Any]:
         """
         Creates an entity template with the provided name, story contents, and optional author ID.
 
@@ -386,11 +361,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'name'")
         if story_contents is None:
             raise ValueError("Missing required parameter 'story_contents'")
-        request_body = {
-            "name": name,
-            "author_id": author_id,
-            "story_contents": story_contents,
-        }
+        request_body = {"name": name, "author_id": author_id, "story_contents": story_contents}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/entity-templates"
         query_params = {}
@@ -398,9 +369,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def disable_story_templates(
-        self,
-    ) -> Any:
+    async def disable_story_templates(self) -> Any:
         """
         Disables story entity templates by sending a PUT request to the API endpoint.
 
@@ -422,9 +391,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def enable_story_templates(
-        self,
-    ) -> Any:
+    async def enable_story_templates(self) -> Any:
         """
         Enables story templates by making a PUT request to the entity-templates endpoint.
 
@@ -446,7 +413,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_entity_template(self, entity_template_public_id) -> dict[str, Any]:
+    async def get_entity_template(self, entity_template_public_id) -> dict[str, Any]:
         """
         Retrieves a specific entity template by its public ID.
 
@@ -471,9 +438,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_entity_template(
-        self, entity_template_public_id, name=None, story_contents=None
-    ) -> dict[str, Any]:
+    async def update_entity_template(self, entity_template_public_id, name=None, story_contents=None) -> dict[str, Any]:
         """
         Updates an entity template using the provided public ID, optionally setting its name and story contents.
 
@@ -493,10 +458,7 @@ class ShortcutApp(APIApplication):
         """
         if entity_template_public_id is None:
             raise ValueError("Missing required parameter 'entity-template-public-id'")
-        request_body = {
-            "name": name,
-            "story_contents": story_contents,
-        }
+        request_body = {"name": name, "story_contents": story_contents}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
         query_params = {}
@@ -504,7 +466,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_entity_template(self, entity_template_public_id) -> Any:
+    async def delete_entity_template(self, entity_template_public_id) -> Any:
         """
         Deletes an entity template by its public ID.
 
@@ -528,9 +490,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_epic_workflow(
-        self,
-    ) -> dict[str, Any]:
+    async def get_epic_workflow(self) -> dict[str, Any]:
         """
         Retrieves the epic workflow configuration from the API.
 
@@ -552,7 +512,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_epics(self, includes_description=None) -> list[Any]:
+    async def list_epics(self, includes_description=None) -> list[Any]:
         """
         Fetches a list of epics from the API.
 
@@ -569,16 +529,12 @@ class ShortcutApp(APIApplication):
             list, epics, async-job, management, important
         """
         url = f"{self.base_url}/api/v3/epics"
-        query_params = {
-            k: v
-            for k, v in [("includes_description", includes_description)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_epic(
+    async def create_epic(
         self,
         name,
         description=None,
@@ -664,7 +620,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_epic(self, epic_public_id) -> dict[str, Any]:
+    async def get_epic(self, epic_public_id) -> dict[str, Any]:
         """
         Fetches an epic by its public ID
 
@@ -688,7 +644,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_epic(
+    async def update_epic(
         self,
         epic_public_id,
         description=None,
@@ -779,7 +735,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_epic(self, epic_public_id) -> Any:
+    async def delete_epic(self, epic_public_id) -> Any:
         """
         Deletes an epic by its public ID.
 
@@ -804,7 +760,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_epic_comments(self, epic_public_id) -> list[Any]:
+    async def list_epic_comments(self, epic_public_id) -> list[Any]:
         """
         Retrieves a list of comments for a specified epic.
 
@@ -829,14 +785,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_epic_comment(
-        self,
-        epic_public_id,
-        text,
-        author_id=None,
-        created_at=None,
-        updated_at=None,
-        external_id=None,
+    async def create_epic_comment(
+        self, epic_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None
     ) -> dict[str, Any]:
         """
         Creates a comment on an epic with the specified details.
@@ -876,7 +826,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_epic_comment(self, epic_public_id, comment_public_id) -> dict[str, Any]:
+    async def get_epic_comment(self, epic_public_id, comment_public_id) -> dict[str, Any]:
         """
         Retrieves a specific comment from an epic by their respective public IDs.
 
@@ -904,9 +854,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_epic_comment(
-        self, epic_public_id, comment_public_id, text
-    ) -> dict[str, Any]:
+    async def update_epic_comment(self, epic_public_id, comment_public_id, text) -> dict[str, Any]:
         """
         Updates the text of an existing comment on a specified epic.
 
@@ -931,9 +879,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {
-            "text": text,
-        }
+        request_body = {"text": text}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
         query_params = {}
@@ -941,15 +887,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_epic_comment_comment(
-        self,
-        epic_public_id,
-        comment_public_id,
-        text,
-        author_id=None,
-        created_at=None,
-        updated_at=None,
-        external_id=None,
+    async def create_epic_comment_comment(
+        self, epic_public_id, comment_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None
     ) -> dict[str, Any]:
         """
         Creates a reply to an existing comment on a specified epic, sending the reply to the backend API and returning the created comment data.
@@ -993,7 +932,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_epic_comment(self, epic_public_id, comment_public_id) -> Any:
+    async def delete_epic_comment(self, epic_public_id, comment_public_id) -> Any:
         """
         Deletes a specific comment from an epic using its public identifiers.
 
@@ -1021,7 +960,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_epic_stories(self, epic_public_id, includes_description=None) -> list[Any]:
+    async def list_epic_stories(self, epic_public_id, includes_description=None) -> list[Any]:
         """
         Retrieves a list of stories associated with a specific epic.
 
@@ -1042,16 +981,12 @@ class ShortcutApp(APIApplication):
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/stories"
-        query_params = {
-            k: v
-            for k, v in [("includes_description", includes_description)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def unlink_productboard_from_epic(self, epic_public_id) -> Any:
+    async def unlink_productboard_from_epic(self, epic_public_id) -> Any:
         """
         Unlinks a ProductBoard integration from an epic in the system.
 
@@ -1076,7 +1011,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_external_link_stories(self, external_link) -> list[Any]:
+    async def get_external_link_stories(self, external_link) -> list[Any]:
         """
         Retrieves stories associated with an external link.
 
@@ -1096,16 +1031,12 @@ class ShortcutApp(APIApplication):
         if external_link is None:
             raise ValueError("Missing required parameter 'external_link'")
         url = f"{self.base_url}/api/v3/external-link/stories"
-        query_params = {
-            k: v for k, v in [("external_link", external_link)] if v is not None
-        }
+        query_params = {k: v for k, v in [("external_link", external_link)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_files(
-        self,
-    ) -> list[Any]:
+    async def list_files(self) -> list[Any]:
         """
         Retrieves a list of files from the remote API endpoint.
 
@@ -1127,7 +1058,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_file(self, file_public_id) -> dict[str, Any]:
+    async def get_file(self, file_public_id) -> dict[str, Any]:
         """
         Retrieves a file based on its public ID, returning a dictionary containing file information.
 
@@ -1151,15 +1082,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_file(
-        self,
-        file_public_id,
-        description=None,
-        created_at=None,
-        updated_at=None,
-        name=None,
-        uploader_id=None,
-        external_id=None,
+    async def update_file(
+        self, file_public_id, description=None, created_at=None, updated_at=None, name=None, uploader_id=None, external_id=None
     ) -> dict[str, Any]:
         """
         Updates metadata for a file identified by its public ID.
@@ -1200,7 +1124,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_file(self, file_public_id) -> Any:
+    async def delete_file(self, file_public_id) -> Any:
         """
         Deletes a file identified by a public ID from the server.
 
@@ -1225,9 +1149,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_groups(
-        self,
-    ) -> list[Any]:
+    async def list_groups(self) -> list[Any]:
         """
         Retrieves a list of all groups from the API.
 
@@ -1249,16 +1171,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_group(
-        self,
-        name,
-        mention_name,
-        description=None,
-        member_ids=None,
-        workflow_ids=None,
-        color=None,
-        color_key=None,
-        display_icon_id=None,
+    async def create_group(
+        self, name, mention_name, description=None, member_ids=None, workflow_ids=None, color=None, color_key=None, display_icon_id=None
     ) -> dict[str, Any]:
         """
         Creates a new group with the specified configuration and returns the group's details.
@@ -1304,7 +1218,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_group(self, group_public_id) -> dict[str, Any]:
+    async def get_group(self, group_public_id) -> dict[str, Any]:
         """
         Retrieves information about a specific group using its public ID.
 
@@ -1329,7 +1243,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_group(
+    async def update_group(
         self,
         group_public_id,
         description=None,
@@ -1387,7 +1301,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_group_stories(self, group_public_id, limit=None, offset=None) -> list[Any]:
+    async def list_group_stories(self, group_public_id, limit=None, offset=None) -> list[Any]:
         """
         Retrieves a list of stories from a specific group.
 
@@ -1409,16 +1323,12 @@ class ShortcutApp(APIApplication):
         if group_public_id is None:
             raise ValueError("Missing required parameter 'group-public-id'")
         url = f"{self.base_url}/api/v3/groups/{group_public_id}/stories"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_iterations(
-        self,
-    ) -> list[Any]:
+    async def list_iterations(self) -> list[Any]:
         """
         Lists all available iterations from the API.
 
@@ -1440,15 +1350,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_iteration(
-        self,
-        name,
-        start_date,
-        end_date,
-        follower_ids=None,
-        group_ids=None,
-        labels=None,
-        description=None,
+    async def create_iteration(
+        self, name, start_date, end_date, follower_ids=None, group_ids=None, labels=None, description=None
     ) -> dict[str, Any]:
         """
         Creates a new iteration with the specified details and returns the server's response as a dictionary.
@@ -1494,9 +1397,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def disable_iterations(
-        self,
-    ) -> Any:
+    async def disable_iterations(self) -> Any:
         """
         Disables iterations by making a PUT request to the iterations API endpoint.
 
@@ -1518,9 +1419,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def enable_iterations(
-        self,
-    ) -> Any:
+    async def enable_iterations(self) -> Any:
         """
         Enable iterations for the API service.
 
@@ -1542,7 +1441,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_iteration(self, iteration_public_id) -> dict[str, Any]:
+    async def get_iteration(self, iteration_public_id) -> dict[str, Any]:
         """
         Retrieves iteration details using the specified public ID.
 
@@ -1567,7 +1466,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_iteration(
+    async def update_iteration(
         self,
         iteration_public_id,
         follower_ids=None,
@@ -1619,7 +1518,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_iteration(self, iteration_public_id) -> Any:
+    async def delete_iteration(self, iteration_public_id) -> Any:
         """
         Deletes a specific iteration identified by its public ID.
 
@@ -1644,9 +1543,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_iteration_stories(
-        self, iteration_public_id, includes_description=None
-    ) -> list[Any]:
+    async def list_iteration_stories(self, iteration_public_id, includes_description=None) -> list[Any]:
         """
         Retrieves a list of stories for a specified iteration, optionally including their descriptions.
 
@@ -1667,16 +1564,12 @@ class ShortcutApp(APIApplication):
         if iteration_public_id is None:
             raise ValueError("Missing required parameter 'iteration-public-id'")
         url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}/stories"
-        query_params = {
-            k: v
-            for k, v in [("includes_description", includes_description)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_key_result(self, key_result_public_id) -> dict[str, Any]:
+    async def get_key_result(self, key_result_public_id) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific key result using its public identifier.
 
@@ -1701,13 +1594,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_key_result(
-        self,
-        key_result_public_id,
-        name=None,
-        initial_observed_value=None,
-        observed_value=None,
-        target_value=None,
+    async def update_key_result(
+        self, key_result_public_id, name=None, initial_observed_value=None, observed_value=None, target_value=None
     ) -> dict[str, Any]:
         """
         Updates a key result with the provided details.
@@ -1743,7 +1631,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_labels(self, slim=None) -> list[Any]:
+    async def list_labels(self, slim=None) -> list[Any]:
         """
         Fetches a list of labels from the API.
 
@@ -1765,9 +1653,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_label(
-        self, name, description=None, color=None, external_id=None
-    ) -> dict[str, Any]:
+    async def create_label(self, name, description=None, color=None, external_id=None) -> dict[str, Any]:
         """
         Creates a new label with the specified attributes.
 
@@ -1789,12 +1675,7 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-            "description": description,
-            "color": color,
-            "external_id": external_id,
-        }
+        request_body = {"name": name, "description": description, "color": color, "external_id": external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/labels"
         query_params = {}
@@ -1802,7 +1683,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_label(self, label_public_id) -> dict[str, Any]:
+    async def get_label(self, label_public_id) -> dict[str, Any]:
         """
         Retrieves a label's details from the API using its public identifier.
 
@@ -1827,9 +1708,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_label(
-        self, label_public_id, name=None, description=None, color=None, archived=None
-    ) -> dict[str, Any]:
+    async def update_label(self, label_public_id, name=None, description=None, color=None, archived=None) -> dict[str, Any]:
         """
         Updates a label with the specified information.
 
@@ -1852,12 +1731,7 @@ class ShortcutApp(APIApplication):
         """
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
-        request_body = {
-            "name": name,
-            "description": description,
-            "color": color,
-            "archived": archived,
-        }
+        request_body = {"name": name, "description": description, "color": color, "archived": archived}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/labels/{label_public_id}"
         query_params = {}
@@ -1865,7 +1739,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_label(self, label_public_id) -> Any:
+    async def delete_label(self, label_public_id) -> Any:
         """
         Deletes a label identified by its public ID via an HTTP DELETE request.
 
@@ -1890,7 +1764,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_label_epics(self, label_public_id) -> list[Any]:
+    async def list_label_epics(self, label_public_id) -> list[Any]:
         """
         Retrieves a list of epics associated with a specific label.
 
@@ -1915,9 +1789,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_label_stories(
-        self, label_public_id, includes_description=None
-    ) -> list[Any]:
+    async def list_label_stories(self, label_public_id, includes_description=None) -> list[Any]:
         """
         Retrieves a list of stories associated with a specific label.
 
@@ -1938,18 +1810,12 @@ class ShortcutApp(APIApplication):
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
         url = f"{self.base_url}/api/v3/labels/{label_public_id}/stories"
-        query_params = {
-            k: v
-            for k, v in [("includes_description", includes_description)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_linked_files(
-        self,
-    ) -> list[Any]:
+    async def list_linked_files(self) -> list[Any]:
         """
         Retrieve a list of all linked files.
 
@@ -1971,17 +1837,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_linked_file(
-        self,
-        name,
-        type,
-        url,
-        description=None,
-        story_id=None,
-        thumbnail_url=None,
-        size=None,
-        uploader_id=None,
-        content_type=None,
+    async def create_linked_file(
+        self, name, type, url, description=None, story_id=None, thumbnail_url=None, size=None, uploader_id=None, content_type=None
     ) -> dict[str, Any]:
         """
         Creates a linked file with the specified attributes.
@@ -2031,7 +1888,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_linked_file(self, linked_file_public_id) -> dict[str, Any]:
+    async def get_linked_file(self, linked_file_public_id) -> dict[str, Any]:
         """
         Fetches details for a linked file by its public identifier.
 
@@ -2056,7 +1913,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_linked_file(
+    async def update_linked_file(
         self,
         linked_file_public_id,
         description=None,
@@ -2111,7 +1968,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_linked_file(self, linked_file_public_id) -> Any:
+    async def delete_linked_file(self, linked_file_public_id) -> Any:
         """
         Deletes a linked file by its public ID using the API.
 
@@ -2136,9 +1993,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_current_member_info(
-        self,
-    ) -> dict[str, Any]:
+    async def get_current_member_info(self) -> dict[str, Any]:
         """
         Retrieves information about the current authenticated member.
 
@@ -2160,9 +2015,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_milestones(
-        self,
-    ) -> list[Any]:
+    async def list_milestones(self) -> list[Any]:
         """
         Lists milestones by fetching them from a specified API endpoint.
 
@@ -2184,14 +2037,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_milestone(
-        self,
-        name,
-        description=None,
-        state=None,
-        started_at_override=None,
-        completed_at_override=None,
-        categories=None,
+    async def create_milestone(
+        self, name, description=None, state=None, started_at_override=None, completed_at_override=None, categories=None
     ) -> dict[str, Any]:
         """
         Creates a new milestone with the specified parameters.
@@ -2231,7 +2078,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_milestone(self, milestone_public_id) -> dict[str, Any]:
+    async def get_milestone(self, milestone_public_id) -> dict[str, Any]:
         """
         Retrieves a milestone resource by its public identifier.
 
@@ -2256,7 +2103,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_milestone(
+    async def update_milestone(
         self,
         milestone_public_id,
         description=None,
@@ -2314,7 +2161,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_milestone(self, milestone_public_id) -> Any:
+    async def delete_milestone(self, milestone_public_id) -> Any:
         """
         Deletes a milestone by its public ID.
 
@@ -2339,7 +2186,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_milestone_epics(self, milestone_public_id) -> list[Any]:
+    async def list_milestone_epics(self, milestone_public_id) -> list[Any]:
         """
         Retrieves a list of epics associated with a specified milestone.
 
@@ -2364,9 +2211,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_objectives(
-        self,
-    ) -> list[Any]:
+    async def list_objectives(self) -> list[Any]:
         """
         Retrieves a list of all objectives from the API endpoint.
 
@@ -2388,14 +2233,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_objective(
-        self,
-        name,
-        description=None,
-        state=None,
-        started_at_override=None,
-        completed_at_override=None,
-        categories=None,
+    async def create_objective(
+        self, name, description=None, state=None, started_at_override=None, completed_at_override=None, categories=None
     ) -> dict[str, Any]:
         """
         Creates a new objective resource with the specified attributes and returns the created objective's data.
@@ -2435,7 +2274,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_objective(self, objective_public_id) -> dict[str, Any]:
+    async def get_objective(self, objective_public_id) -> dict[str, Any]:
         """
         Retrieves an objective by its public ID from the API.
 
@@ -2460,7 +2299,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_objective(
+    async def update_objective(
         self,
         objective_public_id,
         description=None,
@@ -2518,7 +2357,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_objective(self, objective_public_id) -> Any:
+    async def delete_objective(self, objective_public_id) -> Any:
         """
         Deletes an objective by its public ID using an HTTP DELETE request.
 
@@ -2543,7 +2382,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_objective_epics(self, objective_public_id) -> list[Any]:
+    async def list_objective_epics(self, objective_public_id) -> list[Any]:
         """
         Retrieves a list of epics associated with a specific objective.
 
@@ -2568,9 +2407,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_projects(
-        self,
-    ) -> list[Any]:
+    async def list_projects(self) -> list[Any]:
         """
         Retrieves and lists all available projects from the API.
 
@@ -2592,7 +2429,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_project(
+    async def create_project(
         self,
         name,
         team_id,
@@ -2655,7 +2492,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project(self, project_public_id) -> dict[str, Any]:
+    async def get_project(self, project_public_id) -> dict[str, Any]:
         """
         Retrieves project information by its public ID.
 
@@ -2680,7 +2517,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_project(
+    async def update_project(
         self,
         project_public_id,
         description=None,
@@ -2738,7 +2575,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_project(self, project_public_id) -> Any:
+    async def delete_project(self, project_public_id) -> Any:
         """
         Deletes a project using its public ID.
 
@@ -2763,7 +2600,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_stories(self, project_public_id, includes_description=None) -> list[Any]:
+    async def list_stories(self, project_public_id, includes_description=None) -> list[Any]:
         """
         Retrieves a list of stories for a specific project, with optional inclusion of story descriptions.
 
@@ -2784,18 +2621,12 @@ class ShortcutApp(APIApplication):
         if project_public_id is None:
             raise ValueError("Missing required parameter 'project-public-id'")
         url = f"{self.base_url}/api/v3/projects/{project_public_id}/stories"
-        query_params = {
-            k: v
-            for k, v in [("includes_description", includes_description)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_repositories(
-        self,
-    ) -> list[Any]:
+    async def list_repositories(self) -> list[Any]:
         """
         Lists all repositories from the API.
 
@@ -2817,7 +2648,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_repository(self, repo_public_id) -> dict[str, Any]:
+    async def get_repository(self, repo_public_id) -> dict[str, Any]:
         """
         Retrieves detailed information about a repository by its public ID.
 
@@ -2842,9 +2673,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search(
-        self, query, page_size=None, detail=None, next=None, entity_types=None
-    ) -> dict[str, Any]:
+    async def search(self, query, page_size=None, detail=None, next=None, entity_types=None) -> dict[str, Any]:
         """
         Performs a search operation based on the provided query string and optional parameters like page size and entity types.
 
@@ -2869,22 +2698,14 @@ class ShortcutApp(APIApplication):
         url = f"{self.base_url}/api/v3/search"
         query_params = {
             k: v
-            for k, v in [
-                ("query", query),
-                ("page_size", page_size),
-                ("detail", detail),
-                ("next", next),
-                ("entity_types", entity_types),
-            ]
+            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_epics(
-        self, query, page_size=None, detail=None, next=None, entity_types=None
-    ) -> dict[str, Any]:
+    async def search_epics(self, query, page_size=None, detail=None, next=None, entity_types=None) -> dict[str, Any]:
         """
         Searches for epics based on the provided query parameters.
 
@@ -2910,22 +2731,14 @@ class ShortcutApp(APIApplication):
         url = f"{self.base_url}/api/v3/search/epics"
         query_params = {
             k: v
-            for k, v in [
-                ("query", query),
-                ("page_size", page_size),
-                ("detail", detail),
-                ("next", next),
-                ("entity_types", entity_types),
-            ]
+            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_iterations(
-        self, query, page_size=None, detail=None, next=None, entity_types=None
-    ) -> dict[str, Any]:
+    async def search_iterations(self, query, page_size=None, detail=None, next=None, entity_types=None) -> dict[str, Any]:
         """
         Searches for iterations based on a query and additional parameters.
 
@@ -2951,22 +2764,14 @@ class ShortcutApp(APIApplication):
         url = f"{self.base_url}/api/v3/search/iterations"
         query_params = {
             k: v
-            for k, v in [
-                ("query", query),
-                ("page_size", page_size),
-                ("detail", detail),
-                ("next", next),
-                ("entity_types", entity_types),
-            ]
+            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_milestones(
-        self, query, page_size=None, detail=None, next=None, entity_types=None
-    ) -> dict[str, Any]:
+    async def search_milestones(self, query, page_size=None, detail=None, next=None, entity_types=None) -> dict[str, Any]:
         """
         Searches for milestones matching the provided query and returns the results as a dictionary.
 
@@ -2992,22 +2797,14 @@ class ShortcutApp(APIApplication):
         url = f"{self.base_url}/api/v3/search/milestones"
         query_params = {
             k: v
-            for k, v in [
-                ("query", query),
-                ("page_size", page_size),
-                ("detail", detail),
-                ("next", next),
-                ("entity_types", entity_types),
-            ]
+            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_objectives(
-        self, query, page_size=None, detail=None, next=None, entity_types=None
-    ) -> dict[str, Any]:
+    async def search_objectives(self, query, page_size=None, detail=None, next=None, entity_types=None) -> dict[str, Any]:
         """
         Searches for objectives based on the specified query and returns the search results.
 
@@ -3033,22 +2830,14 @@ class ShortcutApp(APIApplication):
         url = f"{self.base_url}/api/v3/search/objectives"
         query_params = {
             k: v
-            for k, v in [
-                ("query", query),
-                ("page_size", page_size),
-                ("detail", detail),
-                ("next", next),
-                ("entity_types", entity_types),
-            ]
+            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def search_stories(
-        self, query, page_size=None, detail=None, next=None, entity_types=None
-    ) -> dict[str, Any]:
+    async def search_stories(self, query, page_size=None, detail=None, next=None, entity_types=None) -> dict[str, Any]:
         """
         Searches for stories matching the given query and optional filters, returning paginated results from the stories API.
 
@@ -3074,20 +2863,14 @@ class ShortcutApp(APIApplication):
         url = f"{self.base_url}/api/v3/search/stories"
         query_params = {
             k: v
-            for k, v in [
-                ("query", query),
-                ("page_size", page_size),
-                ("detail", detail),
-                ("next", next),
-                ("entity_types", entity_types),
-            ]
+            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_story(
+    async def create_story(
         self,
         name,
         description=None,
@@ -3209,7 +2992,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_multiple_stories(
+    async def update_multiple_stories(
         self,
         story_ids,
         archived=None,
@@ -3307,7 +3090,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_multiple_stories(self, stories) -> list[Any]:
+    async def create_multiple_stories(self, stories) -> list[Any]:
         """
         Creates multiple stories in bulk using the API.
 
@@ -3326,9 +3109,7 @@ class ShortcutApp(APIApplication):
         """
         if stories is None:
             raise ValueError("Missing required parameter 'stories'")
-        request_body = {
-            "stories": stories,
-        }
+        request_body = {"stories": stories}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/bulk"
         query_params = {}
@@ -3336,7 +3117,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_story_from_template(
+    async def create_story_from_template(
         self,
         story_template_id,
         description=None,
@@ -3499,7 +3280,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_stories_old(
+    async def search_stories_old(
         self,
         archived=None,
         owner_id=None,
@@ -3609,7 +3390,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_story(self, story_public_id) -> dict[str, Any]:
+    async def get_story(self, story_public_id) -> dict[str, Any]:
         """
         Retrieves a story from the API based on its public ID
 
@@ -3633,7 +3414,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_story(
+    async def update_story(
         self,
         story_public_id,
         description=None,
@@ -3745,7 +3526,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_story(self, story_public_id) -> Any:
+    async def delete_story(self, story_public_id) -> Any:
         """
         Deletes a story using its public ID.
 
@@ -3770,7 +3551,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_story_comment(self, story_public_id) -> list[Any]:
+    async def list_story_comment(self, story_public_id) -> list[Any]:
         """
         Retrieves a list of comments for a specific story.
 
@@ -3795,15 +3576,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_story_comment(
-        self,
-        story_public_id,
-        text,
-        author_id=None,
-        created_at=None,
-        updated_at=None,
-        external_id=None,
-        parent_id=None,
+    async def create_story_comment(
+        self, story_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None, parent_id=None
     ) -> dict[str, Any]:
         """
         Creates a new comment on a story by sending a POST request with the comment details to the specified API endpoint.
@@ -3845,7 +3619,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_story_comment(self, story_public_id, comment_public_id) -> dict[str, Any]:
+    async def get_story_comment(self, story_public_id, comment_public_id) -> dict[str, Any]:
         """
         Retrieves a specific comment from a story using the API.
 
@@ -3873,9 +3647,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_story_comment(
-        self, story_public_id, comment_public_id, text
-    ) -> dict[str, Any]:
+    async def update_story_comment(self, story_public_id, comment_public_id, text) -> dict[str, Any]:
         """
         Updates a story comment with new text based on the provided story and comment public IDs.
 
@@ -3899,9 +3671,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {
-            "text": text,
-        }
+        request_body = {"text": text}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
         query_params = {}
@@ -3909,7 +3679,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_story_comment(self, story_public_id, comment_public_id) -> Any:
+    async def delete_story_comment(self, story_public_id, comment_public_id) -> Any:
         """
         Deletes a specific comment from a story using the provided story and comment public IDs.
 
@@ -3937,9 +3707,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_story_reaction(
-        self, story_public_id, comment_public_id, emoji
-    ) -> list[Any]:
+    async def create_story_reaction(self, story_public_id, comment_public_id, emoji) -> list[Any]:
         """
         Creates a reaction with an emoji to a comment on a story.
 
@@ -3963,9 +3731,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if emoji is None:
             raise ValueError("Missing required parameter 'emoji'")
-        request_body = {
-            "emoji": emoji,
-        }
+        request_body = {"emoji": emoji}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/reactions"
         query_params = {}
@@ -3973,9 +3739,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def unlink_comment_thread_from_slack(
-        self, story_public_id, comment_public_id
-    ) -> dict[str, Any]:
+    async def unlink_comment_thread_from_slack(self, story_public_id, comment_public_id) -> dict[str, Any]:
         """
         Unlinks a comment thread from Slack for a specific story.
 
@@ -4003,7 +3767,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def story_history(self, story_public_id) -> list[Any]:
+    async def story_history(self, story_public_id) -> list[Any]:
         """
         Retrieves the full change history for a specified story by its public ID.
 
@@ -4028,15 +3792,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_task(
-        self,
-        story_public_id,
-        description,
-        complete=None,
-        owner_ids=None,
-        external_id=None,
-        created_at=None,
-        updated_at=None,
+    async def create_task(
+        self, story_public_id, description, complete=None, owner_ids=None, external_id=None, created_at=None, updated_at=None
     ) -> dict[str, Any]:
         """
         Creates a task within a specified story.
@@ -4079,7 +3836,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_task(self, story_public_id, task_public_id) -> dict[str, Any]:
+    async def get_task(self, story_public_id, task_public_id) -> dict[str, Any]:
         """
         Gets task details for a specific task within a story.
 
@@ -4107,15 +3864,8 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_task(
-        self,
-        story_public_id,
-        task_public_id,
-        description=None,
-        owner_ids=None,
-        complete=None,
-        before_id=None,
-        after_id=None,
+    async def update_task(
+        self, story_public_id, task_public_id, description=None, owner_ids=None, complete=None, before_id=None, after_id=None
     ) -> dict[str, Any]:
         """
         Updates the specified task within a story, modifying fields such as description, owners, completion status, and position.
@@ -4157,7 +3907,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_task(self, story_public_id, task_public_id) -> Any:
+    async def delete_task(self, story_public_id, task_public_id) -> Any:
         """
         Deletes a task associated with a story based on their respective public IDs.
 
@@ -4184,7 +3934,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_story_link(self, verb, subject_id, object_id) -> dict[str, Any]:
+    async def create_story_link(self, verb, subject_id, object_id) -> dict[str, Any]:
         """
         Creates a story link between a subject and an object with the specified verb by sending a POST request to the story-links API endpoint.
 
@@ -4209,11 +3959,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'subject_id'")
         if object_id is None:
             raise ValueError("Missing required parameter 'object_id'")
-        request_body = {
-            "verb": verb,
-            "subject_id": subject_id,
-            "object_id": object_id,
-        }
+        request_body = {"verb": verb, "subject_id": subject_id, "object_id": object_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/story-links"
         query_params = {}
@@ -4221,7 +3967,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_story_link(self, story_link_public_id) -> dict[str, Any]:
+    async def get_story_link(self, story_link_public_id) -> dict[str, Any]:
         """
         Retrieves a specific story link by its public ID.
 
@@ -4246,9 +3992,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_story_link(
-        self, story_link_public_id, verb=None, subject_id=None, object_id=None
-    ) -> dict[str, Any]:
+    async def update_story_link(self, story_link_public_id, verb=None, subject_id=None, object_id=None) -> dict[str, Any]:
         """
         Updates an existing story link with new attributes.
 
@@ -4270,11 +4014,7 @@ class ShortcutApp(APIApplication):
         """
         if story_link_public_id is None:
             raise ValueError("Missing required parameter 'story-link-public-id'")
-        request_body = {
-            "verb": verb,
-            "subject_id": subject_id,
-            "object_id": object_id,
-        }
+        request_body = {"verb": verb, "subject_id": subject_id, "object_id": object_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
         query_params = {}
@@ -4282,7 +4022,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_story_link(self, story_link_public_id) -> Any:
+    async def delete_story_link(self, story_link_public_id) -> Any:
         """
         Deletes a story link by its public ID.
 
@@ -4307,9 +4047,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_workflows(
-        self,
-    ) -> list[Any]:
+    async def list_workflows(self) -> list[Any]:
         """
         Retrieves a list of available workflows from the API.
 
@@ -4331,7 +4069,7 @@ class ShortcutApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_workflow(self, workflow_public_id) -> dict[str, Any]:
+    async def get_workflow(self, workflow_public_id) -> dict[str, Any]:
         """
         Retrieves detailed information about a workflow given its public ID.
 

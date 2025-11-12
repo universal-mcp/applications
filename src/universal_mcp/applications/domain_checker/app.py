@@ -1,42 +1,18 @@
 import logging
 import sys
 from typing import Any
-
 import dns.resolver
 import requests
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-# Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler(sys.stderr)],
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", handlers=[logging.StreamHandler(sys.stderr)]
 )
-
 logger = logging.getLogger("domain_checker")
-
-# Constants
 RDAP_BOOTSTRAP_URL = "https://data.iana.org/rdap/dns.json"
 USER_AGENT = "DomainCheckerBot/1.0"
-
-# Top TLDs to check
-TOP_TLDS = [
-    "com",
-    "net",
-    "org",
-    "io",
-    "co",
-    "app",
-    "dev",
-    "ai",
-    "me",
-    "info",
-    "xyz",
-    "online",
-    "site",
-    "tech",
-]
+TOP_TLDS = ["com", "net", "org", "io", "co", "app", "dev", "ai", "me", "info", "xyz", "online", "site", "tech"]
 
 
 class DomainCheckerApp(APIApplication):
@@ -52,22 +28,16 @@ class DomainCheckerApp(APIApplication):
         Fetches a domain's registration details from Registration Data Access Protocol (RDAP) servers. It dynamically selects the appropriate server URL based on the domain's TLD, with special handling for common ones. Returns the JSON data as a dictionary or None if the request fails or data is unavailable.
         """
         try:
-            # Special case for .ch and .li domains
             tld = domain.split(".")[-1].lower()
             if tld in ["ch", "li"]:
                 rdap_url = f"https://rdap.nic.{tld}/domain/{domain}"
-            # Use common RDAP servers for known TLDs
             elif tld in ["com", "net"]:
                 rdap_url = f"https://rdap.verisign.com/{tld}/v1/domain/{domain}"
             elif tld == "org":
-                rdap_url = (
-                    f"https://rdap.publicinterestregistry.org/rdap/domain/{domain}"
-                )
+                rdap_url = f"https://rdap.publicinterestregistry.org/rdap/domain/{domain}"
             else:
                 rdap_url = f"https://rdap.org/domain/{domain}"
-
             headers = {"Accept": "application/rdap+json", "User-Agent": USER_AGENT}
-
             response = requests.get(rdap_url, headers=headers, timeout=5)
             if response.status_code == 200:
                 return response.json()
@@ -122,21 +92,13 @@ class DomainCheckerApp(APIApplication):
             domain, availability, registration, dns, rdap, important
         """
         logger.info(f"Checking domain: {domain}")
-
-        # First check DNS
         has_dns = await self._check_dns(domain)
-
         if has_dns:
-            # Domain exists, get RDAP data if possible
             rdap_data = await self._get_rdap_data(domain)
-
             if rdap_data:
-                # Extract data from RDAP
                 registrar = "Unknown"
                 reg_date = "Unknown"
                 exp_date = "Unknown"
-
-                # Extract registrar
                 entities = rdap_data.get("entities", [])
                 for entity in entities:
                     if "registrar" in entity.get("roles", []):
@@ -146,15 +108,12 @@ class DomainCheckerApp(APIApplication):
                                 if entry[0] in ["fn", "org"] and len(entry) > 3:
                                     registrar = entry[3]
                                     break
-
-                # Extract dates
                 events = rdap_data.get("events", [])
                 for event in events:
                     if event.get("eventAction") == "registration":
                         reg_date = event.get("eventDate", "Unknown")
                     elif event.get("eventAction") == "expiration":
                         exp_date = event.get("eventDate", "Unknown")
-
                 return {
                     "domain": domain,
                     "status": "Registered",
@@ -175,8 +134,6 @@ class DomainCheckerApp(APIApplication):
                     "rdap_data_available": False,
                     "note": "Domain has DNS records but RDAP data couldn't be retrieved",
                 }
-
-        # Try RDAP one more time even if DNS not found
         rdap_data = await self._get_rdap_data(domain)
         if rdap_data:
             return {
@@ -189,8 +146,6 @@ class DomainCheckerApp(APIApplication):
                 "rdap_data_available": True,
                 "note": "Domain found in RDAP registry",
             }
-
-        # If we get here, the domain is likely available
         return {
             "domain": domain,
             "status": "Available",
@@ -233,17 +188,12 @@ class DomainCheckerApp(APIApplication):
             tld, keyword, domain-search, availability, bulk-check, important
         """
         logger.info(f"Checking keyword: {keyword} across TLDs")
-
         available = []
         taken = []
-
-        # Check each TLD in sequence
         for tld in TOP_TLDS:
             domain = f"{keyword}.{tld}"
             has_dns = await self._check_dns(domain)
-
             if not has_dns:
-                # Double-check with RDAP if no DNS
                 rdap_data = await self._get_rdap_data(domain)
                 if not rdap_data:
                     available.append(domain)
@@ -251,7 +201,6 @@ class DomainCheckerApp(APIApplication):
                     taken.append(domain)
             else:
                 taken.append(domain)
-
         return {
             "keyword": keyword,
             "tlds_checked": len(TOP_TLDS),

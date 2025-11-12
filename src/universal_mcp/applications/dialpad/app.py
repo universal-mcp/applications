@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,9 +8,7 @@ class DialpadApp(APIApplication):
         super().__init__(name="dialpad", integration=integration, **kwargs)
         self.base_url = "https://dialpad.com/api/v2"
 
-    def accesscontrolpolicies_assign(
-        self, id, target_id=None, target_type=None, user_id=None
-    ) -> dict[str, Any]:
+    async def accesscontrolpolicies_assign(self, id, target_id=None, target_type=None, user_id=None) -> dict[str, Any]:
         """
         Assigns an access control policy to a target entity using the provided policy ID and returns a success status.
 
@@ -29,11 +26,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "target_id": target_id,
-            "target_type": target_type,
-            "user_id": user_id,
-        }
+        request_body = {"target_id": target_id, "target_type": target_type, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}/assign"
         query_params = {}
@@ -41,7 +34,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_list(self, cursor=None) -> dict[str, Any]:
+    async def accesscontrolpolicies_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of access control policies using the "GET" method, optionally paginating results with a cursor parameter.
 
@@ -60,13 +53,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_create(
-        self,
-        description=None,
-        name=None,
-        owner_id=None,
-        permission_sets=None,
-        target_type=None,
+    async def accesscontrolpolicies_create(
+        self, description=None, name=None, owner_id=None, permission_sets=None, target_type=None
     ) -> dict[str, Any]:
         """
         Creates a new access control policy using JSON data and returns a successful response upon completion.
@@ -102,7 +90,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_delete(self, id) -> dict[str, Any]:
+    async def accesscontrolpolicies_delete(self, id) -> dict[str, Any]:
         """
         Deletes the specified access control policy identified by the provided ID.
 
@@ -123,7 +111,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_get(self, id) -> dict[str, Any]:
+    async def accesscontrolpolicies_get(self, id) -> dict[str, Any]:
         """
         Retrieves a specific access control policy by its ID using the GET method.
 
@@ -144,14 +132,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_update(
-        self,
-        id,
-        description=None,
-        name=None,
-        permission_sets=None,
-        state=None,
-        user_id=None,
+    async def accesscontrolpolicies_update(
+        self, id, description=None, name=None, permission_sets=None, state=None, user_id=None
     ) -> dict[str, Any]:
         """
         Partially updates an existing access control policy by its ID using a JSON payload.
@@ -176,13 +158,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "description": description,
-            "name": name,
-            "permission_sets": permission_sets,
-            "state": state,
-            "user_id": user_id,
-        }
+        request_body = {"description": description, "name": name, "permission_sets": permission_sets, "state": state, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}"
         query_params = {}
@@ -190,7 +166,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_assignments(self, id, cursor=None) -> dict[str, Any]:
+    async def accesscontrolpolicies_assignments(self, id, cursor=None) -> dict[str, Any]:
         """
         Retrieves the assignments of an access control policy identified by the specified ID.
 
@@ -212,9 +188,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def accesscontrolpolicies_unassign(
-        self, id, target_id=None, target_type=None, unassign_all=None, user_id=None
-    ) -> dict[str, Any]:
+    async def accesscontrolpolicies_unassign(self, id, target_id=None, target_type=None, unassign_all=None, user_id=None) -> dict[str, Any]:
         """
         Unassigns an access control policy from a specified ID using a POST request, allowing for the removal of policy assignments based on the provided ID.
 
@@ -233,12 +207,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "target_id": target_id,
-            "target_type": target_type,
-            "unassign_all": unassign_all,
-            "user_id": user_id,
-        }
+        request_body = {"target_id": target_id, "target_type": target_type, "unassign_all": unassign_all, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/accesscontrolpolicies/{id}/unassign"
         query_params = {}
@@ -246,7 +215,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def app_settings_get(self, target_id=None, target_type=None) -> dict[str, Any]:
+    async def app_settings_get(self, target_id=None, target_type=None) -> dict[str, Any]:
         """
         Retrieves application settings using the provided target ID and type from version 2 of the API.
 
@@ -261,16 +230,12 @@ class DialpadApp(APIApplication):
             app
         """
         url = f"{self.base_url}/api/v2/app/settings"
-        query_params = {
-            k: v
-            for k, v in [("target_id", target_id), ("target_type", target_type)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("target_id", target_id), ("target_type", target_type)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def blockednumbers_add(self, numbers=None) -> Any:
+    async def blockednumbers_add(self, numbers=None) -> Any:
         """
         Adds a phone number to the blocked numbers list using a JSON-formatted request body and returns a success status.
 
@@ -283,9 +248,7 @@ class DialpadApp(APIApplication):
         Tags:
             blockednumbers
         """
-        request_body = {
-            "numbers": numbers,
-        }
+        request_body = {"numbers": numbers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/blockednumbers/add"
         query_params = {}
@@ -293,7 +256,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def blockednumbers_get(self, number) -> dict[str, Any]:
+    async def blockednumbers_get(self, number) -> dict[str, Any]:
         """
         Retrieves information about a specific blocked number identified by the given number parameter.
 
@@ -314,7 +277,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def blockednumbers_remove(self, numbers=None) -> Any:
+    async def blockednumbers_remove(self, numbers=None) -> Any:
         """
         Removes a blocked number using the POST method, sending data in JSON format to the defined API endpoint and returns a status response.
 
@@ -327,9 +290,7 @@ class DialpadApp(APIApplication):
         Tags:
             blockednumbers
         """
-        request_body = {
-            "numbers": numbers,
-        }
+        request_body = {"numbers": numbers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/blockednumbers/remove"
         query_params = {}
@@ -337,7 +298,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def blockednumbers_list(self, cursor=None) -> dict[str, Any]:
+    async def blockednumbers_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of blocked numbers using the provided cursor for pagination.
 
@@ -356,7 +317,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_participants_add(self, id, participant=None) -> dict[str, Any]:
+    async def call_participants_add(self, id, participant=None) -> dict[str, Any]:
         """
         Adds participants to a call using the provided call ID.
 
@@ -372,9 +333,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "participant": participant,
-        }
+        request_body = {"participant": participant}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/call/{id}/participants/add"
         query_params = {}
@@ -382,7 +341,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_get_call_info(self, id) -> dict[str, Any]:
+    async def call_get_call_info(self, id) -> dict[str, Any]:
         """
         Retrieves details of a call resource by its unique identifier.
 
@@ -403,13 +362,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_initiate_ivr_call(
-        self,
-        custom_data=None,
-        outbound_caller_id=None,
-        phone_number=None,
-        target_id=None,
-        target_type=None,
+    async def call_initiate_ivr_call(
+        self, custom_data=None, outbound_caller_id=None, phone_number=None, target_id=None, target_type=None
     ) -> dict[str, Any]:
         """
         Initiates an outbound call to ring an IVR workflow by sending a POST request and returns a confirmation upon success[1].
@@ -441,14 +395,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_list(
-        self,
-        cursor=None,
-        started_after=None,
-        started_before=None,
-        target_id=None,
-        target_type=None,
-    ) -> dict[str, Any]:
+    async def call_list(self, cursor=None, started_after=None, started_before=None, target_id=None, target_type=None) -> dict[str, Any]:
         """
         Retrieves a list of calls using the provided query parameters for filtering by cursor, start time, end time, target ID, and target type, and returns the results.
 
@@ -481,7 +428,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_call(
+    async def call_call(
         self,
         custom_data=None,
         device_id=None,
@@ -530,9 +477,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_transfer_call(
-        self, id, custom_data=None, to=None, transfer_state=None
-    ) -> dict[str, Any]:
+    async def call_transfer_call(self, id, custom_data=None, to=None, transfer_state=None) -> dict[str, Any]:
         """
         Transfers a call identified by the provided ID using the POST method, sending the request body in JSON format.
 
@@ -551,11 +496,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "custom_data": custom_data,
-            "to": to,
-            "transfer_state": transfer_state,
-        }
+        request_body = {"custom_data": custom_data, "to": to, "transfer_state": transfer_state}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/call/{id}/transfer"
         query_params = {}
@@ -563,7 +504,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_unpark(self, id, user_id=None) -> dict[str, Any]:
+    async def call_unpark(self, id, user_id=None) -> dict[str, Any]:
         """
         Unparks a call with the specified ID using the POST method.
 
@@ -579,9 +520,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "user_id": user_id,
-        }
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/call/{id}/unpark"
         query_params = {}
@@ -589,7 +528,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_actions_hangup(self, id) -> Any:
+    async def call_actions_hangup(self, id) -> Any:
         """
         Hangs up a call with the specified ID using the PUT method.
 
@@ -610,7 +549,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_put_call_labels(self, id, labels=None) -> dict[str, Any]:
+    async def call_put_call_labels(self, id, labels=None) -> dict[str, Any]:
         """
         Updates the labels of a call with the specified ID using the provided JSON data.
 
@@ -626,9 +565,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "labels": labels,
-        }
+        request_body = {"labels": labels}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/call/{id}/labels"
         query_params = {}
@@ -636,7 +573,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_callback(self, call_center_id=None, phone_number=None) -> dict[str, Any]:
+    async def call_callback(self, call_center_id=None, phone_number=None) -> dict[str, Any]:
         """
         Registers a callback endpoint using a POST request to the "/api/v2/callback" path, accepting a JSON payload in the request body, and returns a successful response upon registration.
 
@@ -650,10 +587,7 @@ class DialpadApp(APIApplication):
         Tags:
             callback
         """
-        request_body = {
-            "call_center_id": call_center_id,
-            "phone_number": phone_number,
-        }
+        request_body = {"call_center_id": call_center_id, "phone_number": phone_number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callback"
         query_params = {}
@@ -661,9 +595,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_validate_callback(
-        self, call_center_id=None, phone_number=None
-    ) -> dict[str, Any]:
+    async def call_validate_callback(self, call_center_id=None, phone_number=None) -> dict[str, Any]:
         """
         Validates a callback using the provided JSON data and returns a success response if the validation is successful.
 
@@ -677,10 +609,7 @@ class DialpadApp(APIApplication):
         Tags:
             callback
         """
-        request_body = {
-            "call_center_id": call_center_id,
-            "phone_number": phone_number,
-        }
+        request_body = {"call_center_id": call_center_id, "phone_number": phone_number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callback/validate"
         query_params = {}
@@ -688,9 +617,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_listall(
-        self, cursor=None, office_id=None, name_search=None
-    ) -> dict[str, Any]:
+    async def callcenters_listall(self, cursor=None, office_id=None, name_search=None) -> dict[str, Any]:
         """
         Retrieves a list of call centers using the specified query parameters, such as cursor for pagination, office_id for filtering by office, and name_search for searching by name.
 
@@ -706,20 +633,12 @@ class DialpadApp(APIApplication):
             callcenters
         """
         url = f"{self.base_url}/api/v2/callcenters"
-        query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("office_id", office_id),
-                ("name_search", name_search),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id), ("name_search", name_search)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def callcenters_create(
+    async def callcenters_create(
         self,
         advanced_settings=None,
         alerts=None,
@@ -795,7 +714,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_delete(self, id) -> dict[str, Any]:
+    async def callcenters_delete(self, id) -> dict[str, Any]:
         """
         Deletes a call center identified by the specified ID.
 
@@ -816,7 +735,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_get(self, id) -> dict[str, Any]:
+    async def callcenters_get(self, id) -> dict[str, Any]:
         """
         Retrieves details for the specified call center identified by its unique ID.
 
@@ -837,7 +756,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_update(
+    async def callcenters_update(
         self,
         id,
         advanced_settings=None,
@@ -914,7 +833,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_status(self, id) -> dict[str, Any]:
+    async def callcenters_status(self, id) -> dict[str, Any]:
         """
         Retrieves the status of a call center identified by the provided ID.
 
@@ -935,7 +854,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_get_dutystatus(self, id) -> dict[str, Any]:
+    async def callcenters_operators_get_dutystatus(self, id) -> dict[str, Any]:
         """
         Retrieves the duty status of a specific call center operator identified by the provided ID.
 
@@ -956,9 +875,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_dutystatus(
-        self, id, duty_status_reason=None, on_duty=None
-    ) -> dict[str, Any]:
+    async def callcenters_operators_dutystatus(self, id, duty_status_reason=None, on_duty=None) -> dict[str, Any]:
         """
         Updates the duty status of a call center operator with the specified ID using the PATCH method and returns a 200 OK response upon success.
 
@@ -977,10 +894,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "duty_status_reason": duty_status_reason,
-            "on_duty": on_duty,
-        }
+        request_body = {"duty_status_reason": duty_status_reason, "on_duty": on_duty}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callcenters/operators/{id}/dutystatus"
         query_params = {}
@@ -988,9 +902,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_get_skilllevel(
-        self, call_center_id, user_id
-    ) -> dict[str, Any]:
+    async def callcenters_operators_get_skilllevel(self, call_center_id, user_id) -> dict[str, Any]:
         """
         Retrieves the skill information for a specific operator associated with a given call center.
 
@@ -1014,9 +926,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_skilllevel(
-        self, call_center_id, user_id, skill_level=None
-    ) -> dict[str, Any]:
+    async def callcenters_operators_skilllevel(self, call_center_id, user_id, skill_level=None) -> dict[str, Any]:
         """
         Updates the skill information for a specific operator in a call center using the PATCH method, requiring a JSON payload with the updated details.
 
@@ -1035,9 +945,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'call_center_id'")
         if user_id is None:
             raise ValueError("Missing required parameter 'user_id'")
-        request_body = {
-            "skill_level": skill_level,
-        }
+        request_body = {"skill_level": skill_level}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callcenters/{call_center_id}/operators/{user_id}/skill"
         query_params = {}
@@ -1045,7 +953,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_delete(self, id, user_id=None) -> dict[str, Any]:
+    async def callcenters_operators_delete(self, id, user_id=None) -> dict[str, Any]:
         """
         Deletes an operator associated with a specific call center identified by the provided ID.
 
@@ -1061,9 +969,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "user_id": user_id,
-        }
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callcenters/{id}/operators"
         query_params = {}
@@ -1071,7 +977,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_get(self, id) -> dict[str, Any]:
+    async def callcenters_operators_get(self, id) -> dict[str, Any]:
         """
         Retrieves the list of operators associated with the specified call center by its ID.
 
@@ -1092,14 +998,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_operators_post(
-        self,
-        id,
-        keep_paid_numbers=None,
-        license_type=None,
-        role=None,
-        skill_level=None,
-        user_id=None,
+    async def callcenters_operators_post(
+        self, id, keep_paid_numbers=None, license_type=None, role=None, skill_level=None, user_id=None
     ) -> dict[str, Any]:
         """
         Adds a new operator to the call center specified by the given ID using a JSON request body.
@@ -1137,7 +1037,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def calllabel_list(self, limit=None) -> dict[str, Any]:
+    async def calllabel_list(self, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of call labels, optionally limited by the specified number of results.
 
@@ -1156,9 +1056,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_review_share_link_create(
-        self, call_id=None, privacy=None
-    ) -> dict[str, Any]:
+    async def call_review_share_link_create(self, call_id=None, privacy=None) -> dict[str, Any]:
         """
         Creates a shareable link for a call review, returning the generated link upon successful creation.
 
@@ -1172,10 +1070,7 @@ class DialpadApp(APIApplication):
         Tags:
             callreviewsharelink
         """
-        request_body = {
-            "call_id": call_id,
-            "privacy": privacy,
-        }
+        request_body = {"call_id": call_id, "privacy": privacy}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callreviewsharelink"
         query_params = {}
@@ -1183,7 +1078,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_review_share_link_delete(self, id) -> dict[str, Any]:
+    async def call_review_share_link_delete(self, id) -> dict[str, Any]:
         """
         Deletes a call review share link identified by the provided ID using the DELETE method.
 
@@ -1204,7 +1099,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_review_share_link_get(self, id) -> dict[str, Any]:
+    async def call_review_share_link_get(self, id) -> dict[str, Any]:
         """
         Retrieves a share link for a call review by its ID using the Dialpad API.
 
@@ -1225,7 +1120,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def call_review_share_link_update(self, id, privacy=None) -> dict[str, Any]:
+    async def call_review_share_link_update(self, id, privacy=None) -> dict[str, Any]:
         """
         Updates a call review share link for the specified ID using the provided JSON data.
 
@@ -1241,9 +1136,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "privacy": privacy,
-        }
+        request_body = {"privacy": privacy}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callreviewsharelink/{id}"
         query_params = {}
@@ -1251,7 +1144,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callrouters_list(self, cursor=None, office_id=None) -> dict[str, Any]:
+    async def callrouters_list(self, cursor=None, office_id=None) -> dict[str, Any]:
         """
         Retrieves a list of call routers, optionally filtered by office ID and paginated using a cursor.
 
@@ -1266,24 +1159,13 @@ class DialpadApp(APIApplication):
             callrouters
         """
         url = f"{self.base_url}/api/v2/callrouters"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("office_id", office_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def callrouters_create(
-        self,
-        default_target_id=None,
-        default_target_type=None,
-        enabled=None,
-        name=None,
-        office_id=None,
-        routing_url=None,
-        secret=None,
+    async def callrouters_create(
+        self, default_target_id=None, default_target_type=None, enabled=None, name=None, office_id=None, routing_url=None, secret=None
     ) -> dict[str, Any]:
         """
         Creates a new call router configuration using the provided JSON data and returns a successful response upon completion.
@@ -1323,7 +1205,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callrouters_delete(self, id) -> Any:
+    async def callrouters_delete(self, id) -> Any:
         """
         Deletes a call router identified by the provided ID from the system.
 
@@ -1344,7 +1226,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callrouters_get(self, id) -> dict[str, Any]:
+    async def callrouters_get(self, id) -> dict[str, Any]:
         """
         Retrieves details for a specific call router identified by its unique ID.
 
@@ -1365,7 +1247,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callrouters_update(
+    async def callrouters_update(
         self,
         id,
         default_target_id=None,
@@ -1424,9 +1306,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_assign_call_router_number_post(
-        self, id, area_code=None, number=None, primary=None
-    ) -> dict[str, Any]:
+    async def numbers_assign_call_router_number_post(self, id, area_code=None, number=None, primary=None) -> dict[str, Any]:
         """
         Assigns a phone number to a call router with the specified ID using the provided JSON data.
 
@@ -1444,11 +1324,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "area_code": area_code,
-            "number": number,
-            "primary": primary,
-        }
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/callrouters/{id}/assign_number"
         query_params = {}
@@ -1456,7 +1332,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def channels_delete(self, id) -> Any:
+    async def channels_delete(self, id) -> Any:
         """
         Deletes the channel identified by the specified ID and returns a status response confirming the deletion.
 
@@ -1477,7 +1353,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def channels_get(self, id) -> dict[str, Any]:
+    async def channels_get(self, id) -> dict[str, Any]:
         """
         Retrieves information about a specific channel by its ID using the GET method.
 
@@ -1498,7 +1374,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def channels_list(self, cursor=None, state=None) -> dict[str, Any]:
+    async def channels_list(self, cursor=None, state=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of channels, optionally filtered by state, using the provided cursor for pagination.
 
@@ -1513,16 +1389,12 @@ class DialpadApp(APIApplication):
             channels
         """
         url = f"{self.base_url}/api/v2/channels"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("state", state)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("state", state)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def channels_post(
-        self, description=None, name=None, privacy_type=None, user_id=None
-    ) -> dict[str, Any]:
+    async def channels_post(self, description=None, name=None, privacy_type=None, user_id=None) -> dict[str, Any]:
         """
         Creates a new channel by submitting channel details in JSON format.
 
@@ -1540,12 +1412,7 @@ class DialpadApp(APIApplication):
         Tags:
             channels
         """
-        request_body = {
-            "description": description,
-            "name": name,
-            "privacy_type": privacy_type,
-            "user_id": user_id,
-        }
+        request_body = {"description": description, "name": name, "privacy_type": privacy_type, "user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/channels"
         query_params = {}
@@ -1553,7 +1420,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def channels_members_delete(self, id, user_id=None) -> Any:
+    async def channels_members_delete(self, id, user_id=None) -> Any:
         """
         Removes a member from a channel specified by the given ID using the DELETE method.
 
@@ -1569,9 +1436,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "user_id": user_id,
-        }
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/channels/{id}/members"
         query_params = {}
@@ -1579,7 +1444,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def channels_members_list(self, id, cursor=None) -> dict[str, Any]:
+    async def channels_members_list(self, id, cursor=None) -> dict[str, Any]:
         """
         Get a list of members in a specific channel, optionally paginated using a cursor.
 
@@ -1601,7 +1466,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def channels_members_post(self, id, user_id=None) -> dict[str, Any]:
+    async def channels_members_post(self, id, user_id=None) -> dict[str, Any]:
         """
         Adds a member to a channel specified by the provided ID using the provided JSON data.
 
@@ -1617,9 +1482,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "user_id": user_id,
-        }
+        request_body = {"user_id": user_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/channels/{id}/members"
         query_params = {}
@@ -1627,7 +1490,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def coaching_team_members_get(self, id) -> dict[str, Any]:
+    async def coaching_team_members_get(self, id) -> dict[str, Any]:
         """
         Retrieves the members of a coaching team identified by the provided ID.
 
@@ -1648,9 +1511,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def coaching_team_members_add(
-        self, id, member_id=None, role=None
-    ) -> dict[str, Any]:
+    async def coaching_team_members_add(self, id, member_id=None, role=None) -> dict[str, Any]:
         """
         Adds a new member to a coaching team identified by the provided ID using the POST method and returns a status message.
 
@@ -1667,10 +1528,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "member_id": member_id,
-            "role": role,
-        }
+        request_body = {"member_id": member_id, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/coachingteams/{id}/members"
         query_params = {}
@@ -1678,7 +1536,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def coaching_team_get(self, id) -> dict[str, Any]:
+    async def coaching_team_get(self, id) -> dict[str, Any]:
         """
         Retrieves information about a coaching team specified by its identifier using the GET method.
 
@@ -1699,7 +1557,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def coaching_team_listall(self, cursor=None) -> dict[str, Any]:
+    async def coaching_team_listall(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of coaching teams using the GET method, optionally allowing pagination with a cursor query parameter.
 
@@ -1718,7 +1576,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def company_get(self) -> dict[str, Any]:
+    async def company_get(self) -> dict[str, Any]:
         """
         Retrieves company data using the "GET" method at the "/api/v2/company" endpoint and returns the response.
 
@@ -1734,9 +1592,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def company_sms_opt_out(
-        self, id, opt_out_state, a2p_campaign_id=None, cursor=None
-    ) -> dict[str, Any]:
+    async def company_sms_opt_out(self, id, opt_out_state, a2p_campaign_id=None, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of SMS opt-out information for a specified company, filtered by optional parameters such as a2p campaign ID and cursor, with a required opt-out state parameter.
 
@@ -1756,19 +1612,13 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/v2/company/{id}/smsoptout"
         query_params = {
-            k: v
-            for k, v in [
-                ("a2p_campaign_id", a2p_campaign_id),
-                ("cursor", cursor),
-                ("opt_out_state", opt_out_state),
-            ]
-            if v is not None
+            k: v for k, v in [("a2p_campaign_id", a2p_campaign_id), ("cursor", cursor), ("opt_out_state", opt_out_state)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def conference_rooms_list(self, cursor=None) -> dict[str, Any]:
+    async def conference_rooms_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of conference rooms using the "GET" method, optionally paginating results with a query parameter cursor, secured by either an API key in the URL or a Bearer token.
 
@@ -1787,7 +1637,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def conference_meetings_list(self, cursor=None, room_id=None) -> dict[str, Any]:
+    async def conference_meetings_list(self, cursor=None, room_id=None) -> dict[str, Any]:
         """
         Retrieves a list of meetings for a conference, allowing optional filtering by room ID and pagination using a cursor.
 
@@ -1802,14 +1652,12 @@ class DialpadApp(APIApplication):
             conference
         """
         url = f"{self.base_url}/api/v2/conference/meetings"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("room_id", room_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("room_id", room_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def contacts_delete(self, id) -> dict[str, Any]:
+    async def contacts_delete(self, id) -> dict[str, Any]:
         """
         Deletes a specific contact by ID and removes all associated list memberships for that contact.
 
@@ -1830,7 +1678,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def contacts_get(self, id) -> dict[str, Any]:
+    async def contacts_get(self, id) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific contact identified by the given ID.
 
@@ -1851,7 +1699,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def contacts_update(
+    async def contacts_update(
         self,
         id,
         company_name=None,
@@ -1917,9 +1765,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def contacts_list(
-        self, cursor=None, include_local=None, owner_id=None
-    ) -> dict[str, Any]:
+    async def contacts_list(self, cursor=None, include_local=None, owner_id=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of contacts, optionally filtered by owner and local inclusion status.
 
@@ -1935,20 +1781,12 @@ class DialpadApp(APIApplication):
             contacts
         """
         url = f"{self.base_url}/api/v2/contacts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("include_local", include_local),
-                ("owner_id", owner_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("include_local", include_local), ("owner_id", owner_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def contacts_create(
+    async def contacts_create(
         self,
         company_name=None,
         emails=None,
@@ -2015,7 +1853,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def contacts_create_with_uid(
+    async def contacts_create_with_uid(
         self,
         company_name=None,
         emails=None,
@@ -2080,9 +1918,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def ivr_delete(
-        self, target_type, target_id, ivr_type, ivr_id=None, select_option=None
-    ) -> dict[str, Any]:
+    async def ivr_delete(self, target_type, target_id, ivr_type, ivr_id=None, select_option=None) -> dict[str, Any]:
         """
         Deletes a specific customer IVR configuration based on the target type, target ID, and IVR type using the provided JSON payload.
 
@@ -2105,10 +1941,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'target_id'")
         if ivr_type is None:
             raise ValueError("Missing required parameter 'ivr_type'")
-        request_body = {
-            "ivr_id": ivr_id,
-            "select_option": select_option,
-        }
+        request_body = {"ivr_id": ivr_id, "select_option": select_option}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/customivrs/{target_type}/{target_id}/{ivr_type}"
         query_params = {}
@@ -2116,9 +1949,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def ivr_update(
-        self, target_type, target_id, ivr_type, ivr_id=None, select_option=None
-    ) -> dict[str, Any]:
+    async def ivr_update(self, target_type, target_id, ivr_type, ivr_id=None, select_option=None) -> dict[str, Any]:
         """
         Modifies a custom IVR configuration using the PATCH method by updating specific properties for a target identified by type, ID, and IVR type.
 
@@ -2141,10 +1972,7 @@ class DialpadApp(APIApplication):
             raise ValueError("Missing required parameter 'target_id'")
         if ivr_type is None:
             raise ValueError("Missing required parameter 'ivr_type'")
-        request_body = {
-            "ivr_id": ivr_id,
-            "select_option": select_option,
-        }
+        request_body = {"ivr_id": ivr_id, "select_option": select_option}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/customivrs/{target_type}/{target_id}/{ivr_type}"
         query_params = {}
@@ -2152,7 +1980,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def custom_ivrs_get(self, target_type, target_id, cursor=None) -> dict[str, Any]:
+    async def custom_ivrs_get(self, target_type, target_id, cursor=None) -> dict[str, Any]:
         """
         Retrieves custom IVR data based on the specified target type and ID, with optional pagination using a cursor.
 
@@ -2168,28 +1996,12 @@ class DialpadApp(APIApplication):
             customivrs, important
         """
         url = f"{self.base_url}/api/v2/customivrs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("target_type", target_type),
-                ("target_id", target_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("target_type", target_type), ("target_id", target_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def ivr_create(
-        self,
-        description=None,
-        file=None,
-        ivr_type=None,
-        name=None,
-        target_id=None,
-        target_type=None,
-    ) -> dict[str, Any]:
+    async def ivr_create(self, description=None, file=None, ivr_type=None, name=None, target_id=None, target_type=None) -> dict[str, Any]:
         """
         Creates a new custom IVR entry via API and returns a confirmation upon success.
 
@@ -2226,7 +2038,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def ivr_details_update(self, ivr_id, description=None, name=None) -> dict[str, Any]:
+    async def ivr_details_update(self, ivr_id, description=None, name=None) -> dict[str, Any]:
         """
         Updates a custom IVR configuration identified by the `ivr_id` using partial modifications specified in the JSON request body.
 
@@ -2247,10 +2059,7 @@ class DialpadApp(APIApplication):
         """
         if ivr_id is None:
             raise ValueError("Missing required parameter 'ivr_id'")
-        request_body = {
-            "description": description,
-            "name": name,
-        }
+        request_body = {"description": description, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/customivrs/{ivr_id}"
         query_params = {}
@@ -2258,7 +2067,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_delete(self, id) -> dict[str, Any]:
+    async def departments_delete(self, id) -> dict[str, Any]:
         """
         Deletes the department identified by the specified ID from the system.
 
@@ -2279,7 +2088,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_get(self, id) -> dict[str, Any]:
+    async def departments_get(self, id) -> dict[str, Any]:
         """
         Retrieves detailed information for a department by its ID using the GET method.
 
@@ -2300,7 +2109,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_update(
+    async def departments_update(
         self,
         id,
         auto_call_recording=None,
@@ -2374,9 +2183,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_listall(
-        self, cursor=None, office_id=None, name_search=None
-    ) -> dict[str, Any]:
+    async def departments_listall(self, cursor=None, office_id=None, name_search=None) -> dict[str, Any]:
         """
         Retrieves a list of departments, optionally filtered by office ID or name, and supports pagination via cursor.
 
@@ -2392,20 +2199,12 @@ class DialpadApp(APIApplication):
             departments
         """
         url = f"{self.base_url}/api/v2/departments"
-        query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("office_id", office_id),
-                ("name_search", name_search),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id), ("name_search", name_search)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def departments_create(
+    async def departments_create(
         self,
         auto_call_recording=None,
         friday_hours=None,
@@ -2478,9 +2277,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_operators_delete(
-        self, id, operator_id=None, operator_type=None
-    ) -> dict[str, Any]:
+    async def departments_operators_delete(self, id, operator_id=None, operator_type=None) -> dict[str, Any]:
         """
         Deletes a department operator by ID using the specified API endpoint and returns a status message.
 
@@ -2497,10 +2294,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "operator_id": operator_id,
-            "operator_type": operator_type,
-        }
+        request_body = {"operator_id": operator_id, "operator_type": operator_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/departments/{id}/operators"
         query_params = {}
@@ -2508,7 +2302,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_operators_get(self, id) -> dict[str, Any]:
+    async def departments_operators_get(self, id) -> dict[str, Any]:
         """
         Retrieves information about operators associated with a specific department by department ID using the GET method.
 
@@ -2529,9 +2323,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_operators_post(
-        self, id, operator_id=None, operator_type=None, role=None
-    ) -> dict[str, Any]:
+    async def departments_operators_post(self, id, operator_id=None, operator_type=None, role=None) -> dict[str, Any]:
         """
         Creates a new operator for the specified department and returns a successful status on completion.
 
@@ -2549,11 +2341,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "operator_id": operator_id,
-            "operator_type": operator_type,
-            "role": role,
-        }
+        request_body = {"operator_id": operator_id, "operator_type": operator_type, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/departments/{id}/operators"
         query_params = {}
@@ -2561,7 +2349,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def faxline_create(self, line=None, target=None) -> dict[str, Any]:
+    async def faxline_create(self, line=None, target=None) -> dict[str, Any]:
         """
         Creates a new fax line resource using the provided JSON data and returns a successful response upon creation.
 
@@ -2575,10 +2363,7 @@ class DialpadApp(APIApplication):
         Tags:
             faxline
         """
-        request_body = {
-            "line": line,
-            "target": target,
-        }
+        request_body = {"line": line, "target": target}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/faxline"
         query_params = {}
@@ -2586,9 +2371,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_assign_number_post(
-        self, number, primary=None, target_id=None, target_type=None
-    ) -> dict[str, Any]:
+    async def numbers_assign_number_post(self, number, primary=None, target_id=None, target_type=None) -> dict[str, Any]:
         """
         Assigns a specified number to a resource by sending a POST request with the number as a path parameter and the assignment details in the request body.
 
@@ -2606,11 +2389,7 @@ class DialpadApp(APIApplication):
         """
         if number is None:
             raise ValueError("Missing required parameter 'number'")
-        request_body = {
-            "primary": primary,
-            "target_id": target_id,
-            "target_type": target_type,
-        }
+        request_body = {"primary": primary, "target_id": target_id, "target_type": target_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/numbers/{number}/assign"
         query_params = {}
@@ -2618,13 +2397,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_assign_target_number_post(
-        self,
-        area_code=None,
-        number=None,
-        primary=None,
-        target_id=None,
-        target_type=None,
+    async def numbers_assign_target_number_post(
+        self, area_code=None, number=None, primary=None, target_id=None, target_type=None
     ) -> dict[str, Any]:
         """
         Assigns numbers using a JSON payload in the request body via the "POST" method and returns a successful response upon completion.
@@ -2642,13 +2416,7 @@ class DialpadApp(APIApplication):
         Tags:
             numbers
         """
-        request_body = {
-            "area_code": area_code,
-            "number": number,
-            "primary": primary,
-            "target_id": target_id,
-            "target_type": target_type,
-        }
+        request_body = {"area_code": area_code, "number": number, "primary": primary, "target_id": target_id, "target_type": target_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/numbers/assign"
         query_params = {}
@@ -2656,7 +2424,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_delete(self, number, release=None) -> dict[str, Any]:
+    async def numbers_delete(self, number, release=None) -> dict[str, Any]:
         """
         Deletes a number resource identified by the path parameter "number" and optionally considers the "release" status if specified in the query.
 
@@ -2678,7 +2446,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_get(self, number) -> dict[str, Any]:
+    async def numbers_get(self, number) -> dict[str, Any]:
         """
         Retrieves information for a specific number using the provided number identifier.
 
@@ -2699,7 +2467,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_list(self, cursor=None, status=None) -> dict[str, Any]:
+    async def numbers_list(self, cursor=None, status=None) -> dict[str, Any]:
         """
         Retrieves a list of numbers with optional filtering by status and supports pagination using a cursor parameter.
 
@@ -2714,14 +2482,12 @@ class DialpadApp(APIApplication):
             numbers
         """
         url = f"{self.base_url}/api/v2/numbers"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("status", status)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("status", status)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def format_post(self, country_code=None, number=None) -> dict[str, Any]:
+    async def format_post(self, country_code=None, number=None) -> dict[str, Any]:
         """
         Formats a given number according to the specified country code and returns the formatted result.
 
@@ -2736,24 +2502,13 @@ class DialpadApp(APIApplication):
             numbers
         """
         url = f"{self.base_url}/api/v2/numbers/format"
-        query_params = {
-            k: v
-            for k, v in [("country_code", country_code), ("number", number)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("country_code", country_code), ("number", number)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def oauth2_authorize_get(
-        self,
-        redirect_uri,
-        client_id,
-        code_challenge_method=None,
-        code_challenge=None,
-        scope=None,
-        response_type=None,
-        state=None,
+    async def oauth2_authorize_get(
+        self, redirect_uri, client_id, code_challenge_method=None, code_challenge=None, scope=None, response_type=None, state=None
     ) -> Any:
         """
         Initiates the OAuth 2.0 authorization code flow by redirecting the user to authenticate and grant permissions, then redirects back to the specified callback URL with an authorization code or error.
@@ -2791,7 +2546,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def oauth2_deauthorize_post(self) -> Any:
+    async def oauth2_deauthorize_post(self) -> Any:
         """
         Revokes OAuth 2.0 access tokens associated with the client or user, returning a successful response with no content.
 
@@ -2806,23 +2561,14 @@ class DialpadApp(APIApplication):
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
-
-        """
-        Requests an access token and optionally a refresh token using OAuth 2.0 by exchanging credentials or codes, typically in flows like authorization code, client credentials, or refresh token.
-
-        Returns:
-            dict[str, Any]: A successful response
-
-        Tags:
-            oauth2
-        """
+        "\n        Requests an access token and optionally a refresh token using OAuth 2.0 by exchanging credentials or codes, typically in flows like authorization code, client credentials, or refresh token.\n\n        Returns:\n            dict[str, Any]: A successful response\n\n        Tags:\n            oauth2\n        "
         url = f"{self.base_url}/oauth2/token"
         query_params = {}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def plan_get(self, office_id) -> dict[str, Any]:
+    async def plan_get(self, office_id) -> dict[str, Any]:
         """
         Retrieves the plan details for a specified office identified by its office_id.
 
@@ -2843,7 +2589,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def callcenters_list(self, office_id, cursor=None) -> dict[str, Any]:
+    async def callcenters_list(self, office_id, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of call centers associated with a specific office, supporting pagination via a cursor parameter.
 
@@ -2865,7 +2611,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def coaching_team_list(self, office_id, cursor=None) -> dict[str, Any]:
+    async def coaching_team_list(self, office_id, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of teams associated with a specific office, identified by the office ID provided in the path, with optional pagination using the cursor query parameter.
 
@@ -2887,7 +2633,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def departments_list(self, office_id, cursor=None) -> dict[str, Any]:
+    async def departments_list(self, office_id, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of departments associated with a specific office identified by the provided office ID.
 
@@ -2909,9 +2655,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_assign_office_number_post(
-        self, id, area_code=None, number=None, primary=None
-    ) -> dict[str, Any]:
+    async def numbers_assign_office_number_post(self, id, area_code=None, number=None, primary=None) -> dict[str, Any]:
         """
         Assigns a phone number to an office identified by the specified ID using a JSON request body.
 
@@ -2929,11 +2673,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "area_code": area_code,
-            "number": number,
-            "primary": primary,
-        }
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/offices/{id}/assign_number"
         query_params = {}
@@ -2941,7 +2681,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_office_unassign_number_post(self, id, number=None) -> dict[str, Any]:
+    async def numbers_office_unassign_number_post(self, id, number=None) -> dict[str, Any]:
         """
         Unassigns a phone number from an office using the POST method by specifying the office ID in the path and providing additional details in the JSON request body.
 
@@ -2957,9 +2697,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "number": number,
-        }
+        request_body = {"number": number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/offices/{id}/unassign_number"
         query_params = {}
@@ -2967,7 +2705,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_e911_get(self, id) -> dict[str, Any]:
+    async def offices_e911_get(self, id) -> dict[str, Any]:
         """
         Retrieves Enhanced 911 (E911) information for a specific office identified by the provided office ID.
 
@@ -2988,17 +2726,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_e911_update(
-        self,
-        id,
-        address=None,
-        address2=None,
-        city=None,
-        country=None,
-        state=None,
-        update_all=None,
-        use_validated_option=None,
-        zip=None,
+    async def offices_e911_update(
+        self, id, address=None, address2=None, city=None, country=None, state=None, update_all=None, use_validated_option=None, zip=None
     ) -> dict[str, Any]:
         """
         Updates or replaces the E911 configuration for the specified office using the provided data in the request body.
@@ -3049,7 +2778,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def plan_available_licenses_get(self, office_id) -> dict[str, Any]:
+    async def plan_available_licenses_get(self, office_id) -> dict[str, Any]:
         """
         Retrieves the available licenses for a specific office identified by its ID.
 
@@ -3070,7 +2799,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_offdutystatuses_get(self, id) -> dict[str, Any]:
+    async def offices_offdutystatuses_get(self, id) -> dict[str, Any]:
         """
         Retrieves a list of off-duty statuses for the specified office, identified by its ID.
 
@@ -3091,7 +2820,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_get(self, id) -> dict[str, Any]:
+    async def offices_get(self, id) -> dict[str, Any]:
         """
         Retrieves details about a specific office by ID using the API.
 
@@ -3112,7 +2841,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_list(self, cursor=None, active_only=None) -> dict[str, Any]:
+    async def offices_list(self, cursor=None, active_only=None) -> dict[str, Any]:
         """
         Retrieves a list of offices, optionally filtering by active status and supporting pagination with a cursor parameter.
 
@@ -3127,16 +2856,12 @@ class DialpadApp(APIApplication):
             offices
         """
         url = f"{self.base_url}/api/v2/offices"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("active_only", active_only)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("active_only", active_only)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def offices_create(
+    async def offices_create(
         self,
         annual_commit_monthly_billing=None,
         auto_call_recording=None,
@@ -3248,9 +2973,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_operators_delete(
-        self, id, operator_id=None, operator_type=None
-    ) -> dict[str, Any]:
+    async def offices_operators_delete(self, id, operator_id=None, operator_type=None) -> dict[str, Any]:
         """
         Deletes the specified operator(s) associated with the office whose ID is provided in the path, returning a success status upon completion.
 
@@ -3267,10 +2990,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "operator_id": operator_id,
-            "operator_type": operator_type,
-        }
+        request_body = {"operator_id": operator_id, "operator_type": operator_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/offices/{id}/operators"
         query_params = {}
@@ -3278,7 +2998,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_operators_get(self, id) -> dict[str, Any]:
+    async def offices_operators_get(self, id) -> dict[str, Any]:
         """
         Get the list of operators associated with the specified office by its ID.
 
@@ -3299,9 +3019,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def offices_operators_post(
-        self, id, operator_id=None, operator_type=None, role=None
-    ) -> dict[str, Any]:
+    async def offices_operators_post(self, id, operator_id=None, operator_type=None, role=None) -> dict[str, Any]:
         """
         Creates a new operator resource within the specified office using the provided data and returns a success status.
 
@@ -3319,11 +3037,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "operator_id": operator_id,
-            "operator_type": operator_type,
-            "role": role,
-        }
+        request_body = {"operator_id": operator_id, "operator_type": operator_type, "role": role}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/offices/{id}/operators"
         query_params = {}
@@ -3331,9 +3045,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def recording_share_link_create(
-        self, privacy=None, recording_id=None, recording_type=None
-    ) -> dict[str, Any]:
+    async def recording_share_link_create(self, privacy=None, recording_id=None, recording_type=None) -> dict[str, Any]:
         """
         Creates a recording share link by accepting JSON input and returns a success response upon completion.
 
@@ -3348,11 +3060,7 @@ class DialpadApp(APIApplication):
         Tags:
             recordingsharelink
         """
-        request_body = {
-            "privacy": privacy,
-            "recording_id": recording_id,
-            "recording_type": recording_type,
-        }
+        request_body = {"privacy": privacy, "recording_id": recording_id, "recording_type": recording_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/recordingsharelink"
         query_params = {}
@@ -3360,7 +3068,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def recording_share_link_delete(self, id) -> dict[str, Any]:
+    async def recording_share_link_delete(self, id) -> dict[str, Any]:
         """
         Deletes the recording share link identified by the specified ID and returns a confirmation upon successful completion.
 
@@ -3381,7 +3089,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def recording_share_link_get(self, id) -> dict[str, Any]:
+    async def recording_share_link_get(self, id) -> dict[str, Any]:
         """
         Retrieves a recording share link by its ID using the GET method.
 
@@ -3402,7 +3110,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def recording_share_link_update(self, id, privacy=None) -> dict[str, Any]:
+    async def recording_share_link_update(self, id, privacy=None) -> dict[str, Any]:
         """
         Updates or replaces the recording share link resource identified by the given ID with the provided data.
 
@@ -3418,9 +3126,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "privacy": privacy,
-        }
+        request_body = {"privacy": privacy}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/recordingsharelink/{id}"
         query_params = {}
@@ -3428,9 +3134,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_assign_room_number_post(
-        self, id, area_code=None, number=None, primary=None
-    ) -> dict[str, Any]:
+    async def numbers_assign_room_number_post(self, id, area_code=None, number=None, primary=None) -> dict[str, Any]:
         """
         Assigns a number to the specified room and returns a success status.
 
@@ -3448,11 +3152,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "area_code": area_code,
-            "number": number,
-            "primary": primary,
-        }
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/rooms/{id}/assign_number"
         query_params = {}
@@ -3460,7 +3160,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_room_unassign_number_post(self, id, number=None) -> dict[str, Any]:
+    async def numbers_room_unassign_number_post(self, id, number=None) -> dict[str, Any]:
         """
         Unassigns a phone number from a room using the API and returns a success status.
 
@@ -3476,9 +3176,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "number": number,
-        }
+        request_body = {"number": number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/rooms/{id}/unassign_number"
         query_params = {}
@@ -3486,7 +3184,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def rooms_delete(self, id) -> dict[str, Any]:
+    async def rooms_delete(self, id) -> dict[str, Any]:
         """
         Deletes a room by its ID and returns a successful response.
 
@@ -3507,7 +3205,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def rooms_get(self, id) -> dict[str, Any]:
+    async def rooms_get(self, id) -> dict[str, Any]:
         """
         Retrieves details of a specific room identified by its ID using the GET method.
 
@@ -3528,7 +3226,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def rooms_patch(self, id, name=None, phone_numbers=None) -> dict[str, Any]:
+    async def rooms_patch(self, id, name=None, phone_numbers=None) -> dict[str, Any]:
         """
         Updates a room with the specified ID by partially modifying its properties using the provided JSON payload.
 
@@ -3549,10 +3247,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "name": name,
-            "phone_numbers": phone_numbers,
-        }
+        request_body = {"name": name, "phone_numbers": phone_numbers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/rooms/{id}"
         query_params = {}
@@ -3560,7 +3255,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def rooms_list(self, cursor=None, office_id=None) -> dict[str, Any]:
+    async def rooms_list(self, cursor=None, office_id=None) -> dict[str, Any]:
         """
         Retrieves a list of rooms, optionally filtered by office ID, using the provided cursor for pagination.
 
@@ -3575,16 +3270,12 @@ class DialpadApp(APIApplication):
             rooms
         """
         url = f"{self.base_url}/api/v2/rooms"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("office_id", office_id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("office_id", office_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def rooms_post(self, name=None, office_id=None) -> dict[str, Any]:
+    async def rooms_post(self, name=None, office_id=None) -> dict[str, Any]:
         """
         Creates a new room resource and returns a success response upon completion.
 
@@ -3600,10 +3291,7 @@ class DialpadApp(APIApplication):
         Tags:
             rooms
         """
-        request_body = {
-            "name": name,
-            "office_id": office_id,
-        }
+        request_body = {"name": name, "office_id": office_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/rooms"
         query_params = {}
@@ -3611,9 +3299,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_rooms_create_international_pin(
-        self, customer_ref=None
-    ) -> dict[str, Any]:
+    async def deskphones_rooms_create_international_pin(self, customer_ref=None) -> dict[str, Any]:
         """
         Creates an international PIN for a room and returns the result.
 
@@ -3628,9 +3314,7 @@ class DialpadApp(APIApplication):
         Tags:
             rooms
         """
-        request_body = {
-            "customer_ref": customer_ref,
-        }
+        request_body = {"customer_ref": customer_ref}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/rooms/international_pin"
         query_params = {}
@@ -3638,7 +3322,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_rooms_delete(self, parent_id, id) -> Any:
+    async def deskphones_rooms_delete(self, parent_id, id) -> Any:
         """
         Deletes a deskphone with the specified ID from a room with the given parent ID using the DELETE method.
 
@@ -3662,7 +3346,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_rooms_get(self, parent_id, id) -> dict[str, Any]:
+    async def deskphones_rooms_get(self, parent_id, id) -> dict[str, Any]:
         """
         Retrieves details of a specific desk phone identified by `{id}` within a room associated with `{parent_id}`.
 
@@ -3686,7 +3370,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_rooms_list(self, parent_id) -> dict[str, Any]:
+    async def deskphones_rooms_list(self, parent_id) -> dict[str, Any]:
         """
         Retrieves a list of desk phones associated with a specific room, identified by the parent ID.
 
@@ -3707,7 +3391,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_reports_delete(self, id) -> dict[str, Any]:
+    async def schedule_reports_delete(self, id) -> dict[str, Any]:
         """
         Deletes a schedule report by ID using the DELETE method, returning a successful response if the operation is completed.
 
@@ -3728,7 +3412,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_reports_get(self, id) -> dict[str, Any]:
+    async def schedule_reports_get(self, id) -> dict[str, Any]:
         """
         Retrieves a scheduled report by its ID using the "GET" method, returning details or results of the specified report.
 
@@ -3749,7 +3433,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_reports_update(
+    async def schedule_reports_update(
         self,
         id,
         at=None,
@@ -3811,7 +3495,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_reports_list(self, cursor=None) -> dict[str, Any]:
+    async def schedule_reports_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of scheduled reports, optionally paginated by a cursor, and returns them in response.
 
@@ -3830,7 +3514,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_reports_create(
+    async def schedule_reports_create(
         self,
         at=None,
         coaching_group=None,
@@ -3888,7 +3572,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def sms_send(
+    async def sms_send(
         self,
         channel_hashtag=None,
         from_number=None,
@@ -3940,7 +3624,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def stats_get(self, id) -> dict[str, Any]:
+    async def stats_get(self, id) -> dict[str, Any]:
         """
         Retrieves statistics for the specified resource identified by the provided ID.
 
@@ -3961,7 +3645,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def stats_create(
+    async def stats_create(
         self,
         coaching_group=None,
         coaching_team=None,
@@ -4032,9 +3716,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_agent_status_event_subscription_list(
-        self, cursor=None
-    ) -> dict[str, Any]:
+    async def webhook_agent_status_event_subscription_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves the current status of agent subscriptions, optionally paginated using a cursor parameter.
 
@@ -4053,9 +3735,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_agent_status_event_subscription_create(
-        self, agent_type=None, enabled=None, endpoint_id=None
-    ) -> dict[str, Any]:
+    async def webhook_agent_status_event_subscription_create(self, agent_type=None, enabled=None, endpoint_id=None) -> dict[str, Any]:
         """
         Updates the agent status for a subscription using JSON data and returns a successful response.
 
@@ -4070,11 +3750,7 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {
-            "agent_type": agent_type,
-            "enabled": enabled,
-            "endpoint_id": endpoint_id,
-        }
+        request_body = {"agent_type": agent_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/subscriptions/agent_status"
         query_params = {}
@@ -4082,7 +3758,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_agent_status_event_subscription_delete(self, id) -> dict[str, Any]:
+    async def webhook_agent_status_event_subscription_delete(self, id) -> dict[str, Any]:
         """
         Deletes an agent status event subscription by its unique identifier.
 
@@ -4103,7 +3779,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_agent_status_event_subscription_get(self, id) -> dict[str, Any]:
+    async def webhook_agent_status_event_subscription_get(self, id) -> dict[str, Any]:
         """
         Retrieves the status information of a subscription agent identified by the given ID.
 
@@ -4124,9 +3800,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_agent_status_event_subscription_update(
-        self, id, agent_type=None, enabled=None, endpoint_id=None
-    ) -> dict[str, Any]:
+    async def webhook_agent_status_event_subscription_update(self, id, agent_type=None, enabled=None, endpoint_id=None) -> dict[str, Any]:
         """
         Updates the status of a specific agent subscription using a JSON payload.
 
@@ -4145,11 +3819,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "agent_type": agent_type,
-            "enabled": enabled,
-            "endpoint_id": endpoint_id,
-        }
+        request_body = {"agent_type": agent_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/subscriptions/agent_status/{id}"
         query_params = {}
@@ -4157,9 +3827,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_call_event_subscription_list(
-        self, cursor=None, target_type=None, target_id=None
-    ) -> dict[str, Any]:
+    async def webhook_call_event_subscription_list(self, cursor=None, target_type=None, target_id=None) -> dict[str, Any]:
         """
         Retrieves information about a call subscription using optional parameters for cursor, target type, and target ID.
 
@@ -4175,27 +3843,13 @@ class DialpadApp(APIApplication):
             subscriptions
         """
         url = f"{self.base_url}/api/v2/subscriptions/call"
-        query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("target_type", target_type),
-                ("target_id", target_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("target_type", target_type), ("target_id", target_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def webhook_call_event_subscription_create(
-        self,
-        call_states=None,
-        enabled=None,
-        endpoint_id=None,
-        group_calls_only=None,
-        target_id=None,
-        target_type=None,
+    async def webhook_call_event_subscription_create(
+        self, call_states=None, enabled=None, endpoint_id=None, group_calls_only=None, target_id=None, target_type=None
     ) -> dict[str, Any]:
         """
         Subscribes a user to a call notification service using a JSON payload and returns a success response upon successful subscription.
@@ -4229,7 +3883,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_call_event_subscription_delete(self, id) -> dict[str, Any]:
+    async def webhook_call_event_subscription_delete(self, id) -> dict[str, Any]:
         """
         Cancels a subscription identified by the provided ID using the DELETE method, preventing future charges and updating the subscription status to canceled.
 
@@ -4250,7 +3904,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_call_event_subscription_get(self, id) -> dict[str, Any]:
+    async def webhook_call_event_subscription_get(self, id) -> dict[str, Any]:
         """
         Retrieves the subscription details identified by the specified subscription ID.
 
@@ -4271,15 +3925,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_call_event_subscription_update(
-        self,
-        id,
-        call_states=None,
-        enabled=None,
-        endpoint_id=None,
-        group_calls_only=None,
-        target_id=None,
-        target_type=None,
+    async def webhook_call_event_subscription_update(
+        self, id, call_states=None, enabled=None, endpoint_id=None, group_calls_only=None, target_id=None, target_type=None
     ) -> dict[str, Any]:
         """
         Partially updates a subscription identified by the provided ID using the PATCH method, allowing for selective modification of specific fields in the subscription resource.
@@ -4317,7 +3964,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_change_log_event_subscription_list(self, cursor=None) -> dict[str, Any]:
+    async def webhook_change_log_event_subscription_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a changelog of subscription updates using the "GET" method, optionally filtering results by a specified cursor, and authenticates via either an API key or Bearer token.
 
@@ -4336,9 +3983,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_change_log_event_subscription_create(
-        self, enabled=None, endpoint_id=None
-    ) -> dict[str, Any]:
+    async def webhook_change_log_event_subscription_create(self, enabled=None, endpoint_id=None) -> dict[str, Any]:
         """
         Submits a subscription changelog entry by posting JSON data and returns a 200 response if successful, with authentication handled via API key or bearer token.
 
@@ -4352,10 +3997,7 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {
-            "enabled": enabled,
-            "endpoint_id": endpoint_id,
-        }
+        request_body = {"enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/subscriptions/changelog"
         query_params = {}
@@ -4363,7 +4005,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_change_log_event_subscription_delete(self, id) -> dict[str, Any]:
+    async def webhook_change_log_event_subscription_delete(self, id) -> dict[str, Any]:
         """
         Deletes a specific changelog entry identified by the provided ID using the "DELETE" method.
 
@@ -4384,7 +4026,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_change_log_event_subscription_get(self, id) -> dict[str, Any]:
+    async def webhook_change_log_event_subscription_get(self, id) -> dict[str, Any]:
         """
         Retrieves the changelog for a specific subscription with the given ID using a GET request, requiring either an API key in the URL or a Bearer token for authentication.
 
@@ -4405,9 +4047,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_change_log_event_subscription_update(
-        self, id, enabled=None, endpoint_id=None
-    ) -> dict[str, Any]:
+    async def webhook_change_log_event_subscription_update(self, id, enabled=None, endpoint_id=None) -> dict[str, Any]:
         """
         Updates a specific changelog subscription by modifying its properties using a JSON patch document, and returns a status message indicating the success of the operation.
 
@@ -4425,10 +4065,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "enabled": enabled,
-            "endpoint_id": endpoint_id,
-        }
+        request_body = {"enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/subscriptions/changelog/{id}"
         query_params = {}
@@ -4436,7 +4073,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_contact_event_subscription_list(self, cursor=None) -> dict[str, Any]:
+    async def webhook_contact_event_subscription_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of contact details for subscriptions, allowing pagination via a cursor parameter.
 
@@ -4455,9 +4092,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_contact_event_subscription_create(
-        self, contact_type=None, enabled=None, endpoint_id=None
-    ) -> dict[str, Any]:
+    async def webhook_contact_event_subscription_create(self, contact_type=None, enabled=None, endpoint_id=None) -> dict[str, Any]:
         """
         Creates a new contact subscription using the provided JSON data and returns a successful response.
 
@@ -4472,11 +4107,7 @@ class DialpadApp(APIApplication):
         Tags:
             subscriptions
         """
-        request_body = {
-            "contact_type": contact_type,
-            "enabled": enabled,
-            "endpoint_id": endpoint_id,
-        }
+        request_body = {"contact_type": contact_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/subscriptions/contact"
         query_params = {}
@@ -4484,7 +4115,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_contact_event_subscription_delete(self, id) -> dict[str, Any]:
+    async def webhook_contact_event_subscription_delete(self, id) -> dict[str, Any]:
         """
         Deletes a subscription associated with a specific contact ID, removing the subscription from the system and preventing future charges.
 
@@ -4505,7 +4136,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_contact_event_subscription_get(self, id) -> dict[str, Any]:
+    async def webhook_contact_event_subscription_get(self, id) -> dict[str, Any]:
         """
         Retrieves a subscription associated with a specific contact by their ID using the GET method.
 
@@ -4526,9 +4157,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_contact_event_subscription_update(
-        self, id, contact_type=None, enabled=None, endpoint_id=None
-    ) -> dict[str, Any]:
+    async def webhook_contact_event_subscription_update(self, id, contact_type=None, enabled=None, endpoint_id=None) -> dict[str, Any]:
         """
         Modifies a specific subscription contact by ID using a JSON patch document to update its properties.
 
@@ -4547,11 +4176,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "contact_type": contact_type,
-            "enabled": enabled,
-            "endpoint_id": endpoint_id,
-        }
+        request_body = {"contact_type": contact_type, "enabled": enabled, "endpoint_id": endpoint_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/subscriptions/contact/{id}"
         query_params = {}
@@ -4559,9 +4184,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_sms_event_subscription_list(
-        self, cursor=None, target_type=None, target_id=None
-    ) -> dict[str, Any]:
+    async def webhook_sms_event_subscription_list(self, cursor=None, target_type=None, target_id=None) -> dict[str, Any]:
         """
         Retrieves a list of SMS subscriptions, optionally filtered by cursor, target type, and target ID.
 
@@ -4577,28 +4200,13 @@ class DialpadApp(APIApplication):
             subscriptions
         """
         url = f"{self.base_url}/api/v2/subscriptions/sms"
-        query_params = {
-            k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("target_type", target_type),
-                ("target_id", target_id),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("target_type", target_type), ("target_id", target_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def webhook_sms_event_subscription_create(
-        self,
-        direction=None,
-        enabled=None,
-        endpoint_id=None,
-        include_internal=None,
-        status=None,
-        target_id=None,
-        target_type=None,
+    async def webhook_sms_event_subscription_create(
+        self, direction=None, enabled=None, endpoint_id=None, include_internal=None, status=None, target_id=None, target_type=None
     ) -> dict[str, Any]:
         """
         Sends a subscription request for SMS notifications by creating an SMS subscription.
@@ -4634,7 +4242,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_sms_event_subscription_delete(self, id) -> dict[str, Any]:
+    async def webhook_sms_event_subscription_delete(self, id) -> dict[str, Any]:
         """
         Cancels an SMS subscription by its ID using the DELETE method, removing future charges and updating the subscription status to reflect cancellation.
 
@@ -4655,7 +4263,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_sms_event_subscription_get(self, id) -> dict[str, Any]:
+    async def webhook_sms_event_subscription_get(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a specific SMS subscription identified by the provided subscription ID.
 
@@ -4676,16 +4284,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_sms_event_subscription_update(
-        self,
-        id,
-        direction=None,
-        enabled=None,
-        endpoint_id=None,
-        include_internal=None,
-        status=None,
-        target_id=None,
-        target_type=None,
+    async def webhook_sms_event_subscription_update(
+        self, id, direction=None, enabled=None, endpoint_id=None, include_internal=None, status=None, target_id=None, target_type=None
     ) -> dict[str, Any]:
         """
         Updates an SMS subscription identified by its ID, modifying specific properties using JSON Patch operations.
@@ -4725,7 +4325,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def transcripts_get(self, call_id) -> dict[str, Any]:
+    async def transcripts_get(self, call_id) -> dict[str, Any]:
         """
         Retrieves a transcript for a specific call identified by the call ID using the GET method.
 
@@ -4746,7 +4346,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def transcripts_get_url(self, call_id) -> dict[str, Any]:
+    async def transcripts_get_url(self, call_id) -> dict[str, Any]:
         """
         Retrieves the URL for a transcript associated with a specific call ID using the GET method.
 
@@ -4767,7 +4367,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def userdevices_get(self, id) -> dict[str, Any]:
+    async def userdevices_get(self, id) -> dict[str, Any]:
         """
         Retrieves details about a user device specified by its ID using the GET method.
 
@@ -4788,7 +4388,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def userdevices_list(self, cursor=None, user_id=None) -> dict[str, Any]:
+    async def userdevices_list(self, cursor=None, user_id=None) -> dict[str, Any]:
         """
         Retrieves a list of user devices, optionally filtered by a user ID or a cursor for pagination.
 
@@ -4803,21 +4403,13 @@ class DialpadApp(APIApplication):
             userdevices
         """
         url = f"{self.base_url}/api/v2/userdevices"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("user_id", user_id)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("user_id", user_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def users_initiate_call(
-        self,
-        id,
-        custom_data=None,
-        group_id=None,
-        group_type=None,
-        outbound_caller_id=None,
-        phone_number=None,
+    async def users_initiate_call(
+        self, id, custom_data=None, group_id=None, group_type=None, outbound_caller_id=None, phone_number=None
     ) -> dict[str, Any]:
         """
         Initiates a call for a user identified by the provided ID using the POST method, sending JSON data in the request body.
@@ -4855,9 +4447,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_update_active_call(
-        self, id, is_recording=None, play_message=None, recording_type=None
-    ) -> dict[str, Any]:
+    async def users_update_active_call(self, id, is_recording=None, play_message=None, recording_type=None) -> dict[str, Any]:
         """
         Updates the active call status for a user with the specified ID using the PATCH method and returns a status message.
 
@@ -4878,11 +4468,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "is_recording": is_recording,
-            "play_message": play_message,
-            "recording_type": recording_type,
-        }
+        request_body = {"is_recording": is_recording, "play_message": play_message, "recording_type": recording_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/activecall"
         query_params = {}
@@ -4890,7 +4476,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_toggle_call_vi(self, id, enable_vi=None) -> dict[str, Any]:
+    async def users_toggle_call_vi(self, id, enable_vi=None) -> dict[str, Any]:
         """
         Toggles the "vi" setting for a user with the specified ID using the PATCH method.
 
@@ -4906,9 +4492,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "enable_vi": enable_vi,
-        }
+        request_body = {"enable_vi": enable_vi}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/togglevi"
         query_params = {}
@@ -4916,7 +4500,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def caller_id_users_get(self, id) -> dict[str, Any]:
+    async def caller_id_users_get(self, id) -> dict[str, Any]:
         """
         Retrieves the caller ID information for a user identified by the provided ID using the GET method.
 
@@ -4937,7 +4521,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def caller_id_users_post(self, id, caller_id=None) -> dict[str, Any]:
+    async def caller_id_users_post(self, id, caller_id=None) -> dict[str, Any]:
         """
         Updates the caller ID for a user with the specified ID using a JSON payload and returns a successful response upon completion.
 
@@ -4953,9 +4537,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "caller_id": caller_id,
-        }
+        request_body = {"caller_id": caller_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/caller_id"
         query_params = {}
@@ -4963,7 +4545,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_users_delete(self, parent_id, id) -> Any:
+    async def deskphones_users_delete(self, parent_id, id) -> Any:
         """
         Deletes a specific deskphone associated with a user identified by the parent ID and deskphone ID using the DELETE method.
 
@@ -4987,7 +4569,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_users_get(self, parent_id, id) -> dict[str, Any]:
+    async def deskphones_users_get(self, parent_id, id) -> dict[str, Any]:
         """
         Retrieves details of a specific desk phone associated with a user, identified by the parent ID and desk phone ID.
 
@@ -5011,7 +4593,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def deskphones_users_list(self, parent_id) -> dict[str, Any]:
+    async def deskphones_users_list(self, parent_id) -> dict[str, Any]:
         """
         Retrieves a list of desk phones associated with a specific parent ID.
 
@@ -5032,9 +4614,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_assign_user_number_post(
-        self, id, area_code=None, number=None, primary=None
-    ) -> dict[str, Any]:
+    async def numbers_assign_user_number_post(self, id, area_code=None, number=None, primary=None) -> dict[str, Any]:
         """
         Assigns a number to the user identified by the given ID using a POST request with JSON payload and returns a 200 status on success.
 
@@ -5052,11 +4632,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "area_code": area_code,
-            "number": number,
-            "primary": primary,
-        }
+        request_body = {"area_code": area_code, "number": number, "primary": primary}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/assign_number"
         query_params = {}
@@ -5064,7 +4640,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def numbers_user_unassign_number_post(self, id, number=None) -> dict[str, Any]:
+    async def numbers_user_unassign_number_post(self, id, number=None) -> dict[str, Any]:
         """
         Unassigns a phone number from a user using the POST method by providing the user ID in the path and the necessary details in the JSON request body.
 
@@ -5080,9 +4656,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "number": number,
-        }
+        request_body = {"number": number}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/unassign_number"
         query_params = {}
@@ -5090,9 +4664,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_toggle_dnd(
-        self, id, do_not_disturb=None, group_id=None, group_type=None
-    ) -> dict[str, Any]:
+    async def users_toggle_dnd(self, id, do_not_disturb=None, group_id=None, group_type=None) -> dict[str, Any]:
         """
         Toggles the DND status for a user with the specified ID using the PATCH method, accepting a JSON payload.
 
@@ -5110,11 +4682,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "do_not_disturb": do_not_disturb,
-            "group_id": group_id,
-            "group_type": group_type,
-        }
+        request_body = {"do_not_disturb": do_not_disturb, "group_id": group_id, "group_type": group_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/togglednd"
         query_params = {}
@@ -5122,7 +4690,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_e911_get(self, id) -> dict[str, Any]:
+    async def users_e911_get(self, id) -> dict[str, Any]:
         """
         Retrieves the Enhanced 911 (E911) information for a specific user identified by their ID.
 
@@ -5143,16 +4711,8 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_e911_update(
-        self,
-        id,
-        address=None,
-        address2=None,
-        city=None,
-        country=None,
-        state=None,
-        use_validated_option=None,
-        zip=None,
+    async def users_e911_update(
+        self, id, address=None, address2=None, city=None, country=None, state=None, use_validated_option=None, zip=None
     ) -> dict[str, Any]:
         """
         Updates the E911 (Enhanced 911) location information for a user identified by the specified ID.
@@ -5201,7 +4761,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_personas_get(self, id) -> dict[str, Any]:
+    async def users_personas_get(self, id) -> dict[str, Any]:
         """
         Retrieves the personas associated with a user identified by the provided `{id}` parameter using the `GET` method.
 
@@ -5222,7 +4782,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def screen_pop_initiate(self, id, screen_pop_uri=None) -> dict[str, Any]:
+    async def screen_pop_initiate(self, id, screen_pop_uri=None) -> dict[str, Any]:
         """
         Triggers a screen pop for the specified user by their ID, requiring a JSON request body, and returns a success status upon completion.
 
@@ -5241,9 +4801,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "screen_pop_uri": screen_pop_uri,
-        }
+        request_body = {"screen_pop_uri": screen_pop_uri}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/screenpop"
         query_params = {}
@@ -5251,7 +4809,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_delete(self, id) -> dict[str, Any]:
+    async def users_delete(self, id) -> dict[str, Any]:
         """
         Deletes a user with the specified ID from the system, potentially removing associated data and roles.
 
@@ -5272,7 +4830,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_get(self, id) -> dict[str, Any]:
+    async def users_get(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a specific user identified by the provided ID.
 
@@ -5293,7 +4851,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_update(
+    async def users_update(
         self,
         id,
         admin_office_ids=None,
@@ -5385,9 +4943,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_list(
-        self, cursor=None, state=None, company_admin=None, email=None, number=None
-    ) -> dict[str, Any]:
+    async def users_list(self, cursor=None, state=None, company_admin=None, email=None, number=None) -> dict[str, Any]:
         """
         Retrieves a list of users with optional filtering by cursor, state, company admin status, email, or number using the "/api/v2/users" GET endpoint.
 
@@ -5407,27 +4963,15 @@ class DialpadApp(APIApplication):
         url = f"{self.base_url}/api/v2/users"
         query_params = {
             k: v
-            for k, v in [
-                ("cursor", cursor),
-                ("state", state),
-                ("company_admin", company_admin),
-                ("email", email),
-                ("number", number),
-            ]
+            for k, v in [("cursor", cursor), ("state", state), ("company_admin", company_admin), ("email", email), ("number", number)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def users_create(
-        self,
-        auto_assign=None,
-        email=None,
-        first_name=None,
-        last_name=None,
-        license=None,
-        office_id=None,
+    async def users_create(
+        self, auto_assign=None, email=None, first_name=None, last_name=None, license=None, office_id=None
     ) -> dict[str, Any]:
         """
         Creates a new user resource using JSON data and returns a success response with a status code of 200 OK.
@@ -5465,7 +5009,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_move_office_patch(self, id, office_id=None) -> dict[str, Any]:
+    async def users_move_office_patch(self, id, office_id=None) -> dict[str, Any]:
         """
         Updates the office location of a user with the specified ID using a JSON payload.
 
@@ -5481,9 +5025,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "office_id": office_id,
-        }
+        request_body = {"office_id": office_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/move_office"
         query_params = {}
@@ -5491,9 +5033,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def users_update_status(
-        self, id, expiration=None, status_message=None
-    ) -> dict[str, Any]:
+    async def users_update_status(self, id, expiration=None, status_message=None) -> dict[str, Any]:
         """
         Updates the status of a user with the specified ID using the PATCH method.
 
@@ -5510,10 +5050,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "expiration": expiration,
-            "status_message": status_message,
-        }
+        request_body = {"expiration": expiration, "status_message": status_message}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/users/{id}/status"
         query_params = {}
@@ -5521,7 +5058,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_list(self, cursor=None) -> dict[str, Any]:
+    async def webhooks_list(self, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of webhooks, optionally supporting pagination with a cursor query parameter.
 
@@ -5540,7 +5077,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_create(self, hook_url=None, secret=None) -> dict[str, Any]:
+    async def webhooks_create(self, hook_url=None, secret=None) -> dict[str, Any]:
         """
         Creates a new webhook endpoint that sends HTTP notifications in response to specified events.
 
@@ -5556,10 +5093,7 @@ class DialpadApp(APIApplication):
         Tags:
             webhooks
         """
-        request_body = {
-            "hook_url": hook_url,
-            "secret": secret,
-        }
+        request_body = {"hook_url": hook_url, "secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/webhooks"
         query_params = {}
@@ -5567,7 +5101,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_delete(self, id) -> dict[str, Any]:
+    async def webhooks_delete(self, id) -> dict[str, Any]:
         """
         Deletes the webhook with the specified ID and returns a success status.
 
@@ -5588,7 +5122,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhooks_get(self, id) -> dict[str, Any]:
+    async def webhooks_get(self, id) -> dict[str, Any]:
         """
         Retrieves details of a webhook by its ID using the "GET" method.
 
@@ -5609,7 +5143,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def webhook_update(self, id, hook_url=None, secret=None) -> dict[str, Any]:
+    async def webhook_update(self, id, hook_url=None, secret=None) -> dict[str, Any]:
         """
         Updates a specific webhook resource by its ID using a partial payload sent via PATCH.
 
@@ -5628,10 +5162,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "hook_url": hook_url,
-            "secret": secret,
-        }
+        request_body = {"hook_url": hook_url, "secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/webhooks/{id}"
         query_params = {}
@@ -5639,7 +5170,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def websockets_list(self, cursor=None) -> dict[str, Any]:
+    async def websockets_list(self, cursor=None) -> dict[str, Any]:
         """
         Establishes a WebSocket connection at "/api/v2/websockets" using the GET method, allowing optional specification of a cursor for resuming data consumption.
 
@@ -5658,7 +5189,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def websockets_create(self, secret=None) -> dict[str, Any]:
+    async def websockets_create(self, secret=None) -> dict[str, Any]:
         """
         Establishes a WebSocket connection using the POST method to the "/api/v2/websockets" endpoint, accepting JSON data in the request body.
 
@@ -5673,9 +5204,7 @@ class DialpadApp(APIApplication):
         Tags:
             websockets
         """
-        request_body = {
-            "secret": secret,
-        }
+        request_body = {"secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/websockets"
         query_params = {}
@@ -5683,7 +5212,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def websockets_delete(self, id) -> dict[str, Any]:
+    async def websockets_delete(self, id) -> dict[str, Any]:
         """
         Deletes a WebSocket by its ID, specified in the path, using the "DELETE" method.
 
@@ -5704,7 +5233,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def websockets_get(self, id) -> dict[str, Any]:
+    async def websockets_get(self, id) -> dict[str, Any]:
         """
         Retrieves details for a specific WebSocket connection identified by its integer ID.
 
@@ -5725,7 +5254,7 @@ class DialpadApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def websockets_update(self, id, secret=None) -> dict[str, Any]:
+    async def websockets_update(self, id, secret=None) -> dict[str, Any]:
         """
         Updates the WebSocket connection resource identified by the specified ID using a JSON-formatted patch request.
 
@@ -5743,9 +5272,7 @@ class DialpadApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "secret": secret,
-        }
+        request_body = {"secret": secret}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v2/websockets/{id}"
         query_params = {}

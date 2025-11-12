@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,7 +8,7 @@ class SendgridApp(APIApplication):
         super().__init__(name="sendgrid", integration=integration, **kwargs)
         self.base_url = "https://api.sendgrid.com"
 
-    def list_access_activity(self, limit=None) -> dict[str, Any]:
+    async def list_access_activity(self, limit=None) -> dict[str, Any]:
         """
         Retrieves activity settings using the specified limit, allowing for the optional specification of the user on whose behalf the request is made.
 
@@ -28,7 +27,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_allowed_ips(self, ids=None) -> dict[str, Any]:
+    async def delete_allowed_ips(self, ids=None) -> dict[str, Any]:
         """
         Removes a user or IP address from the access whitelist for a resource and returns a 204 No Content response upon success.
 
@@ -41,9 +40,7 @@ class SendgridApp(APIApplication):
         Tags:
             IP Access Management
         """
-        request_body = {
-            "ids": ids,
-        }
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/access_settings/whitelist"
         query_params = {}
@@ -51,7 +48,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_allowed_ip(self) -> dict[str, Any]:
+    async def list_allowed_ip(self) -> dict[str, Any]:
         """
         Retrieves the current list of whitelisted IP addresses for access settings.
 
@@ -67,7 +64,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_ip_to_allow_list(self, ips=None) -> dict[str, Any]:
+    async def add_ip_to_allow_list(self, ips=None) -> dict[str, Any]:
         """
         Adds IP addresses to a whitelist using the provided JSON payload in a POST request to the "/v3/access_settings/whitelist" endpoint.
 
@@ -80,9 +77,7 @@ class SendgridApp(APIApplication):
         Tags:
             IP Access Management
         """
-        request_body = {
-            "ips": ips,
-        }
+        request_body = {"ips": ips}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/access_settings/whitelist"
         query_params = {}
@@ -90,7 +85,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_allowed_ip(self, rule_id) -> dict[str, Any]:
+    async def delete_allowed_ip(self, rule_id) -> dict[str, Any]:
         """
         Deletes the specified whitelist access rule identified by rule_id and returns no content upon success.
 
@@ -111,7 +106,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_allowed_ip(self, rule_id) -> dict[str, Any]:
+    async def get_allowed_ip(self, rule_id) -> dict[str, Any]:
         """
         Retrieves the details of a specific whitelist rule by its identifier using the GET method.
 
@@ -132,7 +127,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_alert(self) -> list[Any]:
+    async def list_alert(self) -> list[Any]:
         """
         Retrieves a list of alerts using the GitHub API, returning a successful response with a status code of 200.
 
@@ -148,9 +143,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_alert(
-        self, email_to=None, frequency=None, percentage=None, type=None
-    ) -> dict[str, Any]:
+    async def create_alert(self, email_to=None, frequency=None, percentage=None, type=None) -> dict[str, Any]:
         """
         Creates a new Dependabot alert for a repository using the GitHub REST API and returns a status indicating success or failure.
 
@@ -169,12 +162,7 @@ class SendgridApp(APIApplication):
         Tags:
             Alerts
         """
-        request_body = {
-            "email_to": email_to,
-            "frequency": frequency,
-            "percentage": percentage,
-            "type": type,
-        }
+        request_body = {"email_to": email_to, "frequency": frequency, "percentage": percentage, "type": type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/alerts"
         query_params = {}
@@ -182,7 +170,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_alert(self, alert_id) -> Any:
+    async def delete_alert(self, alert_id) -> Any:
         """
         Deletes a specified alert by its ID using the GitHub API and returns a status code indicating success.
 
@@ -203,7 +191,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_alert(self, alert_id) -> dict[str, Any]:
+    async def get_alert(self, alert_id) -> dict[str, Any]:
         """
         Retrieves a specific alert by its unique identifier from the API, returning the alert details in the response.
 
@@ -224,9 +212,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_alert(
-        self, alert_id, email_to=None, frequency=None, percentage=None
-    ) -> dict[str, Any]:
+    async def update_alert(self, alert_id, email_to=None, frequency=None, percentage=None) -> dict[str, Any]:
         """
         Updates a specified Dependabot alert using the GitHub API and returns a status message.
 
@@ -247,11 +233,7 @@ class SendgridApp(APIApplication):
         """
         if alert_id is None:
             raise ValueError("Missing required parameter 'alert_id'")
-        request_body = {
-            "email_to": email_to,
-            "frequency": frequency,
-            "percentage": percentage,
-        }
+        request_body = {"email_to": email_to, "frequency": frequency, "percentage": percentage}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/alerts/{alert_id}"
         query_params = {}
@@ -259,7 +241,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_api_key(self, limit=None) -> dict[str, Any]:
+    async def list_api_key(self, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of API keys using the "GET" method at the "/v3/api_keys" path, allowing for optional filtering by a specified limit and supporting authentication on behalf of another user.
 
@@ -278,7 +260,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_api_key(self, name=None, scopes=None) -> dict[str, Any]:
+    async def create_api_key(self, name=None, scopes=None) -> dict[str, Any]:
         """
         Creates and returns a new API key for authenticating requests to the API, with optional specification of the user or context on behalf of whom the key is generated.
 
@@ -292,10 +274,7 @@ class SendgridApp(APIApplication):
         Tags:
             API Keys
         """
-        request_body = {
-            "name": name,
-            "scopes": scopes,
-        }
+        request_body = {"name": name, "scopes": scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/api_keys"
         query_params = {}
@@ -303,7 +282,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_api_key(self, api_key_id) -> Any:
+    async def delete_api_key(self, api_key_id) -> Any:
         """
         Deletes an API key identified by the `api_key_id` parameter, returning a successful response without content if the operation is completed.
 
@@ -324,7 +303,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_api_key(self, api_key_id) -> dict[str, Any]:
+    async def get_api_key(self, api_key_id) -> dict[str, Any]:
         """
         Retrieves details for a specific API key identified by `{api_key_id}` using the `GET` method.
 
@@ -345,7 +324,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_api_key_name(self, api_key_id, name=None) -> dict[str, Any]:
+    async def update_api_key_name(self, api_key_id, name=None) -> dict[str, Any]:
         """
         Updates properties of an existing API key identified by `api_key_id` using patch operations to modify its configuration.
 
@@ -361,9 +340,7 @@ class SendgridApp(APIApplication):
         """
         if api_key_id is None:
             raise ValueError("Missing required parameter 'api_key_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/api_keys/{api_key_id}"
         query_params = {}
@@ -371,7 +348,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_api_key(self, api_key_id, name=None, scopes=None) -> dict[str, Any]:
+    async def update_api_key(self, api_key_id, name=None, scopes=None) -> dict[str, Any]:
         """
         Updates an API key identified by `{api_key_id}` using a JSON body, with optional support for operations on behalf of another entity.
 
@@ -388,10 +365,7 @@ class SendgridApp(APIApplication):
         """
         if api_key_id is None:
             raise ValueError("Missing required parameter 'api_key_id'")
-        request_body = {
-            "name": name,
-            "scopes": scopes,
-        }
+        request_body = {"name": name, "scopes": scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/api_keys/{api_key_id}"
         query_params = {}
@@ -399,7 +373,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_asm_group(self, id=None) -> list[Any]:
+    async def list_asm_group(self, id=None) -> list[Any]:
         """
         Retrieves a list of all suppression groups associated with the specified account, optionally filtered by group ID, using the "GET" method at the "/v3/asm/groups" path.
 
@@ -418,9 +392,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def creat_asm_group(
-        self, description=None, is_default=None, name=None
-    ) -> dict[str, Any]:
+    async def creat_asm_group(self, description=None, is_default=None, name=None) -> dict[str, Any]:
         """
         Creates a new suppression group for an account, allowing you to manage unsubscribe behavior, using the SendGrid API and returning a status message.
 
@@ -435,11 +407,7 @@ class SendgridApp(APIApplication):
         Tags:
             Unsubscribe Groups
         """
-        request_body = {
-            "description": description,
-            "is_default": is_default,
-            "name": name,
-        }
+        request_body = {"description": description, "is_default": is_default, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups"
         query_params = {}
@@ -447,7 +415,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_asm_group(self, group_id) -> dict[str, Any]:
+    async def delete_asm_group(self, group_id) -> dict[str, Any]:
         """
         Deletes an Active Directory group specified by its ID using the GitHub API and returns a successful response if the operation is completed without content.
 
@@ -468,7 +436,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_asm_group(self, group_id) -> dict[str, Any]:
+    async def get_asm_group(self, group_id) -> dict[str, Any]:
         """
         Retrieves a specific suppression group associated with a user using the Sendgrid API, returning its details.
 
@@ -489,9 +457,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_asm_group(
-        self, group_id, description=None, is_default=None, name=None
-    ) -> dict[str, Any]:
+    async def update_asm_group(self, group_id, description=None, is_default=None, name=None) -> dict[str, Any]:
         """
         Updates the settings or details of an ASM group identified by group_id using partial modifications via a PATCH request.
 
@@ -509,11 +475,7 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {
-            "description": description,
-            "is_default": is_default,
-            "name": name,
-        }
+        request_body = {"description": description, "is_default": is_default, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups/{group_id}"
         query_params = {}
@@ -521,7 +483,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_suppression_from_asm_group(self, group_id) -> list[Any]:
+    async def list_suppression_from_asm_group(self, group_id) -> list[Any]:
         """
         Retrieves a list of email addresses that have been suppressed (unsubscribed) from a specific suppression group in SendGrid.
 
@@ -542,9 +504,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_suppression_to_asm_group(
-        self, group_id, recipient_emails=None
-    ) -> dict[str, Any]:
+    async def add_suppression_to_asm_group(self, group_id, recipient_emails=None) -> dict[str, Any]:
         """
         Adds one or more email addresses to the suppression list for a specified unsubscribe group, preventing future emails from being sent to those addresses under that group.
 
@@ -560,9 +520,7 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {
-            "recipient_emails": recipient_emails,
-        }
+        request_body = {"recipient_emails": recipient_emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions"
         query_params = {}
@@ -570,9 +528,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_suppression_from_asm_group(
-        self, group_id, recipient_emails=None
-    ) -> list[Any]:
+    async def search_suppression_from_asm_group(self, group_id, recipient_emails=None) -> list[Any]:
         """
         Searches a suppression group for multiple suppressions using a list of email addresses and a group ID, returning matching suppressions.
 
@@ -588,9 +544,7 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {
-            "recipient_emails": recipient_emails,
-        }
+        request_body = {"recipient_emails": recipient_emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions/search"
         query_params = {}
@@ -598,7 +552,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_suppression_from_asm_group(self, group_id, email) -> Any:
+    async def delete_suppression_from_asm_group(self, group_id, email) -> Any:
         """
         Deletes an email address from a specific suppression group, removing it from that group's suppression list.
 
@@ -622,7 +576,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_asm_suppression(self) -> list[Any]:
+    async def list_asm_suppression(self) -> list[Any]:
         """
         Retrieves a list of suppressions from an ASM group using the SendGrid API.
 
@@ -638,7 +592,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_global_suppression(self, recipient_emails=None) -> dict[str, Any]:
+    async def create_global_suppression(self, recipient_emails=None) -> dict[str, Any]:
         """
         Adds one or more recipient email addresses to the global suppressions group, preventing them from receiving any emails from your account.
 
@@ -651,9 +605,7 @@ class SendgridApp(APIApplication):
         Tags:
             Global Suppressions
         """
-        request_body = {
-            "recipient_emails": recipient_emails,
-        }
+        request_body = {"recipient_emails": recipient_emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/suppressions/global"
         query_params = {}
@@ -661,7 +613,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_global_suppression(self, email) -> dict[str, Any]:
+    async def delete_global_suppression(self, email) -> dict[str, Any]:
         """
         Removes the specified email address from the global suppression (global unsubscribe) list and returns no content upon successful deletion[1][3][4].
 
@@ -682,7 +634,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_global_suppression(self, email) -> dict[str, Any]:
+    async def get_global_suppression(self, email) -> dict[str, Any]:
         """
         Retrieves information about a specific email address in the global suppression group using the SendGrid API.
 
@@ -703,7 +655,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_asm_suppression(self, email) -> dict[str, Any]:
+    async def get_asm_suppression(self, email) -> dict[str, Any]:
         """
         Retrieves a list of suppression groups from which a specified email address has been unsubscribed.
 
@@ -724,15 +676,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_browser_stat(
-        self,
-        start_date,
-        browsers=None,
-        limit=None,
-        offset=None,
-        aggregated_by=None,
-        end_date=None,
-    ) -> list[Any]:
+    async def list_browser_stat(self, start_date, browsers=None, limit=None, offset=None, aggregated_by=None, end_date=None) -> list[Any]:
         """
         Retrieves statistical data for specified browsers, allowing filtering and pagination by date, browser name, and other query parameters.
 
@@ -767,7 +711,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_campaign(self, limit=None, offset=None) -> dict[str, Any]:
+    async def list_campaign(self, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of campaigns with optional pagination and filtering by limit and offset, allowing operations on behalf of another entity.
 
@@ -782,14 +726,12 @@ class SendgridApp(APIApplication):
             Campaigns API, important
         """
         url = f"{self.base_url}/v3/campaigns"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_campaign(
+    async def create_campaign(
         self,
         categories=None,
         custom_unsubscribe_url=None,
@@ -848,7 +790,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_campaign(self, campaign_id) -> Any:
+    async def delete_campaign(self, campaign_id) -> Any:
         """
         Deletes the specified campaign identified by campaign_id and returns a 204 No Content status on successful deletion.
 
@@ -869,7 +811,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_campaign(self, campaign_id) -> dict[str, Any]:
+    async def get_campaign(self, campaign_id) -> dict[str, Any]:
         """
         Retrieves details for a specific campaign identified by its ID using the GET method.
 
@@ -890,14 +832,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_campaign(
-        self,
-        campaign_id,
-        categories=None,
-        html_content=None,
-        plain_content=None,
-        subject=None,
-        title=None,
+    async def update_campaign(
+        self, campaign_id, categories=None, html_content=None, plain_content=None, subject=None, title=None
     ) -> dict[str, Any]:
         """
         Modifies a specific campaign by updating selected fields identified by the `{campaign_id}` using JSON data in the request body, returning a status response.
@@ -932,7 +868,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def un_schedule_campaign(self, campaign_id) -> Any:
+    async def un_schedule_campaign(self, campaign_id) -> Any:
         """
         Deletes the scheduled delivery of a campaign, returning a 204 (No Content) response if successful.
 
@@ -953,7 +889,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_scheduled_campaign(self, campaign_id) -> dict[str, Any]:
+    async def get_scheduled_campaign(self, campaign_id) -> dict[str, Any]:
         """
         Retrieves schedule details for a specified campaign using the "GET" method, optionally executed on behalf of another entity.
 
@@ -974,7 +910,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_scheduled_campaign(self, campaign_id, send_at=None) -> dict[str, Any]:
+    async def update_scheduled_campaign(self, campaign_id, send_at=None) -> dict[str, Any]:
         """
         Modifies the schedule of a campaign with the specified ID using a PATCH request, allowing partial updates to the schedule details.
 
@@ -990,9 +926,7 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {
-            "send_at": send_at,
-        }
+        request_body = {"send_at": send_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
         query_params = {}
@@ -1000,7 +934,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_campaign(self, campaign_id, send_at=None) -> dict[str, Any]:
+    async def schedule_campaign(self, campaign_id, send_at=None) -> dict[str, Any]:
         """
         Creates a new schedule for a specified campaign using the POST method, accepting JSON-formatted data and returning a "201 Created" response upon successful creation.
 
@@ -1016,9 +950,7 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {
-            "send_at": send_at,
-        }
+        request_body = {"send_at": send_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
         query_params = {}
@@ -1026,7 +958,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def send_campaign(self, campaign_id) -> dict[str, Any]:
+    async def send_campaign(self, campaign_id) -> dict[str, Any]:
         """
         Initiates a currently scheduled campaign using the provided campaign ID and returns a status message if successful.
 
@@ -1047,7 +979,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def send_test_campaign(self, campaign_id, to=None) -> dict[str, Any]:
+    async def send_test_campaign(self, campaign_id, to=None) -> dict[str, Any]:
         """
         Tests the schedule configuration for a specific campaign using the POST method and returns a status code, with the campaign identified by the provided campaign ID.
 
@@ -1063,9 +995,7 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {
-            "to": to,
-        }
+        request_body = {"to": to}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules/test"
         query_params = {}
@@ -1073,9 +1003,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_category_stat(
-        self, start_date, categories, end_date=None, aggregated_by=None
-    ) -> list[Any]:
+    async def list_category_stat(self, start_date, categories, end_date=None, aggregated_by=None) -> list[Any]:
         """
         Retrieves statistical data for specified categories within a date range, optionally aggregated by a given parameter.
 
@@ -1094,27 +1022,15 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/categories/stats"
         query_params = {
             k: v
-            for k, v in [
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("categories", categories),
-                ("aggregated_by", aggregated_by),
-            ]
+            for k, v in [("start_date", start_date), ("end_date", end_date), ("categories", categories), ("aggregated_by", aggregated_by)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_category_stat_sum(
-        self,
-        start_date,
-        sort_by_metric=None,
-        sort_by_direction=None,
-        end_date=None,
-        limit=None,
-        offset=None,
-        aggregated_by=None,
+    async def list_category_stat_sum(
+        self, start_date, sort_by_metric=None, sort_by_direction=None, end_date=None, limit=None, offset=None, aggregated_by=None
     ) -> dict[str, Any]:
         """
         Retrieves summary statistics for categories using the "GET" method, allowing filtering by date range, sorting, and aggregation options.
@@ -1152,9 +1068,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_client_stat(
-        self, start_date, end_date=None, aggregated_by=None
-    ) -> list[Any]:
+    async def list_client_stat(self, start_date, end_date=None, aggregated_by=None) -> list[Any]:
         """
         Retrieves client statistics for a specified period, allowing aggregation options, using the "GET" method at the "/v3/clients/stats" endpoint.
 
@@ -1171,21 +1085,13 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/clients/stats"
         query_params = {
-            k: v
-            for k, v in [
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("aggregated_by", aggregated_by),
-            ]
-            if v is not None
+            k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("aggregated_by", aggregated_by)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_client_stat(
-        self, client_type, start_date, end_date=None, aggregated_by=None
-    ) -> list[Any]:
+    async def get_client_stat(self, client_type, start_date, end_date=None, aggregated_by=None) -> list[Any]:
         """
         Get statistical data for a specified client type with optional filtering by date range and aggregation parameters.
 
@@ -1205,19 +1111,13 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'client_type'")
         url = f"{self.base_url}/v3/clients/{client_type}/stats"
         query_params = {
-            k: v
-            for k, v in [
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("aggregated_by", aggregated_by),
-            ]
-            if v is not None
+            k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("aggregated_by", aggregated_by)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_custom_field(self) -> dict[str, Any]:
+    async def list_custom_field(self) -> dict[str, Any]:
         """
         Retrieves a list of custom fields from a contact database using the "GET" method, allowing for on-behalf-of parameters to specify the user making the request.
 
@@ -1233,7 +1133,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_custom_field(self, name=None, type=None) -> dict[str, Any]:
+    async def create_custom_field(self, name=None, type=None) -> dict[str, Any]:
         """
         Creates a new custom field in the contact database using a POST request with a JSON body.
 
@@ -1247,10 +1147,7 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        request_body = {
-            "name": name,
-            "type": type,
-        }
+        request_body = {"name": name, "type": type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/custom_fields"
         query_params = {}
@@ -1258,7 +1155,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_custom_field(self, custom_field_id) -> dict[str, Any]:
+    async def delete_custom_field(self, custom_field_id) -> dict[str, Any]:
         """
         Removes the specified custom field from the contact database, returning appropriate status codes based on success or failure.
 
@@ -1279,7 +1176,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_field(self, custom_field_id) -> dict[str, Any]:
+    async def get_custom_field(self, custom_field_id) -> dict[str, Any]:
         """
         Retrieves the details of a specific custom field in the contact database, including its name, type, and other attributes.
 
@@ -1300,7 +1197,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_contact_db_lists(self, items=None) -> Any:
+    async def delete_contact_db_lists(self, items=None) -> Any:
         """
         Deletes a contact list in the contact database using the provided JSON body and returns a successful status without content if the operation is successful.
 
@@ -1312,14 +1209,13 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        # Use items array directly as request body
         url = f"{self.base_url}/v3/contactdb/lists"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_contact_db_list(self) -> dict[str, Any]:
+    async def list_contact_db_list(self) -> dict[str, Any]:
         """
         Retrieves a list of all recipient lists from the contact database using the SendGrid API.
 
@@ -1335,7 +1231,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_contact_db_list(self, name=None) -> dict[str, Any]:
+    async def create_contact_db_list(self, name=None) -> dict[str, Any]:
         """
         Creates a new contact list in the contact database and returns the created list resource.
 
@@ -1348,9 +1244,7 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/lists"
         query_params = {}
@@ -1358,7 +1252,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_contact_db_list(self, list_id, delete_contacts=None) -> Any:
+    async def delete_contact_db_list(self, list_id, delete_contacts=None) -> Any:
         """
         Deletes a contact list identified by `{list_id}` in the contact database, optionally removing associated contacts if specified, and returns a status message.
 
@@ -1375,14 +1269,12 @@ class SendgridApp(APIApplication):
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
-        query_params = {
-            k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None
-        }
+        query_params = {k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_contact_db_list(self, list_id) -> dict[str, Any]:
+    async def get_contact_db_list(self, list_id) -> dict[str, Any]:
         """
         Retrieves details of a contact list specified by its ID using the "GET" method.
 
@@ -1403,7 +1295,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_contact_db_list(self, list_id, name=None) -> dict[str, Any]:
+    async def update_contact_db_list(self, list_id, name=None) -> dict[str, Any]:
         """
         Updates specific properties of a contact list identified by {list_id} using a JSON Patch request.
 
@@ -1419,9 +1311,7 @@ class SendgridApp(APIApplication):
         """
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
         query_params = {}
@@ -1429,9 +1319,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_recipients_from_contact_db_list(
-        self, list_id, page=None, page_size=None
-    ) -> dict[str, Any]:
+    async def list_recipients_from_contact_db_list(self, list_id, page=None, page_size=None) -> dict[str, Any]:
         """
         Retrieves a list of recipients for a specified contact list, allowing optional pagination via page and page size parameters.
 
@@ -1449,14 +1337,12 @@ class SendgridApp(APIApplication):
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients"
-        query_params = {
-            k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_recipients_to_contact_db_list(self, list_id, items=None) -> Any:
+    async def add_recipients_to_contact_db_list(self, list_id, items=None) -> Any:
         """
         Adds recipients to a specified contact list using the POST method and returns a success status upon creation.
 
@@ -1471,7 +1357,6 @@ class SendgridApp(APIApplication):
         """
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
-        # Use items array directly as request body
         request_body = items
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients"
         query_params = {}
@@ -1479,7 +1364,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_recipient_from_contact_db_list(self, list_id, recipient_id) -> Any:
+    async def delete_recipient_from_contact_db_list(self, list_id, recipient_id) -> Any:
         """
         Deletes a specific recipient from a contact list identified by list_id and recipient_id.
 
@@ -1503,7 +1388,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_recipient_to_contact_db_list(self, list_id, recipient_id) -> Any:
+    async def add_recipient_to_contact_db_list(self, list_id, recipient_id) -> Any:
         """
         Adds a recipient to a specific contact list by list ID and recipient ID.
 
@@ -1527,7 +1412,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_recipients(self, items=None) -> dict[str, Any]:
+    async def delete_recipients(self, items=None) -> dict[str, Any]:
         """
         Deletes one or more recipients from the contact database according to the details provided in the JSON request body.
 
@@ -1539,14 +1424,13 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        # Use items array directly as request body
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_recipient(self, page=None, page_size=None) -> dict[str, Any]:
+    async def list_recipient(self, page=None, page_size=None) -> dict[str, Any]:
         """
         Get a paginated list of recipients from the contact database.
 
@@ -1561,14 +1445,12 @@ class SendgridApp(APIApplication):
             Recipients
         """
         url = f"{self.base_url}/v3/contactdb/recipients"
-        query_params = {
-            k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_recipient(self, items=None) -> dict[str, Any]:
+    async def update_recipient(self, items=None) -> dict[str, Any]:
         """
         Updates a contact database recipient using the PATCH method with JSON content, allowing for partial modifications to an existing recipient's details.
 
@@ -1580,7 +1462,6 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        # Use items array directly as request body
         request_body = items
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {}
@@ -1588,7 +1469,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_recipient(self, items=None) -> dict[str, Any]:
+    async def add_recipient(self, items=None) -> dict[str, Any]:
         """
         Creates a new contact recipient in the contact database and returns the result, with the data provided in the request body.
 
@@ -1600,7 +1481,6 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        # Use items array directly as request body
         request_body = items
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {}
@@ -1608,7 +1488,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_billable(self) -> dict[str, Any]:
+    async def get_billable(self) -> dict[str, Any]:
         """
         Retrieves the current count of billable recipients in the Marketing Campaigns contact database.
 
@@ -1624,7 +1504,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_recipient_count(self) -> dict[str, Any]:
+    async def list_recipient_count(self) -> dict[str, Any]:
         """
         Retrieves the total count of recipients in the contact database.
 
@@ -1640,7 +1520,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_search_recipient(self, field_name=None) -> dict[str, Any]:
+    async def list_search_recipient(self, field_name=None) -> dict[str, Any]:
         """
         Retrieves recipients from SendGrid's contact database matching a specified field name using a GET request to allow filtering by custom recipient attributes.
 
@@ -1659,7 +1539,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_recipient(self, conditions=None, list_id=None) -> dict[str, Any]:
+    async def search_recipient(self, conditions=None, list_id=None) -> dict[str, Any]:
         """
         Searches recipients using segment conditions without creating a segment, allowing filters like equality, inequality, and containment, and returns a list of matching recipients.
 
@@ -1673,10 +1553,7 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        request_body = {
-            "conditions": conditions,
-            "list_id": list_id,
-        }
+        request_body = {"conditions": conditions, "list_id": list_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/recipients/search"
         query_params = {}
@@ -1684,7 +1561,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_recipient(self, recipient_id) -> dict[str, Any]:
+    async def delete_recipient(self, recipient_id) -> dict[str, Any]:
         """
         Deletes a recipient from the contact database by the specified recipient ID and returns a status code indicating the outcome.
 
@@ -1705,7 +1582,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_recipient(self, recipient_id) -> dict[str, Any]:
+    async def get_recipient(self, recipient_id) -> dict[str, Any]:
         """
         Retrieves a single recipient from the contact database by ID using the SendGrid API.
 
@@ -1726,7 +1603,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_recipient_list(self, recipient_id) -> dict[str, Any]:
+    async def get_recipient_list(self, recipient_id) -> dict[str, Any]:
         """
         Retrieves a list of contact lists associated with a specific recipient identified by their recipient ID.
 
@@ -1747,7 +1624,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_reserved_field(self) -> dict[str, Any]:
+    async def list_reserved_field(self) -> dict[str, Any]:
         """
         Retrieves a list of reserved field names in SendGrid's contact database that cannot be used for custom field names.
 
@@ -1763,7 +1640,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_segment(self) -> dict[str, Any]:
+    async def list_segment(self) -> dict[str, Any]:
         """
         Retrieves a list of all segments defined in the contact database using the SendGrid API.
 
@@ -1779,9 +1656,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_segment(
-        self, conditions=None, list_id=None, name=None, recipient_count=None
-    ) -> dict[str, Any]:
+    async def create_segment(self, conditions=None, list_id=None, name=None, recipient_count=None) -> dict[str, Any]:
         """
         Creates a new segment in the contact database using a JSON payload.
 
@@ -1797,12 +1672,7 @@ class SendgridApp(APIApplication):
         Tags:
             Segments
         """
-        request_body = {
-            "conditions": conditions,
-            "list_id": list_id,
-            "name": name,
-            "recipient_count": recipient_count,
-        }
+        request_body = {"conditions": conditions, "list_id": list_id, "name": name, "recipient_count": recipient_count}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/segments"
         query_params = {}
@@ -1810,9 +1680,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_recipient_for_segment(
-        self, segment_id, page=None, page_size=None
-    ) -> dict[str, Any]:
+    async def list_recipient_for_segment(self, segment_id, page=None, page_size=None) -> dict[str, Any]:
         """
         Retrieves a list of recipients for a specified contact database segment using pagination controls.
 
@@ -1830,14 +1698,12 @@ class SendgridApp(APIApplication):
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/v3/contactdb/segments/{segment_id}/recipients"
-        query_params = {
-            k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None
-        }
+        query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_status(self) -> dict[str, Any]:
+    async def list_status(self) -> dict[str, Any]:
         """
         Retrieves the status of current and recent contact export jobs from the SendGrid contact database.
 
@@ -1853,9 +1719,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_design(
-        self, page_size=None, page_token=None, summary=None
-    ) -> dict[str, Any]:
+    async def list_design(self, page_size=None, page_token=None, summary=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of design resources, supporting optional filtering by page size, page token, and summary mode.
 
@@ -1871,22 +1735,12 @@ class SendgridApp(APIApplication):
             Designs
         """
         url = f"{self.base_url}/v3/designs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("page_size", page_size),
-                ("page_token", page_token),
-                ("summary", summary),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token), ("summary", summary)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_design(
-        self, editor=None, html_content=None, name=None, plain_content=None
-    ) -> dict[str, Any]:
+    async def create_design(self, editor=None, html_content=None, name=None, plain_content=None) -> dict[str, Any]:
         """
         Creates a new design using the provided JSON data and returns a success response with a 201 status code upon successful creation.
 
@@ -1902,12 +1756,7 @@ class SendgridApp(APIApplication):
         Tags:
             Designs
         """
-        request_body = {
-            "editor": editor,
-            "html_content": html_content,
-            "name": name,
-            "plain_content": plain_content,
-        }
+        request_body = {"editor": editor, "html_content": html_content, "name": name, "plain_content": plain_content}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs"
         query_params = {}
@@ -1915,9 +1764,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pre_built_design(
-        self, page_size=None, page_token=None, summary=None
-    ) -> dict[str, Any]:
+    async def list_pre_built_design(self, page_size=None, page_token=None, summary=None) -> dict[str, Any]:
         """
         Retrieves a list of pre-built designs using the "/v3/designs/pre-builts" endpoint, allowing for pagination and optional summarization of the results.
 
@@ -1933,20 +1780,12 @@ class SendgridApp(APIApplication):
             Designs
         """
         url = f"{self.base_url}/v3/designs/pre-builts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("page_size", page_size),
-                ("page_token", page_token),
-                ("summary", summary),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token), ("summary", summary)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_pre_built_design(self, id) -> dict[str, Any]:
+    async def get_pre_built_design(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a pre-built design by its ID using the "GET" method.
 
@@ -1967,7 +1806,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def duplicate_pre_built_design(self, id, editor=None, name=None) -> dict[str, Any]:
+    async def duplicate_pre_built_design(self, id, editor=None, name=None) -> dict[str, Any]:
         """
         Creates or updates a pre-built design by ID using the provided data and returns a status response.
 
@@ -1984,10 +1823,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "editor": editor,
-            "name": name,
-        }
+        request_body = {"editor": editor, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs/pre-builts/{id}"
         query_params = {}
@@ -1995,7 +1831,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_design(self, id) -> dict[str, Any]:
+    async def delete_design(self, id) -> dict[str, Any]:
         """
         Deletes a design resource identified by the specified ID using the DELETE method and returns a status code indicating success or failure.
 
@@ -2016,7 +1852,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_design(self, id) -> dict[str, Any]:
+    async def get_design(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a design by its ID using the "GET" method and returns a successful response if the design exists.
 
@@ -2037,15 +1873,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_design(
-        self,
-        id,
-        categories=None,
-        generate_plain_content=None,
-        html_content=None,
-        name=None,
-        plain_content=None,
-        subject=None,
+    async def update_design(
+        self, id, categories=None, generate_plain_content=None, html_content=None, name=None, plain_content=None, subject=None
     ) -> dict[str, Any]:
         """
         Updates a specific design resource by modifying partial attributes identified by the `{id}` at the `/v3/designs/{id}` endpoint using JSON data in the request body.
@@ -2082,7 +1911,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def duplicate_design(self, id, editor=None, name=None) -> dict[str, Any]:
+    async def duplicate_design(self, id, editor=None, name=None) -> dict[str, Any]:
         """
         Updates a design with the specified ID using the provided data and returns a successful creation response.
 
@@ -2099,10 +1928,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "editor": editor,
-            "name": name,
-        }
+        request_body = {"editor": editor, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs/{id}"
         query_params = {}
@@ -2110,9 +1936,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_device_stat(
-        self, start_date, limit=None, offset=None, aggregated_by=None, end_date=None
-    ) -> list[Any]:
+    async def list_device_stat(self, start_date, limit=None, offset=None, aggregated_by=None, end_date=None) -> list[Any]:
         """
         Retrieves device statistics using the "GET" method, allowing for customization through parameters such as on behalf of, advanced query strings for limit and offset, aggregation, and start and end dates.
 
@@ -2145,7 +1969,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_engagement_quality_score(self, from_, to) -> dict[str, Any]:
+    async def list_engagement_quality_score(self, from_, to) -> dict[str, Any]:
         """
         Retrieves SendGrid Engagement Quality scores for a specified date range using the GET method.
 
@@ -2165,9 +1989,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_subuser_engagement_quality_score(
-        self, date, limit=None, after_key=None
-    ) -> dict[str, Any]:
+    async def list_subuser_engagement_quality_score(self, date, limit=None, after_key=None) -> dict[str, Any]:
         """
         Retrieves engagement quality scores for specified subusers, including overall scores and contributing metrics, using optional parameters for date range and pagination.
 
@@ -2183,24 +2005,12 @@ class SendgridApp(APIApplication):
             Engagement Quality
         """
         url = f"{self.base_url}/v3/engagementquality/subusers/scores"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("date", date), ("after_key", after_key)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("date", date), ("after_key", after_key)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_geo_stat(
-        self,
-        start_date,
-        country=None,
-        limit=None,
-        offset=None,
-        aggregated_by=None,
-        end_date=None,
-    ) -> list[Any]:
+    async def list_geo_stat(self, start_date, country=None, limit=None, offset=None, aggregated_by=None, end_date=None) -> list[Any]:
         """
         Retrieves geographic statistics for a specified country using the GET method, allowing for advanced filtering by date range and aggregation options.
 
@@ -2235,7 +2045,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_assigned_ip(self) -> list[Any]:
+    async def list_assigned_ip(self) -> list[Any]:
         """
         Retrieves a list of assigned IP addresses using the "GET" method at the "/v3/ips/assigned" path.
 
@@ -2251,7 +2061,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_ip_pool(self) -> list[Any]:
+    async def list_ip_pool(self) -> list[Any]:
         """
         Retrieves a list of IP pools using the "GET" method at the "/v3/ips/pools" path.
 
@@ -2267,7 +2077,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_ip_to_ip_pool(self, pool_name, ip=None) -> dict[str, Any]:
+    async def add_ip_to_ip_pool(self, pool_name, ip=None) -> dict[str, Any]:
         """
         Adds a new IP address to the specified IP pool.
 
@@ -2283,9 +2093,7 @@ class SendgridApp(APIApplication):
         """
         if pool_name is None:
             raise ValueError("Missing required parameter 'pool_name'")
-        request_body = {
-            "ip": ip,
-        }
+        request_body = {"ip": ip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/ips/pools/{pool_name}/ips"
         query_params = {}
@@ -2293,7 +2101,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_ip_from_ip_pool(self, pool_name, ip) -> dict[str, Any]:
+    async def delete_ip_from_ip_pool(self, pool_name, ip) -> dict[str, Any]:
         """
         Deletes the specified IP address from the given IP pool.
 
@@ -2317,7 +2125,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_remaining_ip_count(self) -> dict[str, Any]:
+    async def list_remaining_ip_count(self) -> dict[str, Any]:
         """
         Retrieves the number of remaining IP addresses available for allocation.
 
@@ -2333,7 +2141,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_warm_up_ip(self) -> list[Any]:
+    async def list_warm_up_ip(self) -> list[Any]:
         """
         Retrieves and returns data related to the IP warm-up process using the GET method at the "/v3/ips/warmup" path.
 
@@ -2349,7 +2157,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def warm_up_ip(self, ip=None) -> list[Any]:
+    async def warm_up_ip(self, ip=None) -> list[Any]:
         """
         Initiates the warmup process for one or more IP addresses by submitting a request in JSON format and returns a success or not found response.
 
@@ -2362,9 +2170,7 @@ class SendgridApp(APIApplication):
         Tags:
             IP Warmup
         """
-        request_body = {
-            "ip": ip,
-        }
+        request_body = {"ip": ip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/ips/warmup"
         query_params = {}
@@ -2372,7 +2178,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def stop_ip_warm_up(self, ip_address) -> dict[str, Any]:
+    async def stop_ip_warm_up(self, ip_address) -> dict[str, Any]:
         """
         Removes the specified IP address from the warmup pool and returns no content upon successful deletion.
 
@@ -2393,7 +2199,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_warm_up_ip(self, ip_address) -> list[Any]:
+    async def get_warm_up_ip(self, ip_address) -> list[Any]:
         """
         Retrieves information about warming up a specific IP address using the GET method and returns a response based on the operation's success or failure.
 
@@ -2414,7 +2220,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_mail_batch(self) -> dict[str, Any]:
+    async def create_mail_batch(self) -> dict[str, Any]:
         """
         Creates and submits a batch of emails in a single request, supporting optional delegation and returning a confirmation upon successful processing.
 
@@ -2430,7 +2236,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_mail_batch(self, batch_id) -> dict[str, Any]:
+    async def get_mail_batch(self, batch_id) -> dict[str, Any]:
         """
         Retrieves the status and details of a specific batch mail operation by its batch ID.
 
@@ -2451,7 +2257,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def send_mail(
+    async def send_mail(
         self,
         asm=None,
         attachments=None,
@@ -2604,7 +2410,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_mail_setting(self, limit=None, offset=None) -> dict[str, Any]:
+    async def list_mail_setting(self, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves mail settings using the GET method, allowing optional parameters for pagination and acting on behalf of another party.
 
@@ -2619,14 +2425,12 @@ class SendgridApp(APIApplication):
             Mail Settings
         """
         url = f"{self.base_url}/v3/mail_settings"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_address_whitelist(self) -> dict[str, Any]:
+    async def list_address_whitelist(self) -> dict[str, Any]:
         """
         Retrieves the current list of whitelisted email addresses for mail settings.
 
@@ -2642,7 +2446,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_address_whitelist(self, enabled=None, list=None) -> dict[str, Any]:
+    async def update_address_whitelist(self, enabled=None, list=None) -> dict[str, Any]:
         """
         Modifies the email address whitelist settings using the PATCH method, accepting JSON payload updates at the "/v3/mail_settings/address_whitelist" endpoint.
 
@@ -2656,10 +2460,7 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {
-            "enabled": enabled,
-            "list": list,
-        }
+        request_body = {"enabled": enabled, "list": list}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/address_whitelist"
         query_params = {}
@@ -2667,7 +2468,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_bounce_purge(self) -> dict[str, Any]:
+    async def list_bounce_purge(self) -> dict[str, Any]:
         """
         Retrieves the current bounce purge mail settings using the SendGrid API, which define how and when bounced email addresses are automatically removed from suppression lists.
 
@@ -2683,9 +2484,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_bounce_purge(
-        self, enabled=None, hard_bounces=None, soft_bounces=None
-    ) -> dict[str, Any]:
+    async def update_bounce_purge(self, enabled=None, hard_bounces=None, soft_bounces=None) -> dict[str, Any]:
         """
         Updates the bounce purge mail settings by applying partial modifications to the resource using a JSON request body.
 
@@ -2700,11 +2499,7 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {
-            "enabled": enabled,
-            "hard_bounces": hard_bounces,
-            "soft_bounces": soft_bounces,
-        }
+        request_body = {"enabled": enabled, "hard_bounces": hard_bounces, "soft_bounces": soft_bounces}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/bounce_purge"
         query_params = {}
@@ -2712,7 +2507,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_footer(self) -> dict[str, Any]:
+    async def list_footer(self) -> dict[str, Any]:
         """
         Retrieves the footer settings for mail using the specified parameters.
 
@@ -2728,9 +2523,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_footer(
-        self, enabled=None, html_content=None, plain_content=None
-    ) -> dict[str, Any]:
+    async def update_footer(self, enabled=None, html_content=None, plain_content=None) -> dict[str, Any]:
         """
         Updates the footer settings for mail using the PATCH method, allowing partial modifications to existing mail settings.
 
@@ -2745,11 +2538,7 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {
-            "enabled": enabled,
-            "html_content": html_content,
-            "plain_content": plain_content,
-        }
+        request_body = {"enabled": enabled, "html_content": html_content, "plain_content": plain_content}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/footer"
         query_params = {}
@@ -2757,7 +2546,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_forward_bounce(self) -> dict[str, Any]:
+    async def list_forward_bounce(self) -> dict[str, Any]:
         """
         Retrieves the current mail settings for forwarding bounced emails to a specified address.
 
@@ -2773,7 +2562,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_forward_bounce(self, email=None, enabled=None) -> dict[str, Any]:
+    async def update_forward_bounce(self, email=None, enabled=None) -> dict[str, Any]:
         """
         Modifies mail settings for forwarding and bouncing using the "PATCH" method, updating specified fields in the resource located at "/v3/mail_settings/forward_bounce".
 
@@ -2787,10 +2576,7 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {
-            "email": email,
-            "enabled": enabled,
-        }
+        request_body = {"email": email, "enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/forward_bounce"
         query_params = {}
@@ -2798,7 +2584,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_forward_spam(self) -> dict[str, Any]:
+    async def list_forward_spam(self) -> dict[str, Any]:
         """
         Retrieves the current Forward Spam mail settings, including the enabled status and any email addresses designated to receive forwarded spam reports[2][3].
 
@@ -2814,7 +2600,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_forward_spam(self, email=None, enabled=None) -> dict[str, Any]:
+    async def update_forward_spam(self, email=None, enabled=None) -> dict[str, Any]:
         """
         Updates mail settings for spam forwarding using the "PATCH" method, allowing partial modifications to the existing configuration.
 
@@ -2828,10 +2614,7 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {
-            "email": email,
-            "enabled": enabled,
-        }
+        request_body = {"email": email, "enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/forward_spam"
         query_params = {}
@@ -2839,7 +2622,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_template(self) -> dict[str, Any]:
+    async def list_template(self) -> dict[str, Any]:
         """
         Retrieves the current template mail settings for the specified account using the SendGrid API.
 
@@ -2855,7 +2638,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_template(self, enabled=None, html_content=None) -> dict[str, Any]:
+    async def update_template(self, enabled=None, html_content=None) -> dict[str, Any]:
         """
         Updates the mail settings template using the PATCH method, allowing for partial modifications to the existing resource.
 
@@ -2869,10 +2652,7 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {
-            "enabled": enabled,
-            "html_content": html_content,
-        }
+        request_body = {"enabled": enabled, "html_content": html_content}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/template"
         query_params = {}
@@ -2880,14 +2660,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_mailbox_provider_stat(
-        self,
-        start_date,
-        mailbox_providers=None,
-        limit=None,
-        offset=None,
-        aggregated_by=None,
-        end_date=None,
+    async def list_mailbox_provider_stat(
+        self, start_date, mailbox_providers=None, limit=None, offset=None, aggregated_by=None, end_date=None
     ) -> list[Any]:
         """
         Retrieves email statistics segmented by recipient mailbox provider, allowing for filtering by provider, date range, and aggregation type.
@@ -2923,7 +2697,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_contact(self, delete_all_contacts=None, ids=None) -> dict[str, Any]:
+    async def delete_contact(self, delete_all_contacts=None, ids=None) -> dict[str, Any]:
         """
         Deletes contacts in the marketing system using the specified IDs or clears all contacts if the "delete_all_contacts" parameter is set, returning status codes to indicate the outcome of the operation.
 
@@ -2938,16 +2712,12 @@ class SendgridApp(APIApplication):
             Contacts
         """
         url = f"{self.base_url}/v3/marketing/contacts"
-        query_params = {
-            k: v
-            for k, v in [("delete_all_contacts", delete_all_contacts), ("ids", ids)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("delete_all_contacts", delete_all_contacts), ("ids", ids)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_contact(self) -> dict[str, Any]:
+    async def list_contact(self) -> dict[str, Any]:
         """
         Retrieves a list of contacts from the marketing service, returning their details in the response.
 
@@ -2963,7 +2733,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_contact(self, contacts=None, list_ids=None) -> dict[str, Any]:
+    async def update_contact(self, contacts=None, list_ids=None) -> dict[str, Any]:
         """
         Updates or adds marketing contact information by replacing the existing contact data with the provided JSON payload.
 
@@ -2977,10 +2747,7 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {
-            "contacts": contacts,
-            "list_ids": list_ids,
-        }
+        request_body = {"contacts": contacts, "list_ids": list_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts"
         query_params = {}
@@ -2988,7 +2755,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_batched_contact(self, ids=None) -> dict[str, Any]:
+    async def list_batched_contact(self, ids=None) -> dict[str, Any]:
         """
         Creates a batch of contacts in the marketing system using a JSON payload and returns a success status upon completion.
 
@@ -3001,9 +2768,7 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {
-            "ids": ids,
-        }
+        request_body = {"ids": ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/batch"
         query_params = {}
@@ -3011,7 +2776,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_export_contact(self) -> dict[str, Any]:
+    async def list_export_contact(self) -> dict[str, Any]:
         """
         Retrieves a list or details of marketing contact exports using the "GET" method at the "/v3/marketing/contacts/exports" path.
 
@@ -3027,13 +2792,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def export_contact(
-        self,
-        file_type=None,
-        list_ids=None,
-        max_file_size=None,
-        notifications=None,
-        segment_ids=None,
+    async def export_contact(
+        self, file_type=None, list_ids=None, max_file_size=None, notifications=None, segment_ids=None
     ) -> dict[str, Any]:
         """
         Exports contacts using a POST request to the "/v3/marketing/contacts/exports" endpoint, accepting JSON data in the request body.
@@ -3065,7 +2825,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_export_contact(self, id) -> dict[str, Any]:
+    async def get_export_contact(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a specific marketing contacts export by its ID using the "GET" method.
 
@@ -3086,9 +2846,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def import_contact(
-        self, field_mappings=None, file_type=None, list_ids=None
-    ) -> dict[str, Any]:
+    async def import_contact(self, field_mappings=None, file_type=None, list_ids=None) -> dict[str, Any]:
         """
         Imports or updates marketing contacts in bulk by replacing or creating the contact data using a JSON payload.
 
@@ -3103,11 +2861,7 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {
-            "field_mappings": field_mappings,
-            "file_type": file_type,
-            "list_ids": list_ids,
-        }
+        request_body = {"field_mappings": field_mappings, "file_type": file_type, "list_ids": list_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/imports"
         query_params = {}
@@ -3115,7 +2869,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_import_contact(self, id) -> dict[str, Any]:
+    async def get_import_contact(self, id) -> dict[str, Any]:
         """
         Retrieves details about a specific contact import operation by its ID using the "GET" method.
 
@@ -3136,7 +2890,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_contact(self, query=None) -> dict[str, Any]:
+    async def search_contact(self, query=None) -> dict[str, Any]:
         """
         Searches for contacts using a SendGrid API endpoint by sending a POST request with a JSON body containing a valid SGQL query, returning up to 50 contacts that match the search criteria.
 
@@ -3149,9 +2903,7 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {
-            "query": query,
-        }
+        request_body = {"query": query}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/search"
         query_params = {}
@@ -3159,9 +2911,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_contact_by_email(
-        self, anonymous_id=None, emails=None, external_id=None, phone_number_id=None
-    ) -> dict[str, Any]:
+    async def list_contact_by_email(self, anonymous_id=None, emails=None, external_id=None, phone_number_id=None) -> dict[str, Any]:
         """
         Searches for marketing contacts by their email addresses via a POST request and returns matching contact records or error responses if the request is invalid.
 
@@ -3177,12 +2927,7 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {
-            "anonymous_id": anonymous_id,
-            "emails": emails,
-            "external_id": external_id,
-            "phone_number_id": phone_number_id,
-        }
+        request_body = {"anonymous_id": anonymous_id, "emails": emails, "external_id": external_id, "phone_number_id": phone_number_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/search/emails"
         query_params = {}
@@ -3190,9 +2935,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_contact_by_identifiers(
-        self, identifier_type, identifiers=None
-    ) -> dict[str, Any]:
+    async def get_contact_by_identifiers(self, identifier_type, identifiers=None) -> dict[str, Any]:
         """
         Searches marketing contacts by a specified identifier type using a POST request with JSON payload and returns matching contact information.
 
@@ -3208,9 +2951,7 @@ class SendgridApp(APIApplication):
         """
         if identifier_type is None:
             raise ValueError("Missing required parameter 'identifier_type'")
-        request_body = {
-            "identifiers": identifiers,
-        }
+        request_body = {"identifiers": identifiers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/search/identifiers/{identifier_type}"
         query_params = {}
@@ -3218,9 +2959,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_contact_identifier(
-        self, contact_id, identifier_type=None, identifier_value=None
-    ) -> dict[str, Any]:
+    async def delete_contact_identifier(self, contact_id, identifier_type=None, identifier_value=None) -> dict[str, Any]:
         """
         Deletes a contact identifier with the specified contact ID and returns a status indicating whether the operation was accepted or encountered errors.
 
@@ -3237,10 +2976,7 @@ class SendgridApp(APIApplication):
         """
         if contact_id is None:
             raise ValueError("Missing required parameter 'contact_id'")
-        request_body = {
-            "identifier_type": identifier_type,
-            "identifier_value": identifier_value,
-        }
+        request_body = {"identifier_type": identifier_type, "identifier_value": identifier_value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/{contact_id}/identifiers"
         query_params = {}
@@ -3248,7 +2984,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_contact(self, id) -> dict[str, Any]:
+    async def get_contact(self, id) -> dict[str, Any]:
         """
         Retrieves detailed information for a specified contact in the marketing contacts database.
 
@@ -3269,7 +3005,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_field_definition(self) -> dict[str, Any]:
+    async def list_field_definition(self) -> dict[str, Any]:
         """
         Retrieves the definitions of marketing fields available for use in marketing-related API operations.
 
@@ -3285,7 +3021,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_field_definition(self, field_type=None, name=None) -> dict[str, Any]:
+    async def create_field_definition(self, field_type=None, name=None) -> dict[str, Any]:
         """
         Creates new custom field definitions for marketing purposes using the "POST" method at the "/v3/marketing/field_definitions" endpoint, accepting JSON-formatted data in the request body.
 
@@ -3299,10 +3035,7 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        request_body = {
-            "field_type": field_type,
-            "name": name,
-        }
+        request_body = {"field_type": field_type, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/field_definitions"
         query_params = {}
@@ -3310,7 +3043,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_field_definition(self, custom_field_id) -> Any:
+    async def delete_field_definition(self, custom_field_id) -> Any:
         """
         Deletes the specified marketing field definition by custom field ID and returns a 204 (No Content) on success or 404 (Not Found) if the resource does not exist.
 
@@ -3331,7 +3064,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_field_definition(self, custom_field_id, name=None) -> dict[str, Any]:
+    async def update_field_definition(self, custom_field_id, name=None) -> dict[str, Any]:
         """
         Updates a specific custom field definition in the marketing system using the provided field ID and returns a status or error response.
 
@@ -3347,9 +3080,7 @@ class SendgridApp(APIApplication):
         """
         if custom_field_id is None:
             raise ValueError("Missing required parameter 'custom_field_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/field_definitions/{custom_field_id}"
         query_params = {}
@@ -3357,7 +3088,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_integration(self, ids) -> Any:
+    async def delete_integration(self, ids) -> Any:
         """
         Deletes marketing integrations specified by the IDs provided in the request, returning no content upon successful deletion.
 
@@ -3376,7 +3107,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_integrations_by_user(self) -> dict[str, Any]:
+    async def get_integrations_by_user(self) -> dict[str, Any]:
         """
         Retrieves a list of available marketing integrations and their API connection details.
 
@@ -3392,9 +3123,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_integration(
-        self, destination, filters, properties, label=None
-    ) -> dict[str, Any]:
+    async def add_integration(self, destination, filters, properties, label=None) -> dict[str, Any]:
         """
         Creates a new marketing integration by accepting required JSON data and returns a confirmation on success or an error otherwise.
 
@@ -3430,12 +3159,7 @@ class SendgridApp(APIApplication):
         Tags:
             External Integration Endpoints
         """
-        request_body = {
-            "destination": destination,
-            "filters": filters,
-            "label": label,
-            "properties": properties,
-        }
+        request_body = {"destination": destination, "filters": filters, "label": label, "properties": properties}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/integrations"
         query_params = {}
@@ -3443,7 +3167,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def find_integration_by_id(self, id) -> dict[str, Any]:
+    async def find_integration_by_id(self, id) -> dict[str, Any]:
         """
         Retrieves details about a specific marketing integration by its ID using the "GET" method at the path "/v3/marketing/integrations/{id}".
 
@@ -3464,9 +3188,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_integration(
-        self, id, destination=None, filters=None, label=None, properties=None
-    ) -> dict[str, Any]:
+    async def update_integration(self, id, destination=None, filters=None, label=None, properties=None) -> dict[str, Any]:
         """
         Updates a marketing integration identified by its ID using the provided JSON Patch document.
 
@@ -3502,12 +3224,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "destination": destination,
-            "filters": filters,
-            "label": label,
-            "properties": properties,
-        }
+        request_body = {"destination": destination, "filters": filters, "label": label, "properties": properties}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/integrations/{id}"
         query_params = {}
@@ -3515,7 +3232,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_marketing_segment(self, page_size=None, page_token=None) -> dict[str, Any]:
+    async def list_marketing_segment(self, page_size=None, page_token=None) -> dict[str, Any]:
         """
         Retrieves a list of marketing lists, allowing pagination through optional parameters for page size and page token.
 
@@ -3530,16 +3247,12 @@ class SendgridApp(APIApplication):
             Lists
         """
         url = f"{self.base_url}/v3/marketing/lists"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("page_token", page_token)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_marketing_list(self, name=None) -> dict[str, Any]:
+    async def create_marketing_list(self, name=None) -> dict[str, Any]:
         """
         Creates a new marketing list for managing contacts in marketing campaigns using the SendGrid API.
 
@@ -3552,9 +3265,7 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/lists"
         query_params = {}
@@ -3562,7 +3273,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_marketing_list(self, id, delete_contacts=None) -> dict[str, Any]:
+    async def delete_marketing_list(self, id, delete_contacts=None) -> dict[str, Any]:
         """
         Deletes a specific marketing list using the provided ID and optionally deletes associated contacts if the `delete_contacts` query parameter is set to true.
 
@@ -3579,14 +3290,12 @@ class SendgridApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/lists/{id}"
-        query_params = {
-            k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None
-        }
+        query_params = {k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_marketing_list(self, id, contact_sample=None) -> dict[str, Any]:
+    async def get_marketing_list(self, id, contact_sample=None) -> dict[str, Any]:
         """
         Retrieves details of a marketing list by its ID using the "GET" method, optionally filtering by contact sample if specified.
 
@@ -3603,14 +3312,12 @@ class SendgridApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/lists/{id}"
-        query_params = {
-            k: v for k, v in [("contact_sample", contact_sample)] if v is not None
-        }
+        query_params = {k: v for k, v in [("contact_sample", contact_sample)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_marketing_list(self, id, name=None) -> dict[str, Any]:
+    async def update_marketing_list(self, id, name=None) -> dict[str, Any]:
         """
         Modifies a specific marketing list identified by its ID using the PATCH method, allowing for partial updates to the list's properties.
 
@@ -3626,9 +3333,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/lists/{id}"
         query_params = {}
@@ -3636,7 +3341,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_contact_count(self, id) -> dict[str, Any]:
+    async def list_contact_count(self, id) -> dict[str, Any]:
         """
         Retrieves the total number of contacts in the specified marketing list.
 
@@ -3657,9 +3362,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_makreting_segment(
-        self, ids=None, parent_list_ids=None, no_parent_list_id=None
-    ) -> dict[str, Any]:
+    def list_makreting_segment(self, ids=None, parent_list_ids=None, no_parent_list_id=None) -> dict[str, Any]:
         """
         Retrieves marketing segment data, version 2.0, allowing optional filtering by segment IDs, parent list IDs, and whether to exclude parent list IDs.
 
@@ -3676,19 +3379,13 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/segments/2.0"
         query_params = {
-            k: v
-            for k, v in [
-                ("ids", ids),
-                ("parent_list_ids", parent_list_ids),
-                ("no_parent_list_id", no_parent_list_id),
-            ]
-            if v is not None
+            k: v for k, v in [("ids", ids), ("parent_list_ids", parent_list_ids), ("no_parent_list_id", no_parent_list_id)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def refresh_segment(self, segment_id, user_time_zone) -> dict[str, Any]:
+    async def refresh_segment(self, segment_id, user_time_zone) -> dict[str, Any]:
         """
         Refreshes a specified marketing segment by its ID, ensuring that the segment is updated to reflect any changes in contact data or segment criteria.
 
@@ -3704,9 +3401,7 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        request_body = {
-            "user_time_zone": user_time_zone,
-        }
+        request_body = {"user_time_zone": user_time_zone}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/segments/2.0/refresh/{segment_id}"
         query_params = {}
@@ -3714,7 +3409,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_segment(self, segment_id) -> Any:
+    async def delete_segment(self, segment_id) -> Any:
         """
         Deletes a marketing segment identified by the segment ID using the DELETE method, returning a status code indicating the outcome of the operation.
 
@@ -3735,7 +3430,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_segment(self, segment_id, contacts_sample=None) -> dict[str, Any]:
+    async def get_segment(self, segment_id, contacts_sample=None) -> dict[str, Any]:
         """
         Retrieves details for a specific marketing segment, identified by its segment ID, with optional filtering by sampling contacts.
 
@@ -3752,14 +3447,12 @@ class SendgridApp(APIApplication):
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
-        query_params = {
-            k: v for k, v in [("contacts_sample", contacts_sample)] if v is not None
-        }
+        query_params = {k: v for k, v in [("contacts_sample", contacts_sample)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_segment(self, segment_id, name=None, query_dsl=None) -> dict[str, Any]:
+    async def update_segment(self, segment_id, name=None, query_dsl=None) -> dict[str, Any]:
         """
         Updates a marketing segment using the PATCH method, allowing partial modifications to the specified segment resource.
 
@@ -3776,10 +3469,7 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        request_body = {
-            "name": name,
-            "query_dsl": query_dsl,
-        }
+        request_body = {"name": name, "query_dsl": query_dsl}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
         query_params = {}
@@ -3787,17 +3477,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_sender(
-        self,
-        address=None,
-        address_2=None,
-        city=None,
-        country=None,
-        from_=None,
-        nickname=None,
-        reply_to=None,
-        state=None,
-        zip=None,
+    async def create_sender(
+        self, address=None, address_2=None, city=None, country=None, from_=None, nickname=None, reply_to=None, state=None, zip=None
     ) -> dict[str, Any]:
         """
         Adds a new sender to the marketing senders list using the SendGrid API and returns a status code indicating the success or failure of the operation.
@@ -3837,7 +3518,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_sender(self, id) -> Any:
+    async def delete_sender(self, id) -> Any:
         """
         Deletes a marketing sender with the specified ID using the DELETE method, returning a successful response with no content if found, or an error if unauthorized or not found.
 
@@ -3858,7 +3539,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_sender(self, id) -> dict[str, Any]:
+    async def get_sender(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a specific sender by ID using the GET method at the "/v3/marketing/senders/{id}" endpoint.
 
@@ -3879,18 +3560,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_sender(
-        self,
-        id,
-        address=None,
-        address_2=None,
-        city=None,
-        country=None,
-        from_=None,
-        nickname=None,
-        reply_to=None,
-        state=None,
-        zip=None,
+    async def update_sender(
+        self, id, address=None, address_2=None, city=None, country=None, from_=None, nickname=None, reply_to=None, state=None, zip=None
     ) -> dict[str, Any]:
         """
         Updates the properties of a marketing sender resource identified by the given ID using a PATCH request and returns the appropriate status code.
@@ -3933,7 +3604,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def reset_sender_verification(self, id) -> Any:
+    async def reset_sender_verification(self, id) -> Any:
         """
         Resends a verification email for a specified sender identity using the SendGrid API.
 
@@ -3954,7 +3625,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_single_sends(self, ids=None) -> Any:
+    async def delete_single_sends(self, ids=None) -> Any:
         """
         Deletes one or more Single Sends from SendGrid's marketing campaigns by ID, permanently removing them from the system.
 
@@ -3973,7 +3644,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_single_send(self, page_size=None, page_token=None) -> dict[str, Any]:
+    async def list_single_send(self, page_size=None, page_token=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all Single Sends (one-time, non-automated email campaigns) with condensed details about each, allowing optional page size and token parameters for result pagination.
 
@@ -3988,18 +3659,12 @@ class SendgridApp(APIApplication):
             Single Sends
         """
         url = f"{self.base_url}/v3/marketing/singlesends"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("page_token", page_token)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_single_send(
-        self, categories=None, email_config=None, name=None, send_at=None, send_to=None
-    ) -> dict[str, Any]:
+    async def create_single_send(self, categories=None, email_config=None, name=None, send_at=None, send_to=None) -> dict[str, Any]:
         """
         Creates a new single send email campaign using the provided request data.
 
@@ -4016,13 +3681,7 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        request_body = {
-            "categories": categories,
-            "email_config": email_config,
-            "name": name,
-            "send_at": send_at,
-            "send_to": send_to,
-        }
+        request_body = {"categories": categories, "email_config": email_config, "name": name, "send_at": send_at, "send_to": send_to}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends"
         query_params = {}
@@ -4030,7 +3689,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_category(self) -> dict[str, Any]:
+    async def list_category(self) -> dict[str, Any]:
         """
         Retrieves a list of the latest 1,000 unique categories associated with all Single Sends in ascending order.
 
@@ -4046,9 +3705,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def search_single_send(
-        self, page_size=None, page_token=None, categories=None, name=None, status=None
-    ) -> dict[str, Any]:
+    async def search_single_send(self, page_size=None, page_token=None, categories=None, name=None, status=None) -> dict[str, Any]:
         """
         Searches yielded no direct description of the specific "/v3/marketing/singlesends/search" POST operation, but based on standard REST API and endpoint conventions, this endpoint likely performs a search for single-send marketing campaigns using parameters such as pagination (page_size, page_token) provided in the query and a JSON request body.
 
@@ -4069,23 +3726,15 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        request_body = {
-            "categories": categories,
-            "name": name,
-            "status": status,
-        }
+        request_body = {"categories": categories, "name": name, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/search"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("page_token", page_token)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_single_send(self, id) -> Any:
+    async def delete_single_send(self, id) -> Any:
         """
         Deletes a single send marketing campaign identified by the specified ID using the DELETE method.
 
@@ -4106,7 +3755,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_single_send(self, id) -> dict[str, Any]:
+    async def get_single_send(self, id) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific Single Send using its ID.
 
@@ -4127,15 +3776,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_single_send(
-        self,
-        id,
-        categories=None,
-        email_config=None,
-        name=None,
-        send_at=None,
-        send_to=None,
-    ) -> dict[str, Any]:
+    async def update_single_send(self, id, categories=None, email_config=None, name=None, send_at=None, send_to=None) -> dict[str, Any]:
         """
         Modifies an existing single send resource by partially updating its properties using the PATCH method at the "/v3/marketing/singlesends/{id}" endpoint.
 
@@ -4155,13 +3796,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "categories": categories,
-            "email_config": email_config,
-            "name": name,
-            "send_at": send_at,
-            "send_to": send_to,
-        }
+        request_body = {"categories": categories, "email_config": email_config, "name": name, "send_at": send_at, "send_to": send_to}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/{id}"
         query_params = {}
@@ -4169,7 +3804,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def duplicate_single_send(self, id, name=None) -> dict[str, Any]:
+    async def duplicate_single_send(self, id, name=None) -> dict[str, Any]:
         """
         Creates and returns a new single send email draft in the marketing automation system, optionally setting initial configurations such as send time and template data.
 
@@ -4185,9 +3820,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/{id}"
         query_params = {}
@@ -4195,7 +3828,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_scheduled_single_send(self, id) -> dict[str, Any]:
+    async def delete_scheduled_single_send(self, id) -> dict[str, Any]:
         """
         Deletes a scheduled Single Send using the provided Single Send ID, effectively canceling its future delivery.
 
@@ -4216,7 +3849,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def schedule_single_send(self, id, send_at=None) -> dict[str, Any]:
+    async def schedule_single_send(self, id, send_at=None) -> dict[str, Any]:
         """
         Schedules a Single Send email campaign for future delivery by updating its schedule using the specified ID and returns a success status upon completion.
 
@@ -4232,9 +3865,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "send_at": send_at,
-        }
+        request_body = {"send_at": send_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/{id}/schedule"
         query_params = {}
@@ -4242,9 +3873,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_automation_stat(
-        self, automation_ids=None, page_size=None, page_token=None
-    ) -> dict[str, Any]:
+    async def list_automation_stat(self, automation_ids=None, page_size=None, page_token=None) -> dict[str, Any]:
         """
         Retrieves marketing automation statistics for specified automation IDs with support for pagination.
 
@@ -4261,19 +3890,13 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/stats/automations"
         query_params = {
-            k: v
-            for k, v in [
-                ("automation_ids", automation_ids),
-                ("page_size", page_size),
-                ("page_token", page_token),
-            ]
-            if v is not None
+            k: v for k, v in [("automation_ids", automation_ids), ("page_size", page_size), ("page_token", page_token)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def export_automation_stat(self, ids=None, timezone=None) -> Any:
+    async def export_automation_stat(self, ids=None, timezone=None) -> Any:
         """
         Exports marketing automation statistics based on the provided ids and timezone.
 
@@ -4288,14 +3911,12 @@ class SendgridApp(APIApplication):
             Stats
         """
         url = f"{self.base_url}/v3/marketing/stats/automations/export"
-        query_params = {
-            k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None
-        }
+        query_params = {k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_automation_stat(
+    async def get_automation_stat(
         self,
         id,
         group_by=None,
@@ -4348,9 +3969,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_click_tracking_stat(
-        self, id, group_by=None, step_ids=None, page_size=None, page_token=None
-    ) -> dict[str, Any]:
+    async def list_click_tracking_stat(self, id, group_by=None, step_ids=None, page_size=None, page_token=None) -> dict[str, Any]:
         """
         Retrieves and paginates statistics for links contained within a specified automation workflow, optionally grouped or filtered by step.
 
@@ -4372,21 +3991,14 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/marketing/stats/automations/{id}/links"
         query_params = {
             k: v
-            for k, v in [
-                ("group_by", group_by),
-                ("step_ids", step_ids),
-                ("page_size", page_size),
-                ("page_token", page_token),
-            ]
+            for k, v in [("group_by", group_by), ("step_ids", step_ids), ("page_size", page_size), ("page_token", page_token)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_single_send_stat(
-        self, singlesend_ids=None, page_size=None, page_token=None
-    ) -> dict[str, Any]:
+    async def list_single_send_stat(self, singlesend_ids=None, page_size=None, page_token=None) -> dict[str, Any]:
         """
         Retrieves statistics for single sends identified by the specified IDs, with optional pagination.
 
@@ -4403,19 +4015,13 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/stats/singlesends"
         query_params = {
-            k: v
-            for k, v in [
-                ("singlesend_ids", singlesend_ids),
-                ("page_size", page_size),
-                ("page_token", page_token),
-            ]
-            if v is not None
+            k: v for k, v in [("singlesend_ids", singlesend_ids), ("page_size", page_size), ("page_token", page_token)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def export_single_send_stat(self, ids=None, timezone=None) -> Any:
+    async def export_single_send_stat(self, ids=None, timezone=None) -> Any:
         """
         Exports statistics for specified single sends in a downloadable format, with options to filter by IDs and set the timezone for timestamps.
 
@@ -4430,23 +4036,13 @@ class SendgridApp(APIApplication):
             Stats
         """
         url = f"{self.base_url}/v3/marketing/stats/singlesends/export"
-        query_params = {
-            k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None
-        }
+        query_params = {k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_single_send_stat(
-        self,
-        id,
-        aggregated_by=None,
-        start_date=None,
-        end_date=None,
-        timezone=None,
-        page_size=None,
-        page_token=None,
-        group_by=None,
+    async def get_single_send_stat(
+        self, id, aggregated_by=None, start_date=None, end_date=None, timezone=None, page_size=None, page_token=None, group_by=None
     ) -> dict[str, Any]:
         """
         Retrieves aggregated marketing statistics for a specific single send campaign, supporting filtering by date, timezone, pagination, and optional grouping.
@@ -4487,14 +4083,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_single_send_tracking_stat(
-        self,
-        id,
-        page_size=None,
-        page_token=None,
-        group_by=None,
-        ab_variation_id=None,
-        ab_phase_id=None,
+    async def list_single_send_tracking_stat(
+        self, id, page_size=None, page_token=None, group_by=None, ab_variation_id=None, ab_phase_id=None
     ) -> dict[str, Any]:
         """
         Retrieves statistics for links in a single send campaign identified by {id}, allowing for pagination and filtering by group by, variation ID, and phase ID.
@@ -4531,7 +4121,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def send_test_marketing_email(
+    async def send_test_marketing_email(
         self,
         custom_unsubscribe_url=None,
         emails=None,
@@ -4575,7 +4165,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_message(self, query, limit=None) -> dict[str, Any]:
+    async def list_message(self, query, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of messages based on a query string, optionally limited by a specified number of results.
 
@@ -4590,14 +4180,12 @@ class SendgridApp(APIApplication):
             Email Activity
         """
         url = f"{self.base_url}/v3/messages"
-        query_params = {
-            k: v for k, v in [("query", query), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("query", query), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def request_csv(self, query=None) -> dict[str, Any]:
+    async def request_csv(self, query=None) -> dict[str, Any]:
         """
         Downloads messages using the provided query parameters and returns a successful response upon completion.
 
@@ -4616,7 +4204,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def download_csv(self, download_uuid) -> dict[str, Any]:
+    async def download_csv(self, download_uuid) -> dict[str, Any]:
         """
         Downloads a message file identified by the provided download UUID using the GET method.
 
@@ -4637,7 +4225,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_message(self, msg_id) -> dict[str, Any]:
+    async def get_message(self, msg_id) -> dict[str, Any]:
         """
         Retrieves details of a specific message by its ID using the "GET" method at the "/v3/messages/{msg_id}" path.
 
@@ -4658,7 +4246,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_partner_setting(self, limit=None, offset=None) -> dict[str, Any]:
+    async def list_partner_setting(self, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of partner settings with support for limiting and offsetting results.
 
@@ -4673,14 +4261,12 @@ class SendgridApp(APIApplication):
             Partner Settings
         """
         url = f"{self.base_url}/v3/partner_settings"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_account(self, offerings, profile=None) -> dict[str, Any]:
+    async def create_account(self, offerings, profile=None) -> dict[str, Any]:
         """
         Creates a new partner account using the provided JSON data and returns a "201 Created" response upon success.
 
@@ -4714,10 +4300,7 @@ class SendgridApp(APIApplication):
         Tags:
             Account
         """
-        request_body = {
-            "offerings": offerings,
-            "profile": profile,
-        }
+        request_body = {"offerings": offerings, "profile": profile}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/partners/accounts"
         query_params = {}
@@ -4725,7 +4308,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_account(self, accountID) -> Any:
+    async def delete_account(self, accountID) -> Any:
         """
         Deletes a partner account identified by the specified `accountID` using the DELETE method, returning a 204 status on success.
 
@@ -4746,7 +4329,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_account_offering(self, accountID) -> dict[str, Any]:
+    async def list_account_offering(self, accountID) -> dict[str, Any]:
         """
         Retrieves a list of offerings associated with a specific partner account using the account ID.
 
@@ -4767,7 +4350,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_account_offering(self, accountID, offerings) -> dict[str, Any]:
+    async def update_account_offering(self, accountID, offerings) -> dict[str, Any]:
         """
         Updates an existing offering for a specific account using the "PUT" method, sending the updated offering details in JSON format to the "/v3/partners/accounts/{accountID}/offerings" endpoint.
 
@@ -4795,9 +4378,7 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        request_body = {
-            "offerings": offerings,
-        }
+        request_body = {"offerings": offerings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/offerings"
         query_params = {}
@@ -4805,7 +4386,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def authenticate_account(self, accountID) -> Any:
+    async def authenticate_account(self, accountID) -> Any:
         """
         Initiates a single sign-on (SSO) process for the specified partner account identified by accountID.
 
@@ -4826,7 +4407,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_account_state(self, accountID) -> dict[str, Any]:
+    async def get_account_state(self, accountID) -> dict[str, Any]:
         """
         Retrieves the current state information of a partner account identified by the specified accountID.
 
@@ -4847,7 +4428,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_account_state(self, accountID, state) -> Any:
+    async def update_account_state(self, accountID, state) -> Any:
         """
         Updates the state of a partner account using JSON data and returns a status code indicating success or failure.
 
@@ -4863,9 +4444,7 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        request_body = {
-            "state": state,
-        }
+        request_body = {"state": state}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/state"
         query_params = {}
@@ -4873,7 +4452,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_offering(self) -> dict[str, Any]:
+    async def list_offering(self) -> dict[str, Any]:
         """
         Retrieves a list of offerings for partners using the GET method at the "/v3/partners/offerings" path.
 
@@ -4889,7 +4468,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def erase_recipient_email_data(self, email_addresses) -> dict[str, Any]:
+    async def erase_recipient_email_data(self, email_addresses) -> dict[str, Any]:
         """
         Initiates an erase job for recipients using the provided JSON data in the request body and returns a status message.
 
@@ -4911,9 +4490,7 @@ class SendgridApp(APIApplication):
         Tags:
             Point Delete System
         """
-        request_body = {
-            "email_addresses": email_addresses,
-        }
+        request_body = {"email_addresses": email_addresses}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/recipients/erasejob"
         query_params = {}
@@ -4921,7 +4498,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_scope(self) -> dict[str, Any]:
+    async def list_scope(self) -> dict[str, Any]:
         """
         Retrieves a list of authentication scopes using the GitHub API.
 
@@ -4937,7 +4514,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_scope_request(self, limit=None, offset=None) -> list[Any]:
+    async def list_scope_request(self, limit=None, offset=None) -> list[Any]:
         """
         Retrieves a list of scope requests using the "GET" method, allowing optional parameters for pagination and limit.
 
@@ -4952,14 +4529,12 @@ class SendgridApp(APIApplication):
             Scopes
         """
         url = f"{self.base_url}/v3/scopes/requests"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def deny_scope_request(self, request_id) -> Any:
+    async def deny_scope_request(self, request_id) -> Any:
         """
         Deletes a scope request with the specified request ID using the GitHub API and returns a status message if successful.
 
@@ -4980,7 +4555,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def approve_scope_request(self, request_id) -> dict[str, Any]:
+    async def approve_scope_request(self, request_id) -> dict[str, Any]:
         """
         Approves a pending scope request with the specified `request_id` using the GitHub API and returns a status message.
 
@@ -5001,7 +4576,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_ip(
+    async def list_ip(
         self,
         ip=None,
         limit=None,
@@ -5062,14 +4637,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_ip(
-        self,
-        include_region=None,
-        is_auto_warmup=None,
-        is_parent_assigned=None,
-        region=None,
-        subusers=None,
-    ) -> dict[str, Any]:
+    async def add_ip(self, include_region=None, is_auto_warmup=None, is_parent_assigned=None, region=None, subusers=None) -> dict[str, Any]:
         """
         Submits a list of IP addresses using a JSON payload via the POST method to the "/v3/send_ips/ips" endpoint, returning a success status code upon completion.
 
@@ -5110,7 +4678,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_ip(self, ip, include_region=None) -> dict[str, Any]:
+    async def get_ip(self, ip, include_region=None) -> dict[str, Any]:
         """
         Retrieves detailed information for a specified IP address, including assignment status, associated pools, and optional region details.
 
@@ -5127,16 +4695,12 @@ class SendgridApp(APIApplication):
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
         url = f"{self.base_url}/v3/send_ips/ips/{ip}"
-        query_params = {
-            k: v for k, v in [("include_region", include_region)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_region", include_region)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_ip(
-        self, ip, is_auto_warmup=None, is_enabled=None, is_parent_assigned=None
-    ) -> dict[str, Any]:
+    async def update_ip(self, ip, is_auto_warmup=None, is_enabled=None, is_parent_assigned=None) -> dict[str, Any]:
         """
         Partially updates the IP resource at the specified path "/v3/send_ips/ips/{ip}" using a JSON payload to modify specific properties.
 
@@ -5162,11 +4726,7 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        request_body = {
-            "is_auto_warmup": is_auto_warmup,
-            "is_enabled": is_enabled,
-            "is_parent_assigned": is_parent_assigned,
-        }
+        request_body = {"is_auto_warmup": is_auto_warmup, "is_enabled": is_enabled, "is_parent_assigned": is_parent_assigned}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips/{ip}"
         query_params = {}
@@ -5174,9 +4734,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_sub_user_assigned_to_ip(
-        self, ip, after_key=None, limit=None
-    ) -> dict[str, Any]:
+    async def list_sub_user_assigned_to_ip(self, ip, after_key=None, limit=None) -> dict[str, Any]:
         """
         Retrieves information about subusers associated with a specified IP address, allowing optional filtering by a limit parameter.
 
@@ -5194,16 +4752,12 @@ class SendgridApp(APIApplication):
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
         url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers"
-        query_params = {
-            k: v
-            for k, v in [("after_key", after_key), ("limit", limit)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("after_key", after_key), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_sub_users_to_ip(self, ip, subusers=None) -> dict[str, Any]:
+    async def add_sub_users_to_ip(self, ip, subusers=None) -> dict[str, Any]:
         """
         Adds multiple subusers to a specific IP address in a single batch operation using the provided data in the request body.
 
@@ -5228,9 +4782,7 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        request_body = {
-            "subusers": subusers,
-        }
+        request_body = {"subusers": subusers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchAdd"
         query_params = {}
@@ -5238,7 +4790,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_sub_users_from_ip(self, ip, subusers=None) -> Any:
+    async def delete_sub_users_from_ip(self, ip, subusers=None) -> Any:
         """
         Deletes multiple subusers associated with a specified IP address in a single batch operation, supporting various response status codes including success (204), bad request (400), unauthorized (401), and server error (500).
 
@@ -5263,9 +4815,7 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        request_body = {
-            "subusers": subusers,
-        }
+        request_body = {"subusers": subusers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchDelete"
         query_params = {}
@@ -5273,7 +4823,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_ip_pool(self, ips=None, name=None) -> dict[str, Any]:
+    async def create_ip_pool(self, ips=None, name=None) -> dict[str, Any]:
         """
         Creates IP pools using a JSON payload and returns a successful creation status upon completion.
 
@@ -5297,10 +4847,7 @@ class SendgridApp(APIApplication):
         Tags:
             IP Address Management
         """
-        request_body = {
-            "ips": ips,
-            "name": name,
-        }
+        request_body = {"ips": ips, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools"
         query_params = {}
@@ -5308,7 +4855,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_ip_pool(self, poolid) -> Any:
+    async def delete_ip_pool(self, poolid) -> Any:
         """
         Deletes a specific IP pool identified by the {poolid} using the DELETE method, returning a 204 No Content response upon successful deletion.
 
@@ -5329,7 +4876,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_ip_pool(self, poolid, include_region=None) -> dict[str, Any]:
+    async def get_ip_pool(self, poolid, include_region=None) -> dict[str, Any]:
         """
         Retrieves details for a specified IP pool, including its name, ID, and a sample list of associated IP addresses[1].
 
@@ -5346,14 +4893,12 @@ class SendgridApp(APIApplication):
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
-        query_params = {
-            k: v for k, v in [("include_region", include_region)] if v is not None
-        }
+        query_params = {k: v for k, v in [("include_region", include_region)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_ip_pool(self, poolid, name=None) -> dict[str, Any]:
+    async def update_ip_pool(self, poolid, name=None) -> dict[str, Any]:
         """
         Updates a specified IP pool using the provided JSON data and returns a status message.
 
@@ -5375,9 +4920,7 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
         query_params = {}
@@ -5385,9 +4928,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_ip_assigned_to_ip_pool(
-        self, poolid, limit=None, after_key=None, include_region=None
-    ) -> dict[str, Any]:
+    async def list_ip_assigned_to_ip_pool(self, poolid, limit=None, after_key=None, include_region=None) -> dict[str, Any]:
         """
         Retrieves a list of IP addresses within a specified pool, optionally including region information and limited by a specified after key.
 
@@ -5406,20 +4947,12 @@ class SendgridApp(APIApplication):
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("after_key", after_key),
-                ("include_region", include_region),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("after_key", after_key), ("include_region", include_region)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_ips_to_ip_pool(self, poolid, ips=None) -> dict[str, Any]:
+    async def add_ips_to_ip_pool(self, poolid, ips=None) -> dict[str, Any]:
         """
         Adds multiple IP addresses to a pool using a batch operation via the POST method.
 
@@ -5446,9 +4979,7 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        request_body = {
-            "ips": ips,
-        }
+        request_body = {"ips": ips}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchAdd"
         query_params = {}
@@ -5456,7 +4987,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_ips_from_ip_pool(self, poolid, ips=None) -> Any:
+    async def delete_ips_from_ip_pool(self, poolid, ips=None) -> Any:
         """
         Deletes multiple IP addresses in a specified pool using the POST method with a JSON body containing IP details and returns a status message based on the response codes 204, 400, 401, or 500.
 
@@ -5483,9 +5014,7 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        request_body = {
-            "ips": ips,
-        }
+        request_body = {"ips": ips}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchDelete"
         query_params = {}
@@ -5493,7 +5022,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_sender(self) -> dict[str, Any]:
+    async def list_sender(self) -> dict[str, Any]:
         """
         Retrieves a list of senders using the API endpoint at "/v3/senders" with the "GET" method, potentially operating on behalf of another entity.
 
@@ -5509,9 +5038,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_sso_certificate(
-        self, enabled=None, integration_id=None, public_certificate=None
-    ) -> dict[str, Any]:
+    async def create_sso_certificate(self, enabled=None, integration_id=None, public_certificate=None) -> dict[str, Any]:
         """
         Creates a new SSO certificate using the provided JSON data, enabling Single Sign-On configurations between an Identity Provider (IdP) and a service.
 
@@ -5526,11 +5053,7 @@ class SendgridApp(APIApplication):
         Tags:
             SSO Certificates
         """
-        request_body = {
-            "enabled": enabled,
-            "integration_id": integration_id,
-            "public_certificate": public_certificate,
-        }
+        request_body = {"enabled": enabled, "integration_id": integration_id, "public_certificate": public_certificate}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/certificates"
         query_params = {}
@@ -5538,7 +5061,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_sso_certificate(self, cert_id) -> dict[str, Any]:
+    async def delete_sso_certificate(self, cert_id) -> dict[str, Any]:
         """
         Deletes a certificate with the specified ID from the system using the "DELETE" method, returning appropriate status codes based on the operation's success or failure.
 
@@ -5559,7 +5082,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_sso_certificate(self, cert_id) -> dict[str, Any]:
+    async def get_sso_certificate(self, cert_id) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific SSO certificate identified by the given certificate ID.
 
@@ -5580,9 +5103,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_sso_certificate(
-        self, cert_id, enabled=None, integration_id=None, public_certificate=None
-    ) -> dict[str, Any]:
+    async def update_sso_certificate(self, cert_id, enabled=None, integration_id=None, public_certificate=None) -> dict[str, Any]:
         """
         Updates an existing SSO certificate identified by its certificate ID and returns the updated certificate details in the response.
 
@@ -5600,11 +5121,7 @@ class SendgridApp(APIApplication):
         """
         if cert_id is None:
             raise ValueError("Missing required parameter 'cert_id'")
-        request_body = {
-            "enabled": enabled,
-            "integration_id": integration_id,
-            "public_certificate": public_certificate,
-        }
+        request_body = {"enabled": enabled, "integration_id": integration_id, "public_certificate": public_certificate}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
         query_params = {}
@@ -5612,7 +5129,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_sso_integration(self, si=None) -> list[Any]:
+    async def list_sso_integration(self, si=None) -> list[Any]:
         """
         Retrieves Single Sign-On (SSO) integrations using the API, optionally filtering by a specified condition with the "si" query parameter.
 
@@ -5631,14 +5148,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_sso_integration(
-        self,
-        completed_integration=None,
-        enabled=None,
-        entity_id=None,
-        name=None,
-        signin_url=None,
-        signout_url=None,
+    async def create_sso_integration(
+        self, completed_integration=None, enabled=None, entity_id=None, name=None, signin_url=None, signout_url=None
     ) -> dict[str, Any]:
         """
         Creates a new Single Sign-On (SSO) integration using the provided details, returning a status message indicating the outcome of the operation.
@@ -5672,7 +5183,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_sso_integration(self, id) -> Any:
+    async def delete_sso_integration(self, id) -> Any:
         """
         Deletes a specified SSO integration and returns a successful status with no content upon completion.
 
@@ -5693,7 +5204,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_sso_integration(self, id, si=None) -> dict[str, Any]:
+    async def get_sso_integration(self, id, si=None) -> dict[str, Any]:
         """
         Retrieves details about a specific SSO integration identified by {id} using the GET method, with an optional query parameter "si" for additional filtering or inclusion.
 
@@ -5715,16 +5226,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_sso_integration(
-        self,
-        id,
-        si=None,
-        completed_integration=None,
-        enabled=None,
-        entity_id=None,
-        name=None,
-        signin_url=None,
-        signout_url=None,
+    async def update_sso_integration(
+        self, id, si=None, completed_integration=None, enabled=None, entity_id=None, name=None, signin_url=None, signout_url=None
     ) -> dict[str, Any]:
         """
         Updates an existing single sign-on integration identified by {id} at path "/v3/sso/integrations/{id}" using the "PATCH" method.
@@ -5762,7 +5265,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_sso_integration_certificate(self, integration_id) -> list[Any]:
+    async def list_sso_integration_certificate(self, integration_id) -> list[Any]:
         """
         Retrieves information about certificates associated with a specific SSO integration identified by the `integration_id`.
 
@@ -5783,7 +5286,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_sso_teammate(
+    async def create_sso_teammate(
         self,
         email=None,
         first_name=None,
@@ -5840,7 +5343,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_sso_teammate(
+    async def update_sso_teammate(
         self,
         username,
         first_name=None,
@@ -5897,9 +5400,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_subuser(
-        self, username=None, limit=None, region=None, include_region=None, offset=None
-    ) -> list[Any]:
+    async def list_subuser(self, username=None, limit=None, region=None, include_region=None, offset=None) -> list[Any]:
         """
         Retrieves a list of subusers for a given username, allowing filtering by region and customization of the response through pagination and optional inclusion of the region.
 
@@ -5932,15 +5433,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_subuser(
-        self,
-        email=None,
-        include_region=None,
-        ips=None,
-        password=None,
-        region=None,
-        username=None,
-    ) -> dict[str, Any]:
+    async def create_subuser(self, email=None, include_region=None, ips=None, password=None, region=None, username=None) -> dict[str, Any]:
         """
         Creates a new subuser using the GitHub API and returns a response based on the request's outcome.
 
@@ -5973,7 +5466,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_reputation(self, usernames=None) -> list[Any]:
+    async def list_reputation(self, usernames=None) -> list[Any]:
         """
         Retrieves the reputation information for specified usernames using the GET method.
 
@@ -5992,15 +5485,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_stat(
-        self,
-        subusers,
-        start_date,
-        limit=None,
-        offset=None,
-        aggregated_by=None,
-        end_date=None,
-    ) -> list[Any]:
+    async def list_stat(self, subusers, start_date, limit=None, offset=None, aggregated_by=None, end_date=None) -> list[Any]:
         """
         Retrieves statistical data for specified subusers within a defined time period, allowing for optional filtering by date range, aggregation method, and pagination control.
 
@@ -6035,14 +5520,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_monthly_stat(
-        self,
-        date,
-        subuser=None,
-        sort_by_metric=None,
-        sort_by_direction=None,
-        limit=None,
-        offset=None,
+    async def list_monthly_stat(
+        self, date, subuser=None, sort_by_metric=None, sort_by_direction=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves and returns monthly statistics for subusers, filterable by date and customizable with sorting, pagination, and subuser selection.
@@ -6078,15 +5557,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_stat_sum(
-        self,
-        start_date,
-        sort_by_direction=None,
-        end_date=None,
-        limit=None,
-        offset=None,
-        aggregated_by=None,
-        sort_by_metric=None,
+    async def list_stat_sum(
+        self, start_date, sort_by_direction=None, end_date=None, limit=None, offset=None, aggregated_by=None, sort_by_metric=None
     ) -> dict[str, Any]:
         """
         Retrieves summary statistics for subusers, allowing optional filtering by sort direction, start and end dates, data aggregation, and sorting metrics.
@@ -6124,7 +5596,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_subuser(self, subuser_name) -> dict[str, Any]:
+    async def delete_subuser(self, subuser_name) -> dict[str, Any]:
         """
         Deletes the specified subuser from the account, removing their access and related data.
 
@@ -6145,7 +5617,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_subuser(self, subuser_name, disabled=None) -> dict[str, Any]:
+    async def update_subuser(self, subuser_name, disabled=None) -> dict[str, Any]:
         """
         Updates properties of a specified subuser using a PATCH request with JSON data and returns a success status (204) or relevant error codes.
 
@@ -6161,9 +5633,7 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {
-            "disabled": disabled,
-        }
+        request_body = {"disabled": disabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}"
         query_params = {}
@@ -6171,7 +5641,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_subuser_credit(self, subuser_name) -> dict[str, Any]:
+    async def get_subuser_credit(self, subuser_name) -> dict[str, Any]:
         """
         Retrieves the credits information for a specified subuser, identified by {subuser_name}, and returns the details in response.
 
@@ -6192,9 +5662,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_subuser_credit(
-        self, subuser_name, type, reset_frequency=None, total=None
-    ) -> dict[str, Any]:
+    async def update_subuser_credit(self, subuser_name, type, reset_frequency=None, total=None) -> dict[str, Any]:
         """
         Updates the credits of a subuser identified by `{subuser_name}` using a JSON payload.
 
@@ -6212,11 +5680,7 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {
-            "reset_frequency": reset_frequency,
-            "total": total,
-            "type": type,
-        }
+        request_body = {"reset_frequency": reset_frequency, "total": total, "type": type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}/credits"
         query_params = {}
@@ -6224,9 +5688,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_subuser_remaining_credit(
-        self, subuser_name, allocation_update
-    ) -> dict[str, Any]:
+    async def update_subuser_remaining_credit(self, subuser_name, allocation_update) -> dict[str, Any]:
         """
         Updates the remaining credits for a specified subuser and returns status information.
 
@@ -6242,9 +5704,7 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {
-            "allocation_update": allocation_update,
-        }
+        request_body = {"allocation_update": allocation_update}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}/credits/remaining"
         query_params = {}
@@ -6252,7 +5712,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_subuser_ip(self, subuser_name, items=None) -> dict[str, Any]:
+    async def update_subuser_ip(self, subuser_name, items=None) -> dict[str, Any]:
         """
         Updates the IP configuration for a specified subuser using the provided JSON data and returns a success status if the operation is successful.
 
@@ -6267,7 +5727,6 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        # Use items array directly as request body
         request_body = items
         url = f"{self.base_url}/v3/subusers/{subuser_name}/ips"
         query_params = {}
@@ -6275,14 +5734,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_subuser_monthly_stat(
-        self,
-        subuser_name,
-        date,
-        sort_by_metric=None,
-        sort_by_direction=None,
-        limit=None,
-        offset=None,
+    async def list_subuser_monthly_stat(
+        self, subuser_name, date, sort_by_metric=None, sort_by_direction=None, limit=None, offset=None
     ) -> dict[str, Any]:
         """
         Retrieves monthly statistics for a specified subuser using the "GET" method, allowing filtering by date and optional sorting and pagination parameters.
@@ -6319,9 +5772,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_subuser_website_access(
-        self, subuser_name, disabled=None
-    ) -> dict[str, Any]:
+    async def update_subuser_website_access(self, subuser_name, disabled=None) -> dict[str, Any]:
         """
         Updates a subuser's website access using the GitHub API, returning a status message upon successful modification.
 
@@ -6337,9 +5788,7 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {
-            "disabled": disabled,
-        }
+        request_body = {"disabled": disabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}/website_access"
         query_params = {}
@@ -6347,7 +5796,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_suppression_blocks(self, delete_all=None, emails=None) -> dict[str, Any]:
+    async def delete_suppression_blocks(self, delete_all=None, emails=None) -> dict[str, Any]:
         """
         Removes a suppression block using the "DELETE" method at the "/v3/suppression/blocks" path, returning a successful response with no content.
 
@@ -6361,10 +5810,7 @@ class SendgridApp(APIApplication):
         Tags:
             Blocks
         """
-        request_body = {
-            "delete_all": delete_all,
-            "emails": emails,
-        }
+        request_body = {"delete_all": delete_all, "emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/blocks"
         query_params = {}
@@ -6372,9 +5818,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_suppression_block(
-        self, start_time=None, end_time=None, limit=None, offset=None, email=None
-    ) -> list[Any]:
+    async def list_suppression_block(self, start_time=None, end_time=None, limit=None, offset=None, email=None) -> list[Any]:
         """
         Retrieves a list of suppression blocks within a specified time range using optional pagination and partial matching parameters.
 
@@ -6394,20 +5838,14 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/suppression/blocks"
         query_params = {
             k: v
-            for k, v in [
-                ("start_time", start_time),
-                ("end_time", end_time),
-                ("limit", limit),
-                ("offset", offset),
-                ("email", email),
-            ]
+            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_suppression_block(self, email) -> dict[str, Any]:
+    async def delete_suppression_block(self, email) -> dict[str, Any]:
         """
         Removes the specified email address from the suppression block list and returns no content upon success.
 
@@ -6428,7 +5866,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_suppression_block(self, email) -> list[Any]:
+    async def get_suppression_block(self, email) -> list[Any]:
         """
         Retrieves the block status of an email address using a GET request to the "/v3/suppression/blocks/{email}" endpoint.
 
@@ -6449,7 +5887,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_suppression_bounces(self, delete_all=None, emails=None) -> Any:
+    async def delete_suppression_bounces(self, delete_all=None, emails=None) -> Any:
         """
         Removes bounce suppression records via DELETE, returning 204 No Content on success or 401 Unauthorized if not authenticated.
 
@@ -6463,10 +5901,7 @@ class SendgridApp(APIApplication):
         Tags:
             Bounces
         """
-        request_body = {
-            "delete_all": delete_all,
-            "emails": emails,
-        }
+        request_body = {"delete_all": delete_all, "emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/bounces"
         query_params = {}
@@ -6474,9 +5909,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_suppression_bounces(
-        self, start_time=None, end_time=None, limit=None, offset=None, email=None
-    ) -> list[Any]:
+    async def list_suppression_bounces(self, start_time=None, end_time=None, limit=None, offset=None, email=None) -> list[Any]:
         """
         Retrieves a paginated list of bounced email addresses and their details, optionally filtered by time range, email address, and other query parameters.
 
@@ -6496,22 +5929,14 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/suppression/bounces"
         query_params = {
             k: v
-            for k, v in [
-                ("start_time", start_time),
-                ("end_time", end_time),
-                ("limit", limit),
-                ("offset", offset),
-                ("email", email),
-            ]
+            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_suppression_bounces_classifications(
-        self, start_date=None, end_date=None
-    ) -> dict[str, Any]:
+    async def list_suppression_bounces_classifications(self, start_date=None, end_date=None) -> dict[str, Any]:
         """
         Retrieves email bounces by specific classification using the SendGrid API, allowing filtering by date range and classification types such as 'Content', 'Frequency or Volume Too High', 'Invalid Address', 'Mailbox Unavailable', 'Reputation', 'Technical Failure', and 'Unclassified'.
 
@@ -6526,18 +5951,12 @@ class SendgridApp(APIApplication):
             Bounces
         """
         url = f"{self.base_url}/v3/suppression/bounces/classifications"
-        query_params = {
-            k: v
-            for k, v in [("start_date", start_date), ("end_date", end_date)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_suppression_bounces_classifications(
-        self, classification, start_date=None, end_date=None
-    ) -> dict[str, Any]:
+    async def get_suppression_bounces_classifications(self, classification, start_date=None, end_date=None) -> dict[str, Any]:
         """
         Retrieves bounces from the suppression list filtered by a specified classification and optional date range.
 
@@ -6555,16 +5974,12 @@ class SendgridApp(APIApplication):
         if classification is None:
             raise ValueError("Missing required parameter 'classification'")
         url = f"{self.base_url}/v3/suppression/bounces/classifications/{classification}"
-        query_params = {
-            k: v
-            for k, v in [("start_date", start_date), ("end_date", end_date)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_suppression_bounce(self, email) -> dict[str, Any]:
+    async def delete_suppression_bounce(self, email) -> dict[str, Any]:
         """
         Deletes a suppression bounce entry for a specified email address.
 
@@ -6585,7 +6000,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_suppression_bounces(self, email) -> list[Any]:
+    async def get_suppression_bounces(self, email) -> list[Any]:
         """
         Retrieves bounce suppression details for a specific email address from the suppression list.
 
@@ -6606,7 +6021,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_invalid_emails(self, delete_all=None, emails=None) -> dict[str, Any]:
+    async def delete_invalid_emails(self, delete_all=None, emails=None) -> dict[str, Any]:
         """
         Deletes a specified invalid email from suppression using the "DELETE" method and returns no content upon successful removal.
 
@@ -6620,10 +6035,7 @@ class SendgridApp(APIApplication):
         Tags:
             Invalid Emails
         """
-        request_body = {
-            "delete_all": delete_all,
-            "emails": emails,
-        }
+        request_body = {"delete_all": delete_all, "emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/invalid_emails"
         query_params = {}
@@ -6631,9 +6043,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_invalid_email(
-        self, start_time=None, end_time=None, limit=None, offset=None, email=None
-    ) -> list[Any]:
+    async def list_invalid_email(self, start_time=None, end_time=None, limit=None, offset=None, email=None) -> list[Any]:
         """
         Retrieves a list of invalid emails for suppression, optionally filtered by start and end time, email address, and pagination parameters.
 
@@ -6653,20 +6063,14 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/suppression/invalid_emails"
         query_params = {
             k: v
-            for k, v in [
-                ("start_time", start_time),
-                ("end_time", end_time),
-                ("limit", limit),
-                ("offset", offset),
-                ("email", email),
-            ]
+            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_invalid_email(self, email) -> dict[str, Any]:
+    async def delete_invalid_email(self, email) -> dict[str, Any]:
         """
         Deletes an invalid email from the suppression list at path "/v3/suppression/invalid_emails/{email}" using the DELETE method and returns a 204 No Content response.
 
@@ -6687,7 +6091,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_invalid_email(self, email) -> list[Any]:
+    async def get_invalid_email(self, email) -> list[Any]:
         """
         Retrieves details about a specific invalid email address from the suppression list.
 
@@ -6708,7 +6112,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_spam_reports(self, delete_all=None, emails=None) -> dict[str, Any]:
+    async def delete_spam_reports(self, delete_all=None, emails=None) -> dict[str, Any]:
         """
         Removes spam report records via a DELETE request to the specified endpoint, returning a 204 No Content response upon success.
 
@@ -6722,10 +6126,7 @@ class SendgridApp(APIApplication):
         Tags:
             Spam Reports
         """
-        request_body = {
-            "delete_all": delete_all,
-            "emails": emails,
-        }
+        request_body = {"delete_all": delete_all, "emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/spam_reports"
         query_params = {}
@@ -6733,9 +6134,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_spam_report(
-        self, start_time=None, end_time=None, limit=None, offset=None, email=None
-    ) -> list[Any]:
+    async def list_spam_report(self, start_time=None, end_time=None, limit=None, offset=None, email=None) -> list[Any]:
         """
         Retrieves a list of spam reports based on query parameters for start and end times, with optional filtering by pagination and email partial matching.
 
@@ -6755,20 +6154,14 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/suppression/spam_reports"
         query_params = {
             k: v
-            for k, v in [
-                ("start_time", start_time),
-                ("end_time", end_time),
-                ("limit", limit),
-                ("offset", offset),
-                ("email", email),
-            ]
+            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def delete_spam_report(self, email) -> dict[str, Any]:
+    async def delete_spam_report(self, email) -> dict[str, Any]:
         """
         Deletes the specified email address from the spam reports suppression list and returns no content upon successful removal.
 
@@ -6789,7 +6182,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_spam_report(self, email) -> list[Any]:
+    async def get_spam_report(self, email) -> list[Any]:
         """
         Retrieves the spam report details for the specified email address from the suppression list.
 
@@ -6810,9 +6203,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_global_suppression(
-        self, start_time=None, end_time=None, limit=None, offset=None, email=None
-    ) -> list[Any]:
+    async def list_global_suppression(self, start_time=None, end_time=None, limit=None, offset=None, email=None) -> list[Any]:
         """
         Retrieves a paginated list of email addresses that were unsubscribed within a specified time range, optionally filtered by partial email match and supporting pagination parameters.
 
@@ -6832,20 +6223,14 @@ class SendgridApp(APIApplication):
         url = f"{self.base_url}/v3/suppression/unsubscribes"
         query_params = {
             k: v
-            for k, v in [
-                ("start_time", start_time),
-                ("end_time", end_time),
-                ("limit", limit),
-                ("offset", offset),
-                ("email", email),
-            ]
+            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_teammate(self, limit=None, offset=None) -> dict[str, Any]:
+    async def list_teammate(self, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves a list of teammates using the specified parameters, including pagination options and the ability to act on behalf of another user.
 
@@ -6860,14 +6245,12 @@ class SendgridApp(APIApplication):
             Teammates
         """
         url = f"{self.base_url}/v3/teammates"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def invite_teammate(self, email=None, is_admin=None, scopes=None) -> dict[str, Any]:
+    async def invite_teammate(self, email=None, is_admin=None, scopes=None) -> dict[str, Any]:
         """
         Creates a new teammate by sending a POST request to the "/v3/teammates" endpoint, accepting JSON content, and returns a 201 status upon successful creation.
 
@@ -6882,11 +6265,7 @@ class SendgridApp(APIApplication):
         Tags:
             Teammates
         """
-        request_body = {
-            "email": email,
-            "is_admin": is_admin,
-            "scopes": scopes,
-        }
+        request_body = {"email": email, "is_admin": is_admin, "scopes": scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/teammates"
         query_params = {}
@@ -6894,7 +6273,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_pending_teammate(self) -> dict[str, Any]:
+    async def list_pending_teammate(self) -> dict[str, Any]:
         """
         Retrieves a list of pending teammates using the GitHub API and returns a successful response with relevant details.
 
@@ -6910,7 +6289,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_pending_teammate(self, token) -> Any:
+    async def delete_pending_teammate(self, token) -> Any:
         """
         Deletes a pending teammate invitation using the provided token, returning a 204 status if successful.
 
@@ -6931,7 +6310,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def resend_teammate_invite(self, token) -> dict[str, Any]:
+    async def resend_teammate_invite(self, token) -> dict[str, Any]:
         """
         Resends a pending teammate invitation associated with the given token using the API.
 
@@ -6952,7 +6331,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_subuser_by_template(self, teammate_name) -> dict[str, Any]:
+    async def list_subuser_by_template(self, teammate_name) -> dict[str, Any]:
         """
         Retrieves the list of Subusers and their available scopes that a specified Teammate can access and act on behalf of.
 
@@ -6973,7 +6352,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_teammate(self, username) -> Any:
+    async def delete_teammate(self, username) -> Any:
         """
         Removes a teammate from a GitHub organization using the GitHub API and returns a status code indicating success or failure.
 
@@ -6994,7 +6373,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_teammate(self, username) -> dict[str, Any]:
+    async def get_teammate(self, username) -> dict[str, Any]:
         """
         Retrieves information about a GitHub user's teammate with the specified username using the "GET" method.
 
@@ -7015,7 +6394,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_teammate(self, username, is_admin=None, scopes=None) -> dict[str, Any]:
+    async def update_teammate(self, username, is_admin=None, scopes=None) -> dict[str, Any]:
         """
         Updates the details of a teammate identified by username within an organization using JSON-formatted data and supports acting on behalf of another user.
 
@@ -7032,10 +6411,7 @@ class SendgridApp(APIApplication):
         """
         if username is None:
             raise ValueError("Missing required parameter 'username'")
-        request_body = {
-            "is_admin": is_admin,
-            "scopes": scopes,
-        }
+        request_body = {"is_admin": is_admin, "scopes": scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/teammates/{username}"
         query_params = {}
@@ -7043,7 +6419,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_template(self, generation=None, name=None) -> dict[str, Any]:
+    async def create_template(self, generation=None, name=None) -> dict[str, Any]:
         """
         Creates a new template using the JSON data provided in the request body and returns a successful creation response with a 201 status code.
 
@@ -7057,10 +6433,7 @@ class SendgridApp(APIApplication):
         Tags:
             Templates
         """
-        request_body = {
-            "generation": generation,
-            "name": name,
-        }
+        request_body = {"generation": generation, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/templates"
         query_params = {}
@@ -7068,7 +6441,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_template(self, template_id) -> dict[str, Any]:
+    async def delete_template(self, template_id) -> dict[str, Any]:
         """
         Deletes a template identified by the `template_id` in the `/v3/templates/{template_id}` path, returning a successful response with no content (204).
 
@@ -7089,7 +6462,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_template(self, template_id) -> dict[str, Any]:
+    async def get_template(self, template_id) -> dict[str, Any]:
         """
         Retrieves detailed information for the specified template identified by its template_id.
 
@@ -7110,7 +6483,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def duplicate_template(self, template_id, name=None) -> dict[str, Any]:
+    async def duplicate_template(self, template_id, name=None) -> dict[str, Any]:
         """
         Creates a new resource related to a template identified by `{template_id}` using a JSON payload and returns a successful creation status with a 201 response code.
 
@@ -7126,9 +6499,7 @@ class SendgridApp(APIApplication):
         """
         if template_id is None:
             raise ValueError("Missing required parameter 'template_id'")
-        request_body = {
-            "name": name,
-        }
+        request_body = {"name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/templates/{template_id}"
         query_params = {}
@@ -7136,7 +6507,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_template_version(
+    async def create_template_version(
         self,
         template_id,
         active=None,
@@ -7187,7 +6558,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_template_version(self, template_id, version_id) -> Any:
+    async def delete_template_version(self, template_id, version_id) -> Any:
         """
         Deletes a specific version of a template identified by the provided template ID and version ID.
 
@@ -7211,7 +6582,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_template_version(self, template_id, version_id) -> dict[str, Any]:
+    async def get_template_version(self, template_id, version_id) -> dict[str, Any]:
         """
         Retrieves a specific version of a transactional template by its template ID and version ID using the SendGrid API.
 
@@ -7235,7 +6606,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def activate_template_version(self, template_id, version_id) -> dict[str, Any]:
+    async def activate_template_version(self, template_id, version_id) -> dict[str, Any]:
         """
         Activates a specific version of a template by sending a POST request with the template and version IDs.
 
@@ -7253,15 +6624,13 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         if version_id is None:
             raise ValueError("Missing required parameter 'version_id'")
-        url = (
-            f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}/activate"
-        )
+        url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}/activate"
         query_params = {}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_tracking_setting(self) -> dict[str, Any]:
+    async def list_tracking_setting(self) -> dict[str, Any]:
         """
         Retrieves the current tracking settings for an account using the SendGrid API.
 
@@ -7277,7 +6646,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_click_tracking_setting(self) -> dict[str, Any]:
+    async def list_click_tracking_setting(self) -> dict[str, Any]:
         """
         Retrieves the current click tracking settings for the specified configuration using the "GET" method.
 
@@ -7293,7 +6662,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_click_tracking_setting(self, enabled=None) -> dict[str, Any]:
+    async def update_click_tracking_setting(self, enabled=None) -> dict[str, Any]:
         """
         Updates the click tracking settings for email links using a PATCH request to the "/v3/tracking_settings/click" endpoint.
 
@@ -7306,9 +6675,7 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        request_body = {
-            "enabled": enabled,
-        }
+        request_body = {"enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/tracking_settings/click"
         query_params = {}
@@ -7316,7 +6683,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_google_analytics_tracking_setting(self) -> dict[str, Any]:
+    async def list_google_analytics_tracking_setting(self) -> dict[str, Any]:
         """
         Retrieves the Google Analytics tracking settings using the API.
 
@@ -7332,14 +6699,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_google_analytics_tracking_setting(
-        self,
-        enabled=None,
-        utm_campaign=None,
-        utm_content=None,
-        utm_medium=None,
-        utm_source=None,
-        utm_term=None,
+    async def update_google_analytics_tracking_setting(
+        self, enabled=None, utm_campaign=None, utm_content=None, utm_medium=None, utm_source=None, utm_term=None
     ) -> dict[str, Any]:
         """
         Updates the Google Analytics tracking settings for the specified resource using the provided configuration.
@@ -7373,7 +6734,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_open_tracking_setting(self) -> dict[str, Any]:
+    async def list_open_tracking_setting(self) -> dict[str, Any]:
         """
         Retrieves the open tracking settings for the specified configuration using the "GET" method, optionally executed on behalf of another user.
 
@@ -7389,7 +6750,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_open_tracking_setting(self, enabled=None) -> dict[str, Any]:
+    async def update_open_tracking_setting(self, enabled=None) -> dict[str, Any]:
         """
         Updates tracking settings for open events by sending a JSON payload to the specified endpoint, returning a successful status upon completion.
 
@@ -7402,9 +6763,7 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        request_body = {
-            "enabled": enabled,
-        }
+        request_body = {"enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/tracking_settings/open"
         query_params = {}
@@ -7412,7 +6771,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_subscription_tracking_setting(self) -> dict[str, Any]:
+    async def list_subscription_tracking_setting(self) -> dict[str, Any]:
         """
         Retrieves the current subscription tracking settings for your SendGrid account, which control the inclusion of subscription management links in your emails. [1][2][3]
 
@@ -7428,14 +6787,8 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_subscription_tracking_setting(
-        self,
-        enabled=None,
-        html_content=None,
-        landing=None,
-        plain_content=None,
-        replace=None,
-        url=None,
+    async def update_subscription_tracking_setting(
+        self, enabled=None, html_content=None, landing=None, plain_content=None, replace=None, url=None
     ) -> dict[str, Any]:
         """
         Modifies the tracking settings subscription using the PATCH method, allowing partial updates to specific fields of the resource at the "/v3/tracking_settings/subscription" path.
@@ -7469,7 +6822,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_account(self) -> dict[str, Any]:
+    async def list_account(self) -> dict[str, Any]:
         """
         Retrieves information about the GitHub user account using the "GET /v3/user/account" method.
 
@@ -7485,7 +6838,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_credit(self) -> dict[str, Any]:
+    async def list_credit(self) -> dict[str, Any]:
         """
         Retrieves user credits information using the specified API endpoint.
 
@@ -7501,7 +6854,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_email(self) -> dict[str, Any]:
+    async def list_email(self) -> dict[str, Any]:
         """
         Retrieves a user's email address using the GET method, optionally acting on behalf of another user.
 
@@ -7517,7 +6870,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_email(self, email=None) -> dict[str, Any]:
+    async def update_email(self, email=None) -> dict[str, Any]:
         """
         Updates a user's email address using the PUT method at the "/v3/user/email" endpoint, accepting a JSON body and returning a successful response upon completion.
 
@@ -7530,9 +6883,7 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {
-            "email": email,
-        }
+        request_body = {"email": email}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/email"
         query_params = {}
@@ -7540,7 +6891,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_password(self, new_password=None, old_password=None) -> dict[str, Any]:
+    async def update_password(self, new_password=None, old_password=None) -> dict[str, Any]:
         """
         Updates the password for the authenticated user using the GitHub API.
 
@@ -7554,10 +6905,7 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {
-            "new_password": new_password,
-            "old_password": old_password,
-        }
+        request_body = {"new_password": new_password, "old_password": old_password}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/password"
         query_params = {}
@@ -7565,7 +6913,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_profile(self) -> dict[str, Any]:
+    async def list_profile(self) -> dict[str, Any]:
         """
         Retrieves the authenticated user's public and private profile information.
 
@@ -7581,7 +6929,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_profile(
+    async def update_profile(
         self,
         address=None,
         address2=None,
@@ -7637,7 +6985,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_scheduled_send(self) -> list[Any]:
+    async def list_scheduled_send(self) -> list[Any]:
         """
         Retrieves a list of all scheduled sends for a user using the specified API endpoint.
 
@@ -7653,7 +7001,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_scheduled_send(self, batch_id=None, status=None) -> dict[str, Any]:
+    async def create_scheduled_send(self, batch_id=None, status=None) -> dict[str, Any]:
         """
         Creates a new scheduled send for a user with the provided details and returns a status indicating the result of the operation.
 
@@ -7667,10 +7015,7 @@ class SendgridApp(APIApplication):
         Tags:
             Scheduled Sends
         """
-        request_body = {
-            "batch_id": batch_id,
-            "status": status,
-        }
+        request_body = {"batch_id": batch_id, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/scheduled_sends"
         query_params = {}
@@ -7678,7 +7023,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_scheduled_send(self, batch_id) -> Any:
+    async def delete_scheduled_send(self, batch_id) -> Any:
         """
         Deletes a scheduled send batch identified by the specified `batch_id` in the user's account, returning no content upon successful deletion.
 
@@ -7699,7 +7044,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_scheduled_send(self, batch_id) -> list[Any]:
+    async def get_scheduled_send(self, batch_id) -> list[Any]:
         """
         Retrieves details about a scheduled send operation for the specified batch ID.
 
@@ -7720,7 +7065,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_scheduled_send(self, batch_id, status=None) -> Any:
+    async def update_scheduled_send(self, batch_id, status=None) -> Any:
         """
         Updates a scheduled send batch by modifying specific fields using JSON Patch operations, returning a response code indicating the outcome of the update operation.
 
@@ -7736,9 +7081,7 @@ class SendgridApp(APIApplication):
         """
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'")
-        request_body = {
-            "status": status,
-        }
+        request_body = {"status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
         query_params = {}
@@ -7746,7 +7089,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_enforced_tls_setting(self) -> dict[str, Any]:
+    async def list_enforced_tls_setting(self) -> dict[str, Any]:
         """
         Retrieves the TLS enforcement settings for the user, including whether TLS is required for connections, and returns the current configuration.
 
@@ -7762,9 +7105,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_enforced_tls_setting(
-        self, require_tls=None, require_valid_cert=None, version=None
-    ) -> dict[str, Any]:
+    async def update_enforced_tls_setting(self, require_tls=None, require_valid_cert=None, version=None) -> dict[str, Any]:
         """
         Updates the Enforced TLS settings for a user, specifying whether TLS support and a valid certificate are required for recipients, using the "PATCH" method.
 
@@ -7779,11 +7120,7 @@ class SendgridApp(APIApplication):
         Tags:
             Enforced TLS
         """
-        request_body = {
-            "require_tls": require_tls,
-            "require_valid_cert": require_valid_cert,
-            "version": version,
-        }
+        request_body = {"require_tls": require_tls, "require_valid_cert": require_valid_cert, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/settings/enforced_tls"
         query_params = {}
@@ -7791,7 +7128,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_username(self) -> dict[str, Any]:
+    async def list_username(self) -> dict[str, Any]:
         """
         Retrieves the authenticated user's profile information, supporting requests made on behalf of another user.
 
@@ -7807,7 +7144,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_username(self, username=None) -> dict[str, Any]:
+    async def update_username(self, username=None) -> dict[str, Any]:
         """
         Updates the username of the authenticated user with the provided new username data.
 
@@ -7820,9 +7157,7 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {
-            "username": username,
-        }
+        request_body = {"username": username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/username"
         query_params = {}
@@ -7830,7 +7165,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_event_webhook(
+    async def create_event_webhook(
         self,
         bounce=None,
         click=None,
@@ -7926,7 +7261,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_event_webhook(self, include=None) -> dict[str, Any]:
+    async def list_event_webhook(self, include=None) -> dict[str, Any]:
         """
         Retrieves the configuration and settings for all user webhook events and their associated preferences.
 
@@ -7945,7 +7280,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_signed_event_webhook(self, id) -> dict[str, Any]:
+    async def get_signed_event_webhook(self, id) -> dict[str, Any]:
         """
         Retrieves the signed event settings for a specific webhook event identified by the provided ID using the GET method.
 
@@ -7966,7 +7301,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_signed_event_webhook(self, id, enabled=None) -> dict[str, Any]:
+    async def update_signed_event_webhook(self, id, enabled=None) -> dict[str, Any]:
         """
         Updates the configuration settings for a signed event webhook identified by the given ID using the PATCH method and returns the updated settings.
 
@@ -7988,9 +7323,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "enabled": enabled,
-        }
+        request_body = {"enabled": enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/event/settings/signed/{id}"
         query_params = {}
@@ -7998,7 +7331,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_event_webhook(self, id) -> Any:
+    async def delete_event_webhook(self, id) -> Any:
         """
         Removes the event webhook settings with the specified ID and returns no content (204) or not found (404) if the settings do not exist.
 
@@ -8019,7 +7352,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_event_webhook(self, id, include=None) -> dict[str, Any]:
+    async def get_event_webhook(self, id, include=None) -> dict[str, Any]:
         """
         Retrieves the webhook event settings for a specific user by ID.
 
@@ -8041,7 +7374,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_event_webhook(
+    async def update_event_webhook(
         self,
         id,
         include=None,
@@ -8121,14 +7454,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def test_event_webhook(
-        self,
-        id=None,
-        oauth_client_id=None,
-        oauth_client_secret=None,
-        oauth_token_url=None,
-        url=None,
-    ) -> Any:
+    async def test_event_webhook(self, id=None, oauth_client_id=None, oauth_client_secret=None, oauth_token_url=None, url=None) -> Any:
         """
         Sends a test event to the user's webhook endpoint to verify its functionality.
 
@@ -8159,7 +7485,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_parse_setting(self) -> dict[str, Any]:
+    async def list_parse_setting(self) -> dict[str, Any]:
         """
         Retrieves and returns the settings for parsing webhooks in the user's webhooks configuration.
 
@@ -8175,9 +7501,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_parse_setting(
-        self, hostname=None, send_raw=None, spam_check=None, url=None
-    ) -> dict[str, Any]:
+    async def create_parse_setting(self, hostname=None, send_raw=None, spam_check=None, url=None) -> dict[str, Any]:
         """
         Configures and parses webhook settings for a user using the POST method.
 
@@ -8193,12 +7517,7 @@ class SendgridApp(APIApplication):
         Tags:
             Parse Webhook
         """
-        request_body = {
-            "hostname": hostname,
-            "send_raw": send_raw,
-            "spam_check": spam_check,
-            "url": url,
-        }
+        request_body = {"hostname": hostname, "send_raw": send_raw, "spam_check": spam_check, "url": url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/parse/settings"
         query_params = {}
@@ -8206,7 +7525,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_parse_setting(self, hostname) -> dict[str, Any]:
+    async def delete_parse_setting(self, hostname) -> dict[str, Any]:
         """
         Deletes the parse webhook settings associated with the specified hostname for the authenticated user.
 
@@ -8227,7 +7546,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_parse_setting(self, hostname) -> dict[str, Any]:
+    async def get_parse_setting(self, hostname) -> dict[str, Any]:
         """
         Retrieves the settings for parsing webhooks from a specified hostname using the GET method.
 
@@ -8248,9 +7567,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_parse_setting(
-        self, hostname, hostname_body=None, send_raw=None, spam_check=None, url=None
-    ) -> dict[str, Any]:
+    async def update_parse_setting(self, hostname, hostname_body=None, send_raw=None, spam_check=None, url=None) -> dict[str, Any]:
         """
         Updates the settings for parsing webhooks for a specified hostname using the PATCH method, returning a status message upon success.
 
@@ -8269,12 +7586,7 @@ class SendgridApp(APIApplication):
         """
         if hostname is None:
             raise ValueError("Missing required parameter 'hostname'")
-        request_body = {
-            "hostname": hostname_body,
-            "send_raw": send_raw,
-            "spam_check": spam_check,
-            "url": url,
-        }
+        request_body = {"hostname": hostname_body, "send_raw": send_raw, "spam_check": spam_check, "url": url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
         query_params = {}
@@ -8282,9 +7594,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_parse_static(
-        self, start_date, limit=None, offset=None, aggregated_by=None, end_date=None
-    ) -> list[Any]:
+    async def list_parse_static(self, start_date, limit=None, offset=None, aggregated_by=None, end_date=None) -> list[Any]:
         """
         Retrieves statistical data for webhook parsing, allowing users to filter results by limit, offset, aggregation, and date range.
 
@@ -8317,7 +7627,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def validate_email(self, email=None, source=None) -> dict[str, Any]:
+    async def validate_email(self, email=None, source=None) -> dict[str, Any]:
         """
         Validates the format and deliverability of an email address by submitting the email data in JSON format to the API.
 
@@ -8331,10 +7641,7 @@ class SendgridApp(APIApplication):
         Tags:
             Email Address Validation
         """
-        request_body = {
-            "email": email,
-            "source": source,
-        }
+        request_body = {"email": email, "source": source}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/validations/email"
         query_params = {}
@@ -8342,7 +7649,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_validations_email_jobs(self) -> dict[str, Any]:
+    async def get_validations_email_jobs(self) -> dict[str, Any]:
         """
         Retrieves a list of email validation jobs processed by the API.
 
@@ -8358,7 +7665,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_email_job_for_verification(self, file_type=None) -> dict[str, Any]:
+    async def list_email_job_for_verification(self, file_type=None) -> dict[str, Any]:
         """
         Updates an existing email job validation resource using a JSON payload at the "/v3/validations/email/jobs" endpoint and returns a status message upon successful modification.
 
@@ -8371,9 +7678,7 @@ class SendgridApp(APIApplication):
         Tags:
             Bulk Email Address Validation
         """
-        request_body = {
-            "file_type": file_type,
-        }
+        request_body = {"file_type": file_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/validations/email/jobs"
         query_params = {}
@@ -8381,7 +7686,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_email_job_for_verification(self, job_id) -> dict[str, Any]:
+    async def get_email_job_for_verification(self, job_id) -> dict[str, Any]:
         """
         Get the status and details of an email validation job by its job ID.
 
@@ -8402,9 +7707,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_verified_sender(
-        self, limit=None, lastSeenID=None, id=None
-    ) -> dict[str, Any]:
+    async def list_verified_sender(self, limit=None, lastSeenID=None, id=None) -> dict[str, Any]:
         """
         Retrieves a list of verified senders using the GET method, allowing optional filtering by limit, last seen ID, and specific ID.
 
@@ -8420,16 +7723,12 @@ class SendgridApp(APIApplication):
             Sender Verification
         """
         url = f"{self.base_url}/v3/verified_senders"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("lastSeenID", lastSeenID), ("id", id)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("lastSeenID", lastSeenID), ("id", id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_verified_sender(
+    async def create_verified_sender(
         self,
         address=None,
         address2=None,
@@ -8485,7 +7784,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_verified_sender_domain(self) -> dict[str, Any]:
+    async def list_verified_sender_domain(self) -> dict[str, Any]:
         """
         Retrieves a list of verified sender domains.
 
@@ -8501,7 +7800,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def resend_verified_sender(self, id) -> dict[str, Any]:
+    async def resend_verified_sender(self, id) -> dict[str, Any]:
         """
         Resends a verification request for a specified verified sender using the POST method.
 
@@ -8522,7 +7821,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_verified_sender_steps_completed(self) -> dict[str, Any]:
+    async def list_verified_sender_steps_completed(self) -> dict[str, Any]:
         """
         Retrieves the completed steps associated with verified senders in the system.
 
@@ -8538,7 +7837,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def verify_sender_token(self, token) -> Any:
+    async def verify_sender_token(self, token) -> Any:
         """
         Verifies a sender using the provided token and returns a successful response if valid.
 
@@ -8559,7 +7858,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_verified_sender(self, id) -> dict[str, Any]:
+    async def delete_verified_sender(self, id) -> dict[str, Any]:
         """
         Deletes a verified sender with the specified ID using the DELETE method and returns a successful response with a 204 status code if the operation is successful.
 
@@ -8580,7 +7879,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_verified_sender(
+    async def update_verified_sender(
         self,
         id,
         address=None,
@@ -8595,8 +7894,8 @@ class SendgridApp(APIApplication):
         state=None,
         zip=None,
     ) -> dict[str, Any]:
-        r"""
-        Updates specific details of a verified sender identified by \{id\} using partial modifications.
+        """
+        Updates specific details of a verified sender identified by \\{id\\} using partial modifications.
 
         Args:
             id (string): id
@@ -8640,9 +7939,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def email_dns_record(
-        self, domain_id=None, email=None, link_id=None, message=None
-    ) -> Any:
+    async def email_dns_record(self, domain_id=None, email=None, link_id=None, message=None) -> Any:
         """
         Creates a new whitelabel DNS configuration for email by submitting the required details in JSON format.
 
@@ -8658,12 +7955,7 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        request_body = {
-            "domain_id": domain_id,
-            "email": email,
-            "link_id": link_id,
-            "message": message,
-        }
+        request_body = {"domain_id": domain_id, "email": email, "link_id": link_id, "message": message}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/dns/email"
         query_params = {}
@@ -8671,9 +7963,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_authenticated_domain(
-        self, limit=None, offset=None, exclude_subusers=None, username=None, domain=None
-    ) -> list[Any]:
+    async def list_authenticated_domain(self, limit=None, offset=None, exclude_subusers=None, username=None, domain=None) -> list[Any]:
         """
         Retrieves a list of whitelabel domains for the specified criteria, supporting optional filters by username, domain name, and excluding subusers.
 
@@ -8706,7 +7996,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def authenticate_domain(
+    async def authenticate_domain(
         self,
         automatic_security=None,
         custom_dkim_selector=None,
@@ -8756,7 +8046,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_default_authenticated_domain(self, domain=None) -> list[Any]:
+    async def list_default_authenticated_domain(self, domain=None) -> list[Any]:
         """
         Retrieves the default domain for a whitelabel setup, optionally filtered by a specified domain.
 
@@ -8775,9 +8065,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def disassociate_authenticated_domain_from_user(
-        self, username=None
-    ) -> dict[str, Any]:
+    async def disassociate_authenticated_domain_from_user(self, username=None) -> dict[str, Any]:
         """
         Removes a domain from the whitelist for the specified subuser and returns no content upon success.
 
@@ -8796,7 +8084,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_authenticated_domain_with_user(self, username) -> dict[str, Any]:
+    async def list_authenticated_domain_with_user(self, username) -> dict[str, Any]:
         """
         Get a list of whitelabel domains associated with a specified subuser by providing their username.
 
@@ -8815,7 +8103,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_all_authenticated_domain_with_user(self, username) -> list[Any]:
+    async def list_all_authenticated_domain_with_user(self, username) -> list[Any]:
         """
         Retrieves a list of all subusers associated with whitelabel domains for a specified username.
 
@@ -8834,7 +8122,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_authenticated_domain(self, domain_id) -> dict[str, Any]:
+    async def delete_authenticated_domain(self, domain_id) -> dict[str, Any]:
         """
         Deletes a whitelabel domain identified by `{domain_id}` using the DELETE method, returning a successful response with no content.
 
@@ -8855,7 +8143,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_authenticated_domain(self, domain_id) -> dict[str, Any]:
+    async def get_authenticated_domain(self, domain_id) -> dict[str, Any]:
         """
         Retrieves details about a specific whitelabeled domain identified by the provided domain ID.
 
@@ -8876,9 +8164,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_authenticated_domain(
-        self, domain_id, custom_spf=None, default=None
-    ) -> list[Any]:
+    async def update_authenticated_domain(self, domain_id, custom_spf=None, default=None) -> list[Any]:
         """
         Updates the settings of an authenticated domain by modifying specified attributes using the PATCH method.
 
@@ -8895,10 +8181,7 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        request_body = {
-            "custom_spf": custom_spf,
-            "default": default,
-        }
+        request_body = {"custom_spf": custom_spf, "default": default}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
         query_params = {}
@@ -8906,9 +8189,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def disassociate_subuser_from_domain(
-        self, domain_id, username=None
-    ) -> dict[str, Any]:
+    async def disassociate_subuser_from_domain(self, domain_id, username=None) -> dict[str, Any]:
         """
         Deletes a specified subuser associated with a given whitelabel domain by domain ID and username.
 
@@ -8930,7 +8211,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def associate_subuser_with_domain(self, domain_id, username=None) -> dict[str, Any]:
+    async def associate_subuser_with_domain(self, domain_id, username=None) -> dict[str, Any]:
         """
         Creates a subuser for the specified domain using the provided JSON data.
 
@@ -8946,9 +8227,7 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        request_body = {
-            "username": username,
-        }
+        request_body = {"username": username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser"
         query_params = {}
@@ -8956,9 +8235,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def associate_subuser_with_domain_multiple(
-        self, domain_id, username=None
-    ) -> dict[str, Any]:
+    async def associate_subuser_with_domain_multiple(self, domain_id, username=None) -> dict[str, Any]:
         """
         Associates a specific authenticated domain with a subuser using the SendGrid API.
 
@@ -8974,9 +8251,7 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        request_body = {
-            "username": username,
-        }
+        request_body = {"username": username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser:add"
         query_params = {}
@@ -8984,7 +8259,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_ip_to_authenticated_domain(self, id, ip=None) -> dict[str, Any]:
+    async def add_ip_to_authenticated_domain(self, id, ip=None) -> dict[str, Any]:
         """
         Associates IP addresses with a specific authenticated domain using the POST method and returns a status message.
 
@@ -9000,9 +8275,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "ip": ip,
-        }
+        request_body = {"ip": ip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{id}/ips"
         query_params = {}
@@ -9010,7 +8283,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_ip_from_authenticated_domain(self, id, ip) -> dict[str, Any]:
+    async def delete_ip_from_authenticated_domain(self, id, ip) -> dict[str, Any]:
         """
         Deletes an IP address associated with a specific domain in the whitelabel service.
 
@@ -9034,7 +8307,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def validate_authenticated_domain(self, id) -> dict[str, Any]:
+    async def validate_authenticated_domain(self, id) -> dict[str, Any]:
         """
         Validates a domain with the specified ID for whitelabel purposes using the provided parameters.
 
@@ -9055,7 +8328,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_reverse_dns(self, limit=None, offset=None, ip=None) -> list[Any]:
+    async def list_reverse_dns(self, limit=None, offset=None, ip=None) -> list[Any]:
         """
         Get a list of whitelabel IP addresses with optional filtering by IP, pagination, and on-behalf-of user context.
 
@@ -9071,18 +8344,12 @@ class SendgridApp(APIApplication):
             Reverse DNS
         """
         url = f"{self.base_url}/v3/whitelabel/ips"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("offset", offset), ("ip", ip)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("ip", ip)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def set_up_reverse_dns(
-        self, domain=None, ip=None, subdomain=None
-    ) -> dict[str, Any]:
+    async def set_up_reverse_dns(self, domain=None, ip=None, subdomain=None) -> dict[str, Any]:
         """
         Adds IP addresses to a whitelist using the "POST" method at the "/v3/whitelabel/ips" path, allowing specified IP addresses to access certain resources.
 
@@ -9097,11 +8364,7 @@ class SendgridApp(APIApplication):
         Tags:
             Reverse DNS
         """
-        request_body = {
-            "domain": domain,
-            "ip": ip,
-            "subdomain": subdomain,
-        }
+        request_body = {"domain": domain, "ip": ip, "subdomain": subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/ips"
         query_params = {}
@@ -9109,7 +8372,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_reverse_dns(self, id) -> dict[str, Any]:
+    async def delete_reverse_dns(self, id) -> dict[str, Any]:
         """
         Deletes the specified whitelabel IP address identified by its ID and returns a 204 No Content status upon successful removal.
 
@@ -9130,7 +8393,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_reverse_dns(self, id) -> dict[str, Any]:
+    async def get_reverse_dns(self, id) -> dict[str, Any]:
         """
         Retrieves information about a specific whitelabel IP address identified by its ID using the "GET" method.
 
@@ -9151,7 +8414,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def validate_reverse_dns(self, id) -> dict[str, Any]:
+    async def validate_reverse_dns(self, id) -> dict[str, Any]:
         """
         Validates a specified IP address for whitelabeling using the POST method and returns a validation result.
 
@@ -9172,7 +8435,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_branded_link(self, limit=None) -> list[Any]:
+    async def list_branded_link(self, limit=None) -> list[Any]:
         """
         Retrieves a list of whitelabeled links, allowing optional filtering by a specified limit and execution on behalf of another entity.
 
@@ -9191,9 +8454,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_branded_link(
-        self, default=None, domain=None, region=None, subdomain=None
-    ) -> dict[str, Any]:
+    async def create_branded_link(self, default=None, domain=None, region=None, subdomain=None) -> dict[str, Any]:
         """
         Creates a new whitelabel link resource using the provided JSON payload and returns a 201 status code upon successful creation.
 
@@ -9209,12 +8470,7 @@ class SendgridApp(APIApplication):
         Tags:
             Link Branding
         """
-        request_body = {
-            "default": default,
-            "domain": domain,
-            "region": region,
-            "subdomain": subdomain,
-        }
+        request_body = {"default": default, "domain": domain, "region": region, "subdomain": subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/links"
         query_params = {}
@@ -9222,7 +8478,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_default_branded_link(self, domain=None) -> dict[str, Any]:
+    async def list_default_branded_link(self, domain=None) -> dict[str, Any]:
         """
         Retrieves the default whitelabel link for a specified domain using the "GET" method.
 
@@ -9241,7 +8497,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def disassociate_branded_link_from_subuser(self, username) -> dict[str, Any]:
+    async def disassociate_branded_link_from_subuser(self, username) -> dict[str, Any]:
         """
         Deletes a subuser link for a specified whitelabel using the provided username and returns no content upon successful deletion.
 
@@ -9260,7 +8516,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_subuser_branded_link(self, username) -> dict[str, Any]:
+    async def list_subuser_branded_link(self, username) -> dict[str, Any]:
         """
         Retrieves and provides information about a subuser in the context of whitelabel links using the "GET" method, requiring a username as a query parameter.
 
@@ -9279,7 +8535,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_branded_link(self, id) -> dict[str, Any]:
+    async def delete_branded_link(self, id) -> dict[str, Any]:
         """
         Deletes a whitelabel link specified by the `{id}` parameter and returns a successful response without content.
 
@@ -9300,7 +8556,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_branded_link(self, id) -> dict[str, Any]:
+    async def get_branded_link(self, id) -> dict[str, Any]:
         """
         Retrieves the details of a whitelabel link specified by its ID using the GET method.
 
@@ -9321,7 +8577,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_branded_link(self, id, default=None) -> dict[str, Any]:
+    async def update_branded_link(self, id, default=None) -> dict[str, Any]:
         """
         Partially updates a whitelabel link by ID using JSON data and returns a success response.
 
@@ -9337,9 +8593,7 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "default": default,
-        }
+        request_body = {"default": default}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/links/{id}"
         query_params = {}
@@ -9347,7 +8601,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def validate_branded_link(self, id) -> dict[str, Any]:
+    async def validate_branded_link(self, id) -> dict[str, Any]:
         """
         Validates a specific whitelabel link by ID using the "POST" method.
 
@@ -9368,9 +8622,7 @@ class SendgridApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def associate_branded_link_with_subuser(
-        self, link_id, username=None
-    ) -> dict[str, Any]:
+    async def associate_branded_link_with_subuser(self, link_id, username=None) -> dict[str, Any]:
         """
         Creates a new subuser link for the specified whitelabel link ID using a JSON request body and returns a success response.
 
@@ -9386,9 +8638,7 @@ class SendgridApp(APIApplication):
         """
         if link_id is None:
             raise ValueError("Missing required parameter 'link_id'")
-        request_body = {
-            "username": username,
-        }
+        request_body = {"username": username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/links/{link_id}/subuser"
         query_params = {}

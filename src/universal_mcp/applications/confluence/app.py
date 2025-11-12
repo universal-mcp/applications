@@ -1,5 +1,4 @@
 from typing import Any
-
 import httpx
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -13,24 +12,15 @@ class ConfluenceApp(APIApplication):
     def get_base_url(self):
         headers = self._get_headers()
         url = "https://api.atlassian.com/oauth/token/accessible-resources"
-
         response = httpx.get(url, headers=headers)
         response.raise_for_status()
         resources = response.json()
-
         if not resources:
-            raise ValueError(
-                "No accessible Confluence resources found for the provided credentials."
-            )
-
+            raise ValueError("No accessible Confluence resources found for the provided credentials.")
         first_resource = resources[0]
         resource_id = first_resource.get("id")
-
         if not resource_id:
-            raise ValueError(
-                "Could not determine the resource ID from the first accessible resource."
-            )
-
+            raise ValueError("Could not determine the resource ID from the first accessible resource.")
         return f"https://api.atlassian.com/ex/confluence/{resource_id}/api/v2"
 
     @property
@@ -50,15 +40,7 @@ class ConfluenceApp(APIApplication):
         """
         self._base_url = value
 
-    def get_attachments(
-        self,
-        sort=None,
-        cursor=None,
-        status=None,
-        mediaType=None,
-        filename=None,
-        limit=None,
-    ) -> dict[str, Any]:
+    async def get_attachments(self, sort=None, cursor=None, status=None, mediaType=None, filename=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of attachments based on specified filters like sort order, cursor position, status, media type, filename, and limit, using the GET method.
 
@@ -93,7 +75,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_by_id(
+    async def get_attachment_by_id(
         self,
         id,
         version=None,
@@ -148,7 +130,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_attachment(self, id, purge=None) -> Any:
+    async def delete_attachment(self, id, purge=None) -> Any:
         """
         Deletes the specified attachment using its unique identifier and optionally purges it permanently.
 
@@ -170,9 +152,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_labels(
-        self, id, prefix=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_attachment_labels(self, id, prefix=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves labels associated with a specific attachment, optionally filtered by prefix, sorted, and paginated using cursor-based pagination.
 
@@ -192,21 +172,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/attachments/{id}/labels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("prefix", prefix),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_operations(self, id) -> dict[str, Any]:
+    async def get_attachment_operations(self, id) -> dict[str, Any]:
         """
         Retrieves operations associated with a specific attachment using its unique identifier.
 
@@ -227,9 +198,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_content_properties(
-        self, attachment_id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_attachment_content_properties(self, attachment_id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves properties of a specific attachment identified by `attachment-id`, with optional filtering, sorting, and pagination via query parameters.
 
@@ -249,23 +218,12 @@ class ConfluenceApp(APIApplication):
         if attachment_id is None:
             raise ValueError("Missing required parameter 'attachment-id'")
         url = f"{self.base_url}/attachments/{attachment_id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_attachment_property(
-        self, attachment_id, key=None, value=None
-    ) -> dict[str, Any]:
+    async def create_attachment_property(self, attachment_id, key=None, value=None) -> dict[str, Any]:
         """
         Creates a new property for the specified attachment and returns the created property.
 
@@ -282,10 +240,7 @@ class ConfluenceApp(APIApplication):
         """
         if attachment_id is None:
             raise ValueError("Missing required parameter 'attachment-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/attachments/{attachment_id}/properties"
         query_params = {}
@@ -293,9 +248,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_content_properties_by_id(
-        self, attachment_id, property_id
-    ) -> dict[str, Any]:
+    async def get_attachment_content_properties_by_id(self, attachment_id, property_id) -> dict[str, Any]:
         """
         Retrieves a specific property of an attachment using the provided attachment ID and property ID.
 
@@ -319,9 +272,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_attachment_property_by_id(
-        self, attachment_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_attachment_property_by_id(self, attachment_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates a specific property for an attachment by its ID and returns the updated result.
 
@@ -342,11 +293,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'attachment-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/attachments/{attachment_id}/properties/{property_id}"
         query_params = {}
@@ -354,7 +301,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_attachment_property_by_id(self, attachment_id, property_id) -> Any:
+    async def delete_attachment_property_by_id(self, attachment_id, property_id) -> Any:
         """
         Deletes a specific property from an attachment using the DELETE method, identified by both the attachment ID and the property ID.
 
@@ -378,9 +325,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_versions(
-        self, id, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_attachment_versions(self, id, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of versions for a specific attachment using the "id" parameter and supports query parameters for pagination and sorting.
 
@@ -399,18 +344,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/attachments/{id}/versions"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_version_details(
-        self, attachment_id, version_number
-    ) -> dict[str, Any]:
+    async def get_attachment_version_details(self, attachment_id, version_number) -> dict[str, Any]:
         """
         Retrieves a specific version of an attachment file using the attachment ID and version number, returning the details of the specified version.
 
@@ -434,9 +373,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_attachment_comments(
-        self, id, body_format=None, cursor=None, limit=None, sort=None, version=None
-    ) -> dict[str, Any]:
+    async def get_attachment_comments(self, id, body_format=None, cursor=None, limit=None, sort=None, version=None) -> dict[str, Any]:
         """
         Retrieves paginated footer comments for a specific attachment using query parameters for formatting, pagination, sorting, and version control.
 
@@ -459,29 +396,15 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/attachments/{id}/footer-comments"
         query_params = {
             k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-                ("version", version),
-            ]
+            for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort), ("version", version)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blog_posts(
-        self,
-        id=None,
-        space_id=None,
-        sort=None,
-        status=None,
-        title=None,
-        body_format=None,
-        cursor=None,
-        limit=None,
+    async def get_blog_posts(
+        self, id=None, space_id=None, sort=None, status=None, title=None, body_format=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of blog posts using the "GET" method at the "/blogposts" endpoint, allowing filtering by parameters such as ID, space ID, sort order, status, title, and body format.
@@ -521,9 +444,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_blog_post(
-        self, spaceId, private=None, status=None, title=None, body=None, createdAt=None
-    ) -> Any:
+    async def create_blog_post(self, spaceId, private=None, status=None, title=None, body=None, createdAt=None) -> Any:
         """
         Creates a new blog post using the POST method at the "/blogposts" endpoint, with an optional parameter to specify whether the post should be private.
 
@@ -541,13 +462,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             Blog Post
         """
-        request_body = {
-            "spaceId": spaceId,
-            "status": status,
-            "title": title,
-            "body": body,
-            "createdAt": createdAt,
-        }
+        request_body = {"spaceId": spaceId, "status": status, "title": title, "body": body, "createdAt": createdAt}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts"
         query_params = {k: v for k, v in [("private", private)] if v is not None}
@@ -555,7 +470,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_by_id(
+    async def get_blog_post_by_id(
         self,
         id,
         body_format=None,
@@ -619,10 +534,7 @@ class ConfluenceApp(APIApplication):
                 ("include-likes", include_likes),
                 ("include-versions", include_versions),
                 ("include-version", include_version),
-                (
-                    "include-favorited-by-current-user-status",
-                    include_favorited_by_current_user_status,
-                ),
+                ("include-favorited-by-current-user-status", include_favorited_by_current_user_status),
                 ("include-webresources", include_webresources),
                 ("include-collaborators", include_collaborators),
             ]
@@ -632,9 +544,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_blog_post(
-        self, id, status, title, body, version, spaceId=None, createdAt=None
-    ) -> Any:
+    async def update_blog_post(self, id, status, title, body, version, spaceId=None, createdAt=None) -> Any:
         """
         Updates or creates a blog post with the specified ID and returns a status message.
 
@@ -676,7 +586,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_blog_post(self, id, purge=None, draft=None) -> Any:
+    async def delete_blog_post(self, id, purge=None, draft=None) -> Any:
         """
         Deletes a blog post with the specified ID using the DELETE method, with optional parameters to purge or manage draft status.
 
@@ -694,22 +604,13 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}"
-        query_params = {
-            k: v for k, v in [("purge", purge), ("draft", draft)] if v is not None
-        }
+        query_params = {k: v for k, v in [("purge", purge), ("draft", draft)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blogpost_attachments(
-        self,
-        id,
-        sort=None,
-        cursor=None,
-        status=None,
-        mediaType=None,
-        filename=None,
-        limit=None,
+    async def get_blogpost_attachments(
+        self, id, sort=None, cursor=None, status=None, mediaType=None, filename=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of attachments associated with a specific blog post, supporting filtering by status, media type, filename, and pagination via query parameters.
@@ -748,7 +649,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_by_type_in_blog_post(
+    async def get_custom_content_by_type_in_blog_post(
         self, id, type, sort=None, cursor=None, limit=None, body_format=None
     ) -> dict[str, Any]:
         """
@@ -773,22 +674,14 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/blogposts/{id}/custom-content"
         query_params = {
             k: v
-            for k, v in [
-                ("type", type),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("body-format", body_format),
-            ]
+            for k, v in [("type", type), ("sort", sort), ("cursor", cursor), ("limit", limit), ("body-format", body_format)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_labels(
-        self, id, prefix=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_blog_post_labels(self, id, prefix=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of labels associated with a specific blog post, filtered by prefix, sorted, and paginated based on provided query parameters.
 
@@ -808,21 +701,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/labels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("prefix", prefix),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_like_count(self, id) -> dict[str, Any]:
+    async def get_blog_post_like_count(self, id) -> dict[str, Any]:
         """
         Retrieves the number of likes for a blog post using the specified ID via the GET method.
 
@@ -843,7 +727,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
+    async def get_blog_post_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of users who liked a specific blog post, using cursor-based pagination parameters.
 
@@ -861,16 +745,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/likes/users"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blogpost_content_properties(
-        self, blogpost_id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_blogpost_content_properties(self, blogpost_id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves properties of a specific blog post identified by its ID, allowing optional filtering by key, sorting, and pagination using cursor and limit parameters.
 
@@ -890,23 +770,12 @@ class ConfluenceApp(APIApplication):
         if blogpost_id is None:
             raise ValueError("Missing required parameter 'blogpost-id'")
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_blogpost_property(
-        self, blogpost_id, key=None, value=None
-    ) -> dict[str, Any]:
+    async def create_blogpost_property(self, blogpost_id, key=None, value=None) -> dict[str, Any]:
         """
         Adds custom properties to a specified blogpost and returns a success or error status.
 
@@ -923,10 +792,7 @@ class ConfluenceApp(APIApplication):
         """
         if blogpost_id is None:
             raise ValueError("Missing required parameter 'blogpost-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties"
         query_params = {}
@@ -934,9 +800,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blogpost_content_properties_by_id(
-        self, blogpost_id, property_id
-    ) -> dict[str, Any]:
+    async def get_blogpost_content_properties_by_id(self, blogpost_id, property_id) -> dict[str, Any]:
         """
         Retrieves a specific property from a blog post using the provided blogpost and property IDs.
 
@@ -960,9 +824,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_blogpost_property_by_id(
-        self, blogpost_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_blogpost_property_by_id(self, blogpost_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates the specified property of a blog post using the provided identifiers and returns a status message.
 
@@ -983,11 +845,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'blogpost-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties/{property_id}"
         query_params = {}
@@ -995,7 +853,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_blogpost_property_by_id(self, blogpost_id, property_id) -> Any:
+    async def delete_blogpost_property_by_id(self, blogpost_id, property_id) -> Any:
         """
         Deletes a specific property from a blog post using the blog post ID and property ID.
 
@@ -1019,7 +877,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_operations(self, id) -> dict[str, Any]:
+    async def get_blog_post_operations(self, id) -> dict[str, Any]:
         """
         Retrieves operations associated with a specific blog post identified by the provided ID using the GET method.
 
@@ -1040,9 +898,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_versions(
-        self, id, body_format=None, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_blog_post_versions(self, id, body_format=None, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of version history entries for a specific blog post, optionally paginated and sorted, with customizable response formatting.
 
@@ -1063,22 +919,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/versions"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_version_details(
-        self, blogpost_id, version_number
-    ) -> dict[str, Any]:
+    async def get_blog_post_version_details(self, blogpost_id, version_number) -> dict[str, Any]:
         """
         Retrieves a specific version of a blog post identified by its ID and version number using the GET method.
 
@@ -1102,7 +949,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def convert_content_ids_to_content_types(self, contentIds) -> dict[str, Any]:
+    async def convert_content_ids_to_content_types(self, contentIds) -> dict[str, Any]:
         """
         Converts content IDs to their corresponding types using a POST request and returns appropriate responses based on the conversion outcome.
 
@@ -1115,9 +962,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             Content
         """
-        request_body = {
-            "contentIds": contentIds,
-        }
+        request_body = {"contentIds": contentIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/content/convert-ids-to-types"
         query_params = {}
@@ -1125,15 +970,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_by_type(
-        self,
-        type,
-        id=None,
-        space_id=None,
-        sort=None,
-        cursor=None,
-        limit=None,
-        body_format=None,
+    async def get_custom_content_by_type(
+        self, type, id=None, space_id=None, sort=None, cursor=None, limit=None, body_format=None
     ) -> dict[str, Any]:
         """
         Retrieves custom content at the specified path "/custom-content" using the GET method, allowing for filtering by type, id, space-id, sort order, and pagination with optional cursor and limit parameters.
@@ -1171,16 +1009,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_custom_content(
-        self,
-        type,
-        title,
-        body,
-        status=None,
-        spaceId=None,
-        pageId=None,
-        blogPostId=None,
-        customContentId=None,
+    async def create_custom_content(
+        self, type, title, body, status=None, spaceId=None, pageId=None, blogPostId=None, customContentId=None
     ) -> Any:
         """
         Creates custom content via a POST request and returns appropriate status codes indicating success or specific errors.
@@ -1218,7 +1048,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_by_id(
+    async def get_custom_content_by_id(
         self,
         id,
         body_format=None,
@@ -1276,18 +1106,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_custom_content(
-        self,
-        id,
-        type,
-        status,
-        title,
-        body,
-        version,
-        spaceId=None,
-        pageId=None,
-        blogPostId=None,
-        customContentId=None,
+    async def update_custom_content(
+        self, id, type, status, title, body, version, spaceId=None, pageId=None, blogPostId=None, customContentId=None
     ) -> Any:
         """
         Updates or replaces a custom content resource identified by the provided ID using the PUT method, returning various status responses based on the request's success or failure.
@@ -1331,7 +1151,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_custom_content(self, id, purge=None) -> Any:
+    async def delete_custom_content(self, id, purge=None) -> Any:
         """
         Deletes a custom content resource identified by its ID from the system, with an optional query parameter to specify whether to purge the content.
 
@@ -1353,15 +1173,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_attachments(
-        self,
-        id,
-        sort=None,
-        cursor=None,
-        status=None,
-        mediaType=None,
-        filename=None,
-        limit=None,
+    async def get_custom_content_attachments(
+        self, id, sort=None, cursor=None, status=None, mediaType=None, filename=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of attachments associated with custom content identified by the given ID, allowing for filtering by sort order, cursor, status, media type, filename, and limiting the number of results.
@@ -1400,9 +1213,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_comments(
-        self, id, body_format=None, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_custom_content_comments(self, id, body_format=None, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of footer comments associated with a specific custom content item using the "GET" method, allowing for optional filtering by body format, cursor, limit, and sort order.
 
@@ -1423,22 +1234,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}/footer-comments"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_labels(
-        self, id, prefix=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_custom_content_labels(self, id, prefix=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves labels for custom content with a specified ID, allowing filtering by prefix, sorting, and pagination using query parameters.
 
@@ -1458,21 +1260,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}/labels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("prefix", prefix),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_operations(self, id) -> dict[str, Any]:
+    async def get_custom_content_operations(self, id) -> dict[str, Any]:
         """
         Retrieves operational details for a custom content item identified by its ID using the GET method.
 
@@ -1493,7 +1286,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_content_properties(
+    async def get_custom_content_content_properties(
         self, custom_content_id, key=None, sort=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
@@ -1515,23 +1308,12 @@ class ConfluenceApp(APIApplication):
         if custom_content_id is None:
             raise ValueError("Missing required parameter 'custom-content-id'")
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_custom_content_property(
-        self, custom_content_id, key=None, value=None
-    ) -> dict[str, Any]:
+    async def create_custom_content_property(self, custom_content_id, key=None, value=None) -> dict[str, Any]:
         """
         Adds or updates properties for a specified custom content item and returns the operation result.
 
@@ -1548,10 +1330,7 @@ class ConfluenceApp(APIApplication):
         """
         if custom_content_id is None:
             raise ValueError("Missing required parameter 'custom-content-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties"
         query_params = {}
@@ -1559,9 +1338,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_content_properties_by_id(
-        self, custom_content_id, property_id
-    ) -> dict[str, Any]:
+    async def get_custom_content_content_properties_by_id(self, custom_content_id, property_id) -> dict[str, Any]:
         """
         Retrieves properties of a specific item identified by a custom content ID and property ID using the GET method.
 
@@ -1585,7 +1362,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_custom_content_property_by_id(
+    async def update_custom_content_property_by_id(
         self, custom_content_id, property_id, key=None, value=None, version=None
     ) -> dict[str, Any]:
         """
@@ -1608,11 +1385,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'custom-content-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties/{property_id}"
         query_params = {}
@@ -1620,9 +1393,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_custom_content_property_by_id(
-        self, custom_content_id, property_id
-    ) -> Any:
+    async def delete_custom_content_property_by_id(self, custom_content_id, property_id) -> Any:
         """
         Deletes a specified property from a custom content resource.
 
@@ -1646,9 +1417,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_labels(
-        self, label_id=None, prefix=None, cursor=None, sort=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_labels(self, label_id=None, prefix=None, cursor=None, sort=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of labels using the "GET" method at the "/labels" endpoint, allowing filtering by label ID, prefix, sorting, and pagination via query parameters.
 
@@ -1668,22 +1437,14 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/labels"
         query_params = {
             k: v
-            for k, v in [
-                ("label-id", label_id),
-                ("prefix", prefix),
-                ("cursor", cursor),
-                ("sort", sort),
-                ("limit", limit),
-            ]
+            for k, v in [("label-id", label_id), ("prefix", prefix), ("cursor", cursor), ("sort", sort), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_label_attachments(
-        self, id, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_label_attachments(self, id, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of attachments associated with a label identified by the provided ID, allowing for sorting and pagination via query parameters.
 
@@ -1702,18 +1463,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/labels/{id}/attachments"
-        query_params = {
-            k: v
-            for k, v in [("sort", sort), ("cursor", cursor), ("limit", limit)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_label_blog_posts(
-        self, id, space_id=None, body_format=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_label_blog_posts(self, id, space_id=None, body_format=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of blog posts associated with a specific label by ID, allowing optional filtering by space ID, body format, sorting, cursor pagination, and content limit, using the GET method.
 
@@ -1736,22 +1491,14 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/labels/{id}/blogposts"
         query_params = {
             k: v
-            for k, v in [
-                ("space-id", space_id),
-                ("body-format", body_format),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
+            for k, v in [("space-id", space_id), ("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_label_pages(
-        self, id, space_id=None, body_format=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_label_pages(self, id, space_id=None, body_format=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of pages associated with a label identified by `{id}`, allowing filtering by space, body format, sorting, and pagination options.
 
@@ -1774,29 +1521,15 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/labels/{id}/pages"
         query_params = {
             k: v
-            for k, v in [
-                ("space-id", space_id),
-                ("body-format", body_format),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
+            for k, v in [("space-id", space_id), ("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_pages(
-        self,
-        id=None,
-        space_id=None,
-        sort=None,
-        status=None,
-        title=None,
-        body_format=None,
-        cursor=None,
-        limit=None,
+    async def get_pages(
+        self, id=None, space_id=None, sort=None, status=None, title=None, body_format=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of pages based on specified parameters such as ID, space ID, sort order, status, title, body format, cursor, and limit using the GET method at the "/pages" endpoint.
@@ -1836,16 +1569,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_page(
-        self,
-        spaceId,
-        embedded=None,
-        private=None,
-        root_level=None,
-        status=None,
-        title=None,
-        parentId=None,
-        body=None,
+    async def create_page(
+        self, spaceId, embedded=None, private=None, root_level=None, status=None, title=None, parentId=None, body=None
     ) -> Any:
         """
         Creates a new page with optional query parameters to specify visibility (private/public), embedding, and root-level placement, returning appropriate status codes.
@@ -1868,29 +1593,15 @@ class ConfluenceApp(APIApplication):
         Tags:
             Page
         """
-        request_body = {
-            "spaceId": spaceId,
-            "status": status,
-            "title": title,
-            "parentId": parentId,
-            "body": body,
-        }
+        request_body = {"spaceId": spaceId, "status": status, "title": title, "parentId": parentId, "body": body}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages"
-        query_params = {
-            k: v
-            for k, v in [
-                ("embedded", embedded),
-                ("private", private),
-                ("root-level", root_level),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("embedded", embedded), ("private", private), ("root-level", root_level)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_by_id(
+    async def get_page_by_id(
         self,
         id,
         body_format=None,
@@ -1954,10 +1665,7 @@ class ConfluenceApp(APIApplication):
                 ("include-likes", include_likes),
                 ("include-versions", include_versions),
                 ("include-version", include_version),
-                (
-                    "include-favorited-by-current-user-status",
-                    include_favorited_by_current_user_status,
-                ),
+                ("include-favorited-by-current-user-status", include_favorited_by_current_user_status),
                 ("include-webresources", include_webresources),
                 ("include-collaborators", include_collaborators),
             ]
@@ -1967,17 +1675,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_page(
-        self,
-        id,
-        status,
-        title,
-        body,
-        version,
-        spaceId=None,
-        parentId=None,
-        ownerId=None,
-    ) -> Any:
+    async def update_page(self, id, status, title, body, version, spaceId=None, parentId=None, ownerId=None) -> Any:
         """
         Updates or creates a page resource at the specified ID and returns a status.
 
@@ -2025,7 +1723,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_page(self, id, purge=None, draft=None) -> Any:
+    async def delete_page(self, id, purge=None, draft=None) -> Any:
         """
         Deletes a page specified by ID using the DELETE method, with optional purge and draft query parameters, returning a successful response if the operation is completed without providing content.
 
@@ -2043,22 +1741,13 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}"
-        query_params = {
-            k: v for k, v in [("purge", purge), ("draft", draft)] if v is not None
-        }
+        query_params = {k: v for k, v in [("purge", purge), ("draft", draft)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_attachments(
-        self,
-        id,
-        sort=None,
-        cursor=None,
-        status=None,
-        mediaType=None,
-        filename=None,
-        limit=None,
+    async def get_page_attachments(
+        self, id, sort=None, cursor=None, status=None, mediaType=None, filename=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of attachments for a page with the specified ID, allowing optional sorting, filtering, and pagination based on query parameters.
@@ -2097,9 +1786,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_by_type_in_page(
-        self, id, type, sort=None, cursor=None, limit=None, body_format=None
-    ) -> dict[str, Any]:
+    async def get_custom_content_by_type_in_page(self, id, type, sort=None, cursor=None, limit=None, body_format=None) -> dict[str, Any]:
         """
         Retrieves custom content for a page with the specified ID using the GET method, allowing filtering by type, sorting, pagination, and body format customization.
 
@@ -2122,22 +1809,14 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/pages/{id}/custom-content"
         query_params = {
             k: v
-            for k, v in [
-                ("type", type),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("body-format", body_format),
-            ]
+            for k, v in [("type", type), ("sort", sort), ("cursor", cursor), ("limit", limit), ("body-format", body_format)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_labels(
-        self, id, prefix=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_page_labels(self, id, prefix=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of labels for a page with the specified ID, optionally filtering by prefix, sorting, and paginating using cursor and limit parameters.
 
@@ -2157,21 +1836,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/labels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("prefix", prefix),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_like_count(self, id) -> dict[str, Any]:
+    async def get_page_like_count(self, id) -> dict[str, Any]:
         """
         Retrieves the number of likes for a page identified by the given ID using the GET method.
 
@@ -2192,7 +1862,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
+    async def get_page_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of users who have liked a page with the specified ID using the GET method, with optional parameters for pagination.
 
@@ -2210,14 +1880,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/likes/users"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_operations(self, id) -> dict[str, Any]:
+    async def get_page_operations(self, id) -> dict[str, Any]:
         """
         Retrieves operations associated with a specific page based on the provided ID.
 
@@ -2238,9 +1906,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_content_properties(
-        self, page_id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_page_content_properties(self, page_id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves properties associated with a specific page using the Notion API and returns them based on query parameters like key, sort, cursor, and limit.
 
@@ -2260,21 +1926,12 @@ class ConfluenceApp(APIApplication):
         if page_id is None:
             raise ValueError("Missing required parameter 'page-id'")
         url = f"{self.base_url}/pages/{page_id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_page_property(self, page_id, key=None, value=None) -> dict[str, Any]:
+    async def create_page_property(self, page_id, key=None, value=None) -> dict[str, Any]:
         """
         Updates properties for a page using the page ID provided in the path.
 
@@ -2291,10 +1948,7 @@ class ConfluenceApp(APIApplication):
         """
         if page_id is None:
             raise ValueError("Missing required parameter 'page-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{page_id}/properties"
         query_params = {}
@@ -2302,7 +1956,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_content_properties_by_id(self, page_id, property_id) -> dict[str, Any]:
+    async def get_page_content_properties_by_id(self, page_id, property_id) -> dict[str, Any]:
         """
         Retrieves the properties of a specific page element using the page ID and property ID.
 
@@ -2326,9 +1980,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_page_property_by_id(
-        self, page_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_page_property_by_id(self, page_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates a specific property for a given page using the provided path parameters and returns the operation status.
 
@@ -2349,11 +2001,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'page-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{page_id}/properties/{property_id}"
         query_params = {}
@@ -2361,7 +2009,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_page_property_by_id(self, page_id, property_id) -> Any:
+    async def delete_page_property_by_id(self, page_id, property_id) -> Any:
         """
         Deletes a specific property from a specified page using the provided page-id and property-id as path parameters.
 
@@ -2385,9 +2033,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_versions(
-        self, id, body_format=None, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_page_versions(self, id, body_format=None, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves versions of a page identified by the specified ID, allowing optional filtering by body format, sorting, and pagination using cursor and limit parameters.
 
@@ -2408,28 +2054,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/versions"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_whiteboard(
-        self,
-        spaceId,
-        private=None,
-        title=None,
-        parentId=None,
-        templateKey=None,
-        locale=None,
-    ) -> Any:
+    async def create_whiteboard(self, spaceId, private=None, title=None, parentId=None, templateKey=None, locale=None) -> Any:
         """
         Creates a new whiteboard with optional privacy settings and returns the result.
 
@@ -2447,13 +2078,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             Whiteboard
         """
-        request_body = {
-            "spaceId": spaceId,
-            "title": title,
-            "parentId": parentId,
-            "templateKey": templateKey,
-            "locale": locale,
-        }
+        request_body = {"spaceId": spaceId, "title": title, "parentId": parentId, "templateKey": templateKey, "locale": locale}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards"
         query_params = {k: v for k, v in [("private", private)] if v is not None}
@@ -2461,13 +2086,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_whiteboard_by_id(
-        self,
-        id,
-        include_collaborators=None,
-        include_direct_children=None,
-        include_operations=None,
-        include_properties=None,
+    async def get_whiteboard_by_id(
+        self, id, include_collaborators=None, include_direct_children=None, include_operations=None, include_properties=None
     ) -> Any:
         """
         Retrieves a specific whiteboard by ID, optionally including additional details such as collaborators, direct children, operations, and properties using query parameters.
@@ -2508,7 +2128,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_whiteboard(self, id) -> Any:
+    async def delete_whiteboard(self, id) -> Any:
         """
         Deletes the specified whiteboard by its ID and moves it to the trash.
 
@@ -2529,9 +2149,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_whiteboard_content_properties(
-        self, id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_whiteboard_content_properties(self, id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves properties for a whiteboard with the specified ID, optionally filtering by key, sorting, and paginating results using a cursor and limit parameters.
 
@@ -2551,21 +2169,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/whiteboards/{id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_whiteboard_property(self, id, key=None, value=None) -> dict[str, Any]:
+    async def create_whiteboard_property(self, id, key=None, value=None) -> dict[str, Any]:
         """
         Updates the properties of a specific whiteboard using the API at path "/whiteboards/{id}/properties" via the POST method.
 
@@ -2582,10 +2191,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{id}/properties"
         query_params = {}
@@ -2593,9 +2199,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_whiteboard_content_properties_by_id(
-        self, whiteboard_id, property_id
-    ) -> dict[str, Any]:
+    async def get_whiteboard_content_properties_by_id(self, whiteboard_id, property_id) -> dict[str, Any]:
         """
         Retrieves a specific property from a designated whiteboard using the provided whiteboard and property identifiers.
 
@@ -2619,9 +2223,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_whiteboard_property_by_id(
-        self, whiteboard_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_whiteboard_property_by_id(self, whiteboard_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates a specific property of a whiteboard using the "PUT" method, specifying the whiteboard and property IDs in the path.
 
@@ -2642,11 +2244,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'whiteboard-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{whiteboard_id}/properties/{property_id}"
         query_params = {}
@@ -2654,7 +2252,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_whiteboard_property_by_id(self, whiteboard_id, property_id) -> Any:
+    async def delete_whiteboard_property_by_id(self, whiteboard_id, property_id) -> Any:
         """
         Deletes a specific property from a whiteboard by ID using the DELETE method.
 
@@ -2678,7 +2276,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_whiteboard_operations(self, id) -> dict[str, Any]:
+    async def get_whiteboard_operations(self, id) -> dict[str, Any]:
         """
         Retrieves a list of operations for a specific whiteboard identified by its ID using the GET method.
 
@@ -2699,7 +2297,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_whiteboard_ancestors(self, id, limit=None) -> dict[str, Any]:
+    async def get_whiteboard_ancestors(self, id, limit=None) -> dict[str, Any]:
         """
         Retrieves all ancestors for a specified whiteboard in top-to-bottom order, limited by the `limit` parameter, with minimal details returned for each ancestor.
 
@@ -2721,7 +2319,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_database(self, spaceId, private=None, title=None, parentId=None) -> Any:
+    async def create_database(self, spaceId, private=None, title=None, parentId=None) -> Any:
         """
         Creates a new database (optionally with private access restrictions) and returns the operation result.
 
@@ -2737,11 +2335,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             Database
         """
-        request_body = {
-            "spaceId": spaceId,
-            "title": title,
-            "parentId": parentId,
-        }
+        request_body = {"spaceId": spaceId, "title": title, "parentId": parentId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases"
         query_params = {k: v for k, v in [("private", private)] if v is not None}
@@ -2749,13 +2343,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_database_by_id(
-        self,
-        id,
-        include_collaborators=None,
-        include_direct_children=None,
-        include_operations=None,
-        include_properties=None,
+    async def get_database_by_id(
+        self, id, include_collaborators=None, include_direct_children=None, include_operations=None, include_properties=None
     ) -> Any:
         """
         Retrieves a database by its ID and optionally includes additional details such as collaborators, direct children, operations, or properties using the specified query parameters.
@@ -2796,7 +2385,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_database(self, id) -> Any:
+    async def delete_database(self, id) -> Any:
         """
         Deletes a database identified by its ID using the DELETE method, returning a success status of 204 if successful, or error statuses for unauthorized access, invalid requests, or if the database is not found.
 
@@ -2817,9 +2406,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_database_content_properties(
-        self, id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_database_content_properties(self, id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves the properties (columns) of a Notion database identified by its ID, supporting pagination and sorting via query parameters.
 
@@ -2839,21 +2426,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/databases/{id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_database_property(self, id, key=None, value=None) -> dict[str, Any]:
+    async def create_database_property(self, id, key=None, value=None) -> dict[str, Any]:
         """
         Creates a new property in a database using the specified database ID and returns the result.
 
@@ -2870,10 +2448,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{id}/properties"
         query_params = {}
@@ -2881,9 +2456,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_database_content_properties_by_id(
-        self, database_id, property_id
-    ) -> dict[str, Any]:
+    async def get_database_content_properties_by_id(self, database_id, property_id) -> dict[str, Any]:
         """
         Retrieves specific property details from a designated database using the provided database and property identifiers.
 
@@ -2907,9 +2480,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_database_property_by_id(
-        self, database_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_database_property_by_id(self, database_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates a specific property in a database by providing the database ID and property ID, using the PUT method to modify its schema or settings.
 
@@ -2930,11 +2501,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'database-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{database_id}/properties/{property_id}"
         query_params = {}
@@ -2942,7 +2509,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_database_property_by_id(self, database_id, property_id) -> Any:
+    async def delete_database_property_by_id(self, database_id, property_id) -> Any:
         """
         Removes a specified property from a database and returns a confirmation response upon success.
 
@@ -2966,7 +2533,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_database_operations(self, id) -> dict[str, Any]:
+    async def get_database_operations(self, id) -> dict[str, Any]:
         """
         Retrieves and performs operations on a specific database by its identifier.
 
@@ -2987,7 +2554,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_database_ancestors(self, id, limit=None) -> dict[str, Any]:
+    async def get_database_ancestors(self, id, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of ancestors for a database specified by its ID, returning them in top-to-bottom order, with optional filtering by a limit parameter.
 
@@ -3009,9 +2576,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_smart_link(
-        self, spaceId, title=None, parentId=None, embedUrl=None
-    ) -> Any:
+    async def create_smart_link(self, spaceId, title=None, parentId=None, embedUrl=None) -> Any:
         """
         Creates or processes embedded content via the API and returns a status or the created resource.
 
@@ -3027,12 +2592,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             Smart Link
         """
-        request_body = {
-            "spaceId": spaceId,
-            "title": title,
-            "parentId": parentId,
-            "embedUrl": embedUrl,
-        }
+        request_body = {"spaceId": spaceId, "title": title, "parentId": parentId, "embedUrl": embedUrl}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/embeds"
         query_params = {}
@@ -3040,13 +2600,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_smart_link_by_id(
-        self,
-        id,
-        include_collaborators=None,
-        include_direct_children=None,
-        include_operations=None,
-        include_properties=None,
+    async def get_smart_link_by_id(
+        self, id, include_collaborators=None, include_direct_children=None, include_operations=None, include_properties=None
     ) -> Any:
         """
         Retrieves an embed with the specified ID and optionally includes collaborators, direct children, operations, and properties based on query parameters.
@@ -3087,7 +2642,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_smart_link(self, id) -> Any:
+    async def delete_smart_link(self, id) -> Any:
         """
         Deletes an embed resource by ID and returns a success status upon removal.
 
@@ -3108,9 +2663,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_smart_link_content_properties(
-        self, id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_smart_link_content_properties(self, id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves properties for an embed with the specified ID, allowing optional filtering by key, sorting, and pagination using query parameters.
 
@@ -3130,21 +2683,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/embeds/{id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_smart_link_property(self, id, key=None, value=None) -> dict[str, Any]:
+    async def create_smart_link_property(self, id, key=None, value=None) -> dict[str, Any]:
         """
         Creates or updates properties for a specific embed using the embed ID and returns the operation status.
 
@@ -3161,10 +2705,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/embeds/{id}/properties"
         query_params = {}
@@ -3172,9 +2713,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_smart_link_content_properties_by_id(
-        self, embed_id, property_id
-    ) -> dict[str, Any]:
+    async def get_smart_link_content_properties_by_id(self, embed_id, property_id) -> dict[str, Any]:
         """
         Retrieves the properties of a specific embed using its embed ID and property ID.
 
@@ -3198,9 +2737,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_smart_link_property_by_id(
-        self, embed_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_smart_link_property_by_id(self, embed_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates a specific property of an embed using the provided embed ID and property ID.
 
@@ -3221,11 +2758,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'embed-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/embeds/{embed_id}/properties/{property_id}"
         query_params = {}
@@ -3233,7 +2766,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_smart_link_property_by_id(self, embed_id, property_id) -> Any:
+    async def delete_smart_link_property_by_id(self, embed_id, property_id) -> Any:
         """
         Deletes a specific property from an embed identified by embed-id and property-id.
 
@@ -3257,7 +2790,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_smart_link_operations(self, id) -> dict[str, Any]:
+    async def get_smart_link_operations(self, id) -> dict[str, Any]:
         """
         Retrieves the operations associated with a specific embed identified by {id}.
 
@@ -3278,7 +2811,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_smart_link_ancestors(self, id, limit=None) -> dict[str, Any]:
+    async def get_smart_link_ancestors(self, id, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of ancestors associated with a specified embed ID using a path parameter and an optional query limit.
 
@@ -3300,7 +2833,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_folder(self, spaceId, title=None, parentId=None) -> Any:
+    async def create_folder(self, spaceId, title=None, parentId=None) -> Any:
         """
         Creates a new folder within a specified parent folder using the POST method and returns details of the newly created folder.
 
@@ -3315,11 +2848,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             Folder
         """
-        request_body = {
-            "spaceId": spaceId,
-            "title": title,
-            "parentId": parentId,
-        }
+        request_body = {"spaceId": spaceId, "title": title, "parentId": parentId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders"
         query_params = {}
@@ -3327,13 +2856,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folder_by_id(
-        self,
-        id,
-        include_collaborators=None,
-        include_direct_children=None,
-        include_operations=None,
-        include_properties=None,
+    async def get_folder_by_id(
+        self, id, include_collaborators=None, include_direct_children=None, include_operations=None, include_properties=None
     ) -> Any:
         """
         Retrieves a specific folder's details including its collaborators, direct children, operations, and properties based on the provided ID.
@@ -3374,7 +2898,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_folder(self, id) -> Any:
+    async def delete_folder(self, id) -> Any:
         """
         Deletes a folder by its ID using the DELETE method, returning a 204 status code upon successful removal.
 
@@ -3395,9 +2919,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folder_content_properties(
-        self, id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_folder_content_properties(self, id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves properties for a folder identified by the provided ID, allowing filtering by key and optional sorting, pagination, and limiting of results.
 
@@ -3417,21 +2939,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/folders/{id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_folder_property(self, id, key=None, value=None) -> dict[str, Any]:
+    async def create_folder_property(self, id, key=None, value=None) -> dict[str, Any]:
         """
         Creates and updates properties for a specific folder identified by `{id}` using the "POST" method.
 
@@ -3448,10 +2961,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{id}/properties"
         query_params = {}
@@ -3459,9 +2969,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folder_content_properties_by_id(
-        self, folder_id, property_id
-    ) -> dict[str, Any]:
+    async def get_folder_content_properties_by_id(self, folder_id, property_id) -> dict[str, Any]:
         """
         Retrieves a specific property associated with a folder using the folder ID and property ID.
 
@@ -3485,9 +2993,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_folder_property_by_id(
-        self, folder_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_folder_property_by_id(self, folder_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates a specific property of a folder by ID using the specified property identifier.
 
@@ -3508,11 +3014,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'folder-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}/properties/{property_id}"
         query_params = {}
@@ -3520,7 +3022,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_folder_property_by_id(self, folder_id, property_id) -> Any:
+    async def delete_folder_property_by_id(self, folder_id, property_id) -> Any:
         """
         Deletes a specific property from a folder using the "DELETE" method by providing the folder ID and property ID in the request path.
 
@@ -3544,7 +3046,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folder_operations(self, id) -> dict[str, Any]:
+    async def get_folder_operations(self, id) -> dict[str, Any]:
         """
         Retrieves a list of available operations for a specific folder identified by its ID using the GET method.
 
@@ -3565,7 +3067,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_folder_ancestors(self, id, limit=None) -> dict[str, Any]:
+    async def get_folder_ancestors(self, id, limit=None) -> dict[str, Any]:
         """
         Retrieves a flat list of a folder's ancestors starting from its parent up to the root folder.
 
@@ -3587,7 +3089,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_version_details(self, page_id, version_number) -> dict[str, Any]:
+    async def get_page_version_details(self, page_id, version_number) -> dict[str, Any]:
         """
         Retrieves a specific version of a page using the provided page ID and version number.
 
@@ -3611,9 +3113,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_versions(
-        self, custom_content_id, body_format=None, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_custom_content_versions(self, custom_content_id, body_format=None, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of versions for a specific custom content item, supporting filtering, sorting, and format customization.
 
@@ -3634,22 +3134,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'custom-content-id'")
         url = f"{self.base_url}/custom-content/{custom_content_id}/versions"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_version_details(
-        self, custom_content_id, version_number
-    ) -> dict[str, Any]:
+    async def get_custom_content_version_details(self, custom_content_id, version_number) -> dict[str, Any]:
         """
         Retrieves a specific version of custom content by its ID and version number using the "GET" method.
 
@@ -3673,7 +3164,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_spaces(
+    async def get_spaces(
         self,
         ids=None,
         keys=None,
@@ -3734,9 +3225,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_space(
-        self, name, key=None, alias=None, description=None, roleAssignments=None
-    ) -> Any:
+    async def create_space(self, name, key=None, alias=None, description=None, roleAssignments=None) -> Any:
         """
         Creates a new space resource and returns a success response upon creation.
 
@@ -3754,13 +3243,7 @@ class ConfluenceApp(APIApplication):
             Space, EAP
         """
         self._ensure_base_url_set()
-        request_body = {
-            "name": name,
-            "key": key,
-            "alias": alias,
-            "description": description,
-            "roleAssignments": roleAssignments,
-        }
+        request_body = {"name": name, "key": key, "alias": alias, "description": description, "roleAssignments": roleAssignments}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces"
         query_params = {}
@@ -3768,7 +3251,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_by_id(
+    async def get_space_by_id(
         self,
         id,
         description_format=None,
@@ -3828,15 +3311,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_posts_in_space(
-        self,
-        id,
-        sort=None,
-        status=None,
-        title=None,
-        body_format=None,
-        cursor=None,
-        limit=None,
+    async def get_blog_posts_in_space(
+        self, id, sort=None, status=None, title=None, body_format=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of blog posts associated with a specific space, allowing filtering by status, title, and sorting options.
@@ -3875,9 +3351,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_labels(
-        self, id, prefix=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_space_labels(self, id, prefix=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of labels for a specific space identified by its ID, allowing optional filtering by prefix, sorting, and pagination using query parameters.
 
@@ -3897,23 +3371,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/labels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("prefix", prefix),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_space_content_labels(
-        self, id, prefix=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_space_content_labels(self, id, prefix=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of content labels for a specific space using the provided ID, with optional filtering by prefix, sorting, and pagination.
 
@@ -3933,23 +3396,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/content/labels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("prefix", prefix),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_custom_content_by_type_in_space(
-        self, id, type, cursor=None, limit=None, body_format=None
-    ) -> dict[str, Any]:
+    async def get_custom_content_by_type_in_space(self, id, type, cursor=None, limit=None, body_format=None) -> dict[str, Any]:
         """
         Retrieves custom content for a specific space, allowing users to filter by type, cursor, and limit, with options for different body formats.
 
@@ -3970,20 +3422,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/custom-content"
         query_params = {
-            k: v
-            for k, v in [
-                ("type", type),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("body-format", body_format),
-            ]
-            if v is not None
+            k: v for k, v in [("type", type), ("cursor", cursor), ("limit", limit), ("body-format", body_format)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_space_operations(self, id) -> dict[str, Any]:
+    async def get_space_operations(self, id) -> dict[str, Any]:
         """
         Retrieves a list of operations for a specific space identified by the given ID using the provided API endpoint.
 
@@ -4004,16 +3449,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_pages_in_space(
-        self,
-        id,
-        depth=None,
-        sort=None,
-        status=None,
-        title=None,
-        body_format=None,
-        cursor=None,
-        limit=None,
+    async def get_pages_in_space(
+        self, id, depth=None, sort=None, status=None, title=None, body_format=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of pages for a specified space, allowing filtering by depth, sort order, status, title, body format, and pagination controls.
@@ -4054,9 +3491,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_properties(
-        self, space_id, key=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_space_properties(self, space_id, key=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of properties for a specified space, optionally filtered by key, with pagination support via cursor and limit parameters.
 
@@ -4075,16 +3510,12 @@ class ConfluenceApp(APIApplication):
         if space_id is None:
             raise ValueError("Missing required parameter 'space-id'")
         url = f"{self.base_url}/spaces/{space_id}/properties"
-        query_params = {
-            k: v
-            for k, v in [("key", key), ("cursor", cursor), ("limit", limit)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_space_property(self, space_id, key=None, value=None) -> dict[str, Any]:
+    async def create_space_property(self, space_id, key=None, value=None) -> dict[str, Any]:
         """
         Creates a new property for a specified space using the "POST" method, where the space is identified by the `{space-id}` path parameter.
 
@@ -4101,10 +3532,7 @@ class ConfluenceApp(APIApplication):
         """
         if space_id is None:
             raise ValueError("Missing required parameter 'space-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{space_id}/properties"
         query_params = {}
@@ -4112,7 +3540,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_property_by_id(self, space_id, property_id) -> dict[str, Any]:
+    async def get_space_property_by_id(self, space_id, property_id) -> dict[str, Any]:
         """
         Retrieves the specified property details for a space using the provided space and property identifiers.
 
@@ -4136,9 +3564,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_space_property_by_id(
-        self, space_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_space_property_by_id(self, space_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates the specified property within a designated space and returns a success status upon completion.
 
@@ -4159,11 +3585,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'space-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{space_id}/properties/{property_id}"
         query_params = {}
@@ -4171,7 +3593,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_space_property_by_id(self, space_id, property_id) -> Any:
+    async def delete_space_property_by_id(self, space_id, property_id) -> Any:
         """
         Deletes a property from a specified space using the provided space ID and property ID.
 
@@ -4195,9 +3617,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_permissions_assignments(
-        self, id, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_space_permissions_assignments(self, id, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves the list of permissions assigned to a specific space, supporting pagination via cursor and limit parameters.
 
@@ -4215,16 +3635,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/permissions"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_available_space_permissions(
-        self, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_available_space_permissions(self, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves space permissions with pagination support using cursor and limit parameters.
 
@@ -4239,21 +3655,13 @@ class ConfluenceApp(APIApplication):
             Space Permissions, EAP
         """
         url = f"{self.base_url}/space-permissions"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_available_space_roles(
-        self,
-        space_id=None,
-        role_type=None,
-        principal_id=None,
-        principal_type=None,
-        cursor=None,
-        limit=None,
+    async def get_available_space_roles(
+        self, space_id=None, role_type=None, principal_id=None, principal_type=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of space roles, filtered by space ID, role type, principal ID, and principal type, with options for pagination using a cursor and limit, returning relevant space role information.
@@ -4289,7 +3697,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_roles_by_id(self, id) -> Any:
+    async def get_space_roles_by_id(self, id) -> Any:
         """
         Retrieves space role assignments for a specified space ID, returning role-based permissions and user access details.
 
@@ -4310,15 +3718,8 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_role_assignments(
-        self,
-        id,
-        role_id=None,
-        role_type=None,
-        principal_id=None,
-        principal_type=None,
-        cursor=None,
-        limit=None,
+    async def get_space_role_assignments(
+        self, id, role_id=None, role_type=None, principal_id=None, principal_type=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves role assignments for a specific space with optional filtering by role type, role ID, principal type, principal ID, and pagination controls.
@@ -4357,7 +3758,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def set_space_role_assignments(self, id, principal, roleId=None) -> dict[str, Any]:
+    async def set_space_role_assignments(self, id, principal, roleId=None) -> dict[str, Any]:
         """
         Assigns a role to a specific space identified by the path parameter ID and returns the assignment status.
 
@@ -4374,10 +3775,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "principal": principal,
-            "roleId": roleId,
-        }
+        request_body = {"principal": principal, "roleId": roleId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{id}/role-assignments"
         query_params = {}
@@ -4385,9 +3783,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_footer_comments(
-        self, id, body_format=None, status=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_page_footer_comments(self, id, body_format=None, status=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves comments from the footer section of a specific page identified by its ID, allowing for optional filtering by body format, status, sorting, cursor, and limit.
 
@@ -4410,28 +3806,15 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/pages/{id}/footer-comments"
         query_params = {
             k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("status", status),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
+            for k, v in [("body-format", body_format), ("status", status), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_inline_comments(
-        self,
-        id,
-        body_format=None,
-        status=None,
-        resolution_status=None,
-        sort=None,
-        cursor=None,
-        limit=None,
+    async def get_page_inline_comments(
+        self, id, body_format=None, status=None, resolution_status=None, sort=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of inline comments for a specific page, allowing customization by body format, status, resolution status, sorting, cursor, and limit, using the API at "/pages/{id}/inline-comments" via the GET method.
@@ -4470,9 +3853,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_footer_comments(
-        self, id, body_format=None, status=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_blog_post_footer_comments(self, id, body_format=None, status=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves comments from the footer section of a specific blog post using the "GET" method, allowing for customizable output format and sorting options based on query parameters.
 
@@ -4495,28 +3876,15 @@ class ConfluenceApp(APIApplication):
         url = f"{self.base_url}/blogposts/{id}/footer-comments"
         query_params = {
             k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("status", status),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
+            for k, v in [("body-format", body_format), ("status", status), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_inline_comments(
-        self,
-        id,
-        body_format=None,
-        status=None,
-        resolution_status=None,
-        sort=None,
-        cursor=None,
-        limit=None,
+    async def get_blog_post_inline_comments(
+        self, id, body_format=None, status=None, resolution_status=None, sort=None, cursor=None, limit=None
     ) -> dict[str, Any]:
         """
         Retrieves a list of inline comments associated with a specific blog post using the provided parameters for filtering and sorting.
@@ -4555,9 +3923,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_footer_comments(
-        self, body_format=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_footer_comments(self, body_format=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of comments for the footer, allowing customization through query parameters for body format, sorting, pagination with a cursor, and limiting the number of results.
 
@@ -4575,27 +3941,14 @@ class ConfluenceApp(APIApplication):
         """
         url = f"{self.base_url}/footer-comments"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_footer_comment(
-        self,
-        blogPostId=None,
-        pageId=None,
-        parentCommentId=None,
-        attachmentId=None,
-        customContentId=None,
-        body=None,
+    async def create_footer_comment(
+        self, blogPostId=None, pageId=None, parentCommentId=None, attachmentId=None, customContentId=None, body=None
     ) -> Any:
         """
         Creates a new footer comment entry and returns a success status upon creation.
@@ -4629,7 +3982,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_footer_comment_by_id(
+    async def get_footer_comment_by_id(
         self,
         comment_id,
         body_format=None,
@@ -4684,9 +4037,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_footer_comment(
-        self, comment_id, version=None, body=None, alinks=None
-    ) -> dict[str, Any]:
+    async def update_footer_comment(self, comment_id, version=None, body=None, alinks=None) -> dict[str, Any]:
         """
         Updates a Confluence footer comment's content and returns a success response.
 
@@ -4704,11 +4055,7 @@ class ConfluenceApp(APIApplication):
         """
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment-id'")
-        request_body = {
-            "version": version,
-            "body": body,
-            "links": alinks,
-        }
+        request_body = {"version": version, "body": body, "links": alinks}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/footer-comments/{comment_id}"
         query_params = {}
@@ -4716,7 +4063,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_footer_comment(self, comment_id) -> Any:
+    async def delete_footer_comment(self, comment_id) -> Any:
         """
         Deletes a specific footer comment identified by its ID using the DELETE method, returning a 204 status code upon successful deletion.
 
@@ -4737,9 +4084,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_footer_comment_children(
-        self, id, body_format=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_footer_comment_children(self, id, body_format=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves child comments for a specific footer comment with optional filtering, sorting, and pagination parameters.
 
@@ -4760,20 +4105,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/footer-comments/{id}/children"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_footer_like_count(self, id) -> dict[str, Any]:
+    async def get_footer_like_count(self, id) -> dict[str, Any]:
         """
         Retrieves the count of likes for a specific footer comment using the "GET" method at the "/footer-comments/{id}/likes/count" endpoint.
 
@@ -4794,7 +4132,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_footer_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
+    async def get_footer_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of users who have liked a specific comment with the given ID using the GET method, allowing for pagination through cursor and limit parameters.
 
@@ -4812,14 +4150,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/footer-comments/{id}/likes/users"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_footer_comment_operations(self, id) -> dict[str, Any]:
+    async def get_footer_comment_operations(self, id) -> dict[str, Any]:
         """
         Retrieves the operations for a specific footer comment identified by the provided ID using the GET method.
 
@@ -4840,9 +4176,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_footer_comment_versions(
-        self, id, body_format=None, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_footer_comment_versions(self, id, body_format=None, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves and lists versions of a specific comment identified by `{id}` in the footer, allowing customization through query parameters such as format, sorting, and pagination.
 
@@ -4863,20 +4197,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/footer-comments/{id}/versions"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_footer_comment_version_details(self, id, version_number) -> dict[str, Any]:
+    async def get_footer_comment_version_details(self, id, version_number) -> dict[str, Any]:
         """
         Retrieves a specific version of a footer comment by its ID and version number.
 
@@ -4900,9 +4227,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_inline_comments(
-        self, body_format=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_inline_comments(self, body_format=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of inline comments with optional parameters for body formatting, sorting, pagination (cursor), and result limit.
 
@@ -4920,26 +4245,14 @@ class ConfluenceApp(APIApplication):
         """
         url = f"{self.base_url}/inline-comments"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_inline_comment(
-        self,
-        blogPostId=None,
-        pageId=None,
-        parentCommentId=None,
-        body=None,
-        inlineCommentProperties=None,
+    async def create_inline_comment(
+        self, blogPostId=None, pageId=None, parentCommentId=None, body=None, inlineCommentProperties=None
     ) -> Any:
         """
         Creates inline comments on a specified line of a pull request file using the GitHub API and returns the created comment.
@@ -4971,7 +4284,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_inline_comment_by_id(
+    async def get_inline_comment_by_id(
         self,
         comment_id,
         body_format=None,
@@ -5026,9 +4339,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_inline_comment(
-        self, comment_id, version=None, body=None, resolved=None
-    ) -> Any:
+    async def update_inline_comment(self, comment_id, version=None, body=None, resolved=None) -> Any:
         """
         Updates an inline comment's content in a version control system using the specified comment identifier.
 
@@ -5048,11 +4359,7 @@ class ConfluenceApp(APIApplication):
         """
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment-id'")
-        request_body = {
-            "version": version,
-            "body": body,
-            "resolved": resolved,
-        }
+        request_body = {"version": version, "body": body, "resolved": resolved}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/inline-comments/{comment_id}"
         query_params = {}
@@ -5060,7 +4367,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_inline_comment(self, comment_id) -> Any:
+    async def delete_inline_comment(self, comment_id) -> Any:
         """
         Deletes an inline comment specified by its ID using the DELETE method and returns a successful status upon completion.
 
@@ -5081,9 +4388,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_inline_comment_children(
-        self, id, body_format=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_inline_comment_children(self, id, body_format=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of child comments for a specific inline comment, supporting query parameters for formatting, sorting, and pagination.
 
@@ -5104,20 +4409,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/inline-comments/{id}/children"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_inline_like_count(self, id) -> dict[str, Any]:
+    async def get_inline_like_count(self, id) -> dict[str, Any]:
         """
         Retrieves the total number of likes for a specific inline comment using the API endpoint "/inline-comments/{id}/likes/count" via the GET method.
 
@@ -5138,7 +4436,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_inline_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
+    async def get_inline_like_users(self, id, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves a list of users who have liked an inline comment with the specified ID, with optional pagination using cursor and limit parameters.
 
@@ -5156,14 +4454,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/inline-comments/{id}/likes/users"
-        query_params = {
-            k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_inline_comment_operations(self, id) -> dict[str, Any]:
+    async def get_inline_comment_operations(self, id) -> dict[str, Any]:
         """
         Retrieves an inline comment by ID from a GitHub repository using the GitHub API.
 
@@ -5184,9 +4480,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_inline_comment_versions(
-        self, id, body_format=None, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_inline_comment_versions(self, id, body_format=None, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves version history for a specific inline comment, supporting pagination and body formatting options.
 
@@ -5207,20 +4501,13 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/inline-comments/{id}/versions"
         query_params = {
-            k: v
-            for k, v in [
-                ("body-format", body_format),
-                ("cursor", cursor),
-                ("limit", limit),
-                ("sort", sort),
-            ]
-            if v is not None
+            k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_inline_comment_version_details(self, id, version_number) -> dict[str, Any]:
+    async def get_inline_comment_version_details(self, id, version_number) -> dict[str, Any]:
         """
         Retrieves a specific version of an inline comment by its ID and version number using the GET method.
 
@@ -5244,9 +4531,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_comment_content_properties(
-        self, comment_id, key=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_comment_content_properties(self, comment_id, key=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves specific properties of a comment using its ID, optionally filtered by key, sorted, and paginated.
 
@@ -5266,23 +4551,12 @@ class ConfluenceApp(APIApplication):
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment-id'")
         url = f"{self.base_url}/comments/{comment_id}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("key", key),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def create_comment_property(
-        self, comment_id, key=None, value=None
-    ) -> dict[str, Any]:
+    async def create_comment_property(self, comment_id, key=None, value=None) -> dict[str, Any]:
         """
         Updates properties of a comment identified by the given "comment-id" using the specified API.
 
@@ -5299,10 +4573,7 @@ class ConfluenceApp(APIApplication):
         """
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-        }
+        request_body = {"key": key, "value": value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/comments/{comment_id}/properties"
         query_params = {}
@@ -5310,9 +4581,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_comment_content_properties_by_id(
-        self, comment_id, property_id
-    ) -> dict[str, Any]:
+    async def get_comment_content_properties_by_id(self, comment_id, property_id) -> dict[str, Any]:
         """
         Retrieves the specified property of a comment using the provided comment ID and property ID.
 
@@ -5336,9 +4605,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_comment_property_by_id(
-        self, comment_id, property_id, key=None, value=None, version=None
-    ) -> dict[str, Any]:
+    async def update_comment_property_by_id(self, comment_id, property_id, key=None, value=None, version=None) -> dict[str, Any]:
         """
         Updates the specified property of a comment using the provided path parameters and returns a status message.
 
@@ -5359,11 +4626,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property-id'")
-        request_body = {
-            "key": key,
-            "value": value,
-            "version": version,
-        }
+        request_body = {"key": key, "value": value, "version": version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/comments/{comment_id}/properties/{property_id}"
         query_params = {}
@@ -5371,7 +4634,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_comment_property_by_id(self, comment_id, property_id) -> Any:
+    async def delete_comment_property_by_id(self, comment_id, property_id) -> Any:
         """
         Deletes a specific property from a comment using the provided `comment-id` and `property-id`, returning a status code upon successful deletion.
 
@@ -5395,7 +4658,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_tasks(
+    async def get_tasks(
         self,
         body_format=None,
         include_blank_tasks=None,
@@ -5474,7 +4737,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_task_by_id(self, id, body_format=None) -> dict[str, Any]:
+    async def get_task_by_id(self, id, body_format=None) -> dict[str, Any]:
         """
         Retrieves a specific task by ID and optionally formats the response body based on the body-format query parameter.
 
@@ -5491,14 +4754,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/tasks/{id}"
-        query_params = {
-            k: v for k, v in [("body-format", body_format)] if v is not None
-        }
+        query_params = {k: v for k, v in [("body-format", body_format)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_child_pages(self, id, cursor=None, limit=None, sort=None) -> dict[str, Any]:
+    async def get_child_pages(self, id, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of child pages for a given page, identified by the `{id}`, allowing optional filtering by cursor, limit, and sort order.
 
@@ -5517,18 +4778,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/children"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_child_custom_content(
-        self, id, cursor=None, limit=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_child_custom_content(self, id, cursor=None, limit=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of child content items for a specified custom content item identified by `{id}`, allowing optional filtering by `cursor`, `limit`, and `sort` parameters.
 
@@ -5547,16 +4802,12 @@ class ConfluenceApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}/children"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_page_ancestors(self, id, limit=None) -> dict[str, Any]:
+    async def get_page_ancestors(self, id, limit=None) -> dict[str, Any]:
         """
         Retrieves the hierarchical ancestors of a specified Confluence page in top-to-bottom order, returning minimal page details with optional limit control.
 
@@ -5578,7 +4829,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_bulk_user_lookup(self, accountIds) -> dict[str, Any]:
+    async def create_bulk_user_lookup(self, accountIds) -> dict[str, Any]:
         """
         Creates a bulk operation on user data using the POST method at the "/users-bulk" endpoint.
 
@@ -5591,9 +4842,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             User
         """
-        request_body = {
-            "accountIds": accountIds,
-        }
+        request_body = {"accountIds": accountIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/users-bulk"
         query_params = {}
@@ -5601,7 +4850,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def check_access_by_email(self, emails) -> dict[str, Any]:
+    async def check_access_by_email(self, emails) -> dict[str, Any]:
         """
         Checks user access by email using a POST request to the "/user/access/check-access-by-email" endpoint, returning relevant access information.
 
@@ -5614,9 +4863,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             User
         """
-        request_body = {
-            "emails": emails,
-        }
+        request_body = {"emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/user/access/check-access-by-email"
         query_params = {}
@@ -5624,7 +4871,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def invite_by_email(self, emails) -> Any:
+    async def invite_by_email(self, emails) -> Any:
         """
         Sends an email invitation to grant user access and returns a success or error status.
 
@@ -5637,9 +4884,7 @@ class ConfluenceApp(APIApplication):
         Tags:
             User
         """
-        request_body = {
-            "emails": emails,
-        }
+        request_body = {"emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/user/access/invite-by-email"
         query_params = {}
@@ -5647,7 +4892,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_data_policy_metadata(self) -> dict[str, Any]:
+    async def get_data_policy_metadata(self) -> dict[str, Any]:
         """
         Retrieves data policy metadata from a workspace using the Confluence Cloud REST API.
 
@@ -5663,9 +4908,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_data_policy_spaces(
-        self, ids=None, keys=None, sort=None, cursor=None, limit=None
-    ) -> dict[str, Any]:
+    async def get_data_policy_spaces(self, ids=None, keys=None, sort=None, cursor=None, limit=None) -> dict[str, Any]:
         """
         Retrieves information about data policies affecting spaces, returning details on whether content is blocked for each space specified by query parameters like `ids`, `keys`, `sort`, `cursor`, and `limit`.
 
@@ -5684,21 +4927,13 @@ class ConfluenceApp(APIApplication):
         """
         url = f"{self.base_url}/data-policies/spaces"
         query_params = {
-            k: v
-            for k, v in [
-                ("ids", ids),
-                ("keys", keys),
-                ("sort", sort),
-                ("cursor", cursor),
-                ("limit", limit),
-            ]
-            if v is not None
+            k: v for k, v in [("ids", ids), ("keys", keys), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_classification_levels(self) -> list[Any]:
+    async def get_classification_levels(self) -> list[Any]:
         """
         Retrieves a list of classification levels using the "GET" method at the "/classification-levels" path.
 
@@ -5714,7 +4949,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_space_default_classification_level(self, id) -> dict[str, Any]:
+    async def get_space_default_classification_level(self, id) -> dict[str, Any]:
         """
         Retrieves the default classification level for a specified space using its unique identifier.
 
@@ -5735,7 +4970,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_space_default_classification_level(self, id, status) -> Any:
+    async def put_space_default_classification_level(self, id, status) -> Any:
         """
         Updates the default classification level for a space with the specified ID using the "PUT" method via the API endpoint "/spaces/{id}/classification-level/default."
 
@@ -5751,10 +4986,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id,
-            "status": status,
-        }
+        request_body = {"id": id, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{id}/classification-level/default"
         query_params = {}
@@ -5762,7 +4994,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_space_default_classification_level(self, id) -> Any:
+    async def delete_space_default_classification_level(self, id) -> Any:
         """
         Removes the default classification level from a specified space identified by its ID.
 
@@ -5783,7 +5015,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_page_classification_level(self, id, status=None) -> dict[str, Any]:
+    async def get_page_classification_level(self, id, status=None) -> dict[str, Any]:
         """
         Retrieves the classification level for a specified page using the `GET` method, accepting a page ID and an optional status query parameter.
 
@@ -5805,7 +5037,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_page_classification_level(self, id, status) -> Any:
+    async def put_page_classification_level(self, id, status) -> Any:
         """
         Updates the classification level of a page with the specified ID using the PUT method.
 
@@ -5821,10 +5053,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id,
-            "status": status,
-        }
+        request_body = {"id": id, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{id}/classification-level"
         query_params = {}
@@ -5832,7 +5061,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_page_classification_level(self, id, status) -> Any:
+    async def post_page_classification_level(self, id, status) -> Any:
         """
         Resets the classification level for a specific page to the default, removing any custom classification settings.
 
@@ -5848,9 +5077,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "status": status,
-        }
+        request_body = {"status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{id}/classification-level/reset"
         query_params = {}
@@ -5858,7 +5085,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_blog_post_classification_level(self, id, status=None) -> dict[str, Any]:
+    async def get_blog_post_classification_level(self, id, status=None) -> dict[str, Any]:
         """
         Retrieves the classification level for a specific blog post identified by its ID using the GET method at the "/blogposts/{id}/classification-level" endpoint, allowing for optional filtering by status.
 
@@ -5880,7 +5107,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_blog_post_classification_level(self, id, status) -> Any:
+    async def put_blog_post_classification_level(self, id, status) -> Any:
         """
         Updates the classification level of the blog post with the specified ID and returns a success status upon completion.
 
@@ -5896,10 +5123,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id,
-            "status": status,
-        }
+        request_body = {"id": id, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{id}/classification-level"
         query_params = {}
@@ -5907,7 +5131,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_blog_post_classification_level(self, id, status) -> Any:
+    async def post_blog_post_classification_level(self, id, status) -> Any:
         """
         Resets the classification level for a specific blog post to the space's default level using the Confluence REST API.
 
@@ -5923,9 +5147,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "status": status,
-        }
+        request_body = {"status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{id}/classification-level/reset"
         query_params = {}
@@ -5933,7 +5155,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_whiteboard_classification_level(self, id) -> dict[str, Any]:
+    async def get_whiteboard_classification_level(self, id) -> dict[str, Any]:
         """
         Retrieves the classification level of a specific whiteboard identified by its ID, returning relevant information if the request is successful.
 
@@ -5954,7 +5176,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_whiteboard_classification_level(self, id, status) -> Any:
+    async def put_whiteboard_classification_level(self, id, status) -> Any:
         """
         Updates the classification level for a specific whiteboard identified by its ID using the Confluence Cloud REST API.
 
@@ -5970,10 +5192,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id,
-            "status": status,
-        }
+        request_body = {"id": id, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{id}/classification-level"
         query_params = {}
@@ -5981,7 +5200,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_whiteboard_classification_level(self, id, status) -> Any:
+    async def post_whiteboard_classification_level(self, id, status) -> Any:
         """
         Resets the classification level for a specific whiteboard to the default space classification level using the Confluence Cloud REST API.
 
@@ -5997,9 +5216,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "status": status,
-        }
+        request_body = {"status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{id}/classification-level/reset"
         query_params = {}
@@ -6007,7 +5224,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_database_classification_level(self, id) -> dict[str, Any]:
+    async def get_database_classification_level(self, id) -> dict[str, Any]:
         """
         Retrieves the classification level of a specific database by its unique identifier.
 
@@ -6028,7 +5245,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_database_classification_level(self, id, status) -> Any:
+    async def put_database_classification_level(self, id, status) -> Any:
         """
         Updates the classification level of a database identified by `{id}` using the PUT method.
 
@@ -6044,10 +5261,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "id": id,
-            "status": status,
-        }
+        request_body = {"id": id, "status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{id}/classification-level"
         query_params = {}
@@ -6055,7 +5269,7 @@ class ConfluenceApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_database_classification_level(self, id, status) -> Any:
+    async def post_database_classification_level(self, id, status) -> Any:
         """
         Resets the classification level for a specified database using a POST request and returns an empty response on success.
 
@@ -6071,9 +5285,7 @@ class ConfluenceApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "status": status,
-        }
+        request_body = {"status": status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{id}/classification-level/reset"
         query_params = {}

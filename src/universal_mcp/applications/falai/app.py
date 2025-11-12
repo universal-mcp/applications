@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Any, Literal
-
 from fal_client import AsyncClient, AsyncRequestHandle, Status
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
@@ -33,28 +32,15 @@ class FalaiApp(APIApplication):
         if self._fal_client is None:
             credentials = self.integration.get_credentials()
             logger.info(f"Credentials: {credentials}")
-            api_key = (
-                credentials.get("api_key")
-                or credentials.get("API_KEY")
-                or credentials.get("apiKey")
-            )
+            api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
             if not api_key:
-                logger.error(
-                    f"Integration {type(self.integration).__name__} returned credentials in unexpected format."
-                )
-                raise NotAuthorizedError(
-                    "Integration returned empty or invalid API key."
-                )
+                logger.error(f"Integration {type(self.integration).__name__} returned credentials in unexpected format.")
+                raise NotAuthorizedError("Integration returned empty or invalid API key.")
             self._fal_client = AsyncClient(key=api_key)
         return self._fal_client
 
     async def run(
-        self,
-        arguments: Any,
-        application: str = "fal-ai/flux/dev",
-        path: str = "",
-        timeout: float | None = None,
-        hint: str | None = None,
+        self, arguments: Any, application: str = "fal-ai/flux/dev", path: str = "", timeout: float | None = None, hint: str | None = None
     ) -> Any:
         """
         Executes a Fal AI application synchronously, waiting for completion and returning the result directly. This method is suited for short-running tasks, unlike `submit` which queues a job for asynchronous processing and returns a request ID instead of the final output.
@@ -76,18 +62,10 @@ class FalaiApp(APIApplication):
             run, execute, ai, synchronous, fal, important
         """
         try:
-            result = await self.fal_client.run(
-                application=application,
-                arguments=arguments,
-                path=path,
-                timeout=timeout,
-                hint=hint,
-            )
+            result = await self.fal_client.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
             return result
         except Exception as e:
-            logger.error(
-                f"Error running Fal application {application}: {e}", exc_info=True
-            )
+            logger.error(f"Error running Fal application {application}: {e}", exc_info=True)
             raise ToolError(f"Failed to run Fal application {application}: {e}") from e
 
     async def submit(
@@ -121,29 +99,15 @@ class FalaiApp(APIApplication):
         """
         try:
             handle: AsyncRequestHandle = await self.fal_client.submit(
-                application=application,
-                arguments=arguments,
-                path=path,
-                hint=hint,
-                webhook_url=webhook_url,
-                priority=priority,
+                application=application, arguments=arguments, path=path, hint=hint, webhook_url=webhook_url, priority=priority
             )
             request_id = handle.request_id
             return request_id
         except Exception as e:
-            logger.error(
-                f"Error submitting Fal application {application}: {e}", exc_info=True
-            )
-            raise ToolError(
-                f"Failed to submit Fal application {application}: {e}"
-            ) from e
+            logger.error(f"Error submitting Fal application {application}: {e}", exc_info=True)
+            raise ToolError(f"Failed to submit Fal application {application}: {e}") from e
 
-    async def check_status(
-        self,
-        request_id: str,
-        application: str = "fal-ai/flux/dev",
-        with_logs: bool = False,
-    ) -> Status:
+    async def check_status(self, request_id: str, application: str = "fal-ai/flux/dev", with_logs: bool = False) -> Status:
         """
         Checks the execution state (e.g., Queued, InProgress) of an asynchronous Fal AI job using its request ID. It provides a non-blocking way to monitor jobs initiated via `submit` without fetching the final `result`, and can optionally include logs.
 
@@ -162,23 +126,14 @@ class FalaiApp(APIApplication):
             status, check, async_job, monitoring, ai
         """
         try:
-            handle = self.fal_client.get_handle(
-                application=application, request_id=request_id
-            )
+            handle = self.fal_client.get_handle(application=application, request_id=request_id)
             status = await handle.status(with_logs=with_logs)
             return status
         except Exception as e:
-            logger.error(
-                f"Error getting status for Fal request_id {request_id}: {e}",
-                exc_info=True,
-            )
-            raise ToolError(
-                f"Failed to get status for Fal request_id {request_id}: {e}"
-            ) from e
+            logger.error(f"Error getting status for Fal request_id {request_id}: {e}", exc_info=True)
+            raise ToolError(f"Failed to get status for Fal request_id {request_id}: {e}") from e
 
-    async def get_result(
-        self, request_id: str, application: str = "fal-ai/flux/dev"
-    ) -> Any:
+    async def get_result(self, request_id: str, application: str = "fal-ai/flux/dev") -> Any:
         """
         Retrieves the final result of an asynchronous job, identified by its `request_id`. This function waits for the job, initiated via `submit`, to complete. Unlike the non-blocking `check_status`, this method blocks execution to fetch and return the job's actual output upon completion.
 
@@ -196,23 +151,14 @@ class FalaiApp(APIApplication):
             result, async-job, status, wait, ai
         """
         try:
-            handle = self.fal_client.get_handle(
-                application=application, request_id=request_id
-            )
+            handle = self.fal_client.get_handle(application=application, request_id=request_id)
             result = await handle.get()
             return result
         except Exception as e:
-            logger.error(
-                f"Error getting result for Fal request_id {request_id}: {e}",
-                exc_info=True,
-            )
-            raise ToolError(
-                f"Failed to get result for Fal request_id {request_id}: {e}"
-            ) from e
+            logger.error(f"Error getting result for Fal request_id {request_id}: {e}", exc_info=True)
+            raise ToolError(f"Failed to get result for Fal request_id {request_id}: {e}") from e
 
-    async def cancel(
-        self, request_id: str, application: str = "fal-ai/flux/dev"
-    ) -> None:
+    async def cancel(self, request_id: str, application: str = "fal-ai/flux/dev") -> None:
         """
         Asynchronously cancels a running or queued Fal AI job using its `request_id`. This function complements the `submit` method, providing a way to terminate asynchronous tasks before completion. It raises a `ToolError` if the cancellation request fails.
 
@@ -230,15 +176,11 @@ class FalaiApp(APIApplication):
             cancel, async_job, ai, fal, management
         """
         try:
-            handle = self.fal_client.get_handle(
-                application=application, request_id=request_id
-            )
+            handle = self.fal_client.get_handle(application=application, request_id=request_id)
             await handle.cancel()
             return None
         except Exception as e:
-            logger.error(
-                f"Error cancelling Fal request_id {request_id}: {e}", exc_info=True
-            )
+            logger.error(f"Error cancelling Fal request_id {request_id}: {e}", exc_info=True)
             raise ToolError(f"Failed to cancel Fal request_id {request_id}: {e}") from e
 
     async def upload_file(self, path: str) -> str:
@@ -301,34 +243,15 @@ class FalaiApp(APIApplication):
             generate, image, ai, async, important, flux, customizable, default
         """
         application = "fal-ai/flux/dev"
-        arguments = {
-            "prompt": prompt,
-            "seed": seed,
-            "image_size": image_size,
-            "num_images": num_images,
-        }
+        arguments = {"prompt": prompt, "seed": seed, "image_size": image_size, "num_images": num_images}
         if extra_arguments:
             arguments.update(extra_arguments)
             logger.debug(f"Merged extra_arguments. Final arguments: {arguments}")
         try:
-            result = await self.run(
-                application=application,
-                arguments=arguments,
-                path=path,
-                timeout=timeout,
-                hint=hint,
-            )
+            result = await self.run(application=application, arguments=arguments, path=path, timeout=timeout, hint=hint)
             return result
         except Exception:
             raise
 
-    def list_tools(self) -> list[callable]:
-        return [
-            self.run,
-            self.submit,
-            self.check_status,
-            self.get_result,
-            self.cancel,
-            self.upload_file,
-            self.run_image_generation,
-        ]
+    def list_tools(self):
+        return [self.run, self.submit, self.check_status, self.get_result, self.cancel, self.upload_file, self.run_image_generation]

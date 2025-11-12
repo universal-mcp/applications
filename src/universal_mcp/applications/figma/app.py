@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -9,15 +8,8 @@ class FigmaApp(APIApplication):
         super().__init__(name="figma", integration=integration, **kwargs)
         self.base_url = "https://api.figma.com"
 
-    def get_file(
-        self,
-        file_key,
-        version=None,
-        ids=None,
-        depth=None,
-        geometry=None,
-        plugin_data=None,
-        branch_data=None,
+    async def get_file(
+        self, file_key, version=None, ids=None, depth=None, geometry=None, plugin_data=None, branch_data=None
     ) -> dict[str, Any]:
         """
         Retrieves a specified file's data (including versions, geometry, and plugin information) from the API using a unique file identifier.
@@ -56,9 +48,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_file_nodes(
-        self, file_key, ids, version=None, depth=None, geometry=None, plugin_data=None
-    ) -> dict[str, Any]:
+    async def get_file_nodes(self, file_key, ids, version=None, depth=None, geometry=None, plugin_data=None) -> dict[str, Any]:
         """
         Retrieves nodes related to a file identified by the "file_key" using the specified query parameters for filtering by "ids", "version", "depth", "geometry", and "plugin_data".
 
@@ -81,20 +71,14 @@ class FigmaApp(APIApplication):
         url = f"{self.base_url}/v1/files/{file_key}/nodes"
         query_params = {
             k: v
-            for k, v in [
-                ("ids", ids),
-                ("version", version),
-                ("depth", depth),
-                ("geometry", geometry),
-                ("plugin_data", plugin_data),
-            ]
+            for k, v in [("ids", ids), ("version", version), ("depth", depth), ("geometry", geometry), ("plugin_data", plugin_data)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_images(
+    async def get_images(
         self,
         file_key,
         ids,
@@ -153,7 +137,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_image_fills(self, file_key) -> dict[str, Any]:
+    async def get_image_fills(self, file_key) -> dict[str, Any]:
         """
         Retrieves images associated with a file identified by the `{file_key}` using the `/v1/files/{file_key}/images` API endpoint.
 
@@ -174,7 +158,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_projects(self, team_id) -> dict[str, Any]:
+    async def get_team_projects(self, team_id) -> dict[str, Any]:
         """
         Retrieves a list of projects associated with a specific team identified by the team_id parameter.
 
@@ -195,7 +179,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_project_files(self, project_id, branch_data=None) -> dict[str, Any]:
+    async def get_project_files(self, project_id, branch_data=None) -> dict[str, Any]:
         """
         Retrieves files from a specified project, optionally including branch data, using the provided project identifier.
 
@@ -212,16 +196,12 @@ class FigmaApp(APIApplication):
         if project_id is None:
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/v1/projects/{project_id}/files"
-        query_params = {
-            k: v for k, v in [("branch_data", branch_data)] if v is not None
-        }
+        query_params = {k: v for k, v in [("branch_data", branch_data)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_file_versions(
-        self, file_key, page_size=None, before=None, after=None
-    ) -> dict[str, Any]:
+    async def get_file_versions(self, file_key, page_size=None, before=None, after=None) -> dict[str, Any]:
         """
         Retrieves a list of file versions using the "GET" method, filtering by file key and optional query parameters for pagination and sorting.
 
@@ -240,16 +220,12 @@ class FigmaApp(APIApplication):
         if file_key is None:
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/versions"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("before", before), ("after", after)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("before", before), ("after", after)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_comments(self, file_key, as_md=None) -> dict[str, Any]:
+    async def get_comments(self, file_key, as_md=None) -> dict[str, Any]:
         """
         Retrieves comments associated with a specified file and optionally returns them in Markdown format based on the query parameter.
 
@@ -271,9 +247,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_comment(
-        self, file_key, message, comment_id=None, client_meta=None
-    ) -> dict[str, Any]:
+    async def post_comment(self, file_key, message, comment_id=None, client_meta=None) -> dict[str, Any]:
         """
         Creates a new comment on a file specified by the file_key and returns an appropriate status code.
 
@@ -291,11 +265,7 @@ class FigmaApp(APIApplication):
         """
         if file_key is None:
             raise ValueError("Missing required parameter 'file_key'")
-        request_body = {
-            "message": message,
-            "comment_id": comment_id,
-            "client_meta": client_meta,
-        }
+        request_body = {"message": message, "comment_id": comment_id, "client_meta": client_meta}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/files/{file_key}/comments"
         query_params = {}
@@ -303,7 +273,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_comment(self, file_key, comment_id) -> dict[str, Any]:
+    async def delete_comment(self, file_key, comment_id) -> dict[str, Any]:
         """
         Deletes a specified comment from a file identified by its file key and comment ID.
 
@@ -327,9 +297,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_comment_reactions(
-        self, file_key, comment_id, cursor=None
-    ) -> dict[str, Any]:
+    async def get_comment_reactions(self, file_key, comment_id, cursor=None) -> dict[str, Any]:
         """
         Retrieves reactions for a specific comment in a file using the provided file key and comment ID.
 
@@ -354,7 +322,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_comment_reaction(self, file_key, comment_id, emoji) -> dict[str, Any]:
+    async def post_comment_reaction(self, file_key, comment_id, emoji) -> dict[str, Any]:
         """
         Adds a reaction to a specific comment on a file identified by the file key and comment ID using the "POST" method at the "/v1/files/{file_key}/comments/{comment_id}/reactions" endpoint.
 
@@ -373,9 +341,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment_id'")
-        request_body = {
-            "emoji": emoji,
-        }
+        request_body = {"emoji": emoji}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/files/{file_key}/comments/{comment_id}/reactions"
         query_params = {}
@@ -383,7 +349,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_comment_reaction(self, file_key, comment_id, emoji) -> dict[str, Any]:
+    async def delete_comment_reaction(self, file_key, comment_id, emoji) -> dict[str, Any]:
         """
         Removes a reaction emoji from a comment on a file using the specified emoji parameter.
 
@@ -408,7 +374,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_me(self) -> Any:
+    async def get_me(self) -> Any:
         """
         Retrieves the authenticated user's profile data.
 
@@ -424,9 +390,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_components(
-        self, team_id, page_size=None, after=None, before=None
-    ) -> dict[str, Any]:
+    async def get_team_components(self, team_id, page_size=None, after=None, before=None) -> dict[str, Any]:
         """
         Retrieves a list of components for a specified team with pagination support using page_size, after, and before parameters.
 
@@ -445,16 +409,12 @@ class FigmaApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/components"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("after", after), ("before", before)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("after", after), ("before", before)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_file_components(self, file_key) -> dict[str, Any]:
+    async def get_file_components(self, file_key) -> dict[str, Any]:
         """
         Retrieves a list of components associated with a file identified by the specified file key using the API endpoint "/v1/files/{file_key}/components".
 
@@ -475,7 +435,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_component(self, key) -> dict[str, Any]:
+    async def get_component(self, key) -> dict[str, Any]:
         """
         Retrieves component information for a specific key using the API endpoint at "/v1/components/{key}" with the GET method.
 
@@ -496,9 +456,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_component_sets(
-        self, team_id, page_size=None, after=None, before=None
-    ) -> dict[str, Any]:
+    async def get_team_component_sets(self, team_id, page_size=None, after=None, before=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of component sets associated with a specific team ID, supporting pagination via page size, after, and before query parameters.
 
@@ -517,16 +475,12 @@ class FigmaApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/component_sets"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("after", after), ("before", before)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("after", after), ("before", before)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_file_component_sets(self, file_key) -> dict[str, Any]:
+    async def get_file_component_sets(self, file_key) -> dict[str, Any]:
         """
         Retrieves the component sets associated with a file identified by a specific file key using the "GET" method at the "/v1/files/{file_key}/component_sets" endpoint.
 
@@ -547,7 +501,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_component_set(self, key) -> dict[str, Any]:
+    async def get_component_set(self, key) -> dict[str, Any]:
         """
         Retrieves a component set by its unique key identifier and returns the associated component data.
 
@@ -568,9 +522,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_styles(
-        self, team_id, page_size=None, after=None, before=None
-    ) -> dict[str, Any]:
+    async def get_team_styles(self, team_id, page_size=None, after=None, before=None) -> dict[str, Any]:
         """
         Retrieves paginated style resources associated with a specific team using query parameters for pagination control.
 
@@ -589,16 +541,12 @@ class FigmaApp(APIApplication):
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/styles"
-        query_params = {
-            k: v
-            for k, v in [("page_size", page_size), ("after", after), ("before", before)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("page_size", page_size), ("after", after), ("before", before)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_file_styles(self, file_key) -> dict[str, Any]:
+    async def get_file_styles(self, file_key) -> dict[str, Any]:
         """
         Retrieves styles information for a specific file identified by the file key using the API endpoint "/v1/files/{file_key}/styles" with the GET method.
 
@@ -619,7 +567,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_style(self, key) -> dict[str, Any]:
+    async def get_style(self, key) -> dict[str, Any]:
         """
         Retrieves a style object associated with the specified key using the "GET" method at the "/v1/styles/{key}" endpoint.
 
@@ -640,9 +588,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_webhook(
-        self, event_type, team_id, endpoint, passcode, status=None, description=None
-    ) -> dict[str, Any]:
+    async def post_webhook(self, event_type, team_id, endpoint, passcode, status=None, description=None) -> dict[str, Any]:
         """
         Registers a new webhook to receive HTTP callbacks for specified events, returning success or error status codes.
 
@@ -677,7 +623,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhook(self, webhook_id) -> dict[str, Any]:
+    async def get_webhook(self, webhook_id) -> dict[str, Any]:
         """
         Retrieves information about a specific webhook by its ID using the "GET" method at the path "/v2/webhooks/{webhook_id}".
 
@@ -698,9 +644,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_webhook(
-        self, webhook_id, event_type, endpoint, passcode, status=None, description=None
-    ) -> dict[str, Any]:
+    async def put_webhook(self, webhook_id, event_type, endpoint, passcode, status=None, description=None) -> dict[str, Any]:
         """
         Updates an existing webhook's configuration using the provided webhook ID and returns an HTTP status code indicating success or failure.
 
@@ -722,13 +666,7 @@ class FigmaApp(APIApplication):
         """
         if webhook_id is None:
             raise ValueError("Missing required parameter 'webhook_id'")
-        request_body = {
-            "event_type": event_type,
-            "endpoint": endpoint,
-            "passcode": passcode,
-            "status": status,
-            "description": description,
-        }
+        request_body = {"event_type": event_type, "endpoint": endpoint, "passcode": passcode, "status": status, "description": description}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/webhooks/{webhook_id}"
         query_params = {}
@@ -736,7 +674,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_webhook(self, webhook_id) -> dict[str, Any]:
+    async def delete_webhook(self, webhook_id) -> dict[str, Any]:
         """
         Deletes a webhook identified by its `webhook_id`, permanently removing it to manage and optimize webhook configurations.
 
@@ -757,7 +695,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_team_webhooks(self, team_id) -> dict[str, Any]:
+    async def get_team_webhooks(self, team_id) -> dict[str, Any]:
         """
         Retrieves a list of webhooks for a specified team using the "GET" method, with the team identified by the `team_id` path parameter.
 
@@ -778,7 +716,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_webhook_requests(self, webhook_id) -> dict[str, Any]:
+    async def get_webhook_requests(self, webhook_id) -> dict[str, Any]:
         """
         Retrieves a list of requests for a specific webhook identified by `{webhook_id}` using the "GET" method.
 
@@ -799,9 +737,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_activity_logs(
-        self, events=None, start_time=None, end_time=None, limit=None, order=None
-    ) -> dict[str, Any]:
+    async def get_activity_logs(self, events=None, start_time=None, end_time=None, limit=None, order=None) -> dict[str, Any]:
         """
         Retrieves a list of activity logs filtered by specified events, time range, and other parameters, returning the results in a specified order with a limited number of entries.
 
@@ -821,26 +757,15 @@ class FigmaApp(APIApplication):
         url = f"{self.base_url}/v1/activity_logs"
         query_params = {
             k: v
-            for k, v in [
-                ("events", events),
-                ("start_time", start_time),
-                ("end_time", end_time),
-                ("limit", limit),
-                ("order", order),
-            ]
+            for k, v in [("events", events), ("start_time", start_time), ("end_time", end_time), ("limit", limit), ("order", order)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_payments(
-        self,
-        plugin_payment_token=None,
-        user_id=None,
-        community_file_id=None,
-        plugin_id=None,
-        widget_id=None,
+    async def get_payments(
+        self, plugin_payment_token=None, user_id=None, community_file_id=None, plugin_id=None, widget_id=None
     ) -> dict[str, Any]:
         """
         Retrieves payment information based on specified parameters, including plugin payment token, user ID, community file ID, plugin ID, and widget ID, using the "/v1/payments" API endpoint with a GET request.
@@ -874,7 +799,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_local_variables(self, file_key) -> dict[str, Any]:
+    async def get_local_variables(self, file_key) -> dict[str, Any]:
         """
         Retrieves local variables for a file specified by the "file_key" using the "GET" method.
 
@@ -895,7 +820,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_published_variables(self, file_key) -> dict[str, Any]:
+    async def get_published_variables(self, file_key) -> dict[str, Any]:
         """
         Retrieves the published variables for a file identified by the `{file_key}` using the `GET` method.
 
@@ -916,13 +841,8 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_variables(
-        self,
-        file_key,
-        variableCollections=None,
-        variableModes=None,
-        variables=None,
-        variableModeValues=None,
+    async def post_variables(
+        self, file_key, variableCollections=None, variableModes=None, variables=None, variableModeValues=None
     ) -> dict[str, Any]:
         """
         Creates variables for a specific file identified by its file_key and returns an appropriate status code based on the operation's outcome.
@@ -955,7 +875,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_dev_resources(self, file_key, node_ids=None) -> dict[str, Any]:
+    async def get_dev_resources(self, file_key, node_ids=None) -> dict[str, Any]:
         """
         Retrieves development resources associated with a specific file, identified by its file_key, with optional filtering by node IDs.
 
@@ -977,7 +897,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def post_dev_resources(self, dev_resources) -> dict[str, Any]:
+    async def post_dev_resources(self, dev_resources) -> dict[str, Any]:
         """
         Creates developer resources via the API and returns a status response.
 
@@ -990,9 +910,7 @@ class FigmaApp(APIApplication):
         Tags:
             Dev Resources
         """
-        request_body = {
-            "dev_resources": dev_resources,
-        }
+        request_body = {"dev_resources": dev_resources}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/dev_resources"
         query_params = {}
@@ -1000,7 +918,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def put_dev_resources(self, dev_resources) -> dict[str, Any]:
+    async def put_dev_resources(self, dev_resources) -> dict[str, Any]:
         """
         Replaces a specific developer resource at the specified path with updated data, returning a status code for success or error conditions.
 
@@ -1013,9 +931,7 @@ class FigmaApp(APIApplication):
         Tags:
             Dev Resources
         """
-        request_body = {
-            "dev_resources": dev_resources,
-        }
+        request_body = {"dev_resources": dev_resources}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/dev_resources"
         query_params = {}
@@ -1023,7 +939,7 @@ class FigmaApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_dev_resource(self, file_key, dev_resource_id) -> Any:
+    async def delete_dev_resource(self, file_key, dev_resource_id) -> Any:
         """
         Deletes a specific development resource associated with a file using the provided file key and development resource ID.
 

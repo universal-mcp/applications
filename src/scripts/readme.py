@@ -92,9 +92,7 @@ def main():
     """
     Runs the readme generation for a predefined list of applications.
     """
-    base_path = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "universal_mcp", "applications")
-    )
+    base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "universal_mcp", "applications"))
 
     for app in APPS:
         app_path = os.path.join(base_path, app, "app.py")
@@ -102,9 +100,7 @@ def main():
 
         try:
             # Using 'uv run' to ensure the command is executed in the correct environment
-            subprocess.run(
-                ["uv", "run"] + command, check=True, capture_output=True, text=True
-            )
+            subprocess.run(["uv", "run"] + command, check=True, capture_output=True, text=True)
             # print(result.stdout) # Optional: print stdout for more details
         except subprocess.CalledProcessError:
             pass

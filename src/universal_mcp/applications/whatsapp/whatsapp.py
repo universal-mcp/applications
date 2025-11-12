@@ -54,9 +54,7 @@ class MessageContext:
     after: list[Message]
 
 
-def _make_api_request(
-    endpoint: str, method: str = "GET", data: dict = None, user_id: str = "default_user"
-) -> dict:
+def _make_api_request(endpoint: str, method: str = "GET", data: dict = None, user_id: str = "default_user") -> dict:
     """Make HTTP request to WhatsApp Bridge API."""
     url = f"{WHATSAPP_API_BASE_URL}/api/{endpoint}"
 
@@ -87,9 +85,7 @@ def _make_api_request(
 
 def get_sender_name(sender_jid: str, user_id: str = "default_user") -> str:
     """Get sender name via API call."""
-    result = _make_api_request(
-        "sender_name", data={"sender_jid": sender_jid}, user_id=user_id
-    )
+    result = _make_api_request("sender_name", data={"sender_jid": sender_jid}, user_id=user_id)
 
     if "error" in result:
         return sender_jid
@@ -97,9 +93,7 @@ def get_sender_name(sender_jid: str, user_id: str = "default_user") -> str:
     return result.get("name", sender_jid)
 
 
-def format_message(
-    message: Message, show_chat_info: bool = True, user_id: str = "default_user"
-) -> str:
+def format_message(message: Message, show_chat_info: bool = True, user_id: str = "default_user") -> str:
     """Print a single message with consistent formatting."""
     output = ""
 
@@ -113,18 +107,14 @@ def format_message(
         content_prefix = f"[{message.media_type} - Message ID: {message.id} - Chat JID: {message.chat_jid}] "
 
     try:
-        sender_name = (
-            get_sender_name(message.sender, user_id) if not message.is_from_me else "Me"
-        )
+        sender_name = get_sender_name(message.sender, user_id) if not message.is_from_me else "Me"
         output += f"From: {sender_name}: {content_prefix}{message.content}\n"
     except Exception:
         pass
     return output
 
 
-def format_messages_list(
-    messages: list[Message], show_chat_info: bool = True, user_id: str = "default_user"
-) -> str:
+def format_messages_list(messages: list[Message], show_chat_info: bool = True, user_id: str = "default_user") -> str:
     output = ""
     if not messages:
         output += "No messages to display."
@@ -173,9 +163,7 @@ def list_messages(
     return result.get("messages", "No messages found")
 
 
-def get_message_context(
-    message_id: str, before: int = 5, after: int = 5, user_id: str = "default_user"
-) -> MessageContext:
+def get_message_context(message_id: str, before: int = 5, after: int = 5, user_id: str = "default_user") -> MessageContext:
     """Get context around a specific message via API."""
     params = {"message_id": message_id, "before": before, "after": after}
 
@@ -222,9 +210,7 @@ def list_chats(
         chat = Chat(
             jid=chat_data["jid"],
             name=chat_data.get("name"),
-            last_message_time=datetime.fromisoformat(chat_data["last_message_time"])
-            if chat_data.get("last_message_time")
-            else None,
+            last_message_time=datetime.fromisoformat(chat_data["last_message_time"]) if chat_data.get("last_message_time") else None,
             last_message=chat_data.get("last_message"),
             last_sender=chat_data.get("last_sender"),
             last_is_from_me=chat_data.get("last_is_from_me"),
@@ -255,9 +241,7 @@ def search_contacts(query: str, user_id: str = "default_user") -> list[Contact]:
     return contacts
 
 
-def get_contact_chats(
-    jid: str, limit: int = 20, page: int = 0, user_id: str = "default_user"
-) -> list[Chat]:
+def get_contact_chats(jid: str, limit: int = 20, page: int = 0, user_id: str = "default_user") -> list[Chat]:
     """Get all chats involving the contact via API."""
     params = {"jid": jid, "limit": limit, "page": page}
 
@@ -273,9 +257,7 @@ def get_contact_chats(
         chat = Chat(
             jid=chat_data["jid"],
             name=chat_data.get("name"),
-            last_message_time=datetime.fromisoformat(chat_data["last_message_time"])
-            if chat_data.get("last_message_time")
-            else None,
+            last_message_time=datetime.fromisoformat(chat_data["last_message_time"]) if chat_data.get("last_message_time") else None,
             last_message=chat_data.get("last_message"),
             last_sender=chat_data.get("last_sender"),
             last_is_from_me=chat_data.get("last_is_from_me"),
@@ -295,9 +277,7 @@ def get_last_interaction(jid: str, user_id: str = "default_user") -> str:
     return result.get("message", "No interaction found")
 
 
-def get_chat(
-    chat_jid: str, include_last_message: bool = True, user_id: str = "default_user"
-) -> Chat | None:
+def get_chat(chat_jid: str, include_last_message: bool = True, user_id: str = "default_user") -> Chat | None:
     """Get chat metadata by JID via API."""
     params = {"chat_jid": chat_jid, "include_last_message": include_last_message}
 
@@ -313,18 +293,14 @@ def get_chat(
     return Chat(
         jid=chat_data["jid"],
         name=chat_data.get("name"),
-        last_message_time=datetime.fromisoformat(chat_data["last_message_time"])
-        if chat_data.get("last_message_time")
-        else None,
+        last_message_time=datetime.fromisoformat(chat_data["last_message_time"]) if chat_data.get("last_message_time") else None,
         last_message=chat_data.get("last_message"),
         last_sender=chat_data.get("last_sender"),
         last_is_from_me=chat_data.get("last_is_from_me"),
     )
 
 
-def get_direct_chat_by_contact(
-    sender_phone_number: str, user_id: str = "default_user"
-) -> Chat | None:
+def get_direct_chat_by_contact(sender_phone_number: str, user_id: str = "default_user") -> Chat | None:
     """Get chat metadata by sender phone number via API."""
     result = _make_api_request(
         "direct_chat",
@@ -342,18 +318,14 @@ def get_direct_chat_by_contact(
     return Chat(
         jid=chat_data["jid"],
         name=chat_data.get("name"),
-        last_message_time=datetime.fromisoformat(chat_data["last_message_time"])
-        if chat_data.get("last_message_time")
-        else None,
+        last_message_time=datetime.fromisoformat(chat_data["last_message_time"]) if chat_data.get("last_message_time") else None,
         last_message=chat_data.get("last_message"),
         last_sender=chat_data.get("last_sender"),
         last_is_from_me=chat_data.get("last_is_from_me"),
     )
 
 
-def send_message(
-    recipient: str, message: str, user_id: str = "default_user"
-) -> tuple[bool, str]:
+def send_message(recipient: str, message: str, user_id: str = "default_user") -> tuple[bool, str]:
     """Send message via API."""
     payload = {"user_id": user_id, "recipient": recipient, "message": message}
 
@@ -365,9 +337,7 @@ def send_message(
     return result.get("success", False), result.get("message", "Unknown response")
 
 
-def send_file(
-    recipient: str, media_path: str, user_id: str = "default_user"
-) -> tuple[bool, str]:
+def send_file(recipient: str, media_path: str, user_id: str = "default_user") -> tuple[bool, str]:
     """Send file via API."""
     payload = {"user_id": user_id, "recipient": recipient, "media_path": media_path}
 
@@ -379,9 +349,7 @@ def send_file(
     return result.get("success", False), result.get("message", "Unknown response")
 
 
-def send_audio_message(
-    recipient: str, media_path: str, user_id: str = "default_user"
-) -> tuple[bool, str]:
+def send_audio_message(recipient: str, media_path: str, user_id: str = "default_user") -> tuple[bool, str]:
     """Send audio message via API."""
     if not media_path.endswith(".ogg"):
         try:
@@ -402,9 +370,7 @@ def send_audio_message(
     return result.get("success", False), result.get("message", "Unknown response")
 
 
-def download_media(
-    message_id: str, chat_jid: str, user_id: str = "default_user"
-) -> str | None:
+def download_media(message_id: str, chat_jid: str, user_id: str = "default_user") -> str | None:
     """Download media from a message via API."""
     payload = {"user_id": user_id, "message_id": message_id, "chat_jid": chat_jid}
 

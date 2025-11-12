@@ -9,9 +9,7 @@ from .api import api
 logger = logging.getLogger("fpl-mcp-server.fixtures")
 
 
-def get_fixtures_resource(
-    gameweek_id: int | None = None, team_name: str | None = None
-) -> list[dict[str, Any]]:
+def get_fixtures_resource(gameweek_id: int | None = None, team_name: str | None = None) -> list[dict[str, Any]]:
     """Get fixtures from the FPL API with optional filtering by gameweek or team
 
     Args:
@@ -68,9 +66,7 @@ def get_fixtures_resource(
 
     # Apply gameweek filter if provided
     if gameweek_id is not None:
-        formatted_fixtures = [
-            f for f in formatted_fixtures if f["gameweek"] == gameweek_id
-        ]
+        formatted_fixtures = [f for f in formatted_fixtures if f["gameweek"] == gameweek_id]
 
     # Apply team filter if provided
     if team_name is not None:
@@ -109,9 +105,7 @@ def get_player_fixtures(player_id: int, num_fixtures: int = 5) -> list[dict[str,
     Returns:
         List of upcoming fixtures for the player
     """
-    logger.info(
-        f"Getting player fixtures (player_id={player_id}, num_fixtures={num_fixtures})"
-    )
+    logger.info(f"Getting player fixtures (player_id={player_id}, num_fixtures={num_fixtures})")
 
     # Get player data to find their team
     players_data = api.get_players()
@@ -190,9 +184,7 @@ def get_player_fixtures(player_id: int, num_fixtures: int = 5) -> list[dict[str,
         opponent_team = team_map.get(opponent_id, {})
 
         # Determine difficulty - higher is more difficult
-        difficulty = fixture.get(
-            "team_h_difficulty" if is_home else "team_a_difficulty", 3
-        )
+        difficulty = fixture.get("team_h_difficulty" if is_home else "team_a_difficulty", 3)
 
         formatted_fixture = {
             "gameweek": fixture.get("event"),
@@ -218,9 +210,7 @@ def analyze_player_fixtures(player_id: int, num_fixtures: int = 5) -> dict[str, 
     Returns:
         Analysis of player's upcoming fixtures with difficulty ratings
     """
-    logger.info(
-        f"Analyzing player fixtures (player_id={player_id}, num_fixtures={num_fixtures})"
-    )
+    logger.info(f"Analyzing player fixtures (player_id={player_id}, num_fixtures={num_fixtures})")
 
     # Get player data
     players_data = api.get_players()
@@ -258,9 +248,7 @@ def analyze_player_fixtures(player_id: int, num_fixtures: int = 5) -> dict[str, 
     position_info = position_map.get(position_id, {})
     position_code = position_info.get("singular_name_short", "Unknown position")
 
-    logger.info(
-        "Player %s plays as %s for %s", player.get("web_name"), position_code, team_name
-    )
+    logger.info("Player %s plays as %s for %s", player.get("web_name"), position_code, team_name)
 
     # Make sure position is one of GK, DEF, MID, FWD
     position_mapping = {"GKP": "GK", "DEF": "DEF", "MID": "MID", "FWD": "FWD"}
@@ -360,11 +348,7 @@ def get_blank_gameweeks(num_gameweeks: int = 5) -> list[dict[str, Any]]:
     current_gw_id = current_gw["id"]
 
     # Limit to specified number of upcoming gameweeks
-    upcoming_gameweeks = [
-        gw
-        for gw in all_gameweeks
-        if gw["id"] >= current_gw_id and gw["id"] < current_gw_id + num_gameweeks
-    ]
+    upcoming_gameweeks = [gw for gw in all_gameweeks if gw["id"] >= current_gw_id and gw["id"] < current_gw_id + num_gameweeks]
 
     # Map team IDs to names
     team_map = {t["id"]: t for t in team_data}
@@ -439,11 +423,7 @@ def get_double_gameweeks(num_gameweeks: int = 5) -> list[dict[str, Any]]:
     current_gw_id = current_gw["id"]
 
     # Limit to specified number of upcoming gameweeks
-    upcoming_gameweeks = [
-        gw
-        for gw in all_gameweeks
-        if gw["id"] >= current_gw_id and gw["id"] < current_gw_id + num_gameweeks
-    ]
+    upcoming_gameweeks = [gw for gw in all_gameweeks if gw["id"] >= current_gw_id and gw["id"] < current_gw_id + num_gameweeks]
 
     # Map team IDs to names
     team_map = {t["id"]: t for t in team_data}
@@ -495,9 +475,7 @@ def get_double_gameweeks(num_gameweeks: int = 5) -> list[dict[str, Any]]:
     return double_gameweeks
 
 
-def get_player_gameweek_history(
-    player_ids: list[int], num_gameweeks: int = 5
-) -> dict[str, Any]:
+def get_player_gameweek_history(player_ids: list[int], num_gameweeks: int = 5) -> dict[str, Any]:
     """Get recent gameweek history for multiple players.
 
     Args:
@@ -508,9 +486,7 @@ def get_player_gameweek_history(
         Dictionary mapping player IDs to their gameweek histories
     """
     logger = logging.getLogger(__name__)
-    logger.info(
-        f"Getting gameweek history for {len(player_ids)} players, {num_gameweeks} gameweeks"
-    )
+    logger.info(f"Getting gameweek history for {len(player_ids)} players, {num_gameweeks} gameweeks")
 
     # Get current gameweek to determine range
     gameweeks = api.get_gameweeks()
@@ -571,28 +547,18 @@ def get_player_gameweek_history(
                             # Added additional stats as requested
                             "expected_goals": entry.get("expected_goals", 0),
                             "expected_assists": entry.get("expected_assists", 0),
-                            "expected_goal_involvements": entry.get(
-                                "expected_goal_involvements", 0
-                            ),
-                            "expected_goals_conceded": entry.get(
-                                "expected_goals_conceded", 0
-                            ),
+                            "expected_goal_involvements": entry.get("expected_goal_involvements", 0),
+                            "expected_goals_conceded": entry.get("expected_goals_conceded", 0),
                             "transfers_in": entry.get("transfers_in", 0),
                             "transfers_out": entry.get("transfers_out", 0),
                             "selected": entry.get("selected", 0),
-                            "value": entry.get("value", 0) / 10.0
-                            if "value" in entry
-                            else 0,
+                            "value": entry.get("value", 0) / 10.0 if "value" in entry else 0,
                             "team_score": entry.get(
-                                "team_h_score"
-                                if entry.get("was_home")
-                                else "team_a_score",
+                                "team_h_score" if entry.get("was_home") else "team_a_score",
                                 0,
                             ),
                             "opponent_score": entry.get(
-                                "team_a_score"
-                                if entry.get("was_home")
-                                else "team_h_score",
+                                "team_a_score" if entry.get("was_home") else "team_h_score",
                                 0,
                             ),
                         }

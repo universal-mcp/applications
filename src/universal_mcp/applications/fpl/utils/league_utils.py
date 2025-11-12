@@ -20,12 +20,8 @@ def parse_league_standings(data: dict[str, Any]) -> dict[str, Any]:
         "id": data.get("league", {}).get("id"),
         "name": data.get("league", {}).get("name"),
         "created": data.get("league", {}).get("created"),
-        "type": "Public"
-        if data.get("league", {}).get("league_type") == "s"
-        else "Private",
-        "scoring": "Classic"
-        if data.get("league", {}).get("scoring") == "c"
-        else "Head-to-Head",
+        "type": "Public" if data.get("league", {}).get("league_type") == "s" else "Private",
+        "scoring": "Classic" if data.get("league", {}).get("scoring") == "c" else "Head-to-Head",
         "admin_entry": data.get("league", {}).get("admin_entry"),
         "start_event": data.get("league", {}).get("start_event"),
     }
@@ -66,9 +62,7 @@ def parse_league_standings(data: dict[str, Any]) -> dict[str, Any]:
     return response
 
 
-def get_teams_historical_data(
-    team_ids: list[int], api, start_gw: int | None = None, end_gw: int | None = None
-) -> dict[str, Any]:
+def get_teams_historical_data(team_ids: list[int], api, start_gw: int | None = None, end_gw: int | None = None) -> dict[str, Any]:
     """Get historical data for multiple teams"""
     results = {}
     errors = {}
@@ -114,11 +108,7 @@ def get_teams_historical_data(
             history_data = api._make_request(f"entry/{team_id}/history/")
 
             if "current" in history_data:
-                current = [
-                    gw
-                    for gw in history_data["current"]
-                    if start_gw <= gw.get("event", 0) <= end_gw
-                ]
+                current = [gw for gw in history_data["current"] if start_gw <= gw.get("event", 0) <= end_gw]
 
                 filtered_data = {
                     "current": current,
@@ -158,12 +148,8 @@ def _get_league_standings(league_id: int, api) -> dict[str, Any]:
         "id": data.get("league", {}).get("id"),
         "name": data.get("league", {}).get("name"),
         "created": data.get("league", {}).get("created"),
-        "type": "Public"
-        if data.get("league", {}).get("league_type") == "s"
-        else "Private",
-        "scoring": "Classic"
-        if data.get("league", {}).get("scoring") == "c"
-        else "Head-to-Head",
+        "type": "Public" if data.get("league", {}).get("league_type") == "s" else "Private",
+        "scoring": "Classic" if data.get("league", {}).get("scoring") == "c" else "Head-to-Head",
         "admin_entry": data.get("league", {}).get("admin_entry"),
         "start_event": data.get("league", {}).get("start_event"),
     }
@@ -247,9 +233,7 @@ def _get_league_historical_performance(
             if gw_data:
                 points_series.append(gw_data.get("points", 0))
                 rank_series.append(gw_data.get("overall_rank", 0))
-                value_series.append(
-                    gw_data.get("value", 0) / 10.0 if gw_data.get("value") else 0
-                )
+                value_series.append(gw_data.get("value", 0) / 10.0 if gw_data.get("value") else 0)
             else:
                 points_series.append(0)
                 rank_series.append(0)
@@ -292,9 +276,7 @@ def _get_league_historical_performance(
 
         if valid_ranks:
             mean_rank = sum(valid_ranks) / len(valid_ranks)
-            rank_variance = sum((r - mean_rank) ** 2 for r in valid_ranks) / len(
-                valid_ranks
-            )
+            rank_variance = sum((r - mean_rank) ** 2 for r in valid_ranks) / len(valid_ranks)
             consistency_score = 10.0 - min(10.0, (rank_variance / 1000000) * 10)
             team["consistency_score"] = round(consistency_score, 1)
         else:
@@ -381,9 +363,7 @@ def _get_league_team_composition(
     team_values = {}
 
     for team_id, team_data in teams_data.items():
-        team_info = next(
-            (t for t in league_data["standings"] if t["team_id"] == team_id), None
-        )
+        team_info = next((t for t in league_data["standings"] if t["team_id"] == team_id), None)
         if not team_info:
             continue
 
@@ -415,16 +395,10 @@ def _get_league_team_composition(
                     "full_name": full_name.strip() or "Unknown",
                     "position": position,
                     "team": player_data.get("team_short", "UNK"),
-                    "price": player_data.get("now_cost", 0) / 10.0
-                    if player_data.get("now_cost")
-                    else 0,
-                    "form": float(player_data.get("form", "0.0"))
-                    if player_data.get("form")
-                    else 0,
+                    "price": player_data.get("now_cost", 0) / 10.0 if player_data.get("now_cost") else 0,
+                    "form": float(player_data.get("form", "0.0")) if player_data.get("form") else 0,
                     "total_points": player_data.get("total_points", 0),
-                    "points_per_game": float(player_data.get("points_per_game", "0.0"))
-                    if player_data.get("points_per_game")
-                    else 0,
+                    "points_per_game": float(player_data.get("points_per_game", "0.0")) if player_data.get("points_per_game") else 0,
                     "ownership_count": 0,
                     "ownership_percent": 0,
                     "captain_count": 0,
@@ -465,9 +439,7 @@ def _get_league_team_composition(
 
     team_count = len(teams_data)
     for player_id, player in player_ownership.items():
-        player["ownership_percent"] = round(
-            (player["ownership_count"] / team_count) * 100, 1
-        )
+        player["ownership_percent"] = round((player["ownership_count"] / team_count) * 100, 1)
 
     players_by_ownership = sorted(
         player_ownership.values(),
@@ -478,27 +450,15 @@ def _get_league_team_composition(
     template_threshold = 30.0
     differential_threshold = 10.0
 
-    template_players = [
-        p for p in players_by_ownership if p["ownership_percent"] > template_threshold
-    ]
-    differential_players = [
-        p
-        for p in players_by_ownership
-        if 0 < p["ownership_percent"] < differential_threshold
-    ]
+    template_players = [p for p in players_by_ownership if p["ownership_percent"] > template_threshold]
+    differential_players = [p for p in players_by_ownership if 0 < p["ownership_percent"] < differential_threshold]
 
     position_order = {"GKP": 1, "DEF": 2, "MID": 3, "FWD": 4, "UNK": 5}
-    template_players.sort(
-        key=lambda p: (position_order.get(p["position"], 5), -p["ownership_percent"])
-    )
-    differential_players.sort(
-        key=lambda p: (position_order.get(p["position"], 5), -p["total_points"])
-    )
+    template_players.sort(key=lambda p: (position_order.get(p["position"], 5), -p["ownership_percent"]))
+    differential_players.sort(key=lambda p: (position_order.get(p["position"], 5), -p["total_points"]))
 
     captain_data = []
-    for player_id, count in sorted(
-        captain_picks.items(), key=lambda x: x[1], reverse=True
-    ):
+    for player_id, count in sorted(captain_picks.items(), key=lambda x: x[1], reverse=True):
         if player_id in player_ownership:
             player = player_ownership[player_id]
             captain_data.append(
@@ -522,9 +482,7 @@ def _get_league_team_composition(
             "team_value": value_data["value"],
         }
 
-    sorted_value_stats = sorted(
-        value_stats.values(), key=lambda v: v["team_value"], reverse=True
-    )
+    sorted_value_stats = sorted(value_stats.values(), key=lambda v: v["team_value"], reverse=True)
 
     PLAYER_LIMIT = 25
 
@@ -536,9 +494,7 @@ def _get_league_team_composition(
             "all_players": players_by_ownership[:PLAYER_LIMIT],
             "template_players": template_players[:PLAYER_LIMIT],
             "differential_players": differential_players[:PLAYER_LIMIT],
-            "captain_picks": captain_data[:PLAYER_LIMIT]
-            if len(captain_data) > PLAYER_LIMIT
-            else captain_data,
+            "captain_picks": captain_data[:PLAYER_LIMIT] if len(captain_data) > PLAYER_LIMIT else captain_data,
         },
         "team_values": sorted_value_stats,
         "errors": errors,

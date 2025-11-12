@@ -1,6 +1,5 @@
 from base64 import b64encode
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -15,15 +14,9 @@ class GongApp(APIApplication):
         api_key = credentials.get("api_key")
         secret = credentials.get("secret")
         api_key_b64 = b64encode(f"{api_key}:{secret}".encode()).decode()
-        return {
-            "Authorization": f"Basic {api_key_b64}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        return {"Authorization": f"Basic {api_key_b64}", "Content-Type": "application/json", "Accept": "application/json"}
 
-    def list_calls(
-        self, fromDateTime, toDateTime, cursor=None, workspaceId=None
-    ) -> dict[str, Any]:
+    async def list_calls(self, fromDateTime, toDateTime, cursor=None, workspaceId=None) -> dict[str, Any]:
         """
         Retrieves a list of call records within the specified date range, with optional pagination and workspace filtering.
 
@@ -49,19 +42,13 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'toDateTime'")
         url = f"{self.base_url}/v2/calls"
         query_params = {
-            k: v
-            for k, v in [
-                ("fromDateTime", fromDateTime),
-                ("toDateTime", toDateTime),
-                ("workspaceId", workspaceId),
-            ]
-            if v is not None
+            k: v for k, v in [("fromDateTime", fromDateTime), ("toDateTime", toDateTime), ("workspaceId", workspaceId)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_call(
+    async def add_call(
         self,
         clientUniqueId,
         actualStart,
@@ -155,7 +142,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_call(self, id) -> dict[str, Any]:
+    async def get_call(self, id) -> dict[str, Any]:
         """
         Retrieves details for a specific call by its identifier.
 
@@ -180,9 +167,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_calls_extensive(
-        self, filter, cursor=None, contentSelector=None
-    ) -> dict[str, Any]:
+    async def list_calls_extensive(self, filter, cursor=None, contentSelector=None) -> dict[str, Any]:
         """
         Retrieves a list of extensive call records matching the specified filter criteria, with optional pagination and content selection.
 
@@ -203,11 +188,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-            "contentSelector": contentSelector,
-        }
+        request_body = {"cursor": cursor, "filter": filter, "contentSelector": contentSelector}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/extensive"
         query_params = {}
@@ -215,7 +196,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_permission_profile(self, profileId) -> dict[str, Any]:
+    async def get_permission_profile(self, profileId) -> dict[str, Any]:
         """
         Retrieve the details of a permission profile by its profile ID.
 
@@ -240,7 +221,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def update_permission_profile(
+    async def update_permission_profile(
         self,
         profileId,
         id=None,
@@ -418,7 +399,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def create_permission_profile(
+    async def create_permission_profile(
         self,
         workspaceId,
         id=None,
@@ -591,23 +572,12 @@ class GongApp(APIApplication):
         }
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/permission-profile"
-        query_params = {
-            k: v for k, v in [("workspaceId", workspaceId)] if v is not None
-        }
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def update_meeting(
-        self,
-        meetingId,
-        startTime,
-        endTime,
-        invitees,
-        organizerEmail,
-        title=None,
-        externalId=None,
-    ) -> dict[str, Any]:
+    async def update_meeting(self, meetingId, startTime, endTime, invitees, organizerEmail, title=None, externalId=None) -> dict[str, Any]:
         """
         Updates the details of an existing meeting with new information such as time, invitees, and title.
 
@@ -654,7 +624,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_meeting(self, meetingId, organizerEmail=None) -> dict[str, Any]:
+    async def delete_meeting(self, meetingId, organizerEmail=None) -> dict[str, Any]:
         """
         Deletes a meeting by its ID, optionally specifying the organizer's email.
 
@@ -674,9 +644,7 @@ class GongApp(APIApplication):
         """
         if meetingId is None:
             raise ValueError("Missing required parameter 'meetingId'")
-        request_body = {
-            "organizerEmail": organizerEmail,
-        }
+        request_body = {"organizerEmail": organizerEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/meetings/{meetingId}"
         query_params = {}
@@ -684,7 +652,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def content_viewed(
+    async def content_viewed(
         self,
         reportingSystem,
         eventTimestamp,
@@ -793,7 +761,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def content_shared(
+    async def content_shared(
         self,
         reportingSystem,
         eventTimestamp,
@@ -899,7 +867,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def custom_action(
+    async def custom_action(
         self,
         reportingSystem,
         eventTimestamp,
@@ -999,9 +967,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_generic_crm_integration(
-        self,
-    ) -> dict[str, Any]:
+    async def list_generic_crm_integration(self) -> dict[str, Any]:
         """
         Retrieves a list of generic CRM integrations from the API.
 
@@ -1023,7 +989,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def register_generic_crm_integration(self, ownerEmail, name) -> dict[str, Any]:
+    async def register_generic_crm_integration(self, ownerEmail, name) -> dict[str, Any]:
         """
         Registers a generic CRM integration for a given owner email and integration name.
 
@@ -1045,10 +1011,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'ownerEmail'")
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "ownerEmail": ownerEmail,
-            "name": name,
-        }
+        request_body = {"ownerEmail": ownerEmail, "name": name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/crm/integrations"
         query_params = {}
@@ -1056,9 +1019,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_generic_crm_integration(
-        self, integrationId, clientRequestId
-    ) -> dict[str, Any]:
+    async def delete_generic_crm_integration(self, integrationId, clientRequestId) -> dict[str, Any]:
         """
         Deletes a generic CRM integration using the provided integration and client request IDs.
 
@@ -1081,19 +1042,12 @@ class GongApp(APIApplication):
         if clientRequestId is None:
             raise ValueError("Missing required parameter 'clientRequestId'")
         url = f"{self.base_url}/v2/crm/integrations"
-        query_params = {
-            k: v
-            for k, v in [
-                ("integrationId", integrationId),
-                ("clientRequestId", clientRequestId),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("clientRequestId", clientRequestId)] if v is not None}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def add_users_access_to_calls(self, callAccessList=None) -> dict[str, Any]:
+    async def add_users_access_to_calls(self, callAccessList=None) -> dict[str, Any]:
         """
         Updates user access permissions for calls by sending a PUT request with the specified access list.
 
@@ -1109,9 +1063,7 @@ class GongApp(APIApplication):
         Tags:
             update, calls, users-access, api, management
         """
-        request_body = {
-            "callAccessList": callAccessList,
-        }
+        request_body = {"callAccessList": callAccessList}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
@@ -1119,7 +1071,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_users_access_to_calls(self, filter) -> dict[str, Any]:
+    async def get_users_access_to_calls(self, filter) -> dict[str, Any]:
         """
         Retrieves user access information for calls based on the provided filter criteria.
 
@@ -1138,9 +1090,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "filter": filter,
-        }
+        request_body = {"filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
@@ -1148,7 +1098,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def delete_users_access_to_calls(self, callAccessList=None) -> dict[str, Any]:
+    async def delete_users_access_to_calls(self, callAccessList=None) -> dict[str, Any]:
         """
         Deletes a list of users' access permissions to calls.
 
@@ -1164,9 +1114,7 @@ class GongApp(APIApplication):
         Tags:
             delete, access-management, calls
         """
-        request_body = {
-            "callAccessList": callAccessList,
-        }
+        request_body = {"callAccessList": callAccessList}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
@@ -1174,7 +1122,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_multiple_users(self, filter, cursor=None) -> dict[str, Any]:
+    async def list_multiple_users(self, filter, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of users based on a provided filter and optional pagination cursor.
 
@@ -1194,10 +1142,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-        }
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/users/extensive"
         query_params = {}
@@ -1205,7 +1150,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_interaction_stats(self, filter, cursor=None) -> dict[str, Any]:
+    async def list_interaction_stats(self, filter, cursor=None) -> dict[str, Any]:
         """
         Retrieves interaction statistics based on specified filter criteria, with optional pagination support.
 
@@ -1225,10 +1170,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-        }
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/interaction"
         query_params = {}
@@ -1236,7 +1178,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_answered_scorecards(self, filter, cursor=None) -> dict[str, Any]:
+    async def list_answered_scorecards(self, filter, cursor=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of answered scorecards based on the provided filter criteria.
 
@@ -1256,10 +1198,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-        }
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/scorecards"
         query_params = {}
@@ -1267,9 +1206,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_multiple_users_day_by_day_activity(
-        self, filter, cursor=None
-    ) -> dict[str, Any]:
+    async def list_multiple_users_day_by_day_activity(self, filter, cursor=None) -> dict[str, Any]:
         """
         Retrieves day-by-day activity statistics for multiple users based on a provided filter.
 
@@ -1289,10 +1226,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-        }
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/day-by-day"
         query_params = {}
@@ -1300,9 +1234,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_multiple_users_aggregate_activity(
-        self, filter, cursor=None
-    ) -> dict[str, Any]:
+    async def list_multiple_users_aggregate_activity(self, filter, cursor=None) -> dict[str, Any]:
         """
         Aggregates and returns activity statistics for multiple users based on specified filters.
 
@@ -1322,10 +1254,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-        }
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/aggregate"
         query_params = {}
@@ -1333,9 +1262,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_multiple_users_aggregate_by_period(
-        self, filter, aggregationPeriod, cursor=None
-    ) -> dict[str, Any]:
+    async def list_multiple_users_aggregate_by_period(self, filter, aggregationPeriod, cursor=None) -> dict[str, Any]:
         """
         Aggregates activity statistics for multiple users over a specified period using given filter criteria.
 
@@ -1358,11 +1285,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'filter'")
         if aggregationPeriod is None:
             raise ValueError("Missing required parameter 'aggregationPeriod'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-            "aggregationPeriod": aggregationPeriod,
-        }
+        request_body = {"cursor": cursor, "filter": filter, "aggregationPeriod": aggregationPeriod}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/aggregate-by-period"
         query_params = {}
@@ -1370,9 +1293,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_meeting(
-        self, startTime, endTime, invitees, organizerEmail, title=None, externalId=None
-    ) -> dict[str, Any]:
+    async def add_meeting(self, startTime, endTime, invitees, organizerEmail, title=None, externalId=None) -> dict[str, Any]:
         """
         Creates a new meeting with the specified details and returns the server's response as a dictionary.
 
@@ -1417,7 +1338,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def integration_status(self, emails=None) -> dict[str, Any]:
+    async def integration_status(self, emails=None) -> dict[str, Any]:
         """
         Retrieves the integration status for specified email addresses via the meetings API.
 
@@ -1433,9 +1354,7 @@ class GongApp(APIApplication):
         Tags:
             integration-status, status, check, api, async-job
         """
-        request_body = {
-            "emails": emails,
-        }
+        request_body = {"emails": emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/meetings/integration/status"
         query_params = {}
@@ -1443,7 +1362,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def integration_settings(self, integrationTypeSettings) -> dict[str, Any]:
+    async def integration_settings(self, integrationTypeSettings) -> dict[str, Any]:
         """
         Sends integration type settings to the integration settings API endpoint and returns the server's response as a dictionary.
 
@@ -1462,9 +1381,7 @@ class GongApp(APIApplication):
         """
         if integrationTypeSettings is None:
             raise ValueError("Missing required parameter 'integrationTypeSettings'")
-        request_body = {
-            "integrationTypeSettings": integrationTypeSettings,
-        }
+        request_body = {"integrationTypeSettings": integrationTypeSettings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/integration-settings"
         query_params = {}
@@ -1472,7 +1389,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_flows_for_prospects(self, crmProspectsIds) -> dict[str, Any]:
+    async def get_flows_for_prospects(self, crmProspectsIds) -> dict[str, Any]:
         """
         Fetches flow data for the specified CRM prospect IDs from the API.
 
@@ -1491,9 +1408,7 @@ class GongApp(APIApplication):
         """
         if crmProspectsIds is None:
             raise ValueError("Missing required parameter 'crmProspectsIds'")
-        request_body = {
-            "crmProspectsIds": crmProspectsIds,
-        }
+        request_body = {"crmProspectsIds": crmProspectsIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/flows/prospects"
         query_params = {}
@@ -1501,9 +1416,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def assign_prospects(
-        self, crmProspectsIds, flowId, flowInstanceOwnerEmail
-    ) -> dict[str, Any]:
+    async def assign_prospects(self, crmProspectsIds, flowId, flowInstanceOwnerEmail) -> dict[str, Any]:
         """
         Assigns a list of CRM prospect IDs to a specified flow instance and owner via an API POST request.
 
@@ -1528,11 +1441,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'flowId'")
         if flowInstanceOwnerEmail is None:
             raise ValueError("Missing required parameter 'flowInstanceOwnerEmail'")
-        request_body = {
-            "crmProspectsIds": crmProspectsIds,
-            "flowId": flowId,
-            "flowInstanceOwnerEmail": flowInstanceOwnerEmail,
-        }
+        request_body = {"crmProspectsIds": crmProspectsIds, "flowId": flowId, "flowInstanceOwnerEmail": flowInstanceOwnerEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/flows/prospects/assign"
         query_params = {}
@@ -1540,7 +1449,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def add_digital_interaction(
+    async def add_digital_interaction(
         self,
         eventId,
         timestamp,
@@ -1605,7 +1514,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def purge_phone_number(self, phoneNumber) -> dict[str, Any]:
+    async def purge_phone_number(self, phoneNumber) -> dict[str, Any]:
         """
         Erases all data associated with the specified phone number via the data privacy API.
 
@@ -1625,14 +1534,12 @@ class GongApp(APIApplication):
         if phoneNumber is None:
             raise ValueError("Missing required parameter 'phoneNumber'")
         url = f"{self.base_url}/v2/data-privacy/erase-data-for-phone-number"
-        query_params = {
-            k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None
-        }
+        query_params = {k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def purge_email_address(self, emailAddress) -> dict[str, Any]:
+    async def purge_email_address(self, emailAddress) -> dict[str, Any]:
         """
         Permanently erases all data associated with the specified email address from the system.
 
@@ -1652,14 +1559,12 @@ class GongApp(APIApplication):
         if emailAddress is None:
             raise ValueError("Missing required parameter 'emailAddress'")
         url = f"{self.base_url}/v2/data-privacy/erase-data-for-email-address"
-        query_params = {
-            k: v for k, v in [("emailAddress", emailAddress)] if v is not None
-        }
+        query_params = {k: v for k, v in [("emailAddress", emailAddress)] if v is not None}
         response = self._post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_crm_schema_fields(self, integrationId, objectType) -> dict[str, Any]:
+    async def list_crm_schema_fields(self, integrationId, objectType) -> dict[str, Any]:
         """
         Retrieves the schema fields for a specified CRM object type associated with a given integration.
 
@@ -1682,18 +1587,12 @@ class GongApp(APIApplication):
         if objectType is None:
             raise ValueError("Missing required parameter 'objectType'")
         url = f"{self.base_url}/v2/crm/entity-schema"
-        query_params = {
-            k: v
-            for k, v in [("integrationId", integrationId), ("objectType", objectType)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("objectType", objectType)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def upload_crm_schema_field(
-        self, integrationId, objectType, items
-    ) -> dict[str, Any]:
+    async def upload_crm_schema_field(self, integrationId, objectType, items) -> dict[str, Any]:
         """
         Uploads CRM entity schema fields to the integration service for the specified CRM object type.
 
@@ -1720,18 +1619,12 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'items'")
         request_body = items
         url = f"{self.base_url}/v2/crm/entity-schema"
-        query_params = {
-            k: v
-            for k, v in [("integrationId", integrationId), ("objectType", objectType)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("objectType", objectType)] if v is not None}
         response = self._post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_crm_objects(
-        self, integrationId, objectType, objectsCrmIds
-    ) -> dict[str, Any]:
+    async def get_crm_objects(self, integrationId, objectType, objectsCrmIds) -> dict[str, Any]:
         """
         Retrieves CRM objects by their CRM IDs from a specified integration and object type.
 
@@ -1758,18 +1651,14 @@ class GongApp(APIApplication):
         url = f"{self.base_url}/v2/crm/entities"
         query_params = {
             k: v
-            for k, v in [
-                ("integrationId", integrationId),
-                ("objectType", objectType),
-                ("objectsCrmIds", objectsCrmIds),
-            ]
+            for k, v in [("integrationId", integrationId), ("objectType", objectType), ("objectsCrmIds", objectsCrmIds)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_call_transcripts(self, filter, cursor=None) -> dict[str, Any]:
+    async def get_call_transcripts(self, filter, cursor=None) -> dict[str, Any]:
         """
         Retrieves call transcripts based on the specified filter and optional pagination cursor.
 
@@ -1789,10 +1678,7 @@ class GongApp(APIApplication):
         """
         if filter is None:
             raise ValueError("Missing required parameter 'filter'")
-        request_body = {
-            "cursor": cursor,
-            "filter": filter,
-        }
+        request_body = {"cursor": cursor, "filter": filter}
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/transcript"
         query_params = {}
@@ -1800,9 +1686,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_workspaces(
-        self,
-    ) -> dict[str, Any]:
+    async def list_workspaces(self) -> dict[str, Any]:
         """
         Retrieves a list of all available workspaces from the API.
 
@@ -1821,7 +1705,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_users(self, cursor=None, includeAvatars=None) -> dict[str, Any]:
+    async def list_users(self, cursor=None, includeAvatars=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of users from the API, with optional filtering by cursor and inclusion of avatar data.
 
@@ -1839,16 +1723,12 @@ class GongApp(APIApplication):
             list, users, api, management
         """
         url = f"{self.base_url}/v2/users"
-        query_params = {
-            k: v
-            for k, v in [("cursor", cursor), ("includeAvatars", includeAvatars)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("cursor", cursor), ("includeAvatars", includeAvatars)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_user(self, id) -> dict[str, Any]:
+    async def get_user(self, id) -> dict[str, Any]:
         """
         Retrieves user information by user ID from the API.
 
@@ -1873,7 +1753,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def get_user_history(self, id) -> dict[str, Any]:
+    async def get_user_history(self, id) -> dict[str, Any]:
         """
         Retrieves the settings history for a specific user by user ID.
 
@@ -1898,7 +1778,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_trackers(self, workspaceId=None) -> dict[str, Any]:
+    async def list_trackers(self, workspaceId=None) -> dict[str, Any]:
         """
         Retrieves a list of trackers for the specified workspace from the API.
 
@@ -1915,16 +1795,12 @@ class GongApp(APIApplication):
             list, trackers, management, api
         """
         url = f"{self.base_url}/v2/settings/trackers"
-        query_params = {
-            k: v for k, v in [("workspaceId", workspaceId)] if v is not None
-        }
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_scorecards(
-        self,
-    ) -> dict[str, Any]:
+    async def list_scorecards(self) -> dict[str, Any]:
         """
         Retrieves a list of scorecard settings from the API.
 
@@ -1946,7 +1822,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_permission_profile_users(self, profileId) -> dict[str, Any]:
+    async def list_permission_profile_users(self, profileId) -> dict[str, Any]:
         """
         Retrieves a list of users associated with a specified permission profile.
 
@@ -1971,9 +1847,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_logs(
-        self, logType, fromDateTime, toDateTime=None, cursor=None
-    ) -> dict[str, Any]:
+    async def list_logs(self, logType, fromDateTime, toDateTime=None, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of logs for the specified log type and time range, with optional cursor-based pagination.
 
@@ -2000,19 +1874,14 @@ class GongApp(APIApplication):
         url = f"{self.base_url}/v2/logs"
         query_params = {
             k: v
-            for k, v in [
-                ("logType", logType),
-                ("fromDateTime", fromDateTime),
-                ("toDateTime", toDateTime),
-                ("cursor", cursor),
-            ]
+            for k, v in [("logType", logType), ("fromDateTime", fromDateTime), ("toDateTime", toDateTime), ("cursor", cursor)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_library_structure(self, workspaceId=None) -> dict[str, Any]:
+    async def get_library_structure(self, workspaceId=None) -> dict[str, Any]:
         """
         Retrieves the hierarchical structure of library folders, optionally filtered by workspace ID.
 
@@ -2029,14 +1898,12 @@ class GongApp(APIApplication):
             get, library, structure, folders, management
         """
         url = f"{self.base_url}/v2/library/folders"
-        query_params = {
-            k: v for k, v in [("workspaceId", workspaceId)] if v is not None
-        }
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_calls_in_specific_folder(self, folderId=None) -> dict[str, Any]:
+    async def get_calls_in_specific_folder(self, folderId=None) -> dict[str, Any]:
         """
         Retrieves the list of calls contained within a specified folder from the remote library API.
 
@@ -2058,9 +1925,7 @@ class GongApp(APIApplication):
         response.raise_for_status()
         return response.json()
 
-    def list_flows(
-        self, flowOwnerEmail, cursor=None, workspaceId=None
-    ) -> dict[str, Any]:
+    async def list_flows(self, flowOwnerEmail, cursor=None, workspaceId=None) -> dict[str, Any]:
         """
         Retrieves a list of flows owned by the specified user, with optional pagination and workspace filtering.
 
@@ -2083,19 +1948,13 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'flowOwnerEmail'")
         url = f"{self.base_url}/v2/flows"
         query_params = {
-            k: v
-            for k, v in [
-                ("flowOwnerEmail", flowOwnerEmail),
-                ("cursor", cursor),
-                ("workspaceId", workspaceId),
-            ]
-            if v is not None
+            k: v for k, v in [("flowOwnerEmail", flowOwnerEmail), ("cursor", cursor), ("workspaceId", workspaceId)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def find_all_references_to_phone_number(self, phoneNumber) -> dict[str, Any]:
+    async def find_all_references_to_phone_number(self, phoneNumber) -> dict[str, Any]:
         """
         Fetches all references to a specified phone number from the data privacy API.
 
@@ -2115,14 +1974,12 @@ class GongApp(APIApplication):
         if phoneNumber is None:
             raise ValueError("Missing required parameter 'phoneNumber'")
         url = f"{self.base_url}/v2/data-privacy/data-for-phone-number"
-        query_params = {
-            k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None
-        }
+        query_params = {k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def find_all_references_to_email_address(self, emailAddress) -> dict[str, Any]:
+    async def find_all_references_to_email_address(self, emailAddress) -> dict[str, Any]:
         """
         Finds and returns all data references associated with a given email address.
 
@@ -2142,14 +1999,12 @@ class GongApp(APIApplication):
         if emailAddress is None:
             raise ValueError("Missing required parameter 'emailAddress'")
         url = f"{self.base_url}/v2/data-privacy/data-for-email-address"
-        query_params = {
-            k: v for k, v in [("emailAddress", emailAddress)] if v is not None
-        }
+        query_params = {k: v for k, v in [("emailAddress", emailAddress)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def get_request_status(self, integrationId, clientRequestId) -> dict[str, Any]:
+    async def get_request_status(self, integrationId, clientRequestId) -> dict[str, Any]:
         """
         Retrieves the status of a CRM request using the provided integration and client request IDs.
 
@@ -2172,21 +2027,12 @@ class GongApp(APIApplication):
         if clientRequestId is None:
             raise ValueError("Missing required parameter 'clientRequestId'")
         url = f"{self.base_url}/v2/crm/request-status"
-        query_params = {
-            k: v
-            for k, v in [
-                ("integrationId", integrationId),
-                ("clientRequestId", clientRequestId),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("integrationId", integrationId), ("clientRequestId", clientRequestId)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_crmcalls_manual_association(
-        self, fromDateTime=None, cursor=None
-    ) -> dict[str, Any]:
+    async def list_crmcalls_manual_association(self, fromDateTime=None, cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of manually associated CRM call records, with optional filtering by date and pagination.
 
@@ -2204,16 +2050,12 @@ class GongApp(APIApplication):
             list, crmcalls, management, async_job
         """
         url = f"{self.base_url}/v2/calls/manual-crm-associations"
-        query_params = {
-            k: v
-            for k, v in [("fromDateTime", fromDateTime), ("cursor", cursor)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fromDateTime", fromDateTime), ("cursor", cursor)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    def list_permission_profile(self, workspaceId) -> dict[str, Any]:
+    async def list_permission_profile(self, workspaceId) -> dict[str, Any]:
         """
         Retrieves the list of permission profiles for the specified workspace.
 
@@ -2233,9 +2075,7 @@ class GongApp(APIApplication):
         if workspaceId is None:
             raise ValueError("Missing required parameter 'workspaceId'")
         url = f"{self.base_url}/v2/all-permission-profiles"
-        query_params = {
-            k: v for k, v in [("workspaceId", workspaceId)] if v is not None
-        }
+        query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()

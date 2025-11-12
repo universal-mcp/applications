@@ -1,5 +1,4 @@
 from typing import Any
-
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
@@ -37,7 +36,7 @@ class ShopifyApp(APIApplication):
         self._base_url = base_url
         logger.info(f"Shopify: Base URL set to {self._base_url}")
 
-    def get_access_scopes(self) -> dict[str, Any]:
+    async def get_access_scopes(self) -> dict[str, Any]:
         """
         Retrieves the list of OAuth access scopes (permissions) granted to an application using the Shopify Admin REST API.
 
@@ -55,18 +54,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_storefront_tokens(self, api_version: str) -> dict[str, Any]:
+    async def get_storefront_tokens(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves a list of storefront access tokens, which are used to authenticate requests to the Shopify Storefront API, allowing access to data such as products and checkout functionality.
 
@@ -89,20 +84,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_storefront_token(
-        self, api_version: str, storefront_access_token: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_storefront_token(self, api_version: str, storefront_access_token: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a Shopify Storefront API access token for client-side GraphQL requests, enabling access to store data like products, collections, and checkout.
 
@@ -123,37 +112,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "storefront_access_token": storefront_access_token,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"storefront_access_token": storefront_access_token}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_storefront_access_token(
-        self,
-        api_version: str,
-        storefront_access_token_id: str,
-        body_content: str | None = None,
+    async def delete_storefront_access_token(
+        self, api_version: str, storefront_access_token_id: str, body_content: str | None = None
     ) -> Any:
         """
         Deletes a storefront access token and returns a success status upon completion.
@@ -181,18 +154,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_reports(
+    async def retrieves_alist_of_reports(
         self,
         api_version: str,
         ids: str | None = None,
@@ -241,20 +210,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_anew_report(
-        self, api_version: str, report: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_anew_report(self, api_version: str, report: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Submits a report generation request and returns a success status upon creation.
 
@@ -275,35 +238,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "report": report,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"report": report}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/reports.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_report(
-        self, api_version: str, report_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_report(self, api_version: str, report_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a report by its ID using the specified API version and optionally includes additional fields in the response.
 
@@ -330,20 +278,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_areport(
-        self, api_version: str, report_id: str, report: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def updates_areport(self, api_version: str, report_id: str, report: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or replaces a specific report resource at the specified report ID in JSON format using the PUT method.
 
@@ -367,35 +309,20 @@ class ShopifyApp(APIApplication):
         if report_id is None:
             raise ValueError("Missing required parameter 'report_id'.")
         request_body_data = None
-        request_body_data = {
-            "report": report,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"report": report}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_areport(
-        self, api_version: str, report_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_areport(self, api_version: str, report_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes the specified report using the DELETE method and returns a successful status upon completion.
 
@@ -422,23 +349,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_application_charges(
-        self,
-        api_version: str,
-        since_id: str | None = None,
-        fields: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_application_charges(self, api_version: str, since_id: str | None = None, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of application charges in JSON format, allowing filtering by specific fields and starting from a given ID.
 
@@ -460,27 +378,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/application_charges.json"
-        query_params = {
-            k: v
-            for k, v in [("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_an_application_charge(
-        self, api_version: str, application_charge: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_an_application_charge(self, api_version: str, application_charge: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new application charge through the API, returning a success response upon creation or an error if validation fails.
 
@@ -501,33 +409,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "application_charge": application_charge,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"application_charge": application_charge}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/application_charges.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_an_application_charge(
+    async def retrieves_an_application_charge(
         self, api_version: str, application_charge_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
@@ -556,22 +451,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activates_an_application_charge(
-        self,
-        api_version: str,
-        application_charge_id: str,
-        application_charge: dict[str, Any] | None = None,
+    async def activates_an_application_charge(
+        self, api_version: str, application_charge_id: str, application_charge: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Activates a previously created application charge using the specified ID and returns a success status upon completion.
@@ -596,35 +484,20 @@ class ShopifyApp(APIApplication):
         if application_charge_id is None:
             raise ValueError("Missing required parameter 'application_charge_id'.")
         request_body_data = None
-        request_body_data = {
-            "application_charge": application_charge,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"application_charge": application_charge}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}/activate.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_all_application_credits(
-        self, api_version: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_all_application_credits(self, api_version: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of application credits issued to merchants through the Shopify API, allowing optional field filtering via query parameters.
 
@@ -648,20 +521,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_an_application_credit(
-        self, api_version: str, application_credit: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_an_application_credit(self, api_version: str, application_credit: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Issues application credits to merchants, which can be used towards future app purchases in Shopify, using the POST method at "/admin/api/{api_version}/application_credits.json".
 
@@ -682,35 +549,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "application_credit": application_credit,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"application_credit": application_credit}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/application_credits.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_application_credit_by_id(
-        self, api_version: str, application_credit_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def get_application_credit_by_id(self, api_version: str, application_credit_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific application credit from Shopify's admin API, including optional field filtering parameters.
 
@@ -737,23 +589,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_recurring_charges(
-        self,
-        api_version: str,
-        since_id: str | None = None,
-        fields: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_recurring_charges(self, api_version: str, since_id: str | None = None, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of recurring application charges with optional filtering by ID and field selection.
 
@@ -775,29 +618,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges.json"
-        query_params = {
-            k: v
-            for k, v in [("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_recurring_charge(
-        self,
-        api_version: str,
-        recurring_application_charge: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def create_recurring_charge(self, api_version: str, recurring_application_charge: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new recurring application charge using the API, handling the setup and management of periodic billing.
 
@@ -818,37 +649,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "recurring_application_charge": recurring_application_charge,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"recurring_application_charge": recurring_application_charge}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_charge(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        fields: str | None = None,
+    async def retrieves_asingle_charge(
+        self, api_version: str, recurring_application_charge_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves details for a specific recurring application charge by ID using the "GET" method, optionally including additional fields specified in the query parameters.
@@ -871,30 +686,19 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_recurring_charge(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        body_content: str | None = None,
-    ) -> Any:
+    async def delete_recurring_charge(self, api_version: str, recurring_application_charge_id: str, body_content: str | None = None) -> Any:
         """
         Cancels an existing recurring application charge for a Shopify store.
 
@@ -916,29 +720,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def activate_recurring_charge(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        recurring_application_charge: dict[str, Any] | None = None,
+    async def activate_recurring_charge(
+        self, api_version: str, recurring_application_charge_id: str, recurring_application_charge: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Activates a recurring application charge using the API and returns a status message in response.
@@ -961,41 +756,23 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         request_body_data = None
-        request_body_data = {
-            "recurring_application_charge": recurring_application_charge,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"recurring_application_charge": recurring_application_charge}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/activate.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_recurring_charge_custom(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        body_content: str | None = None,
+    async def update_recurring_charge_custom(
+        self, api_version: str, recurring_application_charge_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Updates a Shopify recurring application charge's properties and returns the modified charge details.
@@ -1018,33 +795,22 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         request_body_data = None
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/customize.json"
         query_params = {}
-        response = self._put(
-            url, data=request_body_data, params=query_params, content_type="text/plain"
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_usage_charges(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        fields: str | None = None,
+    async def retrieves_alist_of_usage_charges(
+        self, api_version: str, recurring_application_charge_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves usage charges for a specific recurring application charge via the Shopify Admin API, filtering results based on specified fields.
@@ -1067,29 +833,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_ausage_charge(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        usage_charge: dict[str, Any] | None = None,
+    async def creates_ausage_charge(
+        self, api_version: str, recurring_application_charge_id: str, usage_charge: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Creates a usage-based charge on a recurring billing subscription and returns the charge details upon success.
@@ -1112,42 +869,23 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         request_body_data = None
-        request_body_data = {
-            "usage_charge": usage_charge,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"usage_charge": usage_charge}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_chargeone(
-        self,
-        api_version: str,
-        recurring_application_charge_id: str,
-        usage_charge_id: str,
-        fields: str | None = None,
+    async def retrieves_asingle_chargeone(
+        self, api_version: str, recurring_application_charge_id: str, usage_charge_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific usage charge associated with a recurring application charge for tracking and billing purposes.
@@ -1171,29 +909,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if recurring_application_charge_id is None:
-            raise ValueError(
-                "Missing required parameter 'recurring_application_charge_id'."
-            )
+            raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         if usage_charge_id is None:
             raise ValueError("Missing required parameter 'usage_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges/{usage_charge_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_customer_addresses(
-        self, api_version: str, customer_id: str
-    ) -> dict[str, Any]:
+    async def list_customer_addresses(self, api_version: str, customer_id: str) -> dict[str, Any]:
         """
         Retrieves a list of customer addresses associated with a specific customer ID.
 
@@ -1219,22 +949,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_anew_address_for_acustomer(
-        self,
-        api_version: str,
-        customer_id: str,
-        address: dict[str, Any] | None = None,
+    async def creates_anew_address_for_acustomer(
+        self, api_version: str, customer_id: str, address: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Creates a new address for a specified customer using the POST method.
@@ -1259,35 +982,20 @@ class ShopifyApp(APIApplication):
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
-        request_body_data = {
-            "address": address,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"address": address}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_single_customer_address(
-        self, api_version: str, customer_id: str, address_id: str
-    ) -> dict[str, Any]:
+    async def get_single_customer_address(self, api_version: str, customer_id: str, address_id: str) -> dict[str, Any]:
         """
         Retrieves a specific customer address using the provided customer ID and address ID, returning details about the address.
 
@@ -1316,23 +1024,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_customer_address_by_id(
-        self,
-        api_version: str,
-        customer_id: str,
-        address_id: str,
-        address: dict[str, Any] | None = None,
+    async def update_customer_address_by_id(
+        self, api_version: str, customer_id: str, address_id: str, address: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates an existing customer address using the HTTP PUT method at a specified API path, returning a successful status message upon completion.
@@ -1360,38 +1060,21 @@ class ShopifyApp(APIApplication):
         if address_id is None:
             raise ValueError("Missing required parameter 'address_id'.")
         request_body_data = None
-        request_body_data = {
-            "address": address,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"address": address}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_customer_address(
-        self,
-        api_version: str,
-        customer_id: str,
-        address_id: str,
-        body_content: str | None = None,
+    async def delete_customer_address(
+        self, api_version: str, customer_id: str, address_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a customer's address specified by the customer ID and address ID using a DELETE request.
@@ -1422,20 +1105,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def set_customer_address(
-        self, api_version: str, customer_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def set_customer_address(self, api_version: str, customer_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Updates an existing address for a specified customer using the PUT method, returning a status message upon successful completion.
 
@@ -1462,27 +1139,17 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/set.json"
         query_params = {}
-        response = self._put(
-            url, data=request_body_data, params=query_params, content_type="text/plain"
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def set_default_address_by_id(
-        self,
-        api_version: str,
-        customer_id: str,
-        address_id: str,
-        body_content: str | None = None,
+    async def set_default_address_by_id(
+        self, api_version: str, customer_id: str, address_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Sets the specified address as the default for the customer.
@@ -1513,22 +1180,16 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}/default.json"
         query_params = {}
-        response = self._put(
-            url, data=request_body_data, params=query_params, content_type="text/plain"
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_customers(
+    async def retrieves_alist_of_customers(
         self,
         api_version: str,
         ids: str | None = None,
@@ -1583,20 +1244,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acustomer(
-        self, api_version: str, customer: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acustomer(self, api_version: str, customer: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new customer resource using the API and returns a status message upon successful creation.
 
@@ -1617,39 +1272,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "customer": customer,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"customer": customer}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def search_customers(
-        self,
-        api_version: str,
-        order: str | None = None,
-        query: str | None = None,
-        limit: str | None = None,
-        fields: str | None = None,
+    async def search_customers(
+        self, api_version: str, order: str | None = None, query: str | None = None, limit: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Searches customer records using specified filters, sorting options, and field selections, returning matching results in a structured format.
@@ -1657,7 +1294,7 @@ class ShopifyApp(APIApplication):
         Args:
             api_version (string): api_version
             order (string): Set the field and direction by which to order results.(default: last\\_order\\_date DESC)
-            query (string): Text to search for in the shop\'s customer data.
+            query (string): Text to search for in the shop's customer data.
             limit (string): The maximum number of results to show.(default: 50)(maximum: 250)
             fields (string): Show only certain fields, specified by a comma-separated list of field names.
 
@@ -1674,32 +1311,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/search.json"
-        query_params = {
-            k: v
-            for k, v in [
-                ("order", order),
-                ("query", query),
-                ("limit", limit),
-                ("fields", fields),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("order", order), ("query", query), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_customer(
-        self, api_version: str, customer_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_customer(self, api_version: str, customer_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a customer's details in JSON format using the specified API version and customer ID, with optional fields specified via the query parameters.
 
@@ -1726,23 +1348,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_acustomer(
-        self,
-        api_version: str,
-        customer_id: str,
-        customer: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def updates_acustomer(self, api_version: str, customer_id: str, customer: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or replaces the customer resource at the specified ID and returns the updated entity.
 
@@ -1766,35 +1379,20 @@ class ShopifyApp(APIApplication):
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
-        request_body_data = {
-            "customer": customer,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"customer": customer}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_acustomer(
-        self, api_version: str, customer_id: str, body_content: str | None = None
-    ) -> Any:
+    async def deletes_acustomer(self, api_version: str, customer_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a customer's data permanently using the "DELETE" method at the specified API path, immediately canceling any active subscriptions and preventing further operations.
 
@@ -1821,22 +1419,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def generate_activation_url(
-        self,
-        api_version: str,
-        customer_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def generate_activation_url(
+        self, api_version: str, customer_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Generates and returns an account activation URL for a customer via Shopify's API, enabling direct access to activation without manual intervention.
@@ -1864,29 +1455,17 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/account_activation_url.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def send_customer_invite(
-        self,
-        api_version: str,
-        customer_id: str,
-        customer_invite: dict[str, Any] | None = None,
+    async def send_customer_invite(
+        self, api_version: str, customer_id: str, customer_invite: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Sends an invitation to a specified customer using the "POST" method.
@@ -1911,33 +1490,20 @@ class ShopifyApp(APIApplication):
         if customer_id is None:
             raise ValueError("Missing required parameter 'customer_id'.")
         request_body_data = None
-        request_body_data = {
-            "customer_invite": customer_invite,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"customer_invite": customer_invite}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/send_invite.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_customers(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_acount_of_customers(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the count of customers using the specified API version.
 
@@ -1960,18 +1526,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_customer_orders(self, api_version: str, customer_id: str) -> dict[str, Any]:
+    async def get_customer_orders(self, api_version: str, customer_id: str) -> dict[str, Any]:
         """
         Retrieves a list of orders for a specified customer using the "GET" method via the API endpoint "/admin/api/{api_version}/customers/{customer_id}/orders.json".
 
@@ -1997,23 +1559,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_customer_saved_searches(
-        self,
-        api_version: str,
-        limit: str | None = None,
-        since_id: str | None = None,
-        fields: str | None = None,
+    async def list_customer_saved_searches(
+        self, api_version: str, limit: str | None = None, since_id: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of customer-saved searches in JSON format, allowing for optional filtering by limit, since_id, and specific fields.
@@ -2037,27 +1591,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches.json"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acustomer_saved_search(
-        self, api_version: str, customer_saved_search: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acustomer_saved_search(self, api_version: str, customer_saved_search: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new customer saved search entry via the specified API version and returns an empty response on success or validation errors.
 
@@ -2078,35 +1622,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "customer_saved_search": customer_saved_search,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"customer_saved_search": customer_saved_search}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_customer_saved_searches_count(
-        self, api_version: str, since_id: str | None = None
-    ) -> dict[str, Any]:
+    async def get_customer_saved_searches_count(self, api_version: str, since_id: str | None = None) -> dict[str, Any]:
         """
         Retrieves a count of customer saved searches with optional filtering by creation time using the "since_id" parameter.
 
@@ -2130,22 +1659,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("since_id", since_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_customer_saved_search_by_id(
-        self,
-        api_version: str,
-        customer_saved_search_id: str,
-        fields: str | None = None,
+    async def get_customer_saved_search_by_id(
+        self, api_version: str, customer_saved_search_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a customer saved search by ID using the Shopify API, optionally specifying fields to include in the response.
@@ -2173,22 +1695,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_acustomer_saved_search(
-        self,
-        api_version: str,
-        customer_saved_search_id: str,
-        customer_saved_search: dict[str, Any] | None = None,
+    async def updates_acustomer_saved_search(
+        self, api_version: str, customer_saved_search_id: str, customer_saved_search: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a customer's saved search identified by the `{customer_saved_search_id}` at the specified `{api_version}`, allowing modifications to its details.
@@ -2213,37 +1728,21 @@ class ShopifyApp(APIApplication):
         if customer_saved_search_id is None:
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
         request_body_data = None
-        request_body_data = {
-            "customer_saved_search": customer_saved_search,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"customer_saved_search": customer_saved_search}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_acustomer_saved_search(
-        self,
-        api_version: str,
-        customer_saved_search_id: str,
-        body_content: str | None = None,
+    async def deletes_acustomer_saved_search(
+        self, api_version: str, customer_saved_search_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a specified customer saved search using its unique identifier and returns a success status upon completion.
@@ -2271,32 +1770,23 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_customers_by_saved_search(
-        self,
-        api_version: str,
-        customer_saved_search_id: str,
-        order: str | None = None,
-        limit: str | None = None,
-        fields: str | None = None,
+    async def get_customers_by_saved_search(
+        self, api_version: str, customer_saved_search_id: str, order: str | None = None, limit: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
-        r"""
+        """
         Retrieves a list of customers associated with a specific customer saved search, allowing for optional filtering by order, limited results, and customizable fields.
 
         Args:
             api_version (string): api_version
             customer_saved_search_id (string): customer_saved_search_id
-            order (string): Set the field and direction by which to order results.(default: last\_order\_date DESC)
+            order (string): Set the field and direction by which to order results.(default: last\\_order\\_date DESC)
             limit (string): The maximum number of results to show.(default: 50)(maximum: 250)
             fields (string): Show only certain fields, specified by a comma-separated list of field names.
 
@@ -2315,27 +1805,17 @@ class ShopifyApp(APIApplication):
         if customer_saved_search_id is None:
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}/customers.json"
-        query_params = {
-            k: v
-            for k, v in [("order", order), ("limit", limit), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("order", order), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_discount_codes(
-        self, api_version: str, price_rule_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_alist_of_discount_codes(self, api_version: str, price_rule_id: str) -> dict[str, Any]:
         """
         Retrieves discount codes associated with a specific price rule using the specified API version.
 
@@ -2361,22 +1841,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_adiscount_code(
-        self,
-        api_version: str,
-        price_rule_id: str,
-        discount_code: dict[str, Any] | None = None,
+    async def creates_adiscount_code(
+        self, api_version: str, price_rule_id: str, discount_code: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Creates a discount code associated with a specific price rule in Shopify and returns the created resource.
@@ -2401,35 +1874,20 @@ class ShopifyApp(APIApplication):
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
         request_body_data = None
-        request_body_data = {
-            "discount_code": discount_code,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"discount_code": discount_code}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_discount_code(
-        self, api_version: str, price_rule_id: str, discount_code_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_discount_code(self, api_version: str, price_rule_id: str, discount_code_id: str) -> dict[str, Any]:
         """
         Retrieves information about a specific discount code for a given price rule using the API.
 
@@ -2458,23 +1916,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_existing_discount_code(
-        self,
-        api_version: str,
-        price_rule_id: str,
-        discount_code_id: str,
-        discount_code: dict[str, Any] | None = None,
+    async def updates_an_existing_discount_code(
+        self, api_version: str, price_rule_id: str, discount_code_id: str, discount_code: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates an existing discount code associated with a specified price rule in Shopify, allowing merchants to modify the discount code details within the defined price rule.
@@ -2502,38 +1952,21 @@ class ShopifyApp(APIApplication):
         if discount_code_id is None:
             raise ValueError("Missing required parameter 'discount_code_id'.")
         request_body_data = None
-        request_body_data = {
-            "discount_code": discount_code,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"discount_code": discount_code}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_adiscount_code(
-        self,
-        api_version: str,
-        price_rule_id: str,
-        discount_code_id: str,
-        body_content: str | None = None,
+    async def deletes_adiscount_code(
+        self, api_version: str, price_rule_id: str, discount_code_id: str, body_content: str | None = None
     ) -> Any:
         """
         Deletes a specific discount code associated with a price rule.
@@ -2564,18 +1997,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def lookup_discount_codes(self, api_version: str) -> Any:
+    async def lookup_discount_codes(self, api_version: str) -> Any:
         """
         Retrieves discount code information using the "GET" method at the "/admin/api/{api_version}/discount_codes/lookup.json" endpoint.
 
@@ -2598,22 +2027,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def post_price_rule_batch(
-        self,
-        api_version: str,
-        price_rule_id: str,
-        discount_codes: list[dict[str, Any]] | None = None,
+    async def post_price_rule_batch(
+        self, api_version: str, price_rule_id: str, discount_codes: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Applies batch operations to a specific price rule using the POST method, allowing for efficient management of price rules in bulk.
@@ -2638,35 +2060,20 @@ class ShopifyApp(APIApplication):
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
         request_body_data = None
-        request_body_data = {
-            "discount_codes": discount_codes,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"discount_codes": discount_codes}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_price_rule_batch(
-        self, api_version: str, price_rule_id: str, batch_id: str
-    ) -> dict[str, Any]:
+    async def get_price_rule_batch(self, api_version: str, price_rule_id: str, batch_id: str) -> dict[str, Any]:
         """
         Retrieves a batch of price rule details for a specific batch and price rule ID using the specified API version.
 
@@ -2695,20 +2102,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_discount_codes(
-        self, api_version: str, price_rule_id: str, batch_id: str
-    ) -> dict[str, Any]:
+    async def get_discount_codes(self, api_version: str, price_rule_id: str, batch_id: str) -> dict[str, Any]:
         """
         Retrieves a list of discount codes associated with a specific batch under a price rule using the "GET" method.
 
@@ -2737,18 +2138,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_price_rules(
+    async def retrieves_alist_of_price_rules(
         self,
         api_version: str,
         limit: str | None = None,
@@ -2812,20 +2209,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_aprice_rule(
-        self, api_version: str, price_rule: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_aprice_rule(self, api_version: str, price_rule: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new price rule using the POST method, enabling the management of pricing configurations for specific products or customer groups at the specified API endpoint.
 
@@ -2847,35 +2238,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "price_rule": price_rule,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"price_rule": price_rule}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_price_rule(
-        self, api_version: str, price_rule_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_price_rule(self, api_version: str, price_rule_id: str) -> dict[str, Any]:
         """
         Retrieves a specific price rule's details including entitlements, prerequisites, and discount conditions from the store's pricing system.
 
@@ -2897,28 +2273,19 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_existing_aprice_rule(
-        self,
-        api_version: str,
-        price_rule_id: str,
-        price_rule: dict[str, Any] | None = None,
+    async def updates_an_existing_aprice_rule(
+        self, api_version: str, price_rule_id: str, price_rule: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a price rule configuration for a specific ID using the Shopify Admin REST API.
@@ -2943,37 +2310,20 @@ class ShopifyApp(APIApplication):
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
         request_body_data = None
-        request_body_data = {
-            "price_rule": price_rule,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
-        )
+        request_body_data = {"price_rule": price_rule}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_pricerule(
-        self, api_version: str, price_rule_id: str, body_content: str | None = None
-    ) -> Any:
+    async def remove_an_existing_pricerule(self, api_version: str, price_rule_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a specified price rule with the provided ID using the "DELETE" method, returning a successful response with a 204 status code.
 
@@ -2996,24 +2346,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if price_rule_id is None:
             raise ValueError("Missing required parameter 'price_rule_id'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_all_price_rules(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_acount_of_all_price_rules(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the total count of price rules configured in the system.
 
@@ -3036,18 +2380,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_events(
+    async def retrieves_alist_of_events(
         self,
         api_version: str,
         limit: str | None = None,
@@ -3099,20 +2439,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_event(
-        self, api_version: str, event_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_event(self, api_version: str, event_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves event details in JSON format from the admin API for a specified event ID and API version with optional field filtering.
 
@@ -3139,22 +2473,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_events(
-        self,
-        api_version: str,
-        created_at_min: str | None = None,
-        created_at_max: str | None = None,
+    async def retrieves_acount_of_events(
+        self, api_version: str, created_at_min: str | None = None, created_at_max: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves the count of events using the "GET" method, allowing filtering by creation date range via "created_at_min" and "created_at_max" query parameters.
@@ -3177,28 +2504,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/events/count.json"
-        query_params = {
-            k: v
-            for k, v in [
-                ("created_at_min", created_at_min),
-                ("created_at_max", created_at_max),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("created_at_min", created_at_min), ("created_at_max", created_at_max)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_webhooks(
+    async def retrieves_alist_of_webhooks(
         self,
         api_version: str,
         address: str | None = None,
@@ -3211,7 +2527,7 @@ class ShopifyApp(APIApplication):
         updated_at_min: str | None = None,
         updated_at_max: str | None = None,
     ) -> dict[str, Any]:
-        r"""
+        """
         Retrieves a list of webhooks in JSON format, allowing filtering by address, creation and update times, specific fields, limit, and topic, using the "GET" method.
 
         Args:
@@ -3221,7 +2537,7 @@ class ShopifyApp(APIApplication):
             created_at_min (string): Retrieve webhook subscriptions that were created after a given date and time (format: 2014-04-25T16:15:47-04:00).
             fields (string): Comma-separated list of the properties you want returned for each item in the result list. Use this parameter to restrict the returned list of items to only those properties you specify.
             limit (string): Maximum number of webhook subscriptions that should be returned. Setting this parameter outside the maximum range will return an error.(default: 50)(maximum: 250)
-            since_id (string): Restrict the returned list to webhook subscriptions whose id is greater than the specified since\_id.
+            since_id (string): Restrict the returned list to webhook subscriptions whose id is greater than the specified since\\_id.
             topic (string): Show webhook subscriptions with a given topic. For a list of valid values, refer to the [`topic` property](#topic-property-).>
             updated_at_min (string): Retrieve webhooks that were updated before a given date and time (format: 2014-04-25T16:15:47-04:00).
             updated_at_max (string): Retrieve webhooks that were updated after a given date and time (format: 2014-04-25T16:15:47-04:00).
@@ -3256,20 +2572,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_webhook(
-        self, api_version: str, webhook: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_webhook(self, api_version: str, webhook: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new webhook subscription for event notifications from the admin API.
 
@@ -3290,37 +2600,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "webhook": webhook,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"webhook": webhook}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/webhooks.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_acount_of_all_webhooks(
-        self,
-        api_version: str,
-        address: str | None = None,
-        topic: str | None = None,
+    async def receive_acount_of_all_webhooks(
+        self, api_version: str, address: str | None = None, topic: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves the count of webhooks for a specified address and topic using the GET method.
@@ -3343,25 +2637,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/webhooks/count.json"
-        query_params = {
-            k: v for k, v in [("address", address), ("topic", topic)] if v is not None
-        }
+        query_params = {k: v for k, v in [("address", address), ("topic", topic)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_webhook(
-        self, api_version: str, webhook_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def receive_asingle_webhook(self, api_version: str, webhook_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific webhook's details in JSON format using the specified API version and webhook ID from the admin API.
 
@@ -3388,23 +2674,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_webhook(
-        self,
-        api_version: str,
-        webhook_id: str,
-        webhook: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def modify_an_existing_webhook(self, api_version: str, webhook_id: str, webhook: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates the specified webhook's configuration using the provided data and returns a success status upon completion.
 
@@ -3428,35 +2705,20 @@ class ShopifyApp(APIApplication):
         if webhook_id is None:
             raise ValueError("Missing required parameter 'webhook_id'.")
         request_body_data = None
-        request_body_data = {
-            "webhook": webhook,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"webhook": webhook}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_webhook(
-        self, api_version: str, webhook_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def remove_an_existing_webhook(self, api_version: str, webhook_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a webhook identified by its ID using the DELETE method, effectively removing the webhook endpoint.
 
@@ -3483,18 +2745,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_inventory_items(
+    async def retrieves_alist_of_inventory_items(
         self, api_version: str, ids: str | None = None, limit: str | None = None
     ) -> dict[str, Any]:
         """
@@ -3518,25 +2776,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/inventory_items.json"
-        query_params = {
-            k: v for k, v in [("ids", ids), ("limit", limit)] if v is not None
-        }
+        query_params = {k: v for k, v in [("ids", ids), ("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_inventory_item_by_id(
-        self, api_version: str, inventory_item_id: str
-    ) -> dict[str, Any]:
+    async def get_inventory_item_by_id(self, api_version: str, inventory_item_id: str) -> dict[str, Any]:
         """
         Retrieves inventory item details using the API at the specified version, returning information for the specified inventory item ID.
 
@@ -3562,22 +2812,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_existing_inventory_item(
-        self,
-        api_version: str,
-        inventory_item_id: str,
-        inventory_item: dict[str, Any] | None = None,
+    async def updates_an_existing_inventory_item(
+        self, api_version: str, inventory_item_id: str, inventory_item: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates an inventory item with the specified ID by modifying its characteristics or details using the PUT method at the "/admin/api/{api_version}/inventory_items/{inventory_item_id}.json" endpoint.
@@ -3602,33 +2845,20 @@ class ShopifyApp(APIApplication):
         if inventory_item_id is None:
             raise ValueError("Missing required parameter 'inventory_item_id'.")
         request_body_data = None
-        request_body_data = {
-            "inventory_item": inventory_item,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"inventory_item": inventory_item}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_inventory_levels(
+    async def get_inventory_levels(
         self,
         api_version: str,
         inventory_item_ids: str | None = None,
@@ -3671,20 +2901,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_inventory_levels(
-        self, api_version: str, body_content: str | None = None
-    ) -> Any:
+    async def delete_inventory_levels(self, api_version: str, body_content: str | None = None) -> Any:
         """
         Deletes inventory levels from the system and returns a success status without content.
 
@@ -3708,18 +2932,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def adjust_inventory_level(
+    async def adjust_inventory_level(
         self,
         api_version: str,
         available_adjustment: float | None = None,
@@ -3753,34 +2973,20 @@ class ShopifyApp(APIApplication):
             "inventory_item_id": inventory_item_id,
             "location_id": location_id,
         }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/adjust.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def connect_inventory_levels(
-        self,
-        api_version: str,
-        inventory_item_id: float | None = None,
-        location_id: float | None = None,
+    async def connect_inventory_levels(
+        self, api_version: str, inventory_item_id: float | None = None, location_id: float | None = None
     ) -> dict[str, Any]:
         """
         Connects inventory levels to a specified location or system and returns a success status upon creation.
@@ -3803,39 +3009,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "inventory_item_id": inventory_item_id,
-            "location_id": location_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"inventory_item_id": inventory_item_id, "location_id": location_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/connect.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def set_inventory_level(
-        self,
-        api_version: str,
-        available: float | None = None,
-        inventory_item_id: float | None = None,
-        location_id: float | None = None,
+    async def set_inventory_level(
+        self, api_version: str, available: float | None = None, inventory_item_id: float | None = None, location_id: float | None = None
     ) -> dict[str, Any]:
         """
         Updates inventory levels for specific items and returns a success status.
@@ -3859,35 +3047,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "available": available,
-            "inventory_item_id": inventory_item_id,
-            "location_id": location_id,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"available": available, "inventory_item_id": inventory_item_id, "location_id": location_id}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/set.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_locations(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_alist_of_locations(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves a list of locations accessible through the admin API and returns them in JSON format.
 
@@ -3910,18 +3083,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_location_by_id(self, api_version: str, location_id: str) -> dict[str, Any]:
+    async def get_location_by_id(self, api_version: str, location_id: str) -> dict[str, Any]:
         """
         Retrieves the details of a specific location by its ID from the admin API.
 
@@ -3947,18 +3116,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_locations(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_acount_of_locations(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the count of locations in JSON format using the specified API version.
 
@@ -3981,18 +3146,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_inventory_level(self, api_version: str, location_id: str) -> dict[str, Any]:
+    async def get_inventory_level(self, api_version: str, location_id: str) -> dict[str, Any]:
         """
         Retrieves the current inventory levels for products at a specified store location using the GET method and returns this information in JSON format.
 
@@ -4018,23 +3179,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_marketing_events(
-        self,
-        api_version: str,
-        limit: str | None = None,
-        offset: str | None = None,
-    ) -> dict[str, Any]:
+    async def list_marketing_events(self, api_version: str, limit: str | None = None, offset: str | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of marketing events using the specified limit and offset parameters.
 
@@ -4056,25 +3208,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events.json"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_amarketing_event(
-        self, api_version: str, marketing_event: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_amarketing_event(self, api_version: str, marketing_event: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a marketing event using the specified API version and returns a status message upon successful creation.
 
@@ -4095,33 +3239,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "marketing_event": marketing_event,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"marketing_event": marketing_event}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_marketing_events_count(self, api_version: str) -> dict[str, Any]:
+    async def get_marketing_events_count(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the total count of marketing events matching specified criteria using filtering parameters.
 
@@ -4144,20 +3275,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_marketing_event(
-        self, api_version: str, marketing_event_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_marketing_event(self, api_version: str, marketing_event_id: str) -> dict[str, Any]:
         """
         Retrieves the details of a specific marketing event by its ID from the Shopify API.
 
@@ -4183,22 +3308,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_amarketing_event(
-        self,
-        api_version: str,
-        marketing_event_id: str,
-        marketing_event: dict[str, Any] | None = None,
+    async def updates_amarketing_event(
+        self, api_version: str, marketing_event_id: str, marketing_event: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a marketing event's details via the specified marketing_event_id and returns a success status upon completion.
@@ -4223,38 +3341,20 @@ class ShopifyApp(APIApplication):
         if marketing_event_id is None:
             raise ValueError("Missing required parameter 'marketing_event_id'.")
         request_body_data = None
-        request_body_data = {
-            "marketing_event": marketing_event,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"marketing_event": marketing_event}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_amarketing_event(
-        self,
-        api_version: str,
-        marketing_event_id: str,
-        body_content: str | None = None,
-    ) -> dict[str, Any]:
+    async def deletes_amarketing_event(self, api_version: str, marketing_event_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific marketing event using its unique identifier and returns a success status upon removal.
 
@@ -4281,22 +3381,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_marketing_event_engagement(
-        self,
-        api_version: str,
-        marketing_event_id: str,
-        engagements: list[dict[str, Any]] | None = None,
+    async def create_marketing_event_engagement(
+        self, api_version: str, marketing_event_id: str, engagements: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Creates an engagement record for a specified marketing event using the POST method.
@@ -4321,33 +3414,20 @@ class ShopifyApp(APIApplication):
         if marketing_event_id is None:
             raise ValueError("Missing required parameter 'marketing_event_id'.")
         request_body_data = None
-        request_body_data = {
-            "engagements": engagements,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"engagements": engagements}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}/engagements.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_metafields(
+    async def get_metafields(
         self,
         api_version: str,
         limit: str | None = None,
@@ -4408,20 +3488,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_metafields(
-        self, api_version: str, metafield: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_metafields(self, api_version: str, metafield: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new metafield entry in Shopify's system for storing custom data associated with various resources.
 
@@ -4442,33 +3516,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "metafield": metafield,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"metafield": metafield}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/metafields.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_metafield_count(self, api_version: str) -> dict[str, Any]:
+    async def get_metafield_count(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the count of metafields for a specified resource using the "GET" method at the "/admin/api/{api_version}/metafields/count.json" endpoint.
 
@@ -4491,20 +3552,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_metafield_by_id_json(
-        self, api_version: str, metafield_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def get_metafield_by_id_json(self, api_version: str, metafield_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific metafield by its ID using the Shopify API, allowing for optional filtering of returned fields.
 
@@ -4531,23 +3586,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_ametafield(
-        self,
-        api_version: str,
-        metafield_id: str,
-        metafield: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def updates_ametafield(self, api_version: str, metafield_id: str, metafield: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates an existing metafield's data in Shopify via the specified API endpoint.
 
@@ -4571,35 +3617,20 @@ class ShopifyApp(APIApplication):
         if metafield_id is None:
             raise ValueError("Missing required parameter 'metafield_id'.")
         request_body_data = None
-        request_body_data = {
-            "metafield": metafield,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"metafield": metafield}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_ametafield_by_its_id(
-        self, api_version: str, metafield_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_ametafield_by_its_id(self, api_version: str, metafield_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a metafield by its ID using the Shopify API, removing the specified metafield's data from a store.
 
@@ -4626,18 +3657,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_blog_articles_by_params(
+    async def list_blog_articles_by_params(
         self,
         api_version: str,
         blog_id: str,
@@ -4711,70 +3738,52 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_an_article_for_ablog(
-        self, api_version: str, blog_id: str, article: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_an_article_for_ablog(self, api_version: str, blog_id: str, article: dict[str, Any] | None = None) -> dict[str, Any]:
         """
-        Creates a new article in the specified blog using the Blogger API and returns the created article on success.
+                Creates a new article in the specified blog using the Blogger API and returns the created article on success.
 
-        Args:
-            api_version (string): api_version
-            blog_id (string): blog_id
-            article (object): article Example: {'author': 'John Smith', 'body_html': '<h1>I like articles</h1>\n<p><strong>Yea</strong>, I like posting them through <span class="caps">REST</span>.</p>', 'published': False, 'tags': 'This Post, Has Been Tagged', 'title': 'My new Article title'}.
+                Args:
+                    api_version (string): api_version
+                    blog_id (string): blog_id
+                    article (object): article Example: {'author': 'John Smith', 'body_html': '<h1>I like articles</h1>
+        <p><strong>Yea</strong>, I like posting them through <span class="caps">REST</span>.</p>', 'published': False, 'tags': 'This Post, Has Been Tagged', 'title': 'My new Article title'}.
 
-        Returns:
-            dict[str, Any]: Create an article with a metafield / Create an article with an image, which will be downloaded by Shopify / Create an article with HTML markup for a blog / Create an article with a base64 encoded image / Create an unpublished article for a blog
+                Returns:
+                    dict[str, Any]: Create an article with a metafield / Create an article with an image, which will be downloaded by Shopify / Create an article with HTML markup for a blog / Create an article with a base64 encoded image / Create an unpublished article for a blog
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Online store, Article
+                Tags:
+                    Online store, Article
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
         request_body_data = None
-        request_body_data = {
-            "article": article,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"article": article}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_article_count(
+    async def get_article_count(
         self,
         api_version: str,
         blog_id: str,
@@ -4830,24 +3839,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_article(
-        self,
-        api_version: str,
-        blog_id: str,
-        article_id: str,
-        fields: str | None = None,
-    ) -> dict[str, Any]:
+    async def receive_asingle_article(self, api_version: str, blog_id: str, article_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific article from a blog by its ID, returning the requested fields in the response.
 
@@ -4877,23 +3876,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_article(
-        self,
-        api_version: str,
-        blog_id: str,
-        article_id: str,
-        article: dict[str, Any] | None = None,
+    async def updates_an_article(
+        self, api_version: str, blog_id: str, article_id: str, article: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates an article in a blog using the "PUT" method, replacing the existing resource with a new representation at the specified API path.
@@ -4921,39 +3912,20 @@ class ShopifyApp(APIApplication):
         if article_id is None:
             raise ValueError("Missing required parameter 'article_id'.")
         request_body_data = None
-        request_body_data = {
-            "article": article,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"article": article}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_an_article(
-        self,
-        api_version: str,
-        blog_id: str,
-        article_id: str,
-        body_content: str | None = None,
-    ) -> dict[str, Any]:
+    async def deletes_an_article(self, api_version: str, blog_id: str, article_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific article from a blog using the provided blog and article identifiers and returns a success status upon completion.
 
@@ -4983,18 +3955,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_authors(self, api_version: str) -> dict[str, Any]:
+    async def get_authors(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves a list of article authors in JSON format using the specified API version.
 
@@ -5017,22 +3985,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_all_article_tags(
-        self,
-        api_version: str,
-        limit: str | None = None,
-        popular: str | None = None,
+    async def retrieves_alist_of_all_article_tags(
+        self, api_version: str, limit: str | None = None, popular: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves article tags with optional parameters for limiting results and filtering by popularity.
@@ -5055,25 +4016,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/articles/tags.json"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("popular", popular)] if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("popular", popular)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_theme_assets_json(
-        self, api_version: str, theme_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def get_theme_assets_json(self, api_version: str, theme_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of theme assets for a specified theme in Shopify using the GET method at the "/admin/api/{api_version}/themes/{theme_id}/assets.json" endpoint, optionally filtering the response by fields specified in the query parameters.
 
@@ -5100,20 +4053,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_theme_asset(
-        self, api_version: str, theme_id: str, asset: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def update_theme_asset(self, api_version: str, theme_id: str, asset: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or creates theme assets in Shopify stores using the Asset REST API, enabling modification of theme files like Liquid templates or CSS.
 
@@ -5137,35 +4084,20 @@ class ShopifyApp(APIApplication):
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
         request_body_data = None
-        request_body_data = {
-            "asset": asset,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"asset": asset}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_an_asset_from_atheme(
-        self, api_version: str, theme_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_an_asset_from_atheme(self, api_version: str, theme_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a theme asset in a Shopify store using the "DELETE" method at the specified API path, returning a status message based on the outcome of the deletion request.
 
@@ -5192,24 +4124,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieve_alist_of_all_blogs(
-        self,
-        api_version: str,
-        limit: str | None = None,
-        since_id: str | None = None,
-        handle: str | None = None,
-        fields: str | None = None,
+    async def retrieve_alist_of_all_blogs(
+        self, api_version: str, limit: str | None = None, since_id: str | None = None, handle: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of blogs with configurable filters (limit, handle, etc.) and optional field selection in the specified API version.
@@ -5235,31 +4158,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/blogs.json"
         query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("since_id", since_id),
-                ("handle", handle),
-                ("fields", fields),
-            ]
-            if v is not None
+            k: v for k, v in [("limit", limit), ("since_id", since_id), ("handle", handle), ("fields", fields)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_blog(
-        self, api_version: str, blog: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_blog(self, api_version: str, blog: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new blog using the API at "/admin/api/{api_version}/blogs.json" with the "POST" method, returning a status indicating success or failure.
 
@@ -5280,33 +4190,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "blog": blog,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"blog": blog}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_acount_of_all_blogs(self, api_version: str) -> dict[str, Any]:
+    async def receive_acount_of_all_blogs(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the count of blogs using the "GET" method at the specified API endpoint.
 
@@ -5329,20 +4226,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_blog(
-        self, api_version: str, blog_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def receive_asingle_blog(self, api_version: str, blog_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a blog with the specified ID and optional fields using the "GET" method.
 
@@ -5369,20 +4260,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_blog(
-        self, api_version: str, blog_id: str, blog: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def modify_an_existing_blog(self, api_version: str, blog_id: str, blog: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or replaces an entire blog entry at the specified blog ID using the provided data and returns a success status.
 
@@ -5406,35 +4291,20 @@ class ShopifyApp(APIApplication):
         if blog_id is None:
             raise ValueError("Missing required parameter 'blog_id'.")
         request_body_data = None
-        request_body_data = {
-            "blog": blog,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"blog": blog}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_blog(
-        self, api_version: str, blog_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def remove_an_existing_blog(self, api_version: str, blog_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a blog with the specified ID using the DELETE method via the API endpoint "/admin/api/{api_version}/blogs/{blog_id}.json" and returns a successful status message if the operation is completed.
 
@@ -5461,18 +4331,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_comments(
+    async def retrieves_alist_of_comments(
         self,
         api_version: str,
         limit: str | None = None,
@@ -5536,20 +4402,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acomment_for_an_article(
-        self, api_version: str, comment: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acomment_for_an_article(self, api_version: str, comment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates comments through an administrative API endpoint.
 
@@ -5570,33 +4430,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "comment": comment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"comment": comment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/comments.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_comments(
+    async def retrieves_acount_of_comments(
         self,
         api_version: str,
         created_at_min: str | None = None,
@@ -5651,20 +4498,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_comment_by_its_id(
-        self, api_version: str, comment_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_comment_by_its_id(self, api_version: str, comment_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific comment's details by its ID in the GitHub API, supporting optional field filtering.
 
@@ -5691,22 +4532,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_acomment_of_an_article(
-        self,
-        api_version: str,
-        comment_id: str,
-        comment: dict[str, Any] | None = None,
+    async def updates_acomment_of_an_article(
+        self, api_version: str, comment_id: str, comment: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a comment identified by `{comment_id}` using the "PUT" method, enabling modifications to existing comments in a structured API environment.
@@ -5731,38 +4565,20 @@ class ShopifyApp(APIApplication):
         if comment_id is None:
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
-        request_body_data = {
-            "comment": comment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"comment": comment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def marks_acomment_as_spam(
-        self,
-        api_version: str,
-        comment_id: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def marks_acomment_as_spam(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Marks a comment as spam in the admin system and returns a success status.
 
@@ -5789,29 +4605,17 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/spam.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def marks_acomment_as_not_spam(
-        self,
-        api_version: str,
-        comment_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def marks_acomment_as_not_spam(
+        self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Marks a comment as not spam in the admin API and returns a success status.
@@ -5839,30 +4643,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/not_spam.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def approves_acomment(
-        self,
-        api_version: str,
-        comment_id: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def approves_acomment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Approves a specified comment via a POST request and returns a success status upon approval.
 
@@ -5889,30 +4679,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/approve.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def removes_acomment(
-        self,
-        api_version: str,
-        comment_id: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def removes_acomment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Removes a comment via the API, identified by its ID, using a POST request at the specified path.
 
@@ -5937,34 +4713,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         request_body_data = None
         request_body_data = request_body if request_body is not None else {}
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/remove.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/remove.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def restore_comment(
-        self,
-        api_version: str,
-        comment_id: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def restore_comment(self, api_version: str, comment_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Restores a deleted comment using the specified API version and returns a success status.
 
@@ -5991,25 +4751,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/restore.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_pages(
+    async def retrieves_alist_of_pages(
         self,
         api_version: str,
         limit: str | None = None,
@@ -6076,67 +4827,49 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_page(
-        self, api_version: str, page: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_page(self, api_version: str, page: dict[str, Any] | None = None) -> dict[str, Any]:
         """
-        Creates a new page in the Shopify admin using the POST method and returns a status message.
+                Creates a new page in the Shopify admin using the POST method and returns a status message.
 
-        Args:
-            api_version (string): api_version
-            page (object): page Example: {'body_html': '<h2>Warranty</h2>\n<p>Returns accepted if we receive items <strong>30 days after purchase</strong>.</p>', 'published': False, 'title': 'Warranty information'}.
+                Args:
+                    api_version (string): api_version
+                    page (object): page Example: {'body_html': '<h2>Warranty</h2>
+        <p>Returns accepted if we receive items <strong>30 days after purchase</strong>.</p>', 'published': False, 'title': 'Warranty information'}.
 
-        Returns:
-            dict[str, Any]: Create a page with a metafield / Create a page with HTML markup / Create an unpublished page
+                Returns:
+                    dict[str, Any]: Create a page with a metafield / Create a page with HTML markup / Create an unpublished page
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Online store, Page
+                Tags:
+                    Online store, Page
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "page": page,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"page": page}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/pages.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_apage_count(
+    async def retrieves_apage_count(
         self,
         api_version: str,
         title: str | None = None,
@@ -6191,20 +4924,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_page_by_its_id(
-        self, api_version: str, page_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_page_by_its_id(self, api_version: str, page_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific page's details from the admin API, filtered by the requested fields, and returns the structured data in JSON format.
 
@@ -6231,20 +4958,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_apage(
-        self, api_version: str, page_id: str, page: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def updates_apage(self, api_version: str, page_id: str, page: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a specific page with the given ID using the PUT method, replacing its existing content with new data.
 
@@ -6268,35 +4989,20 @@ class ShopifyApp(APIApplication):
         if page_id is None:
             raise ValueError("Missing required parameter 'page_id'.")
         request_body_data = None
-        request_body_data = {
-            "page": page,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"page": page}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_apage(
-        self, api_version: str, page_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_apage(self, api_version: str, page_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a page identified by the given page ID using the DELETE method, returning a status message upon successful deletion.
 
@@ -6323,18 +5029,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_url_redirects(
+    async def retrieves_alist_of_url_redirects(
         self,
         api_version: str,
         limit: str | None = None,
@@ -6369,31 +5071,19 @@ class ShopifyApp(APIApplication):
         url = f"{self.base_url}/admin/api/{api_version}/redirects.json"
         query_params = {
             k: v
-            for k, v in [
-                ("limit", limit),
-                ("since_id", since_id),
-                ("path", path),
-                ("target", target),
-                ("fields", fields),
-            ]
+            for k, v in [("limit", limit), ("since_id", since_id), ("path", path), ("target", target), ("fields", fields)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_aredirect(
-        self, api_version: str, redirect: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_aredirect(self, api_version: str, redirect: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new URL redirect using the API, returning a successful response with a status code of 201 upon completion, or an error response with a status code of 422 if validation fails.
 
@@ -6414,33 +5104,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "redirect": redirect,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"redirect": redirect}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/redirects.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_url_redirects(
+    async def retrieves_acount_of_url_redirects(
         self, api_version: str, path: str | None = None, target: str | None = None
     ) -> dict[str, Any]:
         """
@@ -6464,25 +5141,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/redirects/count.json"
-        query_params = {
-            k: v for k, v in [("path", path), ("target", target)] if v is not None
-        }
+        query_params = {k: v for k, v in [("path", path), ("target", target)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_redirect(
-        self, api_version: str, redirect_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_redirect(self, api_version: str, redirect_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves details of a specific redirect ID in JSON format, allowing optional field selection via query parameters.
 
@@ -6509,22 +5178,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_existing_redirect(
-        self,
-        api_version: str,
-        redirect_id: str,
-        redirect: dict[str, Any] | None = None,
+    async def updates_an_existing_redirect(
+        self, api_version: str, redirect_id: str, redirect: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates or replaces a specific redirect resource identified by `{redirect_id}` using the REST API, returning a status message if successful.
@@ -6549,35 +5211,20 @@ class ShopifyApp(APIApplication):
         if redirect_id is None:
             raise ValueError("Missing required parameter 'redirect_id'.")
         request_body_data = None
-        request_body_data = {
-            "redirect": redirect,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"redirect": redirect}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_aredirect(
-        self, api_version: str, redirect_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_aredirect(self, api_version: str, redirect_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific URL redirect identified by the provided `redirect_id`, removing the associated redirection rule from the system.
 
@@ -6604,18 +5251,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_all_script_tags(
+    async def retrieves_alist_of_all_script_tags(
         self,
         api_version: str,
         limit: str | None = None,
@@ -6670,20 +5313,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_anew_script_tag(
-        self, api_version: str, script_tag: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_anew_script_tag(self, api_version: str, script_tag: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a script tag for loading remote JavaScript into a storefront or checkout page via the Shopify Admin API.
 
@@ -6704,35 +5341,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "script_tag": script_tag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"script_tag": script_tag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/script_tags.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_all_script_tags(
-        self, api_version: str, src: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_acount_of_all_script_tags(self, api_version: str, src: str | None = None) -> dict[str, Any]:
         """
         Retrieves the count of script tags using the "GET" method, with an optional query parameter "src" to refine the request.
 
@@ -6756,20 +5378,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("src", src)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_script_tag(
-        self, api_version: str, script_tag_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_script_tag(self, api_version: str, script_tag_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a script tag by its ID using the API, allowing for optional specification of fields to include in the response.
 
@@ -6792,29 +5408,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if script_tag_id is None:
             raise ValueError("Missing required parameter 'script_tag_id'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_ascript_tag(
-        self,
-        api_version: str,
-        script_tag_id: str,
-        script_tag: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def updates_ascript_tag(self, api_version: str, script_tag_id: str, script_tag: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a script tag by its ID using the PUT method and returns a successful response with a status code of 200.
 
@@ -6838,37 +5443,20 @@ class ShopifyApp(APIApplication):
         if script_tag_id is None:
             raise ValueError("Missing required parameter 'script_tag_id'.")
         request_body_data = None
-        request_body_data = {
-            "script_tag": script_tag,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
-        )
+        request_body_data = {"script_tag": script_tag}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_ascript_tag(
-        self, api_version: str, script_tag_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_ascript_tag(self, api_version: str, script_tag_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified script tag from a Shopify store using the provided script tag ID.
 
@@ -6891,26 +5479,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if script_tag_id is None:
             raise ValueError("Missing required parameter 'script_tag_id'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_themes(
-        self, api_version: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_alist_of_themes(self, api_version: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of store themes (including active, unpublished, and legacy themes) with optional field filtering via query parameters.
 
@@ -6934,20 +5514,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_atheme(
-        self, api_version: str, theme: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_atheme(self, api_version: str, theme: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new theme in a Shopify store via the Admin API, returning a success status on creation or validation errors.
 
@@ -6968,35 +5542,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "theme": theme,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"theme": theme}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/themes.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_theme(
-        self, api_version: str, theme_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_theme(self, api_version: str, theme_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific theme by ID from the Shopify admin, including customizable fields.
 
@@ -7023,20 +5582,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_theme(
-        self, api_version: str, theme_id: str, theme: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def modify_an_existing_theme(self, api_version: str, theme_id: str, theme: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a theme resource by replacing or modifying it using the provided JSON data.
 
@@ -7060,35 +5613,20 @@ class ShopifyApp(APIApplication):
         if theme_id is None:
             raise ValueError("Missing required parameter 'theme_id'.")
         request_body_data = None
-        request_body_data = {
-            "theme": theme,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"theme": theme}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_theme(
-        self, api_version: str, theme_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def remove_an_existing_theme(self, api_version: str, theme_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified theme and returns a success status upon completion.
 
@@ -7115,18 +5653,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_checkouts(
+    async def retrieves_acount_of_checkouts(
         self,
         api_version: str,
         since_id: str | None = None,
@@ -7175,18 +5709,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_checkouts(
+    async def get_checkouts(
         self,
         api_version: str,
         limit: str | None = None,
@@ -7238,20 +5768,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acheckout(
-        self, api_version: str, checkout: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acheckout(self, api_version: str, checkout: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new checkout session for processing payments and managing order details.
 
@@ -7272,33 +5796,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "checkout": checkout,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"checkout": checkout}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_draft_orders(
+    async def retrieves_alist_of_draft_orders(
         self,
         api_version: str,
         fields: str | None = None,
@@ -7350,20 +5861,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_draftorder(
-        self, api_version: str, draft_order: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_draftorder(self, api_version: str, draft_order: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new draft order in a Shopify store, allowing merchants to generate provisional sales transactions for custom or wholesale purchases, manage inventory, and facilitate secure payment processing when the order is finalized.
 
@@ -7384,35 +5889,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "draft_order": draft_order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"draft_order": draft_order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_draftorder(
-        self, api_version: str, draft_order_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def receive_asingle_draftorder(self, api_version: str, draft_order_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific draft order by its ID using the GET method, allowing optional filtering by specific fields to customize the response.
 
@@ -7439,22 +5929,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_draftorder(
-        self,
-        api_version: str,
-        draft_order_id: str,
-        draft_order: dict[str, Any] | None = None,
+    async def modify_an_existing_draftorder(
+        self, api_version: str, draft_order_id: str, draft_order: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a specific draft order using the Shopify Draft Order API, allowing for modifications such as changing products, quantities, or applying discounts.
@@ -7479,35 +5962,20 @@ class ShopifyApp(APIApplication):
         if draft_order_id is None:
             raise ValueError("Missing required parameter 'draft_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "draft_order": draft_order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"draft_order": draft_order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_draftorder(
-        self, api_version: str, draft_order_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def remove_an_existing_draftorder(self, api_version: str, draft_order_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a draft order specified by its ID using the DELETE method, removing it from the system.
 
@@ -7534,18 +6002,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_acount_of_all_draftorders(
+    async def receive_acount_of_all_draftorders(
         self,
         api_version: str,
         since_id: str | None = None,
@@ -7578,32 +6042,20 @@ class ShopifyApp(APIApplication):
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/count.json"
         query_params = {
             k: v
-            for k, v in [
-                ("since_id", since_id),
-                ("status", status),
-                ("updated_at_max", updated_at_max),
-                ("updated_at_min", updated_at_min),
-            ]
+            for k, v in [("since_id", since_id), ("status", status), ("updated_at_max", updated_at_max), ("updated_at_min", updated_at_min)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def send_an_invoice(
-        self,
-        api_version: str,
-        draft_order_id: str,
-        draft_order_invoice: dict[str, Any] | None = None,
+    async def send_an_invoice(
+        self, api_version: str, draft_order_id: str, draft_order_invoice: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Sends an email invoice for a specified draft order using the Shopify Admin API.
@@ -7628,35 +6080,20 @@ class ShopifyApp(APIApplication):
         if draft_order_id is None:
             raise ValueError("Missing required parameter 'draft_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "draft_order_invoice": draft_order_invoice,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"draft_order_invoice": draft_order_invoice}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/send_invoice.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def complete_adraft_order(
-        self, api_version: str, draft_order_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def complete_adraft_order(self, api_version: str, draft_order_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Completes a Shopify draft order via the API, converting it into a finalized order and returning the result.
 
@@ -7683,22 +6120,16 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/complete.json"
         query_params = {}
-        response = self._put(
-            url, data=request_body_data, params=query_params, content_type="text/plain"
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_order_risks(self, api_version: str, order_id: str) -> dict[str, Any]:
+    async def get_order_risks(self, api_version: str, order_id: str) -> dict[str, Any]:
         """
         Retrieves the risk assessment details for a specific order using the "GET" method.
 
@@ -7724,18 +6155,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_an_order_risk_for_an_order(
+    async def creates_an_order_risk_for_an_order(
         self, api_version: str, order_id: str, risk: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
@@ -7761,35 +6188,20 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "risk": risk,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"risk": risk}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_order_risk_by_id(
-        self, api_version: str, order_id: str, risk_id: str
-    ) -> dict[str, Any]:
+    async def get_order_risk_by_id(self, api_version: str, order_id: str, risk_id: str) -> dict[str, Any]:
         """
         Retrieves a specific risk associated with an order using the specified API version.
 
@@ -7818,23 +6230,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_order_risk(
-        self,
-        api_version: str,
-        order_id: str,
-        risk_id: str,
-        risk: dict[str, Any] | None = None,
+    async def updates_an_order_risk(
+        self, api_version: str, order_id: str, risk_id: str, risk: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates or replaces a specific risk associated with an order in the system using the PUT method.
@@ -7862,38 +6266,21 @@ class ShopifyApp(APIApplication):
         if risk_id is None:
             raise ValueError("Missing required parameter 'risk_id'.")
         request_body_data = None
-        request_body_data = {
-            "risk": risk,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"risk": risk}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_an_order_risk_for_an_order(
-        self,
-        api_version: str,
-        order_id: str,
-        risk_id: str,
-        body_content: str | None = None,
+    async def deletes_an_order_risk_for_an_order(
+        self, api_version: str, order_id: str, risk_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a specific risk associated with an order using the API endpoint at "/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json" via the DELETE method.
@@ -7924,18 +6311,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_orders(
+    async def retrieves_alist_of_orders(
         self,
         api_version: str,
         ids: str | None = None,
@@ -8011,20 +6394,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_an_order(
-        self, api_version: str, order: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_an_order(self, api_version: str, order: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new order in a Shopify store using the Admin API, returning a response with a status code based on the operation's success or failure.
 
@@ -8045,35 +6422,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "order": order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"order": order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_aspecific_order(
-        self, api_version: str, order_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_aspecific_order(self, api_version: str, order_id: str) -> dict[str, Any]:
         """
         Retrieves details for a specific order using the specified API version and order ID in the admin API.
 
@@ -8099,20 +6461,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_order(
-        self, api_version: str, order_id: str, order: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def updates_an_order(self, api_version: str, order_id: str, order: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates an existing order or creates a new one at the specified order ID using the PUT method.
 
@@ -8136,35 +6492,20 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "order": order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"order": order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_an_order(
-        self, api_version: str, order_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_an_order(self, api_version: str, order_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified order using the provided order ID, returning a successful status if the operation is completed.
 
@@ -8191,18 +6532,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_an_order_count(
+    async def retrieves_an_order_count(
         self,
         api_version: str,
         created_at_min: str | None = None,
@@ -8254,23 +6591,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def closes_an_order(
-        self,
-        api_version: str,
-        order_id: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def closes_an_order(self, api_version: str, order_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Closes a specified order in the admin API by its ID using the specified API version and returns a success status.
 
@@ -8297,30 +6625,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/close.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def re_opens_aclosed_order(
-        self,
-        api_version: str,
-        order_id: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def re_opens_aclosed_order(self, api_version: str, order_id: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Opens an order with the specified ID using the POST method and returns a successful response upon completion.
 
@@ -8347,31 +6661,17 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/open.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cancels_an_order(
-        self,
-        api_version: str,
-        order_id: str,
-        amount: str | None = None,
-        currency: str | None = None,
-        note: str | None = None,
+    async def cancels_an_order(
+        self, api_version: str, order_id: str, amount: str | None = None, currency: str | None = None, note: str | None = None
     ) -> dict[str, Any]:
         """
         Cancels a specified order using a POST request and returns status codes for success (200) or invalid request (422).
@@ -8398,41 +6698,21 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "amount": amount,
-            "currency": currency,
-            "note": note,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"amount": amount, "currency": currency, "note": note}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/cancel.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_order_refunds(
-        self,
-        api_version: str,
-        order_id: str,
-        limit: str | None = None,
-        fields: str | None = None,
-        in_shop_currency: str | None = None,
+    async def list_order_refunds(
+        self, api_version: str, order_id: str, limit: str | None = None, fields: str | None = None, in_shop_currency: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of refunds for a specified order, allowing optional filtering by the number of results, specific fields, and currency.
@@ -8459,31 +6739,17 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("fields", fields),
-                ("in_shop_currency", in_shop_currency),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_arefund(
-        self, api_version: str, order_id: str, refund: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_arefund(self, api_version: str, order_id: str, refund: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a refund for an order using the specified order ID, allowing merchants to process partial or full refunds through the API.
 
@@ -8507,39 +6773,21 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "refund": refund,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"refund": refund}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_aspecific_refund(
-        self,
-        api_version: str,
-        order_id: str,
-        refund_id: str,
-        fields: str | None = None,
-        in_shop_currency: str | None = None,
+    async def retrieves_aspecific_refund(
+        self, api_version: str, order_id: str, refund_id: str, fields: str | None = None, in_shop_currency: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific refund associated with an order by its ID, allowing customization of the response with optional fields and currency settings.
@@ -8568,27 +6816,17 @@ class ShopifyApp(APIApplication):
         if refund_id is None:
             raise ValueError("Missing required parameter 'refund_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/{refund_id}.json"
-        query_params = {
-            k: v
-            for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def calculates_arefund(
-        self, api_version: str, order_id: str, refund: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def calculates_arefund(self, api_version: str, order_id: str, refund: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Calculates refund amounts for an order, including line items, shipping, and taxes, based on specified criteria.
 
@@ -8612,39 +6850,21 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "refund": refund,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"refund": refund}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/calculate.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_transactions(
-        self,
-        api_version: str,
-        order_id: str,
-        since_id: str | None = None,
-        fields: str | None = None,
-        in_shop_currency: str | None = None,
+    async def retrieves_alist_of_transactions(
+        self, api_version: str, order_id: str, since_id: str | None = None, fields: str | None = None, in_shop_currency: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of transactions for a specified order using the Shopify API, optionally filtered by since_id, specified fields, and currency.
@@ -8672,32 +6892,19 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json"
         query_params = {
-            k: v
-            for k, v in [
-                ("since_id", since_id),
-                ("fields", fields),
-                ("in_shop_currency", in_shop_currency),
-            ]
-            if v is not None
+            k: v for k, v in [("since_id", since_id), ("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_atransaction_for_an_order(
-        self,
-        api_version: str,
-        order_id: str,
-        transaction: dict[str, Any] | None = None,
+    async def creates_atransaction_for_an_order(
+        self, api_version: str, order_id: str, transaction: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Creates a new transaction for a specified order using the Shopify Admin API and returns the result with a 201 Created status.
@@ -8722,35 +6929,20 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "transaction": transaction,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"transaction": transaction}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_order_transactions_count(
-        self, api_version: str, order_id: str
-    ) -> dict[str, Any]:
+    async def get_order_transactions_count(self, api_version: str, order_id: str) -> dict[str, Any]:
         """
         Retrieves the transaction count for a specific order using the "GET" method.
 
@@ -8776,24 +6968,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_aspecific_transaction(
-        self,
-        api_version: str,
-        order_id: str,
-        transaction_id: str,
-        fields: str | None = None,
-        in_shop_currency: str | None = None,
+    async def retrieves_aspecific_transaction(
+        self, api_version: str, order_id: str, transaction_id: str, fields: str | None = None, in_shop_currency: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific transaction from an order, optionally filtering response fields and currency format using query parameters.
@@ -8822,31 +7005,18 @@ class ShopifyApp(APIApplication):
         if transaction_id is None:
             raise ValueError("Missing required parameter 'transaction_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/{transaction_id}.json"
-        query_params = {
-            k: v
-            for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_gift_cards(
-        self,
-        api_version: str,
-        status: str | None = None,
-        limit: str | None = None,
-        since_id: str | None = None,
-        fields: str | None = None,
+    async def retrieves_alist_of_gift_cards(
+        self, api_version: str, status: str | None = None, limit: str | None = None, since_id: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of gift cards in JSON format, allowing filtering by status, limiting the number of results, specifying a starting point with an ID, and selecting specific fields for the response.
@@ -8872,31 +7042,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards.json"
         query_params = {
-            k: v
-            for k, v in [
-                ("status", status),
-                ("limit", limit),
-                ("since_id", since_id),
-                ("fields", fields),
-            ]
-            if v is not None
+            k: v for k, v in [("status", status), ("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_agift_card(
-        self, api_version: str, gift_card: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_agift_card(self, api_version: str, gift_card: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new gift card and returns the created resource with a 201 status code.
 
@@ -8917,35 +7074,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "gift_card": gift_card,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"gift_card": gift_card}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_gift_card(
-        self, api_version: str, gift_card_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_gift_card(self, api_version: str, gift_card_id: str) -> dict[str, Any]:
         """
         Retrieves information about a specific gift card using the provided gift card ID.
 
@@ -8971,22 +7113,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_existing_gift_card(
-        self,
-        api_version: str,
-        gift_card_id: str,
-        gift_card: dict[str, Any] | None = None,
+    async def updates_an_existing_gift_card(
+        self, api_version: str, gift_card_id: str, gift_card: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates the details of a specific gift card using the PUT method at the "/admin/api/{api_version}/gift_cards/{gift_card_id}.json" endpoint.
@@ -9011,35 +7146,20 @@ class ShopifyApp(APIApplication):
         if gift_card_id is None:
             raise ValueError("Missing required parameter 'gift_card_id'.")
         request_body_data = None
-        request_body_data = {
-            "gift_card": gift_card,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"gift_card": gift_card}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_gift_cards(
-        self, api_version: str, status: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_acount_of_gift_cards(self, api_version: str, status: str | None = None) -> dict[str, Any]:
         """
         Retrieves the count of gift cards filtered by status using the Shopify Admin REST API.
 
@@ -9063,23 +7183,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("status", status)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def disables_agift_card(
-        self,
-        api_version: str,
-        gift_card_id: str,
-        gift_card: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def disables_agift_card(self, api_version: str, gift_card_id: str, gift_card: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Deactivates a gift card and invalidates its remaining balance via a POST request.
 
@@ -9103,46 +7214,28 @@ class ShopifyApp(APIApplication):
         if gift_card_id is None:
             raise ValueError("Missing required parameter 'gift_card_id'.")
         request_body_data = None
-        request_body_data = {
-            "gift_card": gift_card,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"gift_card": gift_card}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}/disable.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def searches_for_gift_cards(
-        self,
-        api_version: str,
-        order: str | None = None,
-        query: str | None = None,
-        limit: str | None = None,
-        fields: str | None = None,
+    async def searches_for_gift_cards(
+        self, api_version: str, order: str | None = None, query: str | None = None, limit: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
-        r"""
+        """
         Retrieves a list of gift cards matching specified criteria such as search query, order, limit, and requested fields.
 
         Args:
             api_version (string): api_version
-            order (string): The field and direction to order results by.(default: disabled\_at DESC)
+            order (string): The field and direction to order results by.(default: disabled\\_at DESC)
             query (string): The text to search for.
             limit (string): The maximum number of results to retrieve.(default: 50)(maximum: 250)
             fields (string): Show only certain fields, specified by a comma-separated list of field names.
@@ -9160,30 +7253,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/search.json"
-        query_params = {
-            k: v
-            for k, v in [
-                ("order", order),
-                ("query", query),
-                ("limit", limit),
-                ("fields", fields),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("order", order), ("query", query), ("limit", limit), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_all_users(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_alist_of_all_users(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves a list of users in the system as JSON data using the "GET" method.
 
@@ -9206,18 +7286,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_user(self, api_version: str, user_id: str) -> dict[str, Any]:
+    async def retrieves_asingle_user(self, api_version: str, user_id: str) -> dict[str, Any]:
         """
         Retrieves a specific user's details from the administrative API in JSON format for the specified API version and user ID.
 
@@ -9243,18 +7319,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_current_user(self, api_version: str) -> dict[str, Any]:
+    async def get_current_user(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the current authenticated user's details in the specified API version.
 
@@ -9277,23 +7349,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_collects(
-        self,
-        api_version: str,
-        limit: str | None = None,
-        since_id: str | None = None,
-        fields: str | None = None,
+    async def retrieves_alist_of_collects(
+        self, api_version: str, limit: str | None = None, since_id: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of data collections in JSON format, allowing filtering by limit, since_id, and specific fields.
@@ -9317,27 +7381,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/collects.json"
-        query_params = {
-            k: v
-            for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_collects_post(
-        self, api_version: str, collect: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_collects_post(self, api_version: str, collect: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new collection in a store using the POST method, returning a status message upon successful creation or an error response if the request is invalid.
 
@@ -9358,35 +7412,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "collect": collect,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"collect": collect}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/collects.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_collect_details(
-        self, api_version: str, collect_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def get_collect_details(self, api_version: str, collect_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific collect entry from the Shopify admin API, returning JSON data with fields optionally filtered by the request.
 
@@ -9413,20 +7452,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def removes_aproduct_from_acollection(
-        self, api_version: str, collect_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def removes_aproduct_from_acollection(self, api_version: str, collect_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specific collect entry by ID using the specified API version and returns a success status.
 
@@ -9453,18 +7486,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_collects(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_acount_of_collects(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the count of collections using the GET method at the specified API endpoint "/admin/api/{api_version}/collects/count.json".
 
@@ -9487,20 +7516,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_collection(
-        self, api_version: str, collection_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_collection(self, api_version: str, collection_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves information about a specific collection using the "GET" method, allowing optional filtering through the "fields" query parameter.
 
@@ -9523,26 +7546,18 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if collection_id is None:
             raise ValueError("Missing required parameter 'collection_id'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/collections/{collection_id}.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/collections/{collection_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_collection_products(
-        self, api_version: str, collection_id: str, limit: str | None = None
-    ) -> dict[str, Any]:
+    async def list_collection_products(self, api_version: str, collection_id: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of products from a specific collection using the "GET" method, allowing optional filtering by a limit parameter.
 
@@ -9569,18 +7584,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_custom_collections(
+    async def list_custom_collections(
         self,
         api_version: str,
         limit: str | None = None,
@@ -9647,20 +7658,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acustom_collection(
-        self, api_version: str, custom_collection: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acustom_collection(self, api_version: str, custom_collection: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new custom collection in a Shopify store using the API, allowing merchants to group products together for easier navigation.
 
@@ -9681,33 +7686,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "custom_collection": custom_collection,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"custom_collection": custom_collection}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/custom_collections.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_custom_collections_count(
+    async def get_custom_collections_count(
         self,
         api_version: str,
         title: str | None = None,
@@ -9759,20 +7751,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_custom_collection_by_id(
-        self, api_version: str, custom_collection_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def get_custom_collection_by_id(self, api_version: str, custom_collection_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a specific custom collection and optionally includes specified fields in the response, using the Shopify API.
 
@@ -9799,22 +7785,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_custom_collection_by_id(
-        self,
-        api_version: str,
-        custom_collection_id: str,
-        custom_collection: dict[str, Any] | None = None,
+    async def update_custom_collection_by_id(
+        self, api_version: str, custom_collection_id: str, custom_collection: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates an existing custom collection by replacing it with the new data provided in the request body, allowing modifications to its attributes such as title and collected products.
@@ -9839,37 +7818,21 @@ class ShopifyApp(APIApplication):
         if custom_collection_id is None:
             raise ValueError("Missing required parameter 'custom_collection_id'.")
         request_body_data = None
-        request_body_data = {
-            "custom_collection": custom_collection,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"custom_collection": custom_collection}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_acustom_collection(
-        self,
-        api_version: str,
-        custom_collection_id: str,
-        body_content: str | None = None,
+    async def deletes_acustom_collection(
+        self, api_version: str, custom_collection_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a custom product collection in Shopify using the specified collection ID.
@@ -9897,23 +7860,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_alist_of_all_product_images(
-        self,
-        api_version: str,
-        product_id: str,
-        since_id: str | None = None,
-        fields: str | None = None,
+    async def receive_alist_of_all_product_images(
+        self, api_version: str, product_id: str, since_id: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of product images for a specified product using the "GET" method at the "/admin/api/{api_version}/products/{product_id}/images.json" path, allowing optional filters by "since_id" and customizable fields.
@@ -9938,84 +7893,245 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
-        )
-        query_params = {
-            k: v
-            for k, v in [("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_product_image(
-        self, api_version: str, product_id: str, image: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_product_image(self, api_version: str, product_id: str, image: dict[str, Any] | None = None) -> dict[str, Any]:
         """
-        Creates and manages product images by uploading new images for a specified product using the POST method.
+                Creates and manages product images by uploading new images for a specified product using the POST method.
 
-        Args:
-            api_version (string): api_version
-            product_id (string): product_id
-            image (object): image Example: {'attachment': 'R0lGODlhbgCMAPf/APbr48VySrxTO7IgKt2qmKQdJeK8lsFjROG5p/nz7Zg3\nMNmnd7Q1MLNVS9GId71hSJMZIuzTu4UtKbeEeakhKMl8U8WYjfr18YQaIbAf\nKKwhKdKzqpQtLebFortOOejKrOjZ1Mt7aMNpVbAqLLV7bsNqR+3WwMqEWenN\nsZYxL/Ddy/Pm2e7ZxLlUQrIjNPXp3bU5MbhENbEtLtqhj5ZQTfHh0bMxL7Ip\nNsNyUYkZIrZJPcqGdYIUHb5aPKkeJnoUHd2yiJkiLKYiKLRFOsyJXKVDO8up\nosFaS+TBnK4kKti5sNaYg/z49aqYl5kqLrljUtORfMOlo/36+H4ZH8yDYq0f\nKKFYTaU9MrY8MrZBNXwXHpgaIdGVYu/byLZNP9SaZLIyOuXCtHkpJst+Wpcm\nLMyCa8BfP9GMb9KQdPDd1PPk1sd5VP79/L5dQZ0bI9+ymqssK9WcfIoXHdzG\nxdWWfteib79lSr1YP86MYurQxKdcUKdMQr5ZSfPs6YEZH8uhl4oWIenMuurQ\nttmejaqoqsqBVaAcJLlJN5kvMLlZRMNsSL5fRak0LbdQQMVvSPjw6cJnRpkf\nKtmjhvfu5cJtT7IuOMVvWLY/M/37+o0YH9ibhtSYdObErc6HarM9NnYSGNGR\navLi09unje3WyeO8rsVrT7tdRtK3uffu6NWeaL9pTJIjJrM4NPbx8cdyX7M7\nPYYVHu7j4KgoNJAYIKtkV5o9MsOcldicis+RYNutfrhFOZ0hJbqinZ8bI8h5\nUObFuOfItJsfJrJfUOfIqc+PXqQtK8RnSbA4Mcd3Tm0SGbpXQ8aqp7RLNs+s\novHfzpVhV9iggMd1TLtbRKUdKXEQFsd4XrZRPLIgMZUeJ+jKvrAlK6AhJ65A\nMpMpKuC3j5obIsRwS7hAN8l/YtvDvnYXHbAoLI47SIUsOMenorF4gO/m4+fH\npo4vLZ8oKMukqp0cJbhVSMV2UuPR0bAfMLIrLrg/OcJwT8h+Vt+wn8eurLlh\nQrIfKHQOHHQOHf///////yH5BAEAAP8ALAAAAABuAIwAAAj/AP8JHDhQXjpz\n/PopXNiPn0OHDRMmbKhQIsOJFS1SxAhxI8SHFzVeDBnx48iNBAeeOkcxokeX\nFRdOnAlSokaaLXNujJkxo8iYHRkKtWkzZSsaOXkAWsoUECynsHgoqEW1qtVa\n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\nGg4lOnRGDKRZsoS7pMPSA6YXNWLsKJLkSZOVwKhMGSTTrJf9ZNKcomXKTrQY\nevr02cSIvKJxi6aJkaVuXaZMs1ziO5UqPawnuXK9AWEW2Jhja9pMuzMd27YW\nLNga10fuZYUPkdZdqpTv575YbJQbkCHw1sEpb9wQMstwWLFkbfppjJPc/wTI\nhHhJ5r0BBGbMRzfb7ez5MwwbpTMsx5pa9eob2CBM5yETpmzGtTE8hrybN29b\nc1oBn6trc9K7nhmUy6BcOUrn0KHLcr0FQvWYMxdnb3w7t/fvwFMiFvKG0uw8\n4kRLYjkGG0RtMPlWc+GGdyCwbwtYrOsHu7K0a+K/AEO04K0CF8InBvPOg2GE\nKpZTrsHSUotwwgnnmW4LHGGBKbb9bMqhsSly082CW0QMkDLLSvQHFQFiOESX\nLGzQpkUY22swA8Lko9EFLqfBEcdvMhRrwx610OLHtJ5Rc01ahHnCzTeFkXNO\nOfWQkwQ6NNFzTz2X0GQJQAMVdJEYsBhBAyrbK/9tgBcbrCTCG7bkkstvvvwm\nzPzI7JEcNLXDCYICQhXVkAIMMdWQd0x1Y9VdiuHGA1hjhfWQQzyg9dZDYmBg\nyioSVfRKFwfYZ8ZIJ3XhGhe83OLSSwEZU78ea+pUO2wK8MFaUUMl9dReDOll\n1VXbuYIZWWOl1dZDLpGhV3YZXLTR9vZhUMJijUX2mmveYRZcQDLlsCZOp21s\nCx+uLTjbbE/11ttv3diFkSHKRReGcthtN1hgrdxH2Awk5fJefK+ZZ9lvVvXW\n2cT+ZSwHgdHCpmCYDb4WYVNL7baXbsN9FdYYbKDA4otddBdYeffZx9iPjw35\nmmlKNtnUfmXSNNqAW9b/6eWYY8YWYW0V7tYQhxWAwwege61y6OXkbdDoSUFe\nWuR3wP3akKhjUtlHlqklG+YqsjaY620VNgQDMcQQouwrX3zR6KKFZfttyKtw\n+utQnRUL2mjLYjnvtLDpu9e9/ZYZ8FK3maLwwn8OmlF3lWNc7df3gfzteaZZ\n+NTKx5y6RxJ69/333mvBwHOLQ/fhiR2SV34HS47hmnAafJ9gh3AaDMcB7LE/\nIoPY441dhOzDz94VN3DPNmoeM5drAyfK7lWH34baYetVCidBIT6C5UMhB4r2\nn3FheSANRVGCwhBmObtlbgqXyYYNyuYFAMQFCtPwQf3spxAraGBRR+Af91wX\n/zsPoCIuCCAV13yAMsWo7zIOaJHFSHEZHZABdWK4X0JoIAENLIeDCXFA2rgX\nuwG8MC6kKGGoZuaDTEhtd/vBTBoyYLYqeAEzFpihGCagEBqIQQJVGMAOEdLD\n2L0uHJdBAMIOhsTELHExwLnS/i6zAQlIQItWxKIccejGL/4wjPvw4kHSQApA\nBhKQUDCiEWE2C93dTSEW2EMjaWABhbgnA3g8SAj4cElK+kMJWoyjBK6YECtw\nUgKZ7N8ejdZHfzjgGgNY5SpnZsisJXFHikwICTLBskzUECFtxJ/FFKKETmrx\nkwixQiclYAX+mfKUCpnBEZzpzHpkS2Yxm0ViMNcjhf+QABs5uKUuD9KoTOaP\nQb80picxaExk8lCZfIxLNuBhrWnurZpjoiVCbAkBbnrTH2pbTjgZVAVyGnOY\nBylmJ9P5xXWOUS6WEB3ZqgmTazLxMk40WntQub3lbIOc7OjkQP1RUI4e9CCl\nfJ3jjCbEogDAE6KrAiKlVs+4gJF7GUDlDLLnUWCyg6Ps8GgxdyrSVK5zH/WI\noARjZjFEQhSmRCEFg9SGSqIoQadT7alOJcAOoJJUmeFA6VBIETqk+ssPKizK\nDorxwx9CdShSvapOqzpVoO7ApMocgAdcIb74HeSroEOqEn8w1mgVRR0KyEEw\nKqoctTZEquzggFsVooepskP/DwqZAAfmakpGvc4HXSXF54CWVLthALASRYhB\nFpmDd4QxsQxRQmNd61HITnWyCVHC9MTnCsY9U7dH4AM8spGQvVrsiRB4Fg/8\ncFxsJmQDHvUHLQyhWsy01rXs2MFj2ZGC6862KKRgHGY6K9zlEPdyP8AJcteo\n3ClsQCHq0AF0QdkN+HbjlxygL31hO13tMrW7lwkB0BiUoR3x4EfmrYlCNjAF\nCRAoIWmwQexQqQcyxHe+9eXAfVOQAg7k16v7jQsAHGi2Bv0gUzyQQ05Ga+Cy\n0MBEDsZgN8gQ4QnXt7oJ0QOGOZACDTeEu0aTCwC80EKhDcAHMDGHWATMsuMC\nFsVl/9GnP0Jg0kw24MUv/qUTOGDlCj8WETfGsVx2vI+UzsATIFZUaTIRk3QY\n+ZYlFq0Ce5QJHBXgdU+MRCSwEYlVBCHPQZhyn7vhhD9fWdAc2DKhKXxhRCc6\n0Yi4LOPcl6hGVUFqc4gJLGaxufKO1s2VkrOj63znOkciCKMedZ+n7ARUp1rQ\niLAyIlyNYURcONaInrWs9ci4JyJOaFYawDzP8Q+ZwAICLckbgd08i290eh9V\nCIadQw3qO5Oa1H1GNRlSjeorO2HLruZ2rLudAm+Dm9Gxcx/GXmSIMbnjH5W2\nzy2RbOzM+cENBRAWs0N9b3zXWdp8pra1r61tbXdb4N/2Nv8i5gzeIJd5Gjui\nwT+AzQ9YVGrYnNO0Agm27GBkvNnNzje+921qf/+b1QEfuMDFPe5lk/lspUG3\nWKbQCofLBBBuwNEs3C3aikcrB2TTeM81HgmOd3zf/PZ3yFPNaqSXfODF0EDK\nE9e6liZmCvJwOLD7AQhU2efSbG6zm7VgiG1ofBc+//nGgZ7vbYw67aVux4v/\nfXSSK53by/HVrzIwDZTBBANUrzpMeAAIWASeB4P/AQ9+cHjEJx7xWgDE5nLQ\neMdHXvKbg/zkMZ23H/1oFRjYPOc9v3nQ58Aw0xn9LACvO7HQAOZVf/jl0ii1\nHcXe9bPX3euftaPL5R71tIf97nsy7/o0WlP2r4/JOU7B+r5nqva7jz1EdZ97\n4qNe+bonfvCfVXvly1762beOOdLBd+Q7PCAAOw==\n', 'filename': 'rails_logo.gif', 'metafields': [{'key': 'new', 'namespace': 'global', 'value': 'newvalue', 'value_type': 'string'}], 'position': 1}.
+                Args:
+                    api_version (string): api_version
+                    product_id (string): product_id
+                    image (object): image Example: {'attachment': 'R0lGODlhbgCMAPf/APbr48VySrxTO7IgKt2qmKQdJeK8lsFjROG5p/nz7Zg3
+        MNmnd7Q1MLNVS9GId71hSJMZIuzTu4UtKbeEeakhKMl8U8WYjfr18YQaIbAf
+        KKwhKdKzqpQtLebFortOOejKrOjZ1Mt7aMNpVbAqLLV7bsNqR+3WwMqEWenN
+        sZYxL/Ddy/Pm2e7ZxLlUQrIjNPXp3bU5MbhENbEtLtqhj5ZQTfHh0bMxL7Ip
+        NsNyUYkZIrZJPcqGdYIUHb5aPKkeJnoUHd2yiJkiLKYiKLRFOsyJXKVDO8up
+        osFaS+TBnK4kKti5sNaYg/z49aqYl5kqLrljUtORfMOlo/36+H4ZH8yDYq0f
+        KKFYTaU9MrY8MrZBNXwXHpgaIdGVYu/byLZNP9SaZLIyOuXCtHkpJst+Wpcm
+        LMyCa8BfP9GMb9KQdPDd1PPk1sd5VP79/L5dQZ0bI9+ymqssK9WcfIoXHdzG
+        xdWWfteib79lSr1YP86MYurQxKdcUKdMQr5ZSfPs6YEZH8uhl4oWIenMuurQ
+        ttmejaqoqsqBVaAcJLlJN5kvMLlZRMNsSL5fRak0LbdQQMVvSPjw6cJnRpkf
+        Ktmjhvfu5cJtT7IuOMVvWLY/M/37+o0YH9ibhtSYdObErc6HarM9NnYSGNGR
+        avLi09unje3WyeO8rsVrT7tdRtK3uffu6NWeaL9pTJIjJrM4NPbx8cdyX7M7
+        PYYVHu7j4KgoNJAYIKtkV5o9MsOcldicis+RYNutfrhFOZ0hJbqinZ8bI8h5
+        UObFuOfItJsfJrJfUOfIqc+PXqQtK8RnSbA4Mcd3Tm0SGbpXQ8aqp7RLNs+s
+        ovHfzpVhV9iggMd1TLtbRKUdKXEQFsd4XrZRPLIgMZUeJ+jKvrAlK6AhJ65A
+        MpMpKuC3j5obIsRwS7hAN8l/YtvDvnYXHbAoLI47SIUsOMenorF4gO/m4+fH
+        po4vLZ8oKMukqp0cJbhVSMV2UuPR0bAfMLIrLrg/OcJwT8h+Vt+wn8eurLlh
+        QrIfKHQOHHQOHf///////yH5BAEAAP8ALAAAAABuAIwAAAj/AP8JHDhQXjpz
+        /PopXNiPn0OHDRMmbKhQIsOJFS1SxAhxI8SHFzVeDBnx48iNBAeeOkcxokeX
+        FRdOnAlSokaaLXNujJkxo8iYHRkKtWkzZSsaOXkAWsoUECynsHgoqEW1qtVa
+        U7Mq2Mq1K9cUW8GKTUG2rNkUHNByWMuWLdWva7t1W7UKG4S7eO/ycEhQHgaK
+        sL4VGGyocGE3br5929KuxQFFkEtIlgypsuUDmDMfWGRmUZvPoEHfGU36jgDT
+        LQSoVt3IQ2sPsL0IUNZGlZ0H0lo00jEkCytWMspdGzBgn/F9EBIWnKIQlqHB
+        hA0bQpx48Z7UAkoEcMTdUeTJJSxf/4akOTNnzqHb3GkjrUdp0gKwq77jWdod
+        O7dNKWvhRUcWT6zYQI82xB03AAQNCdTKX/xAAB10hfVCnRtbVIhIAy14oJoZ
+        AXS4XXfdQaYIeOGJRx555Z1nRnrqqUeaMtIYY8dmn7Vg2yK57TYEgAzIQGBx
+        xyXHj0A0OOTggxFKSN1iWwTTAIYanpYdMtFE4+GVIHrn3XeUmVhZeWiIMoOY
+        nVQDGiTgKALJjIssIsADt0mjjI6+AXcDgQYi2M8/7ijEwzRIFmBIL9NVV+EW
+        VzyZ4Wqj9RBABchQWeWkV3aY5ZYjjgieeKL446mnjxwAiZVpliAjZqblt19/
+        /7HCwIAFGv+X3J4s9fMckoYhphiTQTwJ5Wqn9dDDAWuMUUEFviTrS6STVlmp
+        pVmKqCkOn34aB6TIBAAOJeHZAYl6ptixSCL8edGbq8HFeqBDcygEyIOCGqYk
+        kxUW4euiq7knbA/gUDHGv//ec2wFayQbaQWinOCslVhmSUq1/gCDLJXacgtJ
+        CYu4J66cjbAKoA3CxapnOgm9g+ughdK7xYX3Rinlvj2YYcYanVBBhTg2Axzw
+        G4/4k4bBzDZbKRUQP1LIsRSX6sgBZtwhzQP68ccbj7AWty4/5igEoaC9dK3r
+        oVtgs4evvzKqb8wyQ0JFJzXXbDMVcQBQLTDGVmCssstKGs09oPT/jQcRoBw9
+        MamKgEOeeg/gqBtvdVZSDnHFIQgRD4RxXWhiYEOQKNn4zncHzDIzHc0ZpHdy
+        RicIQOypKDf7q3Pd96ABzSab+E1EIYIvS2o0ijA92gPZiCB1qwL+iJxL78Z7
+        2NeHQrAK2YrCZva+bcgcujFUQIEG6WigonoCdLT9tr9UbIIAMMCEkkYacvvT
+        xSgsBPKGJKBEAw4yjhx+hyn+PAJFfztyVdWOt5B3RehyimneFuwFvQxFyTSf
+        25f1zCAqSFACDXTQ3gwSoDoElI5tZyBAINqnuhJ+Kg9vOIOaVnSHT5ECHucK
+        0OMiBxJAPCdXmGseBLoBvei5rFEStB5m/yBhjFJUIw50oIMoLvCpFRAADduj
+        wxvUYMIqmvARCBiDeiwRBk+lQQTEq5qQ3CWdJSkGAlu4y9h66EBgAbF6QhSV
+        MUpQilKcQRNLwIenfpFEJebBioC0ohrQQJ8QhMIfSwhgj2YouYTYUEmGqhBe
+        FNBDH5otgmgLnRyLWMdq0GEGCMCHJjSBjzQE8pSChMLTCJBI4pXDBeuiiA1T
+        prK7PK+SUPphsIQ1wSEag5OUKIUlyiAmAowClci0YizKILUAFi+WDQEEJOmF
+        xlnMYnOVbOP0gkjBTdZRmDiwhCuywcRkmtOEpHjC1DzBABto4xqN5AcgdEXN
+        NO4Ql0+CB2xctv9LM2SSgpXhZB0t0QlT+iMUkzinQquFihD452P0gGdGAPGN
+        HKYxjbOAwBpxqU9+ApGXQgyoQDWRgASwoAMGMMAHDrnQhc5AkQPSU0NgYVF7
+        QmAWKcBnPvc5HwGcbUVxJCInEfACQXQACUhFQkqRwAIOttScv9ABO21wA8k1
+        p5Z3mYXYdNqAjvLzbHDUpFCNIQoUdGAdHUhrUg2gVAOg4AXmvEAaOPEGaCCA
+        AASQxBtIYYIq5kEHAaKHVfsRGB3eNBPYxKdXGVWGUnAzdOSxgyg+MIxhoDWt
+        al3rUlXABEBeYBQIiMMm0AAKPBBAE1A4nTjWEIAzvGEFqsvDEHqEjZj/wMKw
+        1rwlVxerGkv4AxVoAOkEmXGMOKDgA8i1LFrRioSjKrWtKRVEQlXHBBSKQhLQ
+        EG3tCHCLJaSWClD0zgHO8LBqDeIYNsDGTG4ryZtak4G7lZ6G2sBSfyCAaTK7
+        AzfgQIEzoOC/yKVsZS+bWeim1BsdqEG10oCANxDgDZwIRHa3O4hbaA91nlKB
+        KA7QBhHo0VPwCFBtAdNea86CZVztKk8FUN5PjQIHxKWABihQBkHY+L/HTa5l
+        MetcAxvAG94wQAQAkA1SIIAUBvUHdkVLgBkMwrvkPSEkVtSCJ/yCAJ5gZ20l
+        wgObziITGk3xTqUHhWoxYQVdAIYINMBmO0TA/8aCwHGOBbwOAvc4pXj2RieY
+        IY69ttgfpJBEHOLQ5ArTAQ2SaPAb4lAC33XsoaxYhUx4kFVrZoKSYlYxbOzg
+        PX8kAM1d6AILOuEDDQzBBCaIwJvhjOMAU7bOmE0qdMUhhFozQhVxiMWnuiAJ
+        QTfZyahFQydWGwA1cbiZAJL0Qiht6UzoVsxetUQaJhEKZzhDBdh+A5s9AQxU
+        q3rVN241ne0sa1rXWgjbqLUd3uqPUYhCFNDAxwzm3d3vjgF/vTvAHegUaYbw
+        wMSZyAR8oX0I2BwiC2eoQQ2srYJA6IDNb2ABqr39bVYDWMfkRgIVzs1xdEOD
+        CjhQ4nXlPe9BaOLQNf+rRjQc0eg2DM8TyvZTs3mY6Xwy4xI2YLMGdIAAhTvD
+        FWzuhKhZIHGKq9riF381rDtQho53/Bjpboc1OiEJktMbtaplrbHboCOYT9rS
+        OdhopocwgiRowOw6L0MNCKCBKjwA26IW9cRTXfE4i1vAlpUEHJze8XTXehvc
+        2AQ05k3vDHaiDGNYeaPNoAzGxbwf/86EHDCd4kbsyBMySII2NH92nevg4TbI
+        A7ZVEGqiF93ocLb7nIdhgGMIoROW4Dvft2GHOqQiDoM3+YWJnT8O7yYL3fgI
+        DwK+CrFX0lwBctUxtLH55qNd5xkYxMKvDffSn/7b4L47JYQgjnW0XvZOv0L/
+        Kmz/BS5sIg5QvtkavDPlO/Am+FzOBCBqgU8veEJA9LCBDRjQznIw3/lJEIBs
+        5gqhUIALN3rWR3QTh31IFwcUkAiV1QEOCH4ddw8LkAqpUH5cgAtnIGzikHgs
+        xzSW1w3+Jgc0Bz32Rw8DoA3lQA8yIAP6xwoj4H//B4BJYAOjoAZqYIDWRn0J
+        uIB1Z3fHQAGdgHeJQIEcxwwLQH5csIHEQARE4C9aRx49oAPw5ydyIHaANUPE
+        wXwtmH/6Vw5iKIb/F4DaoAGisAIroIM7WG0MR3pDd3qoJwjVQAEUAAdvEGAG
+        sHcUgITFgAtLmIFNiAtQeAInMAa+UGwiyAEW8QMc//AkgKUNx7EPkLOCLOiC
+        NiADIzCDY0iDm2cHLxCKbNiGPueDcVh02McJ/GWHjfABxyUJdigEfUiB+pAL
+        dVAHX1B+uPCERHAChSAw8QAOHMaIE6EF3MAKkjiJxlGJljgC+UcPm7iJnch8
+        DJAHoRiKaqiDBRgK01d9LDB0QFiHdmiH1YACSDCE4ziLsscIdRCIGriLhfiL
+        axAPOKAKtbARPFAFQKKMywg5XuiC9ACN0TiNOwAAAHCNL5CN2siN3QiHcYhq
+        wCAD6WiHomAJEzmO4LcGueCOG4gLf2OIAjOPOHCPEEFT/KiMzKgNLigDABmN
+        nKgL02aQB3mNCkmKB+iNCv+IBjI2Y+O4ihcZi063DcywkReYi04Yj/ewBmuA
+        AyRYEbAAAVVwkv3oj9rwgizJks4okCMwCI+ACqgwCQaJkGq4hm3IjW8YakPn
+        CWxmhzz5kxfJd3iwkUx4lL0ojw/QlAnxlG4glQYCOStplS8YkJuoCwnwCIY5
+        CYgZljRJlqTYg9WnbTq3lm3plrGojrVWixuJgRpIDB95AgLTCCRYkjeVAXw5
+        lfqXiVa5ks64QSVlmF8JljO5mAtplj4IdJE5YzpHmenYcXCwAHKJi7rIi74Y
+        D7oQms1xU71QmpQ4AOVwmvoHmAH5ABcwna3pmompmAnJmDzIcGp5m2upmxMp
+        i+f/Zg9AIJeCeJSG+ACHAH8OwWyzoJyUCIOnCYOAKQP4wATTeQElVZio8AiI
+        CZtiSZbbuHAIUAXemZu5CZ4YyQ250KAXeJ6c2YsCYIUYwWyZUADK6QoEwAfO
+        OZ8yoANSwAT4SZ37eZjXGZtjOZshoAFQ8HAHOo6TCZ5CgAfluYS4OIhPGA8C
+        4AXBtxBP+WXvWZrZ4ClhYAkdmokzgAkhKqIjqp+GaaIyGaAL+XDOEAEueqC4
+        GaNuKQTWAAQ1OpceCQktcAgcYFuHJQc+wJfhADFpsAPhcJpewAZKKgVL2qTV
+        2ZUnKptqMApJ8ADVZqVYKpkKaodwEAflaYvAuYFE4HIe/8CIEWGhchCkJ7kE
+        JQQAHGoDZcYGckqnTGqnhWmiALqYS5AEdGCAVmqgBvqiMqagquANX3qe8cCo
+        jpqX1iQHsAALaWogx5FkEBMO7URCmjqnTJqfJQql2LkClpAEwNCGahABapmq
+        qqqgjAAE3uCgTFgC6tEIZVoRzCYHckBpJ+kBJoQA+xcCqrOpdeqpT/qf2JkF
+        SQAPOdiGLoqq0QqeVOCqDUp+RMBh+7atDgELX+atPJCPKOkAJmQJ7fRH54oJ
+        c7qk+amfn+qfsAkAKqB5SeAFo7CGwBCo3smWlMkMQPaqyAAJi2AaKTBpECB5
+        UdFlKJk6qoMK/McHVsSwdFqnxP9aUv3JrgRghhcbCCswqp0XmdAamTtJmXHg
+        qjWaCmqCIwJwsg/RrSvLA6R5HDIAAyJAAJ3mKQQAAwxwC4Akp8Iqog9bna+5
+        A2V4g+kUgM/HZlUwtB2rparwYzWKB/nzAG3QtBVaq1HxA5+wl8cBA1iABTCg
+        CyGgsK7Af1lrReiariTKn6ggAmTIfDfIAJuntt7pth2bjnAABHKbC74ADi13
+        ByfLrQG7sp/AA8dBD4EruIILAy0ABboAA66ATMHKqcMKsZ/aCNMouWrbu2vb
+        thw7kdUgt3VgP41WsinwEPzwb7NgqzzwA3xrCMYBuKu7ujBwvTBAAOYEtrbr
+        qQkwg5z/GLmVa7GWy7EJmo7ccGB4gAxp8i3SMLoNEXnOywOf8AmwsA/aUL3V
+        i726QELJtLi3W1ICWQ7SGLm+67tCi6UeSwGb8GOFkC1L+74uAbAq+7z1Sw0F
+        wACXcAmBy8H6O7sLxb22O52k4IwD2Yk0SL69a763KWOJgAQLACnFBgl267Qy
+        V8H0+wnUgAEb3MMbrL/a+1SaWrNMSgpYqZUEPIY1qMICyMJtCQSB4wv2czjw
+        C3mla8E6nAzcEA4+jAU/HLiJG8IAbMRW6ZLgq8S8e8BOPGM4cDtSDLqboQD4
+        eMV8m8VXkAV47MMeDMJP9SmLiw82oAOpicThm8IHXL6BSgEn/4AHhbAsaRLH
+        MSG/e3vBjojHWRADeowFg9DHEMO9DmADDjAK1ZCaLknAhZzGaoyl3IALXHAC
+        Mry0cjwR8juwz0sN1OBs3HDJlpwFl8DLvMrJnqKpUADKIUoKD1DGpVzAZ3vI
+        WKoIxNDKr0yysRy/dKzDP3BTChADunzJlxAOygDMJkQANlAGmMCk+CDI0KiV
+        BYzGh9zEOmcDRPCEjEwlI3IACtARkmzB1JBRs9AN3KDN2mzJZQDOJRQGNmAH
+        DSuiyhCYL2jGKIzKCMxmdwCFRMDIb9xo07y8V1y/14wXVxADIA3QWRDEBF0t
+        Bi0CAOwKgDkCmmjGpzy+anwPvbjIJ//gyBitvLNswRmVVewQ0iL9yyVt0PVA
+        AIsLBfVJytK4zuXQzknADIZoiIVABNEsx8vWvN/6vJRmU6vw0T4tsyWtOvxn
+        A+EABQCgpID8gqh5lQ6dxGR4yIrgi78o01MdyVY9sJ+QCd+ARlmVzT490F8N
+        MTEQ1gwQDiGwPh260i2dzJ3Yu8eAO/fw2BVwD408w7UAEv9mqyubQBe1Q/98
+        CCA9A38NMSLAf4JtAyFw2Gnd0Il9wmKotm0Q10o5j41svFQtc/M7CwmU1/ZU
+        C559CLrwC6FdLSFA2sR9pB5anw4dvlUZDyE5j/SINKBb2RRx2ZldHUxyFxwQ
+        A70d3NUCBa7/QtyljdrIvdZj6AFKGQ/oTY84YA8PnCb3ON11PQv0dN0QgA1X
+        oAuH4Fvc7SkIwABcC97hfdiIvdrgSwnOrd72QAkGDsHSnRDD57wS0g4NcAVb
+        cN1bkAKHcAh+vd95cL3+DeABPp+pjcybeAnojQMobg8JTgmqQAlSrAjSHb8q
+        OwvT0QDocOMTQAJ6UARk4M+HANr77SnY6+Egrn/tdKTjHY2LkOIqruCq8OR2
+        8MYk6ScqSyiGQAI3fuNRsOVRMAEKcAjAHeT+cARD/t8g3k5HLuJHLQMMYA/r
+        reAsbhv48QCUYD8NDnmSR+MF0At/YARGoOXoEAW8QAscMARhHNwh/1DmHm7m
+        xZ3mxw2Y1rDicY4ft/EAlp4tlS3LkndD3ODnfp7lW14EW7AHYu4pg9C6Zc5/
+        jE7a+4fkad3iTy7nlW4KtC4N9hAAU47nR1IAwtAMno4Of77labQHrVDqYWC9
+        is61qx7i83kIsU7plk7rppAI1G4K0UCSDp4JbgAdJNAMvv7pOL4YViAPpe4P
+        +pvsy87qrT6ftQHtiUPr1K4M+9EC9nDnlOYDg+EDf+Dt3/7n6EALi0EL+VDu
+        D4DsqI69ql7kjo4F7r4IpiAN8T7vjdAIdmDv74DvPsAN/O7tv14EiUECUQAC
+        pV4G+ovsqf7hAH6a1jDr8E7tLaAbE+8FMv//3n6S79MwBDuw7xzv6e2gGBMQ
+        BadQ6gSABQ5AAA4gAodg8kOe8GduCu8O8S7/8jHfH5/HDiWRDH6QA9hwK4PB
+        DfbyBLRAAtPxDbaw5X0g5mlwCXzsMwgABUdw8Aif7ocg7fEu9VP/eUPwCmDw
+        AzPxA+TgBxgQ+BBgMpUjKNQR6FEwB6WuDJdw6AAQuMnO9KQNI3UP8x0DQHoP
+        BmBABnuxEH4f+KAP+LitPNNRDFq+DCN/CSQt3Psb+fyXBZU/8ZevA5mv+Zqf
+        Az/AED+gBeQA+r4f+DkAAShTBKAu8kFOAOFQDQV97oqu6o0g8TFP+7Vv+5Ug
+        C9+q+1PQ+7//+1n/DwFF4O/osAFiDgB4DNT+UPDWC/lljgV23zF5b/vwXwny
+        jw3f+hE/kP1TsP36/wxNABBNeEVBp87fQYQJFS5k2NBOjGoEwvxKSOASFowZ
+        scDgyHFIo0ZehrwCU9JkyUopK8nKlIkHP379+P2YMoUcBpw5deZ8RohQE6Cn
+        Gg4lOnRGDKRZsoS7pMPSA6YXNWLsKJLkSZOVwKhMGSTTrJf9ZNKcomXKTrQY
+        evr02cSIvKJxi6aJkaVuXaZMs1ziO5UqPawnuXK9AWEW2Jhja9pMuzMd27YW
+        LNga10fuZYUPkdZdqpTv575YbJQbkCHw1sEpb9wQMstwWLFkbfppjJPc/wTI
+        hHhJ5r0BBGbMRzfb7ez5MwwbpTMsx5pa9eob2CBM5yETpmzGtTE8hrybN29b
+        c1oBn6trc9K7nhmUy6BcOUrn0KHLcr0FQvWYMxdnb3w7t/fvwFMiFvKG0uw8
+        4kRLYjkGG0RtMPlWc+GGdyCwbwtYrOsHu7K0a+K/AEO04K0CF8InBvPOg2GE
+        KpZTrsHSUotwwgnnmW4LHGGBKbb9bMqhsSly082CW0QMkDLLSvQHFQFiOESX
+        LGzQpkUY22swA8Lko9EFLqfBEcdvMhRrwx610OLHtJ5Rc01ahHnCzTeFkXNO
+        OfWQkwQ6NNFzTz2X0GQJQAMVdJEYsBhBAyrbK/9tgBcbrCTCG7bkkstvvvwm
+        zPzI7JEcNLXDCYICQhXVkAIMMdWQd0x1Y9VdiuHGA1hjhfWQQzyg9dZDYmBg
+        yioSVfRKFwfYZ8ZIJ3XhGhe83OLSSwEZU78ea+pUO2wK8MFaUUMl9dReDOll
+        1VXbuYIZWWOl1dZDLpGhV3YZXLTR9vZhUMJijUX2mmveYRZcQDLlsCZOp21s
+        Cx+uLTjbbE/11ttv3diFkSHKRReGcthtN1hgrdxH2Awk5fJefK+ZZ9lvVvXW
+        2cT+ZSwHgdHCpmCYDb4WYVNL7baXbsN9FdYYbKDA4otddBdYeffZx9iPjw35
+        mmlKNtnUfmXSNNqAW9b/6eWYY8YWYW0V7tYQhxWAwwege61y6OXkbdDoSUFe
+        WuR3wP3akKhjUtlHlqklG+YqsjaY620VNgQDMcQQouwrX3zR6KKFZfttyKtw
+        +utQnRUL2mjLYjnvtLDpu9e9/ZYZ8FK3maLwwn8OmlF3lWNc7df3gfzteaZZ
+        +NTKx5y6RxJ69/333mvBwHOLQ/fhiR2SV34HS47hmnAafJ9gh3AaDMcB7LE/
+        IoPY441dhOzDz94VN3DPNmoeM5drAyfK7lWH34baYetVCidBIT6C5UMhB4r2
+        n3FheSANRVGCwhBmObtlbgqXyYYNyuYFAMQFCtPwQf3spxAraGBRR+Af91wX
+        /zsPoCIuCCAV13yAMsWo7zIOaJHFSHEZHZABdWK4X0JoIAENLIeDCXFA2rgX
+        uwG8MC6kKGGoZuaDTEhtd/vBTBoyYLYqeAEzFpihGCagEBqIQQJVGMAOEdLD
+        2L0uHJdBAMIOhsTELHExwLnS/i6zAQlIQItWxKIccejGL/4wjPvw4kHSQApA
+        BhKQUDCiEWE2C93dTSEW2EMjaWABhbgnA3g8SAj4cElK+kMJWoyjBK6YECtw
+        UgKZ7N8ejdZHfzjgGgNY5SpnZsisJXFHikwICTLBskzUECFtxJ/FFKKETmrx
+        kwixQiclYAX+mfKUCpnBEZzpzHpkS2Yxm0ViMNcjhf+QABs5uKUuD9KoTOaP
+        Qb80picxaExk8lCZfIxLNuBhrWnurZpjoiVCbAkBbnrTH2pbTjgZVAVyGnOY
+        BylmJ9P5xXWOUS6WEB3ZqgmTazLxMk40WntQub3lbIOc7OjkQP1RUI4e9CCl
+        fJ3jjCbEogDAE6KrAiKlVs+4gJF7GUDlDLLnUWCyg6Ps8GgxdyrSVK5zH/WI
+        oARjZjFEQhSmRCEFg9SGSqIoQadT7alOJcAOoJJUmeFA6VBIETqk+ssPKizK
+        Dorxwx9CdShSvapOqzpVoO7ApMocgAdcIb74HeSroEOqEn8w1mgVRR0KyEEw
+        KqoctTZEquzggFsVooepskP/DwqZAAfmakpGvc4HXSXF54CWVLthALASRYhB
+        FpmDd4QxsQxRQmNd61HITnWyCVHC9MTnCsY9U7dH4AM8spGQvVrsiRB4Fg/8
+        cFxsJmQDHvUHLQyhWsy01rXs2MFj2ZGC6862KKRgHGY6K9zlEPdyP8AJcteo
+        3ClsQCHq0AF0QdkN+HbjlxygL31hO13tMrW7lwkB0BiUoR3x4EfmrYlCNjAF
+        CRAoIWmwQexQqQcyxHe+9eXAfVOQAg7k16v7jQsAHGi2Bv0gUzyQQ05Ga+Cy
+        0MBEDsZgN8gQ4QnXt7oJ0QOGOZACDTeEu0aTCwC80EKhDcAHMDGHWATMsuMC
+        FsVl/9GnP0Jg0kw24MUv/qUTOGDlCj8WETfGsVx2vI+UzsATIFZUaTIRk3QY
+        +ZYlFq0Ce5QJHBXgdU+MRCSwEYlVBCHPQZhyn7vhhD9fWdAc2DKhKXxhRCc6
+        0Yi4LOPcl6hGVUFqc4gJLGaxufKO1s2VkrOj63znOkciCKMedZ+n7ARUp1rQ
+        iLAyIlyNYURcONaInrWs9ci4JyJOaFYawDzP8Q+ZwAICLckbgd08i290eh9V
+        CIadQw3qO5Oa1H1GNRlSjeorO2HLruZ2rLudAm+Dm9Gxcx/GXmSIMbnjH5W2
+        zy2RbOzM+cENBRAWs0N9b3zXWdp8pra1r61tbXdb4N/2Nv8i5gzeIJd5Gjui
+        wT+AzQ9YVGrYnNO0Agm27GBkvNnNzje+921qf/+b1QEfuMDFPe5lk/lspUG3
+        WKbQCofLBBBuwNEs3C3aikcrB2TTeM81HgmOd3zf/PZ3yFPNaqSXfODF0EDK
+        E9e6liZmCvJwOLD7AQhU2efSbG6zm7VgiG1ofBc+//nGgZ7vbYw67aVux4v/
+        fXSSK53by/HVrzIwDZTBBANUrzpMeAAIWASeB4P/AQ9+cHjEJx7xWgDE5nLQ
+        eMdHXvKbg/zkMZ23H/1oFRjYPOc9v3nQ58Aw0xn9LACvO7HQAOZVf/jl0ii1
+        HcXe9bPX3euftaPL5R71tIf97nsy7/o0WlP2r4/JOU7B+r5nqva7jz1EdZ97
+        4qNe+bonfvCfVXvly1762beOOdLBd+Q7PCAAOw==
+        ', 'filename': 'rails_logo.gif', 'metafields': [{'key': 'new', 'namespace': 'global', 'value': 'newvalue', 'value_type': 'string'}], 'position': 1}.
 
-        Returns:
-            dict[str, Any]: Create a new product image with included image data as attachment / Create a new product image and make it the main image / Create a new product image using a source URL that will be downloaded by Shopify / Create a new product image and attach it to product variants / <span id="metafield">Create a new product image with a metafield</span>
+                Returns:
+                    dict[str, Any]: Create a new product image with included image data as attachment / Create a new product image and make it the main image / Create a new product image using a source URL that will be downloaded by Shopify / Create a new product image and attach it to product variants / <span id="metafield">Create a new product image with a metafield</span>
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Products, Product Image
+                Tags:
+                    Products, Product Image
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
         request_body_data = None
-        request_body_data = {
-            "image": image,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
-        )
+        request_body_data = {"image": image}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
+        url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_product_image_count(
-        self, api_version: str, product_id: str, since_id: str | None = None
-    ) -> dict[str, Any]:
+    async def get_product_image_count(self, api_version: str, product_id: str, since_id: str | None = None) -> dict[str, Any]:
         """
         Retrieves the count of product images associated with a specific product using the GET method, optionally filtering by a since_id parameter.
 
@@ -10042,23 +8158,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("since_id", since_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_product_image(
-        self,
-        api_version: str,
-        product_id: str,
-        image_id: str,
-        fields: str | None = None,
+    async def receive_asingle_product_image(
+        self, api_version: str, product_id: str, image_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific product image by ID with optional field selection for the API version.
@@ -10089,23 +8197,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_product_image(
-        self,
-        api_version: str,
-        product_id: str,
-        image_id: str,
-        image: dict[str, Any] | None = None,
+    async def modify_an_existing_product_image(
+        self, api_version: str, product_id: str, image_id: str, image: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates an existing product image specified by the product ID and image ID using the PUT method, allowing for modifications to image attributes such as source or metadata.
@@ -10133,38 +8233,21 @@ class ShopifyApp(APIApplication):
         if image_id is None:
             raise ValueError("Missing required parameter 'image_id'.")
         request_body_data = None
-        request_body_data = {
-            "image": image,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"image": image}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_product_image(
-        self,
-        api_version: str,
-        product_id: str,
-        image_id: str,
-        body_content: str | None = None,
+    async def remove_an_existing_product_image(
+        self, api_version: str, product_id: str, image_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a specific product image identified by the `image_id` from a product specified by the `product_id` using the HTTP DELETE method.
@@ -10195,18 +8278,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_product_variants(
+    async def list_product_variants(
         self,
         api_version: str,
         product_id: str,
@@ -10243,33 +8322,19 @@ class ShopifyApp(APIApplication):
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json"
         query_params = {
             k: v
-            for k, v in [
-                ("limit", limit),
-                ("presentment_currencies", presentment_currencies),
-                ("since_id", since_id),
-                ("fields", fields),
-            ]
+            for k, v in [("limit", limit), ("presentment_currencies", presentment_currencies), ("since_id", since_id), ("fields", fields)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_product_variant(
-        self,
-        api_version: str,
-        product_id: str,
-        variant: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def create_anew_product_variant(self, api_version: str, product_id: str, variant: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new product variant within a specified product using the POST method, returning a successful response when the variant is added.
 
@@ -10293,35 +8358,20 @@ class ShopifyApp(APIApplication):
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
         request_body_data = None
-        request_body_data = {
-            "variant": variant,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"variant": variant}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_product_variant_count(
-        self, api_version: str, product_id: str
-    ) -> dict[str, Any]:
+    async def get_product_variant_count(self, api_version: str, product_id: str) -> dict[str, Any]:
         """
         Retrieves the count of variants for a specific product in Shopify's inventory.
 
@@ -10347,20 +8397,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_product_variant(
-        self, api_version: str, variant_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def receive_asingle_product_variant(self, api_version: str, variant_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves variant details using the specified API version and variant ID, optionally filtering by specified fields.
 
@@ -10387,22 +8431,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_product_variant(
-        self,
-        api_version: str,
-        variant_id: str,
-        variant: dict[str, Any] | None = None,
+    async def modify_an_existing_product_variant(
+        self, api_version: str, variant_id: str, variant: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates the variant with the specified ID in the API, replacing its current state with the data provided in the request body.
@@ -10427,38 +8464,21 @@ class ShopifyApp(APIApplication):
         if variant_id is None:
             raise ValueError("Missing required parameter 'variant_id'.")
         request_body_data = None
-        request_body_data = {
-            "variant": variant,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"variant": variant}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_product_variant(
-        self,
-        api_version: str,
-        product_id: str,
-        variant_id: str,
-        body_content: str | None = None,
+    async def remove_an_existing_product_variant(
+        self, api_version: str, product_id: str, variant_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a product variant using the Shopify Admin API.
@@ -10489,18 +8509,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_products(
+    async def retrieves_alist_of_products(
         self,
         api_version: str,
         ids: str | None = None,
@@ -10582,20 +8598,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_anew_product(
-        self, api_version: str, product: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_anew_product(self, api_version: str, product: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new product in Shopify via the REST Admin API and returns the product details upon successful creation.
 
@@ -10616,33 +8626,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "product": product,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"product": product}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_products(
+    async def retrieves_acount_of_products(
         self,
         api_version: str,
         vendor: str | None = None,
@@ -10703,20 +8700,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_product(
-        self, api_version: str, product_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_product(self, api_version: str, product_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves product details in JSON format for a specified product using the "GET" method, allowing optional filtering by specifying fields via query parameters.
 
@@ -10743,23 +8734,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_aproduct(
-        self,
-        api_version: str,
-        product_id: str,
-        product: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def updates_aproduct(self, api_version: str, product_id: str, product: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Replaces an entire product entry in the admin system with a new version, returning a success status upon completion.
 
@@ -10783,35 +8765,20 @@ class ShopifyApp(APIApplication):
         if product_id is None:
             raise ValueError("Missing required parameter 'product_id'.")
         request_body_data = None
-        request_body_data = {
-            "product": product,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"product": product}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_aproduct(
-        self, api_version: str, product_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def deletes_aproduct(self, api_version: str, product_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a product along with its associated variants and media from the system using the provided product ID.
 
@@ -10838,18 +8805,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_smart_collections(
+    async def list_smart_collections(
         self,
         api_version: str,
         limit: str | None = None,
@@ -10916,20 +8879,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_asmart_collection(
-        self, api_version: str, smart_collection: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_asmart_collection(self, api_version: str, smart_collection: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new Shopify smart collection with automated product inclusion rules and returns the collection details upon successful creation.
 
@@ -10950,33 +8907,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "smart_collection": smart_collection,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"smart_collection": smart_collection}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def count_smart_collections(
+    async def count_smart_collections(
         self,
         api_version: str,
         title: str | None = None,
@@ -11028,20 +8972,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_smart_collection(
-        self, api_version: str, smart_collection_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def get_smart_collection(self, api_version: str, smart_collection_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves a smart collection by its ID using the Shopify API, optionally specifying fields to include in the response.
 
@@ -11068,77 +9006,244 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_smart_collection(
-        self,
-        api_version: str,
-        smart_collection_id: str,
-        smart_collection: dict[str, Any] | None = None,
+    async def update_smart_collection(
+        self, api_version: str, smart_collection_id: str, smart_collection: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
-        Updates a specific smart collection's configuration and rules via the Shopify Admin API, returning a success status on completion.
+                Updates a specific smart collection's configuration and rules via the Shopify Admin API, returning a success status on completion.
 
-        Args:
-            api_version (string): api_version
-            smart_collection_id (string): smart_collection_id
-            smart_collection (object): smart_collection Example: {'id': 482865238, 'image': {'alt': 'Rails logo', 'attachment': 'R0lGODlhbgCMAPf/APbr48VySrxTO7IgKt2qmKQdJeK8lsFjROG5p/nz7Zg3\nMNmnd7Q1MLNVS9GId71hSJMZIuzTu4UtKbeEeakhKMl8U8WYjfr18YQaIbAf\nKKwhKdKzqpQtLebFortOOejKrOjZ1Mt7aMNpVbAqLLV7bsNqR+3WwMqEWenN\nsZYxL/Ddy/Pm2e7ZxLlUQrIjNPXp3bU5MbhENbEtLtqhj5ZQTfHh0bMxL7Ip\nNsNyUYkZIrZJPcqGdYIUHb5aPKkeJnoUHd2yiJkiLKYiKLRFOsyJXKVDO8up\nosFaS+TBnK4kKti5sNaYg/z49aqYl5kqLrljUtORfMOlo/36+H4ZH8yDYq0f\nKKFYTaU9MrY8MrZBNXwXHpgaIdGVYu/byLZNP9SaZLIyOuXCtHkpJst+Wpcm\nLMyCa8BfP9GMb9KQdPDd1PPk1sd5VP79/L5dQZ0bI9+ymqssK9WcfIoXHdzG\nxdWWfteib79lSr1YP86MYurQxKdcUKdMQr5ZSfPs6YEZH8uhl4oWIenMuurQ\nttmejaqoqsqBVaAcJLlJN5kvMLlZRMNsSL5fRak0LbdQQMVvSPjw6cJnRpkf\nKtmjhvfu5cJtT7IuOMVvWLY/M/37+o0YH9ibhtSYdObErc6HarM9NnYSGNGR\navLi09unje3WyeO8rsVrT7tdRtK3uffu6NWeaL9pTJIjJrM4NPbx8cdyX7M7\nPYYVHu7j4KgoNJAYIKtkV5o9MsOcldicis+RYNutfrhFOZ0hJbqinZ8bI8h5\nUObFuOfItJsfJrJfUOfIqc+PXqQtK8RnSbA4Mcd3Tm0SGbpXQ8aqp7RLNs+s\novHfzpVhV9iggMd1TLtbRKUdKXEQFsd4XrZRPLIgMZUeJ+jKvrAlK6AhJ65A\nMpMpKuC3j5obIsRwS7hAN8l/YtvDvnYXHbAoLI47SIUsOMenorF4gO/m4+fH\npo4vLZ8oKMukqp0cJbhVSMV2UuPR0bAfMLIrLrg/OcJwT8h+Vt+wn8eurLlh\nQrIfKHQOHHQOHf///////yH5BAEAAP8ALAAAAABuAIwAAAj/AP8JHDhQXjpz\n/PopXNiPn0OHDRMmbKhQIsOJFS1SxAhxI8SHFzVeDBnx48iNBAeeOkcxokeX\nFRdOnAlSokaaLXNujJkxo8iYHRkKtWkzZSsaOXkAWsoUECynsHgoqEW1qtVa\n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\nGg4lOnRGDKRZsoS7pMPSA6YXNWLsKJLkSZOVwKhMGSTTrJf9ZNKcomXKTrQY\nevr02cSIvKJxi6aJkaVuXaZMs1ziO5UqPawnuXK9AWEW2Jhja9pMuzMd27YW\nLNga10fuZYUPkdZdqpTv575YbJQbkCHw1sEpb9wQMstwWLFkbfppjJPc/wTI\nhHhJ5r0BBGbMRzfb7ez5MwwbpTMsx5pa9eob2CBM5yETpmzGtTE8hrybN29b\nc1oBn6trc9K7nhmUy6BcOUrn0KHLcr0FQvWYMxdnb3w7t/fvwFMiFvKG0uw8\n4kRLYjkGG0RtMPlWc+GGdyCwbwtYrOsHu7K0a+K/AEO04K0CF8InBvPOg2GE\nKpZTrsHSUotwwgnnmW4LHGGBKbb9bMqhsSly082CW0QMkDLLSvQHFQFiOESX\nLGzQpkUY22swA8Lko9EFLqfBEcdvMhRrwx610OLHtJ5Rc01ahHnCzTeFkXNO\nOfWQkwQ6NNFzTz2X0GQJQAMVdJEYsBhBAyrbK/9tgBcbrCTCG7bkkstvvvwm\nzPzI7JEcNLXDCYICQhXVkAIMMdWQd0x1Y9VdiuHGA1hjhfWQQzyg9dZDYmBg\nyioSVfRKFwfYZ8ZIJ3XhGhe83OLSSwEZU78ea+pUO2wK8MFaUUMl9dReDOll\n1VXbuYIZWWOl1dZDLpGhV3YZXLTR9vZhUMJijUX2mmveYRZcQDLlsCZOp21s\nCx+uLTjbbE/11ttv3diFkSHKRReGcthtN1hgrdxH2Awk5fJefK+ZZ9lvVvXW\n2cT+ZSwHgdHCpmCYDb4WYVNL7baXbsN9FdYYbKDA4otddBdYeffZx9iPjw35\nmmlKNtnUfmXSNNqAW9b/6eWYY8YWYW0V7tYQhxWAwwege61y6OXkbdDoSUFe\nWuR3wP3akKhjUtlHlqklG+YqsjaY620VNgQDMcQQouwrX3zR6KKFZfttyKtw\n+utQnRUL2mjLYjnvtLDpu9e9/ZYZ8FK3maLwwn8OmlF3lWNc7df3gfzteaZZ\n+NTKx5y6RxJ69/333mvBwHOLQ/fhiR2SV34HS47hmnAafJ9gh3AaDMcB7LE/\nIoPY441dhOzDz94VN3DPNmoeM5drAyfK7lWH34baYetVCidBIT6C5UMhB4r2\nn3FheSANRVGCwhBmObtlbgqXyYYNyuYFAMQFCtPwQf3spxAraGBRR+Af91wX\n/zsPoCIuCCAV13yAMsWo7zIOaJHFSHEZHZABdWK4X0JoIAENLIeDCXFA2rgX\nuwG8MC6kKGGoZuaDTEhtd/vBTBoyYLYqeAEzFpihGCagEBqIQQJVGMAOEdLD\n2L0uHJdBAMIOhsTELHExwLnS/i6zAQlIQItWxKIccejGL/4wjPvw4kHSQApA\nBhKQUDCiEWE2C93dTSEW2EMjaWABhbgnA3g8SAj4cElK+kMJWoyjBK6YECtw\nUgKZ7N8ejdZHfzjgGgNY5SpnZsisJXFHikwICTLBskzUECFtxJ/FFKKETmrx\nkwixQiclYAX+mfKUCpnBEZzpzHpkS2Yxm0ViMNcjhf+QABs5uKUuD9KoTOaP\nQb80picxaExk8lCZfIxLNuBhrWnurZpjoiVCbAkBbnrTH2pbTjgZVAVyGnOY\nBylmJ9P5xXWOUS6WEB3ZqgmTazLxMk40WntQub3lbIOc7OjkQP1RUI4e9CCl\nfJ3jjCbEogDAE6KrAiKlVs+4gJF7GUDlDLLnUWCyg6Ps8GgxdyrSVK5zH/WI\noARjZjFEQhSmRCEFg9SGSqIoQadT7alOJcAOoJJUmeFA6VBIETqk+ssPKizK\nDorxwx9CdShSvapOqzpVoO7ApMocgAdcIb74HeSroEOqEn8w1mgVRR0KyEEw\nKqoctTZEquzggFsVooepskP/DwqZAAfmakpGvc4HXSXF54CWVLthALASRYhB\nFpmDd4QxsQxRQmNd61HITnWyCVHC9MTnCsY9U7dH4AM8spGQvVrsiRB4Fg/8\ncFxsJmQDHvUHLQyhWsy01rXs2MFj2ZGC6862KKRgHGY6K9zlEPdyP8AJcteo\n3ClsQCHq0AF0QdkN+HbjlxygL31hO13tMrW7lwkB0BiUoR3x4EfmrYlCNjAF\nCRAoIWmwQexQqQcyxHe+9eXAfVOQAg7k16v7jQsAHGi2Bv0gUzyQQ05Ga+Cy\n0MBEDsZgN8gQ4QnXt7oJ0QOGOZACDTeEu0aTCwC80EKhDcAHMDGHWATMsuMC\nFsVl/9GnP0Jg0kw24MUv/qUTOGDlCj8WETfGsVx2vI+UzsATIFZUaTIRk3QY\n+ZYlFq0Ce5QJHBXgdU+MRCSwEYlVBCHPQZhyn7vhhD9fWdAc2DKhKXxhRCc6\n0Yi4LOPcl6hGVUFqc4gJLGaxufKO1s2VkrOj63znOkciCKMedZ+n7ARUp1rQ\niLAyIlyNYURcONaInrWs9ci4JyJOaFYawDzP8Q+ZwAICLckbgd08i290eh9V\nCIadQw3qO5Oa1H1GNRlSjeorO2HLruZ2rLudAm+Dm9Gxcx/GXmSIMbnjH5W2\nzy2RbOzM+cENBRAWs0N9b3zXWdp8pra1r61tbXdb4N/2Nv8i5gzeIJd5Gjui\nwT+AzQ9YVGrYnNO0Agm27GBkvNnNzje+921qf/+b1QEfuMDFPe5lk/lspUG3\nWKbQCofLBBBuwNEs3C3aikcrB2TTeM81HgmOd3zf/PZ3yFPNaqSXfODF0EDK\nE9e6liZmCvJwOLD7AQhU2efSbG6zm7VgiG1ofBc+//nGgZ7vbYw67aVux4v/\nfXSSK53by/HVrzIwDZTBBANUrzpMeAAIWASeB4P/AQ9+cHjEJx7xWgDE5nLQ\neMdHXvKbg/zkMZ23H/1oFRjYPOc9v3nQ58Aw0xn9LACvO7HQAOZVf/jl0ii1\nHcXe9bPX3euftaPL5R71tIf97nsy7/o0WlP2r4/JOU7B+r5nqva7jz1EdZ97\n4qNe+bonfvCfVXvly1762beOOdLBd+Q7PCAAOw==\n'}}.
+                Args:
+                    api_version (string): api_version
+                    smart_collection_id (string): smart_collection_id
+                    smart_collection (object): smart_collection Example: {'id': 482865238, 'image': {'alt': 'Rails logo', 'attachment': 'R0lGODlhbgCMAPf/APbr48VySrxTO7IgKt2qmKQdJeK8lsFjROG5p/nz7Zg3
+        MNmnd7Q1MLNVS9GId71hSJMZIuzTu4UtKbeEeakhKMl8U8WYjfr18YQaIbAf
+        KKwhKdKzqpQtLebFortOOejKrOjZ1Mt7aMNpVbAqLLV7bsNqR+3WwMqEWenN
+        sZYxL/Ddy/Pm2e7ZxLlUQrIjNPXp3bU5MbhENbEtLtqhj5ZQTfHh0bMxL7Ip
+        NsNyUYkZIrZJPcqGdYIUHb5aPKkeJnoUHd2yiJkiLKYiKLRFOsyJXKVDO8up
+        osFaS+TBnK4kKti5sNaYg/z49aqYl5kqLrljUtORfMOlo/36+H4ZH8yDYq0f
+        KKFYTaU9MrY8MrZBNXwXHpgaIdGVYu/byLZNP9SaZLIyOuXCtHkpJst+Wpcm
+        LMyCa8BfP9GMb9KQdPDd1PPk1sd5VP79/L5dQZ0bI9+ymqssK9WcfIoXHdzG
+        xdWWfteib79lSr1YP86MYurQxKdcUKdMQr5ZSfPs6YEZH8uhl4oWIenMuurQ
+        ttmejaqoqsqBVaAcJLlJN5kvMLlZRMNsSL5fRak0LbdQQMVvSPjw6cJnRpkf
+        Ktmjhvfu5cJtT7IuOMVvWLY/M/37+o0YH9ibhtSYdObErc6HarM9NnYSGNGR
+        avLi09unje3WyeO8rsVrT7tdRtK3uffu6NWeaL9pTJIjJrM4NPbx8cdyX7M7
+        PYYVHu7j4KgoNJAYIKtkV5o9MsOcldicis+RYNutfrhFOZ0hJbqinZ8bI8h5
+        UObFuOfItJsfJrJfUOfIqc+PXqQtK8RnSbA4Mcd3Tm0SGbpXQ8aqp7RLNs+s
+        ovHfzpVhV9iggMd1TLtbRKUdKXEQFsd4XrZRPLIgMZUeJ+jKvrAlK6AhJ65A
+        MpMpKuC3j5obIsRwS7hAN8l/YtvDvnYXHbAoLI47SIUsOMenorF4gO/m4+fH
+        po4vLZ8oKMukqp0cJbhVSMV2UuPR0bAfMLIrLrg/OcJwT8h+Vt+wn8eurLlh
+        QrIfKHQOHHQOHf///////yH5BAEAAP8ALAAAAABuAIwAAAj/AP8JHDhQXjpz
+        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
+        4qNe+bonfvCfVXvly1762beOOdLBd+Q7PCAAOw==
+        '}}.
 
-        Returns:
-            dict[str, Any]: Update the description of a smart collection / Hide a published smart collection / Update a smart collection by setting a new collection image alternative text / Update a smart collection by clearing the collection image / Publish a hidden collection / Update a smart collection by setting a new collection image
+                Returns:
+                    dict[str, Any]: Update the description of a smart collection / Hide a published smart collection / Update a smart collection by setting a new collection image alternative text / Update a smart collection by clearing the collection image / Publish a hidden collection / Update a smart collection by setting a new collection image
 
-        Raises:
-            HTTPError: Raised when the API request fails (e.g., non-2XX status code).
-            JSONDecodeError: Raised if the response body cannot be parsed as JSON.
+                Raises:
+                    HTTPError: Raised when the API request fails (e.g., non-2XX status code).
+                    JSONDecodeError: Raised if the response body cannot be parsed as JSON.
 
-        Tags:
-            Products, SmartCollection
+                Tags:
+                    Products, SmartCollection
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         if smart_collection_id is None:
             raise ValueError("Missing required parameter 'smart_collection_id'.")
         request_body_data = None
-        request_body_data = {
-            "smart_collection": smart_collection,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"smart_collection": smart_collection}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def removes_asmart_collection(
-        self,
-        api_version: str,
-        smart_collection_id: str,
-        body_content: str | None = None,
+    async def removes_asmart_collection(
+        self, api_version: str, smart_collection_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes the specified smart collection and returns a successful response upon completion.
@@ -11166,22 +9271,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_smart_collection_order(
-        self,
-        api_version: str,
-        smart_collection_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def update_smart_collection_order(
+        self, api_version: str, smart_collection_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates the sort order of products in a Shopify smart collection and returns a success status upon completion.
@@ -11209,30 +9307,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}/order.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def completes_acheckout(
-        self,
-        api_version: str,
-        token: str,
-        request_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def completes_acheckout(self, api_version: str, token: str, request_body: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Completes a checkout process for a specified token, returning an Accepted status upon successful submission.
 
@@ -11259,25 +9343,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/complete.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acheckout(self, api_version: str, token: str) -> dict[str, Any]:
+    async def retrieves_acheckout(self, api_version: str, token: str) -> dict[str, Any]:
         """
         Checks the status of a checkout using a provided token via the GET method.
 
@@ -11303,20 +9378,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modifies_an_existing_checkout(
-        self, api_version: str, token: str, checkout: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def modifies_an_existing_checkout(self, api_version: str, token: str, checkout: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates a checkout using the provided token, supporting HTTP responses for successful updates (200), successful processing without immediate completion (202), and invalid request data (422).
 
@@ -11340,35 +9409,20 @@ class ShopifyApp(APIApplication):
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
         request_body_data = None
-        request_body_data = {
-            "checkout": checkout,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"checkout": checkout}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_alist_of_shipping_rates(
-        self, api_version: str, token: str
-    ) -> dict[str, Any]:
+    async def retrieves_alist_of_shipping_rates(self, api_version: str, token: str) -> dict[str, Any]:
         """
         Retrieves shipping rates for a specified checkout token via the API, returning available options in JSON format.
 
@@ -11394,20 +9448,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_collection_listings(
-        self, api_version: str, limit: str | None = None
-    ) -> dict[str, Any]:
+    async def get_collection_listings(self, api_version: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of collection listings in JSON format using the "GET" method, optionally limited by a specified number of entries.
 
@@ -11431,20 +9479,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_product_ids(
-        self, api_version: str, collection_listing_id: str, limit: str | None = None
-    ) -> dict[str, Any]:
+    async def get_product_ids(self, api_version: str, collection_listing_id: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of product IDs for a specified collection listing, optionally limited by a query parameter, using the GET method.
 
@@ -11471,20 +9513,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_collection_listing(
-        self, api_version: str, collection_listing_id: str
-    ) -> dict[str, Any]:
+    async def get_collection_listing(self, api_version: str, collection_listing_id: str) -> dict[str, Any]:
         """
         Retrieves details of a specific collection listing in the admin API.
 
@@ -11510,22 +9546,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_collection_listing_by_id(
-        self,
-        api_version: str,
-        collection_listing_id: str,
-        collection_listing: dict[str, Any] | None = None,
+    async def update_collection_listing_by_id(
+        self, api_version: str, collection_listing_id: str, collection_listing: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates the specified collection listing resource by replacing its entire representation at the specified ID, returning a success response upon completion.
@@ -11550,38 +9579,20 @@ class ShopifyApp(APIApplication):
         if collection_listing_id is None:
             raise ValueError("Missing required parameter 'collection_listing_id'.")
         request_body_data = None
-        request_body_data = {
-            "collection_listing": collection_listing,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"collection_listing": collection_listing}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_collection_listing_by_id(
-        self,
-        api_version: str,
-        collection_listing_id: str,
-        body_content: str | None = None,
-    ) -> Any:
+    async def delete_collection_listing_by_id(self, api_version: str, collection_listing_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a collection listing with the specified ID using the DELETE method.
 
@@ -11608,20 +9619,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_session(
-        self, credit_card: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_session(self, credit_card: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new user session using the Shopify API at the specified path, enabling secure interactions between the client and server.
 
@@ -11639,35 +9644,20 @@ class ShopifyApp(APIApplication):
             Sales channels, Payment
         """
         request_body_data = None
-        request_body_data = {
-            "credit_card": credit_card,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"credit_card": credit_card}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/https:/elb.deposit.shopifycs.com/sessions"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_checkout_payments_list(
-        self, api_version: str, token: str
-    ) -> dict[str, Any]:
+    async def get_checkout_payments_list(self, api_version: str, token: str) -> dict[str, Any]:
         """
         Retrieves payment details from a specific checkout session using the provided token, returning relevant payment information in JSON format.
 
@@ -11693,20 +9683,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_anew_payment(
-        self, api_version: str, token: str, payment: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_anew_payment(self, api_version: str, token: str, payment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a payment for a checkout session using the provided token, returning a status response upon completion.
 
@@ -11730,35 +9714,20 @@ class ShopifyApp(APIApplication):
         if token is None:
             raise ValueError("Missing required parameter 'token'.")
         request_body_data = None
-        request_body_data = {
-            "payment": payment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"payment": payment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_payment(
-        self, api_version: str, token: str, payment_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_payment(self, api_version: str, token: str, payment_id: str) -> dict[str, Any]:
         """
         Retrieves the details of a specific payment associated with a checkout using the Checkout.com API.
 
@@ -11787,20 +9756,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_checkout_payment_count_by_token(
-        self, api_version: str, token: str
-    ) -> dict[str, Any]:
+    async def get_checkout_payment_count_by_token(self, api_version: str, token: str) -> dict[str, Any]:
         """
         Retrieves the count of payments for a specified checkout using the "GET" method, returning the result in JSON format.
 
@@ -11826,18 +9789,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_product_listings(
+    async def list_product_listings(
         self,
         api_version: str,
         product_ids: str | None = None,
@@ -11886,20 +9845,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_product_ids(
-        self, api_version: str, limit: str | None = None
-    ) -> dict[str, Any]:
+    async def list_product_ids(self, api_version: str, limit: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of product IDs from product listings with optional limit parameter.
 
@@ -11919,24 +9872,18 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/product_listings/product_ids.json"
-        )
+        url = f"{self.base_url}/admin/api/{api_version}/product_listings/product_ids.json"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_product_listings_count(self, api_version: str) -> dict[str, Any]:
+    async def get_product_listings_count(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the total count of product listings available in the system.
 
@@ -11959,20 +9906,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_product_listing(
-        self, api_version: str, product_listing_id: str
-    ) -> dict[str, Any]:
+    async def get_product_listing(self, api_version: str, product_listing_id: str) -> dict[str, Any]:
         """
         Retrieves a specific product listing by ID using the GET method, returning details about the product listing.
 
@@ -11998,22 +9939,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_product_listing_by_id(
-        self,
-        api_version: str,
-        product_listing_id: str,
-        product_listing: dict[str, Any] | None = None,
+    async def update_product_listing_by_id(
+        self, api_version: str, product_listing_id: str, product_listing: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a product listing by fully replacing its data at the specified path, using the PUT method.
@@ -12038,38 +9972,20 @@ class ShopifyApp(APIApplication):
         if product_listing_id is None:
             raise ValueError("Missing required parameter 'product_listing_id'.")
         request_body_data = None
-        request_body_data = {
-            "product_listing": product_listing,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"product_listing": product_listing}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_product_listing_by_id(
-        self,
-        api_version: str,
-        product_listing_id: str,
-        body_content: str | None = None,
-    ) -> Any:
+    async def delete_product_listing_by_id(self, api_version: str, product_listing_id: str, body_content: str | None = None) -> Any:
         """
         Deletes a specific product listing by ID using the specified API version.
 
@@ -12096,18 +10012,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_feedback_resource(self, api_version: str) -> dict[str, Any]:
+    async def get_feedback_resource(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves feedback data for a specific resource via the Admin API.
 
@@ -12130,20 +10042,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_resourcefeedback(
-        self, api_version: str, resource_feedback: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_resourcefeedback(self, api_version: str, resource_feedback: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Submits resource feedback for review and processing, returning status codes for success, conflicts, or validation errors.
 
@@ -12164,37 +10070,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "resource_feedback": resource_feedback,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"resource_feedback": resource_feedback}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/resource_feedback.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_assigned_orders(
-        self,
-        api_version: str,
-        assignment_status: str | None = None,
-        location_ids: str | None = None,
+    async def get_assigned_orders(
+        self, api_version: str, assignment_status: str | None = None, location_ids: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves fulfillment orders assigned to specific locations and filtered by assignment status using query parameters.
@@ -12216,35 +10106,19 @@ class ShopifyApp(APIApplication):
         """
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
-        url = (
-            f"{self.base_url}/admin/api/{api_version}/assigned_fulfillment_orders.json"
-        )
-        query_params = {
-            k: v
-            for k, v in [
-                ("assignment_status", assignment_status),
-                ("location_ids", location_ids),
-            ]
-            if v is not None
-        }
+        url = f"{self.base_url}/admin/api/{api_version}/assigned_fulfillment_orders.json"
+        query_params = {k: v for k, v in [("assignment_status", assignment_status), ("location_ids", location_ids)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def sends_acancellation_request(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        cancellation_request: dict[str, Any] | None = None,
+    async def sends_acancellation_request(
+        self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Sends a cancellation request to the fulfillment service for a specific fulfillment order, allowing the cancellation process to be initiated.
@@ -12269,37 +10143,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "cancellation_request": cancellation_request,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"cancellation_request": cancellation_request}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def accepts_acancellation_request(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        cancellation_request: dict[str, Any] | None = None,
+    async def accepts_acancellation_request(
+        self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Accepts a cancellation request for a fulfillment order via a POST request to the specified endpoint.
@@ -12324,37 +10182,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "cancellation_request": cancellation_request,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"cancellation_request": cancellation_request}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/accept.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def rejects_acancellation_request(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        cancellation_request: dict[str, Any] | None = None,
+    async def rejects_acancellation_request(
+        self, api_version: str, fulfillment_order_id: str, cancellation_request: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Rejects a cancellation request for a Shopify fulfillment order and returns the updated fulfillment order details.
@@ -12379,33 +10221,20 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "cancellation_request": cancellation_request,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"cancellation_request": cancellation_request}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/reject.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_carrier_services(self, api_version: str) -> dict[str, Any]:
+    async def list_carrier_services(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves a list of carrier services from a Shopify store, providing access to shipping options and real-time shipping rates for integration with third-party shipping providers.
 
@@ -12428,20 +10257,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acarrier_service(
-        self, api_version: str, carrier_service: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acarrier_service(self, api_version: str, carrier_service: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a custom carrier service in Shopify, enabling third-party shipping rate integration via a callback URL.
 
@@ -12462,35 +10285,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "carrier_service": carrier_service,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"carrier_service": carrier_service}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_asingle_carrier_service(
-        self, api_version: str, carrier_service_id: str
-    ) -> dict[str, Any]:
+    async def retrieves_asingle_carrier_service(self, api_version: str, carrier_service_id: str) -> dict[str, Any]:
         """
         Retrieves detailed information for a specific carrier service configured to provide real-time shipping rates via Shopify's shipping API.
 
@@ -12516,22 +10324,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_acarrier_service(
-        self,
-        api_version: str,
-        carrier_service_id: str,
-        carrier_service: dict[str, Any] | None = None,
+    async def updates_acarrier_service(
+        self, api_version: str, carrier_service_id: str, carrier_service: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a specific carrier service with the provided ID using the "PUT" method in the Shopify API.
@@ -12556,38 +10357,20 @@ class ShopifyApp(APIApplication):
         if carrier_service_id is None:
             raise ValueError("Missing required parameter 'carrier_service_id'.")
         request_body_data = None
-        request_body_data = {
-            "carrier_service": carrier_service,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"carrier_service": carrier_service}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_acarrier_service(
-        self,
-        api_version: str,
-        carrier_service_id: str,
-        body_content: str | None = None,
-    ) -> dict[str, Any]:
+    async def deletes_acarrier_service(self, api_version: str, carrier_service_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes an existing carrier service by ID and returns a success status upon completion.
 
@@ -12614,18 +10397,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_order_fulfillments(
+    async def get_order_fulfillments(
         self,
         api_version: str,
         order_id: str,
@@ -12681,23 +10460,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_fulfillment(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def create_anew_fulfillment(self, api_version: str, order_id: str, fulfillment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new fulfillment for an order, typically used to confirm shipment or pickup of items to complete the order process.
 
@@ -12721,37 +10491,21 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment": fulfillment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment": fulfillment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfill_order_fulfillments(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_order_id_query: str | None = None,
+    async def get_fulfill_order_fulfillments(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order_id_query: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves fulfillment information for a specific fulfillment order by its ID using the Shopify API.
@@ -12776,25 +10530,17 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillments.json"
-        query_params = {
-            k: v
-            for k, v in [("fulfillment_order_id", fulfillment_order_id_query)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fulfillment_order_id", fulfillment_order_id_query)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_order_fulfillment_count(
+    async def get_order_fulfillment_count(
         self,
         api_version: str,
         order_id: str,
@@ -12841,23 +10587,15 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_asingle_fulfillment(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        fields: str | None = None,
+    async def receive_asingle_fulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific fulfillment for an order using the Shopify Admin API, returning fulfillment details in the response.
@@ -12888,23 +10626,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def modify_an_existing_fulfillment(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        fulfillment: dict[str, Any] | None = None,
+    async def modify_an_existing_fulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, fulfillment: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a specific fulfillment order in Shopify's admin API for order processing.
@@ -12932,35 +10662,20 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment": fulfillment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment": fulfillment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_fulfillment(
-        self, api_version: str, fulfillment: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_fulfillment(self, api_version: str, fulfillment: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new fulfillment record for an order using the Shopify API, allowing for the inclusion of details such as tracking numbers and shipment status updates.
 
@@ -12981,37 +10696,21 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment": fulfillment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment": fulfillment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillments.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_fulfillment_tracking(
-        self,
-        api_version: str,
-        fulfillment_id: str,
-        fulfillment: dict[str, Any] | None = None,
+    async def update_fulfillment_tracking(
+        self, api_version: str, fulfillment_id: str, fulfillment: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates tracking information for a fulfillment using the provided tracking details via a POST request.
@@ -13036,38 +10735,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment": fulfillment,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment": fulfillment}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/update_tracking.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def complete_afulfillment(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def complete_afulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Completes a fulfillment for a specific order in the Shopify API, marking it as processed and returning a success confirmation.
@@ -13098,30 +10780,17 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/complete.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def post_order_fulfillment_open(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def post_order_fulfillment_open(
+        self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Opens a fulfillment for a specific order using the POST method, allowing the order to transition from a pending or scheduled state to being actively fulfilled.
@@ -13152,30 +10821,17 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/open.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cancel_fulfillment(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def cancel_fulfillment(
+        self, api_version: str, order_id: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Cancels a specific fulfillment by submitting a request to the endpoint "/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/cancel.json" using the POST method.
@@ -13206,29 +10862,17 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/cancel.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cancels_afulfillment(
-        self,
-        api_version: str,
-        fulfillment_id: str,
-        request_body: dict[str, Any] | None = None,
+    async def cancels_afulfillment(
+        self, api_version: str, fulfillment_id: str, request_body: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Cancels a fulfillment order identified by the `{fulfillment_id}` using the `POST` method, returning a status message indicating the outcome of the cancellation operation.
@@ -13256,25 +10900,16 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/cancel.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfillment_event_by_id(
+    async def get_fulfillment_event_by_id(
         self,
         api_version: str,
         order_id: str,
@@ -13289,8 +10924,8 @@ class ShopifyApp(APIApplication):
             api_version (string): api_version
             order_id (string): order_id
             fulfillment_id (string): fulfillment_id
-            fulfillment_id_query (string): The ID of the fulfillment that\'s associated with the fulfillment event.
-            order_id_query (string): The ID of the order that\'s associated with the fulfillment event.
+            fulfillment_id_query (string): The ID of the fulfillment that's associated with the fulfillment event.
+            order_id_query (string): The ID of the order that's associated with the fulfillment event.
 
         Returns:
             dict[str, Any]: Retrieve a list of all the fulfillment events that are associated with a specific fulfillment
@@ -13309,33 +10944,18 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fulfillment_id", fulfillment_id_query),
-                ("order_id", order_id_query),
-            ]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fulfillment_id", fulfillment_id_query), ("order_id", order_id_query)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_afulfillment_event(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        event: dict[str, Any] | None = None,
+    async def creates_afulfillment_event(
+        self, api_version: str, order_id: str, fulfillment_id: str, event: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Creates a new fulfillment event for a specified order and fulfillment, allowing tracking and updating of the fulfillment status.
@@ -13363,39 +10983,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_id is None:
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         request_body_data = None
-        request_body_data = {
-            "event": event,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"event": event}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfillment_event(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        event_id: str,
-        event_id_query: str | None = None,
+    async def get_fulfillment_event(
+        self, api_version: str, order_id: str, fulfillment_id: str, event_id: str, event_id_query: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a specific event by ID for a fulfillment within an order using the "GET" method.
@@ -13426,29 +11028,18 @@ class ShopifyApp(APIApplication):
         if event_id is None:
             raise ValueError("Missing required parameter 'event_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json"
-        query_params = {
-            k: v for k, v in [("event_id", event_id_query)] if v is not None
-        }
+        query_params = {k: v for k, v in [("event_id", event_id_query)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def deletes_afulfillment_event(
-        self,
-        api_version: str,
-        order_id: str,
-        fulfillment_id: str,
-        event_id: str,
-        body_content: str | None = None,
+    async def deletes_afulfillment_event(
+        self, api_version: str, order_id: str, fulfillment_id: str, event_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a specific fulfillment event associated with a fulfillment in an order using the Shopify API, removing its tracking information.
@@ -13482,20 +11073,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfillment_orders(
-        self, api_version: str, order_id: str, order_id_query: str | None = None
-    ) -> dict[str, Any]:
+    async def get_fulfillment_orders(self, api_version: str, order_id: str, order_id_query: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of fulfillment orders associated with a specific order, including fulfillment details and status.
 
@@ -13519,25 +11104,17 @@ class ShopifyApp(APIApplication):
         if order_id is None:
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillment_orders.json"
-        query_params = {
-            k: v for k, v in [("order_id", order_id_query)] if v is not None
-        }
+        query_params = {k: v for k, v in [("order_id", order_id_query)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfillment_order_by_id(
-        self, api_version: str, fulfillment_order_id: str
-    ) -> dict[str, Any]:
+    async def get_fulfillment_order_by_id(self, api_version: str, fulfillment_order_id: str) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific fulfillment order in Shopify, including its status and associated order items.
 
@@ -13563,22 +11140,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def cancel_afulfillment_order(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_order: dict[str, Any] | None = None,
+    async def cancel_afulfillment_order(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Cancels a fulfillment order using the "POST" method at the specified endpoint, allowing for the termination of fulfillment attempts for the associated order.
@@ -13603,37 +11173,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_order": fulfillment_order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_order": fulfillment_order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancel.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def close_fulfillment_order(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_order: dict[str, Any] | None = None,
+    async def close_fulfillment_order(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Closes a fulfillment order via the Shopify Admin API and returns a success status upon completion.
@@ -13658,37 +11212,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_order": fulfillment_order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_order": fulfillment_order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/close.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def move_fulfillment_order_post(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_order: dict[str, Any] | None = None,
+    async def move_fulfillment_order_post(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Moves fulfillment order line items to a new location and returns the updated fulfillment order details.
@@ -13713,37 +11251,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_order": fulfillment_order,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_order": fulfillment_order}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/move.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def sends_afulfillment_request(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_request: dict[str, Any] | None = None,
+    async def sends_afulfillment_request(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Submits a fulfillment request for a specified fulfillment order, allowing for the management and processing of order line items through a fulfillment service.
@@ -13768,37 +11290,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_request": fulfillment_request,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_request": fulfillment_request}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def accepts_afulfillment_request(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_request: dict[str, Any] | None = None,
+    async def accepts_afulfillment_request(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Accepts a fulfillment request for a specific fulfillment order, transitioning the order status to processing.
@@ -13823,37 +11329,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_request": fulfillment_request,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_request": fulfillment_request}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/accept.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def rejects_afulfillment_request(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_request: dict[str, Any] | None = None,
+    async def rejects_afulfillment_request(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_request: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Rejects a fulfillment request for a specified fulfillment order, preventing any associated line items from being fulfilled.
@@ -13878,35 +11368,20 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_request": fulfillment_request,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_request": fulfillment_request}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/reject.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_fulfillment_services(
-        self, api_version: str, scope: str | None = None
-    ) -> dict[str, Any]:
+    async def list_fulfillment_services(self, api_version: str, scope: str | None = None) -> dict[str, Any]:
         """
         Retrieves a list of fulfillment services available to a merchant using the Shopify API.
 
@@ -13930,20 +11405,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("scope", scope)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def create_anew_fulfillmentservice(
-        self, api_version: str, fulfillment_service: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_anew_fulfillmentservice(self, api_version: str, fulfillment_service: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Registers a new fulfillment service using the Shopify API, allowing third-party warehouses to prepare and ship orders on behalf of store owners.
 
@@ -13964,35 +11433,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_service": fulfillment_service,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_service": fulfillment_service}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfillment_service(
-        self, api_version: str, fulfillment_service_id: str
-    ) -> dict[str, Any]:
+    async def get_fulfillment_service(self, api_version: str, fulfillment_service_id: str) -> dict[str, Any]:
         """
         Retrieves details of a specific fulfillment service, including its configuration and operational settings, within the Shopify admin API.
 
@@ -14018,22 +11472,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_fulfillment_service(
-        self,
-        api_version: str,
-        fulfillment_service_id: str,
-        fulfillment_service: dict[str, Any] | None = None,
+    async def update_fulfillment_service(
+        self, api_version: str, fulfillment_service_id: str, fulfillment_service: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a Shopify fulfillment service's configuration, including tracking support and inventory management settings.
@@ -14058,37 +11505,21 @@ class ShopifyApp(APIApplication):
         if fulfillment_service_id is None:
             raise ValueError("Missing required parameter 'fulfillment_service_id'.")
         request_body_data = None
-        request_body_data = {
-            "fulfillment_service": fulfillment_service,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"fulfillment_service": fulfillment_service}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def delete_fulfillment_service_by_id(
-        self,
-        api_version: str,
-        fulfillment_service_id: str,
-        body_content: str | None = None,
+    async def delete_fulfillment_service_by_id(
+        self, api_version: str, fulfillment_service_id: str, body_content: str | None = None
     ) -> dict[str, Any]:
         """
         Deletes a specified fulfillment service from the Shopify admin and returns a success status upon removal.
@@ -14116,22 +11547,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_fulfillment_locations(
-        self,
-        api_version: str,
-        fulfillment_order_id: str,
-        fulfillment_order_id_query: str | None = None,
+    async def get_fulfillment_locations(
+        self, api_version: str, fulfillment_order_id: str, fulfillment_order_id_query: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of eligible locations where fulfillment order items can be moved for potential fulfillment, sorted alphabetically by location name.
@@ -14156,25 +11580,17 @@ class ShopifyApp(APIApplication):
         if fulfillment_order_id is None:
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/locations_for_move.json"
-        query_params = {
-            k: v
-            for k, v in [("fulfillment_order_id", fulfillment_order_id_query)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("fulfillment_order_id", fulfillment_order_id_query)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def return_the_current_balance(self, api_version: str) -> dict[str, Any]:
+    async def return_the_current_balance(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves the current account balance for Shopify Payments, reflecting transactions not yet included in a payout.
 
@@ -14197,18 +11613,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def return_alist_of_all_disputes(
+    async def return_alist_of_all_disputes(
         self,
         api_version: str,
         since_id: str | None = None,
@@ -14241,30 +11653,19 @@ class ShopifyApp(APIApplication):
         url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/disputes.json"
         query_params = {
             k: v
-            for k, v in [
-                ("since_id", since_id),
-                ("last_id", last_id),
-                ("status", status),
-                ("initiated_at", initiated_at),
-            ]
+            for k, v in [("since_id", since_id), ("last_id", last_id), ("status", status), ("initiated_at", initiated_at)]
             if v is not None
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def return_asingle_dispute(
-        self, api_version: str, dispute_id: str
-    ) -> dict[str, Any]:
+    async def return_asingle_dispute(self, api_version: str, dispute_id: str) -> dict[str, Any]:
         """
         Retrieves information about a specific dispute related to Shopify Payments using the provided dispute ID.
 
@@ -14290,18 +11691,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def return_alist_of_all_payouts(
+    async def return_alist_of_all_payouts(
         self,
         api_version: str,
         since_id: str | None = None,
@@ -14350,18 +11747,14 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def return_asingle_payout(self, api_version: str, payout_id: str) -> dict[str, Any]:
+    async def return_asingle_payout(self, api_version: str, payout_id: str) -> dict[str, Any]:
         """
         Retrieves details of a specific Shopify Payments payout using the payout ID and API version.
 
@@ -14387,18 +11780,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_shopify_balance_txs(
+    async def list_shopify_balance_txs(
         self,
         api_version: str,
         since_id: str | None = None,
@@ -14444,22 +11833,15 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def receive_alist_of_all_countries(
-        self,
-        api_version: str,
-        since_id: str | None = None,
-        fields: str | None = None,
+    async def receive_alist_of_all_countries(
+        self, api_version: str, since_id: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves country data based on specified parameters such as since_id and fields, returning details in JSON format.
@@ -14482,27 +11864,17 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries.json"
-        query_params = {
-            k: v
-            for k, v in [("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def creates_acountry(
-        self, api_version: str, country: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def creates_acountry(self, api_version: str, country: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Creates a new country entry via the Shopify Admin REST API and returns a success status upon creation.
 
@@ -14523,33 +11895,20 @@ class ShopifyApp(APIApplication):
         if api_version is None:
             raise ValueError("Missing required parameter 'api_version'.")
         request_body_data = None
-        request_body_data = {
-            "country": country,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"country": country}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/countries.json"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_acount_of_countries(self, api_version: str) -> dict[str, Any]:
+    async def retrieves_acount_of_countries(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves country list data in JSON format using a GET request.
 
@@ -14572,20 +11931,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_aspecific_county(
-        self, api_version: str, country_id: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_aspecific_county(self, api_version: str, country_id: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves country details by ID with optional field filtering.
 
@@ -14612,23 +11965,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def updates_an_existing_country(
-        self,
-        api_version: str,
-        country_id: str,
-        country: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def updates_an_existing_country(self, api_version: str, country_id: str, country: dict[str, Any] | None = None) -> dict[str, Any]:
         """
         Updates or creates a country resource at a specified ID using the "PUT" method, allowing for full replacement or creation of the country data.
 
@@ -14652,35 +11996,20 @@ class ShopifyApp(APIApplication):
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
         request_body_data = None
-        request_body_data = {
-            "country": country,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"country": country}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def remove_an_existing_country(
-        self, api_version: str, country_id: str, body_content: str | None = None
-    ) -> dict[str, Any]:
+    async def remove_an_existing_country(self, api_version: str, country_id: str, body_content: str | None = None) -> dict[str, Any]:
         """
         Deletes a specified country from the system using the DELETE method at the "/admin/api/{api_version}/countries/{country_id}.json" endpoint.
 
@@ -14707,18 +12036,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._delete(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_currencies(self, api_version: str) -> dict[str, Any]:
+    async def get_currencies(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves a list of supported currencies with their metadata using the specified API version.
 
@@ -14741,18 +12066,14 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_policies_admin_api(self, api_version: str) -> dict[str, Any]:
+    async def get_policies_admin_api(self, api_version: str) -> dict[str, Any]:
         """
         Retrieves policy configurations in JSON format from the specified API version path using a GET request.
 
@@ -14775,23 +12096,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_provinces_by_country_id(
-        self,
-        api_version: str,
-        country_id: str,
-        since_id: str | None = None,
-        fields: str | None = None,
+    async def get_provinces_by_country_id(
+        self, api_version: str, country_id: str, since_id: str | None = None, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of provinces for a specific country using query parameters like `since_id` and `fields` to filter or format the response.
@@ -14817,27 +12130,17 @@ class ShopifyApp(APIApplication):
         if country_id is None:
             raise ValueError("Missing required parameter 'country_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces.json"
-        query_params = {
-            k: v
-            for k, v in [("since_id", since_id), ("fields", fields)]
-            if v is not None
-        }
+        query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_country_provinces_count(
-        self, api_version: str, country_id: str
-    ) -> dict[str, Any]:
+    async def get_country_provinces_count(self, api_version: str, country_id: str) -> dict[str, Any]:
         """
         Retrieves the total count of provinces for a specified country using the GET method.
 
@@ -14863,23 +12166,15 @@ class ShopifyApp(APIApplication):
         query_params = {}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def get_province_detail_by_id(
-        self,
-        api_version: str,
-        country_id: str,
-        province_id: str,
-        fields: str | None = None,
+    async def get_province_detail_by_id(
+        self, api_version: str, country_id: str, province_id: str, fields: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves province details for a specific country using the specified API version and includes optional field selection.
@@ -14910,23 +12205,15 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def update_province_by_id_json(
-        self,
-        api_version: str,
-        country_id: str,
-        province_id: str,
-        province: dict[str, Any] | None = None,
+    async def update_province_by_id_json(
+        self, api_version: str, country_id: str, province_id: str, province: dict[str, Any] | None = None
     ) -> dict[str, Any]:
         """
         Updates a specific province's details for a given country via the Shopify Admin REST API and returns a success status upon completion.
@@ -14954,35 +12241,20 @@ class ShopifyApp(APIApplication):
         if province_id is None:
             raise ValueError("Missing required parameter 'province_id'.")
         request_body_data = None
-        request_body_data = {
-            "province": province,
-        }
-        request_body_data = {
-            k: v for k, v in request_body_data.items() if v is not None
-        }
+        request_body_data = {"province": province}
+        request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def retrieves_the_shop_sconfiguration(
-        self, api_version: str, fields: str | None = None
-    ) -> dict[str, Any]:
+    async def retrieves_the_shop_sconfiguration(self, api_version: str, fields: str | None = None) -> dict[str, Any]:
         """
         Retrieves shop information in JSON format using the specified API version via the "GET" method at the "/admin/api/{api_version}/shop.json" endpoint, allowing optional specification of fields to include in the response.
 
@@ -15006,18 +12278,14 @@ class ShopifyApp(APIApplication):
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
         except ValueError:
             return None
 
-    def list_tender_transactions(
+    async def list_tender_transactions(
         self,
         api_version: str,
         limit: str | None = None,
@@ -15027,17 +12295,17 @@ class ShopifyApp(APIApplication):
         processed_at: str | None = None,
         order: str | None = None,
     ) -> dict[str, Any]:
-        r"""
+        """
         Retrieves a list of tender transactions with optional filtering by processing time, order, and pagination parameters.
 
         Args:
             api_version (string): api_version
             limit (string): The maximum number of results to retrieve.(default: 50)(maximum: 250)
             since_id (string): Retrieve only transactions after the specified ID.
-            processed_at_min (string): Show tender transactions processed\_at or after the specified date.
-            processed_at_max (string): Show tender transactions processed\_at or before the specified date.
+            processed_at_min (string): Show tender transactions processed\\_at or after the specified date.
+            processed_at_max (string): Show tender transactions processed\\_at or before the specified date.
             processed_at (string): Show tender transactions processed at the specified date.
-            order (string): Show tender transactions ordered by processed\_at in ascending or descending order.
+            order (string): Show tender transactions ordered by processed\\_at in ascending or descending order.
 
         Returns:
             dict[str, Any]: Retrieve tender transactions processed_at the specified date / Retrieve tender transactions after the specified ID / Retrieve tender transactions ordered by <code>processed_at</code> / Retrieve tender transactions processed_at or after the specified date / Retrieve all tender transactions / Retrieve tender transactions processed_at or before the specified date
@@ -15066,11 +12334,7 @@ class ShopifyApp(APIApplication):
         }
         response = self._get(url, params=query_params)
         response.raise_for_status()
-        if (
-            response.status_code == 204
-            or not response.content
-            or not response.text.strip()
-        ):
+        if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
         try:
             return response.json()
