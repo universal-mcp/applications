@@ -44,7 +44,7 @@ class HttpToolsApp(APIApplication):
         logger.debug(f"GET request to {url} with headers {headers} and query params {query_params}")
         response = httpx.get(url, params=query_params, headers=headers)
         response.raise_for_status()
-        return self._handle_response(response)
+        return await self._async_handle_response(response)
 
     async def http_post(self, url: str, headers: dict | None = None, body: dict | None = None):
         """
@@ -63,7 +63,7 @@ class HttpToolsApp(APIApplication):
         logger.debug(f"POST request to {url} with headers {headers} and body {body}")
         response = httpx.post(url, json=body, headers=headers)
         response.raise_for_status()
-        return self._handle_response(response)
+        return await self._async_handle_response(response)
 
     async def http_put(self, url: str, headers: dict | None = None, body: dict | None = None):
         """
@@ -82,7 +82,7 @@ class HttpToolsApp(APIApplication):
         logger.debug(f"PUT request to {url} with headers {headers} and body {body}")
         response = httpx.put(url, json=body, headers=headers)
         response.raise_for_status()
-        return self._handle_response(response)
+        return await self._async_handle_response(response)
 
     async def http_delete(self, url: str, headers: dict | None = None, body: dict | None = None):
         """
@@ -101,7 +101,7 @@ class HttpToolsApp(APIApplication):
         logger.debug(f"DELETE request to {url} with headers {headers} and body {body}")
         response = httpx.delete(url, headers=headers)
         response.raise_for_status()
-        return self._handle_response(response)
+        return await self._async_handle_response(response)
 
     async def http_patch(self, url: str, headers: dict | None = None, body: dict | None = None):
         """
@@ -120,7 +120,7 @@ class HttpToolsApp(APIApplication):
         logger.debug(f"PATCH request to {url} with headers {headers} and body {body}")
         response = httpx.patch(url, json=body, headers=headers)
         response.raise_for_status()
-        return self._handle_response(response)
+        return await self._async_handle_response(response)
 
     def list_tools(self):
         """

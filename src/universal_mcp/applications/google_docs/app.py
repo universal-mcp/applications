@@ -27,7 +27,7 @@ class GoogleDocsApp(APIApplication):
         """
         url = self.base_api_url
         document_data = {"title": title}
-        response = self._post(url, data=document_data)
+        response = await self._async_post(url, data=document_data)
         response.raise_for_status()
         payload = response.json()
         payload["Note"] = "You must load and call other google docs content functions (like google_docs__insert_text)"
@@ -225,7 +225,7 @@ class GoogleDocsApp(APIApplication):
         """
         url = f"{self.base_api_url}/{document_id}:batchUpdate"
         batch_update_data = {"requests": [{"insertText": {"location": {"index": index}, "text": content}}]}
-        response = self._post(url, data=batch_update_data)
+        response = await self._async_post(url, data=batch_update_data)
         response.raise_for_status()
         return response.json()
 
@@ -320,8 +320,8 @@ class GoogleDocsApp(APIApplication):
                 }
             ]
         }
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def update_paragraph_style(
         self,
@@ -386,8 +386,8 @@ class GoogleDocsApp(APIApplication):
                 {"updateParagraphStyle": {"range": range_obj, "paragraphStyle": paragraph_style, "fields": ",".join(fields_to_update)}}
             ]
         }
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def delete_content_range(
         self, document_id: str, start_index: int, end_index: int, segment_id: str | None = None, tab_id: str | None = None
@@ -419,8 +419,8 @@ class GoogleDocsApp(APIApplication):
         if tab_id is not None:
             delete_request["tabId"] = tab_id
         batch_update_data = {"requests": [{"deleteContentRange": delete_request}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def insert_table(
         self, document_id: str, location_index: int, rows: int, columns: int, segment_id: str = None, tab_id: str = None
@@ -453,8 +453,8 @@ class GoogleDocsApp(APIApplication):
         if tab_id is not None:
             location["tabId"] = tab_id
         batch_update_data = {"requests": [{"insertTable": {"location": location, "rows": rows, "columns": columns}}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def create_footer(
         self,
@@ -494,8 +494,8 @@ class GoogleDocsApp(APIApplication):
                 section_break_location["tabId"] = section_break_tab_id
             create_footer_request["sectionBreakLocation"] = section_break_location
         batch_update_data = {"requests": [{"createFooter": create_footer_request}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def create_footnote(
         self,
@@ -546,8 +546,8 @@ class GoogleDocsApp(APIApplication):
                 location["tabId"] = location_tab_id
             create_footnote_request["location"] = location
         batch_update_data = {"requests": [{"createFootnote": create_footnote_request}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def delete_footer(self, document_id: str, footer_id: str, tab_id: str = None) -> dict[str, Any]:
         """
@@ -573,8 +573,8 @@ class GoogleDocsApp(APIApplication):
         if tab_id is not None:
             delete_footer_request["tabId"] = tab_id
         batch_update_data = {"requests": [{"deleteFooter": delete_footer_request}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def create_header(
         self,
@@ -614,8 +614,8 @@ class GoogleDocsApp(APIApplication):
                 section_break_location["tabId"] = section_break_tab_id
             create_header_request["sectionBreakLocation"] = section_break_location
         batch_update_data = {"requests": [{"createHeader": create_header_request}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def delete_header(self, document_id: str, header_id: str, tab_id: str = None) -> dict[str, Any]:
         """
@@ -641,8 +641,8 @@ class GoogleDocsApp(APIApplication):
         if tab_id is not None:
             delete_header_request["tabId"] = tab_id
         batch_update_data = {"requests": [{"deleteHeader": delete_header_request}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def apply_list_style(
         self, document_id: str, start_index: int, end_index: int, bullet_preset: str, segment_id: str = None, tab_id: str = None
@@ -675,8 +675,8 @@ class GoogleDocsApp(APIApplication):
         if tab_id is not None:
             range_obj["tabId"] = tab_id
         batch_update_data = {"requests": [{"createParagraphBullets": {"range": range_obj, "bulletPreset": bullet_preset}}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     async def delete_paragraph_bullets(
         self, document_id: str, start_index: int, end_index: int, segment_id: str = None, tab_id: str = None
@@ -708,8 +708,8 @@ class GoogleDocsApp(APIApplication):
         if tab_id is not None:
             range_obj["tabId"] = tab_id
         batch_update_data = {"requests": [{"deleteParagraphBullets": {"range": range_obj}}]}
-        response = self._post(url, data=batch_update_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=batch_update_data)
+        return await self._async_handle_response(response)
 
     def list_tools(self):
         return [

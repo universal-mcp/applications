@@ -2034,6 +2034,18 @@ wheels = [
 ]
 
 [[package]]
+name = "json-schema-to-pydantic"
+version = "0.4.7"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e6/b1/fbcbda5e23ecb5ff987076d9caccb11d182a249cedd5424236aaca4e65b8/json_schema_to_pydantic-0.4.7.tar.gz", hash = "sha256:a6384825fee7609715641a1e5095ddf41aa3bdd06cd91d4a6b6d88a3dfcad920", size = 50054, upload-time = "2025-11-03T19:28:30.65Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/af/f64664df8d4d52a371195e16c6ff4419968ee3eb6f96b21e596e3623dcf3/json_schema_to_pydantic-0.4.7-py3-none-any.whl", hash = "sha256:e329506e42b63f9a0ae0a17f7082ec7fc7cb3326138ec5c24904e0af5a660e63", size = 14709, upload-time = "2025-11-03T19:28:29.168Z" },
+]
+
+[[package]]
 name = "jsonpatch"
 version = "1.33"
 source = { registry = "https://pypi.org/simple" }
@@ -5079,8 +5091,8 @@ wheels = [
 
 [[package]]
 name = "universal-mcp"
-version = "0.1.24rc29"
-source = { registry = "https://pypi.org/simple" }
+version = "0.1.24rc30"
+source = { directory = "../universal-mcp" }
 dependencies = [
     { name = "agentevals" },
     { name = "black" },
@@ -5109,32 +5121,70 @@ dependencies = [
     { name = "streamlit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f2/11/68b20ba072217f6197d320e095cadf501c645c534c5903765df23abd35f9/universal_mcp-0.1.24rc29.tar.gz", hash = "sha256:151507659ab13561f5a1b228de9d90e91951894bda8ca065aab632a9bf44fb57", size = 116887, upload-time = "2025-10-27T14:28:10.268Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/6b/0c97e0ddcfea5ce9e88e6e243ed358bf1fff6f1bafa8c4997ae5cb902621/universal_mcp-0.1.24rc29-py3-none-any.whl", hash = "sha256:8759cdb5b79937ab61109054578c223fa8890c9bb16bc17a9692bea883ebc90f", size = 133382, upload-time = "2025-10-27T14:28:08.284Z" },
+
+[package.metadata]
+requires-dist = [
+    { name = "agentevals", specifier = ">=0.0.9" },
+    { name = "black", specifier = ">=25.1.0" },
+    { name = "cookiecutter", specifier = ">=2.6.0" },
+    { name = "gql", specifier = ">=4.0.0" },
+    { name = "httpx-aiohttp", specifier = ">=0.1.8" },
+    { name = "jinja2", specifier = ">=3.1.3" },
+    { name = "jsonref", specifier = ">=1.1.0" },
+    { name = "keyring", specifier = ">=25.6.0" },
+    { name = "langchain-anthropic", specifier = ">=0.3.19" },
+    { name = "langchain-google-genai", specifier = ">=2.1.10" },
+    { name = "langchain-google-vertexai", specifier = ">=2.0.28" },
+    { name = "langchain-mcp-adapters", specifier = ">=0.1.9" },
+    { name = "langchain-openai", specifier = ">=0.3.27" },
+    { name = "langgraph", specifier = ">=0.5.2" },
+    { name = "langgraph-cli", extras = ["inmem"], specifier = ">=0.3.4" },
+    { name = "langsmith", specifier = ">=0.4.5" },
+    { name = "litellm", marker = "extra == 'dev'", specifier = ">=1.30.7" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "mcp", specifier = ">=1.10.0" },
+    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.6.1" },
+    { name = "mkdocs-glightbox", marker = "extra == 'docs'", specifier = ">=0.4.0" },
+    { name = "mkdocs-material", extras = ["imaging"], marker = "extra == 'docs'", specifier = ">=9.5.45" },
+    { name = "mkdocstrings-python", marker = "extra == 'docs'", specifier = ">=1.12.2" },
+    { name = "openevals", specifier = ">=0.1.0" },
+    { name = "posthog", specifier = ">=3.24.0" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.2.0" },
+    { name = "pydantic", specifier = ">=2.11.1" },
+    { name = "pydantic-settings", specifier = ">=2.8.1" },
+    { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.398" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.5" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.26.0" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "rich", specifier = ">=14.0.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.4" },
+    { name = "streamlit", specifier = ">=1.46.1" },
+    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.1a17" },
+    { name = "typer", specifier = ">=0.15.2" },
 ]
+provides-extras = ["dev", "docs"]
 
 [[package]]
 name = "universal-mcp-agents"
-version = "0.1.21"
+version = "0.1.25rc1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
+    { name = "cloudpickle" },
+    { name = "json-schema-to-pydantic" },
     { name = "langchain-anthropic" },
     { name = "langchain-google-genai" },
     { name = "langchain-openai" },
     { name = "langgraph" },
-    { name = "typer" },
     { name = "universal-mcp" },
     { name = "universal-mcp-applications" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b0/45/72d14ee9ddce831629ac4cc2052c912bf9fd66ea06e9ebc5d1af3bdff6c2/universal_mcp_agents-0.1.21.tar.gz", hash = "sha256:eccf2ab0066f73c373d5aaefc8ae2dc5eb0f388767ae2d663681f8c13240733c", size = 358534, upload-time = "2025-10-15T07:09:39.824Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/25/9d5c7cb2ea366fdb20a38d8aa7f6dc3e4ec1c5366c69396c05cf8366587c/universal_mcp_agents-0.1.21-py3-none-any.whl", hash = "sha256:d64a7a7b0882121e1b43ddb0268b92511a6277551a7793a5146ebb773cb6c901", size = 66669, upload-time = "2025-10-15T07:09:37.421Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/2b/f5035e38bb8bb2941f01fcb5c151c8e94bab134918ee330f26012845f342/universal_mcp_agents-0.1.25rc1-py3-none-any.whl", hash = "sha256:1662b4c88282f40a4326b36ab6d57501a47a6b41360bffd561a5a5c63c6ee516", size = 89880, upload-time = "2025-11-11T07:38:39.042Z" },
 ]
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.36rc3"
+version = "0.1.36rc4"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
@@ -5160,6 +5210,7 @@ dependencies = [
     { name = "resend" },
     { name = "twilio" },
     { name = "universal-mcp" },
+    { name = "universal-mcp-agents" },
     { name = "yfinance" },
     { name = "youtube-transcript-api" },
 ]
@@ -5209,7 +5260,8 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.24rc29" },
+    { name = "universal-mcp", directory = "../universal-mcp" },
+    { name = "universal-mcp-agents", specifier = ">=0.1.25rc1" },
     { name = "yfinance", specifier = ">=0.2.66" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },
 ]

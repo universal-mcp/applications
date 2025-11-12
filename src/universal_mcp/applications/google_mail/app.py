@@ -40,8 +40,8 @@ class GoogleMailApp(APIApplication):
         email_data = {"raw": raw_message}
         if thread_id:
             email_data["threadId"] = thread_id
-        response = self._post(url, email_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, email_data)
+        return await self._async_handle_response(response)
 
     def _create_message(self, to, subject, body, body_type="plain"):
         try:
@@ -86,8 +86,8 @@ class GoogleMailApp(APIApplication):
         if thread_id:
             draft_data["message"]["threadId"] = thread_id
         logger.info(f"Creating draft email to {to}")
-        response = self._post(url, draft_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, draft_data)
+        return await self._async_handle_response(response)
 
     async def send_draft(self, draft_id: str) -> dict[str, Any]:
         """
@@ -110,8 +110,8 @@ class GoogleMailApp(APIApplication):
         url = f"{self.base_api_url}/drafts/send"
         draft_data = {"id": draft_id}
         logger.info(f"Sending draft email with ID: {draft_id}")
-        response = self._post(url, draft_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, draft_data)
+        return await self._async_handle_response(response)
 
     async def get_draft(self, draft_id: str, format: str = "full") -> dict[str, Any]:
         """
@@ -135,8 +135,8 @@ class GoogleMailApp(APIApplication):
         url = f"{self.base_api_url}/drafts/{draft_id}"
         params = {"format": format}
         logger.info(f"Retrieving draft with ID: {draft_id}")
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def list_drafts(self, max_results: int = 20, q: str | None = None, include_spam_trash: bool = False) -> dict[str, Any]:
         """
@@ -165,8 +165,8 @@ class GoogleMailApp(APIApplication):
         if include_spam_trash:
             params["includeSpamTrash"] = "true"
         logger.info(f"Retrieving drafts list with params: {params}")
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def get_message_details(self, message_id: str) -> dict[str, Any]:
         """
@@ -182,7 +182,7 @@ class GoogleMailApp(APIApplication):
             retrieve, email, format, api, gmail, message, important, body, content, attachments
         """
         url = f"{self.base_api_url}/messages/{message_id}"
-        response = self._get(url)
+        response = await self._async_get(url)
         raw_data = self._handle_response(response)
         headers = {}
         for header in raw_data.get("payload", {}).get("headers", []):
@@ -349,7 +349,7 @@ class GoogleMailApp(APIApplication):
         if page_token:
             params["pageToken"] = page_token
         logger.info(f"Retrieving messages list with params: {params}")
-        response = self._get(url, params=params)
+        response = await self._async_get(url, params=params)
         data = self._handle_response(response)
         messages = data.get("messages", [])
         message_ids = [msg.get("id") for msg in messages if msg.get("id")]
@@ -384,8 +384,8 @@ class GoogleMailApp(APIApplication):
         """
         url = f"{self.base_api_url}/threads/{thread_id}"
         logger.info(f"Retrieving thread {thread_id}")
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     async def list_labels(self) -> dict[str, Any]:
         """
@@ -406,8 +406,8 @@ class GoogleMailApp(APIApplication):
         """
         url = f"{self.base_api_url}/labels"
         logger.info("Retrieving Gmail labels")
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     async def create_label(self, name: str) -> dict[str, Any]:
         """
@@ -429,8 +429,8 @@ class GoogleMailApp(APIApplication):
         url = f"{self.base_api_url}/labels"
         label_data = {"name": name, "labelListVisibility": "labelShow", "messageListVisibility": "show"}
         logger.info(f"Creating new Gmail label: {name}")
-        response = self._post(url, label_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, label_data)
+        return await self._async_handle_response(response)
 
     async def get_profile(self) -> dict[str, Any]:
         """
@@ -451,8 +451,8 @@ class GoogleMailApp(APIApplication):
         """
         url = f"{self.base_api_url}/profile"
         logger.info("Retrieving Gmail user profile")
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     async def update_draft(
         self,
@@ -567,7 +567,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -633,7 +633,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -699,7 +699,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -769,7 +769,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -884,7 +884,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -950,7 +950,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1016,7 +1016,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1082,7 +1082,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1144,7 +1144,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1242,7 +1242,7 @@ class GoogleMailApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

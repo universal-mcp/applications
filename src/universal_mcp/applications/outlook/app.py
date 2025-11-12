@@ -52,8 +52,8 @@ class OutlookApp(APIApplication):
         if attachments:
             request_body_data["message"] = {"attachments": attachments}
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/reply"
-        response = self._post(url, data=request_body_data, params={}, content_type="application/json")
-        return self._handle_response(response)
+        response = await self._async_post(url, data=request_body_data, params={}, content_type="application/json")
+        return await self._async_handle_response(response)
 
     async def send_email(
         self,
@@ -109,8 +109,8 @@ class OutlookApp(APIApplication):
             message["attachments"] = attachments
         request_body_data = {"message": message, "saveToSentItems": save_to_sent_items}
         url = f"{self.base_url}/users/{user_id}/sendMail"
-        response = self._post(url, data=request_body_data, params={}, content_type="application/json")
-        return self._handle_response(response)
+        response = await self._async_post(url, data=request_body_data, params={}, content_type="application/json")
+        return await self._async_handle_response(response)
 
     async def get_email_folder(
         self,
@@ -152,8 +152,8 @@ class OutlookApp(APIApplication):
         query_params = {
             k: v for k, v in [("includeHiddenFolders", include_hidden), ("$select", select_str), ("$expand", expand_str)] if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def list_emails(
         self,
@@ -223,8 +223,8 @@ class OutlookApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def get_email(
         self,
@@ -266,8 +266,8 @@ class OutlookApp(APIApplication):
         query_params = {
             k: v for k, v in [("includeHiddenMessages", include_hidden), ("$select", select_str), ("$expand", expand_str)] if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def delete_email(self, message_id: str, user_id: str | None = None) -> dict[str, Any]:
         """
@@ -294,8 +294,8 @@ class OutlookApp(APIApplication):
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
-        response = self._delete(url, params={})
-        return self._handle_response(response)
+        response = await self._async_delete(url, params={})
+        return await self._async_handle_response(response)
 
     async def list_email_attachments(
         self,
@@ -366,8 +366,8 @@ class OutlookApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def get_attachment(self, message_id: str, attachment_id: str, user_id: str | None = None) -> dict[str, Any]:
         """
@@ -395,7 +395,7 @@ class OutlookApp(APIApplication):
         if not message_id or not attachment_id:
             raise ValueError("Missing required parameter 'message_id' or 'attachment_id'.")
         url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments/{attachment_id}"
-        response = self._get(url, params={})
+        response = await self._async_get(url, params={})
         attachment_data = self._handle_response(response)
         content_type = attachment_data.get("contentType", "application/octet-stream")
         attachment_type = content_type.split("/")[0] if "/" in content_type else "file"
@@ -420,8 +420,8 @@ class OutlookApp(APIApplication):
         """
         url = f"{self.base_url}/me"
         query_params = {"$select": "userPrincipalName"}
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def get_next_page_results(self, url: str) -> dict[str, Any]:
         """
@@ -446,8 +446,8 @@ class OutlookApp(APIApplication):
         parsed_relative = urlparse(relative_part)
         path_only = parsed_relative.path
         params = {k: v[0] for k, v in parse_qs(parsed_relative.query).items()}
-        response = self._get(path_only, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(path_only, params=params)
+        return await self._async_handle_response(response)
 
     def list_tools(self):
         return [

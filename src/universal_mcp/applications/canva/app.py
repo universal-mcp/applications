@@ -25,7 +25,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'appId'")
         url = f"{self.base_url}/v1/apps/{appId}/jwks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -46,7 +46,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'assetId'")
         url = f"{self.base_url}/v1/assets/{assetId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -81,7 +81,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/assets/{assetId}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -102,7 +102,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'assetId'")
         url = f"{self.base_url}/v1/assets/{assetId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -137,7 +137,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/assets/{assetId}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -156,7 +156,7 @@ class CanvaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/assets/upload"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -175,7 +175,7 @@ class CanvaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/asset-uploads"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -196,7 +196,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'jobId'")
         url = f"{self.base_url}/v1/asset-uploads/{jobId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -238,7 +238,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/autofills"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -259,7 +259,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'jobId'")
         url = f"{self.base_url}/v1/autofills/{jobId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -298,7 +298,7 @@ class CanvaApp(APIApplication):
             for k, v in [("query", query), ("continuation", continuation), ("ownership", ownership), ("sort_by", sort_by)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -319,7 +319,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'brandTemplateId'")
         url = f"{self.base_url}/v1/brand-templates/{brandTemplateId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -340,7 +340,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'brandTemplateId'")
         url = f"{self.base_url}/v1/brand-templates/{brandTemplateId}/dataset"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -374,7 +374,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -409,7 +409,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/comments/{commentId}/replies"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -433,7 +433,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'")
         url = f"{self.base_url}/v1/designs/{designId}/comments/{commentId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -449,7 +449,7 @@ class CanvaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/connect/keys"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -486,7 +486,7 @@ class CanvaApp(APIApplication):
             for k, v in [("query", query), ("continuation", continuation), ("ownership", ownership), ("sort_by", sort_by)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -520,7 +520,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/designs"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -541,7 +541,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'designId'")
         url = f"{self.base_url}/v1/designs/{designId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -560,7 +560,7 @@ class CanvaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/imports"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -581,7 +581,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'jobId'")
         url = f"{self.base_url}/v1/imports/{jobId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -618,7 +618,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/exports"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -639,7 +639,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'exportId'")
         url = f"{self.base_url}/v1/exports/{exportId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -660,7 +660,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'folderId'")
         url = f"{self.base_url}/v1/folders/{folderId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -681,7 +681,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'folderId'")
         url = f"{self.base_url}/v1/folders/{folderId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -711,7 +711,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/folders/{folderId}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -739,7 +739,7 @@ class CanvaApp(APIApplication):
             raise ValueError("Missing required parameter 'folderId'")
         url = f"{self.base_url}/v1/folders/{folderId}/items"
         query_params = {k: v for k, v in [("continuation", continuation), ("item_types", item_types)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -770,7 +770,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/folders/move"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -799,7 +799,7 @@ class CanvaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/folders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -815,7 +815,7 @@ class CanvaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/users/me"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -831,7 +831,7 @@ class CanvaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/users/me/profile"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

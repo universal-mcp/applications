@@ -38,7 +38,7 @@ class TavilyApp(APIApplication):
             "include_domains": [],
             "exclude_domains": [],
         }
-        response = self._post(url, payload)
+        response = await self._async_post(url, payload)
         result = response.json()
         if "answer" in result:
             return result["answer"]

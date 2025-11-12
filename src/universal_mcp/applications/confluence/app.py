@@ -71,7 +71,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -126,7 +126,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -148,7 +148,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/attachments/{id}"
         query_params = {k: v for k, v in [("purge", purge)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -173,7 +173,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/attachments/{id}/labels"
         query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -194,7 +194,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/attachments/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -219,7 +219,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'attachment-id'")
         url = f"{self.base_url}/attachments/{attachment_id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -244,7 +244,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/attachments/{attachment_id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -268,7 +268,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/attachments/{attachment_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -297,7 +297,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/attachments/{attachment_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -321,7 +321,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/attachments/{attachment_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -345,7 +345,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/attachments/{id}/versions"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -369,7 +369,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'version-number'")
         url = f"{self.base_url}/attachments/{attachment_id}/versions/{version_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -399,7 +399,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort), ("version", version)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -440,7 +440,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -466,7 +466,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts"
         query_params = {k: v for k, v in [("private", private)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -540,7 +540,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -582,7 +582,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -605,7 +605,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}"
         query_params = {k: v for k, v in [("purge", purge), ("draft", draft)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -645,7 +645,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -677,7 +677,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("type", type), ("sort", sort), ("cursor", cursor), ("limit", limit), ("body-format", body_format)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -702,7 +702,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/labels"
         query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -723,7 +723,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/likes/count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -746,7 +746,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/likes/users"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -771,7 +771,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'blogpost-id'")
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -796,7 +796,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -820,7 +820,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -849,7 +849,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -873,7 +873,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/blogposts/{blogpost_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -894,7 +894,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -921,7 +921,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -945,7 +945,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'version-number'")
         url = f"{self.base_url}/blogposts/{blogpost_id}/versions/{version_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -966,7 +966,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/content/convert-ids-to-types"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1005,7 +1005,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1044,7 +1044,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom-content"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1102,7 +1102,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1147,7 +1147,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom-content/{id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1169,7 +1169,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}"
         query_params = {k: v for k, v in [("purge", purge)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1209,7 +1209,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1236,7 +1236,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1261,7 +1261,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}/labels"
         query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1282,7 +1282,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1309,7 +1309,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'custom-content-id'")
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1334,7 +1334,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1358,7 +1358,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1389,7 +1389,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1413,7 +1413,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/custom-content/{custom_content_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1440,7 +1440,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("label-id", label_id), ("prefix", prefix), ("cursor", cursor), ("sort", sort), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1464,7 +1464,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/labels/{id}/attachments"
         query_params = {k: v for k, v in [("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1494,7 +1494,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("space-id", space_id), ("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1524,7 +1524,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("space-id", space_id), ("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1565,7 +1565,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1597,7 +1597,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages"
         query_params = {k: v for k, v in [("embedded", embedded), ("private", private), ("root-level", root_level)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1671,7 +1671,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1719,7 +1719,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1742,7 +1742,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}"
         query_params = {k: v for k, v in [("purge", purge), ("draft", draft)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1782,7 +1782,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1812,7 +1812,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("type", type), ("sort", sort), ("cursor", cursor), ("limit", limit), ("body-format", body_format)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1837,7 +1837,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/labels"
         query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1858,7 +1858,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/likes/count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1881,7 +1881,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/likes/users"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1902,7 +1902,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1927,7 +1927,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'page-id'")
         url = f"{self.base_url}/pages/{page_id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1952,7 +1952,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{page_id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1976,7 +1976,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/pages/{page_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2005,7 +2005,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{page_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2029,7 +2029,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/pages/{page_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2056,7 +2056,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2082,7 +2082,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards"
         query_params = {k: v for k, v in [("private", private)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2124,7 +2124,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2145,7 +2145,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/whiteboards/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2170,7 +2170,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/whiteboards/{id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2195,7 +2195,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2219,7 +2219,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/whiteboards/{whiteboard_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2248,7 +2248,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{whiteboard_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2272,7 +2272,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/whiteboards/{whiteboard_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2293,7 +2293,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/whiteboards/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2315,7 +2315,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/whiteboards/{id}/ancestors"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2339,7 +2339,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases"
         query_params = {k: v for k, v in [("private", private)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2381,7 +2381,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2402,7 +2402,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/databases/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2427,7 +2427,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/databases/{id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2452,7 +2452,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2476,7 +2476,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/databases/{database_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2505,7 +2505,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{database_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2529,7 +2529,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/databases/{database_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2550,7 +2550,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/databases/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2572,7 +2572,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/databases/{id}/ancestors"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2596,7 +2596,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/embeds"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2638,7 +2638,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2659,7 +2659,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/embeds/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2684,7 +2684,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/embeds/{id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2709,7 +2709,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/embeds/{id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2733,7 +2733,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/embeds/{embed_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2762,7 +2762,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/embeds/{embed_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2786,7 +2786,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/embeds/{embed_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2807,7 +2807,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/embeds/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2829,7 +2829,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/embeds/{id}/ancestors"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2852,7 +2852,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2894,7 +2894,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2915,7 +2915,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/folders/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2940,7 +2940,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/folders/{id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2965,7 +2965,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2989,7 +2989,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/folders/{folder_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3018,7 +3018,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3042,7 +3042,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/folders/{folder_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3063,7 +3063,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/folders/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3085,7 +3085,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/folders/{id}/ancestors"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3109,7 +3109,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'version-number'")
         url = f"{self.base_url}/pages/{page_id}/versions/{version_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3136,7 +3136,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3160,7 +3160,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'version-number'")
         url = f"{self.base_url}/custom-content/{custom_content_id}/versions/{version_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3221,7 +3221,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3247,7 +3247,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3307,7 +3307,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3347,7 +3347,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3372,7 +3372,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/labels"
         query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3397,7 +3397,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/content/labels"
         query_params = {k: v for k, v in [("prefix", prefix), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3424,7 +3424,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("type", type), ("cursor", cursor), ("limit", limit), ("body-format", body_format)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3445,7 +3445,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3487,7 +3487,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3511,7 +3511,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'space-id'")
         url = f"{self.base_url}/spaces/{space_id}/properties"
         query_params = {k: v for k, v in [("key", key), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3536,7 +3536,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{space_id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3560,7 +3560,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/spaces/{space_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3589,7 +3589,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{space_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3613,7 +3613,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/spaces/{space_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3636,7 +3636,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/permissions"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3656,7 +3656,7 @@ class ConfluenceApp(APIApplication):
         """
         url = f"{self.base_url}/space-permissions"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3693,7 +3693,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3714,7 +3714,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/space-roles/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3754,7 +3754,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3779,7 +3779,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{id}/role-assignments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3809,7 +3809,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("body-format", body_format), ("status", status), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3849,7 +3849,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3879,7 +3879,7 @@ class ConfluenceApp(APIApplication):
             for k, v in [("body-format", body_format), ("status", status), ("sort", sort), ("cursor", cursor), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3919,7 +3919,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3943,7 +3943,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3978,7 +3978,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/footer-comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4033,7 +4033,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4059,7 +4059,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/footer-comments/{comment_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4080,7 +4080,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-id'")
         url = f"{self.base_url}/footer-comments/{comment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4107,7 +4107,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4128,7 +4128,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/footer-comments/{id}/likes/count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4151,7 +4151,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/footer-comments/{id}/likes/users"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4172,7 +4172,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/footer-comments/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4199,7 +4199,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4223,7 +4223,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'version-number'")
         url = f"{self.base_url}/footer-comments/{id}/versions/{version_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4247,7 +4247,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4280,7 +4280,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/inline-comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4335,7 +4335,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4363,7 +4363,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/inline-comments/{comment_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4384,7 +4384,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-id'")
         url = f"{self.base_url}/inline-comments/{comment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4411,7 +4411,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4432,7 +4432,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/inline-comments/{id}/likes/count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4455,7 +4455,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/inline-comments/{id}/likes/users"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4476,7 +4476,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/inline-comments/{id}/operations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4503,7 +4503,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("body-format", body_format), ("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4527,7 +4527,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'version-number'")
         url = f"{self.base_url}/inline-comments/{id}/versions/{version_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4552,7 +4552,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-id'")
         url = f"{self.base_url}/comments/{comment_id}/properties"
         query_params = {k: v for k, v in [("key", key), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4577,7 +4577,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/comments/{comment_id}/properties"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4601,7 +4601,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/comments/{comment_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4630,7 +4630,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/comments/{comment_id}/properties/{property_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4654,7 +4654,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'property-id'")
         url = f"{self.base_url}/comments/{comment_id}/properties/{property_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4733,7 +4733,7 @@ class ConfluenceApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4755,7 +4755,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/tasks/{id}"
         query_params = {k: v for k, v in [("body-format", body_format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4779,7 +4779,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/children"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4803,7 +4803,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/custom-content/{id}/children"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4825,7 +4825,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/ancestors"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4846,7 +4846,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/users-bulk"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4867,7 +4867,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/user/access/check-access-by-email"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4888,7 +4888,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/user/access/invite-by-email"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4904,7 +4904,7 @@ class ConfluenceApp(APIApplication):
         """
         url = f"{self.base_url}/data-policies/metadata"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4929,7 +4929,7 @@ class ConfluenceApp(APIApplication):
         query_params = {
             k: v for k, v in [("ids", ids), ("keys", keys), ("sort", sort), ("cursor", cursor), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4945,7 +4945,7 @@ class ConfluenceApp(APIApplication):
         """
         url = f"{self.base_url}/classification-levels"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4966,7 +4966,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/classification-level/default"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4990,7 +4990,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/spaces/{id}/classification-level/default"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5011,7 +5011,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/spaces/{id}/classification-level/default"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5033,7 +5033,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/pages/{id}/classification-level"
         query_params = {k: v for k, v in [("status", status)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5057,7 +5057,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{id}/classification-level"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5081,7 +5081,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/pages/{id}/classification-level/reset"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5103,7 +5103,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/blogposts/{id}/classification-level"
         query_params = {k: v for k, v in [("status", status)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5127,7 +5127,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{id}/classification-level"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5151,7 +5151,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/blogposts/{id}/classification-level/reset"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5172,7 +5172,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/whiteboards/{id}/classification-level"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5196,7 +5196,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{id}/classification-level"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5220,7 +5220,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/whiteboards/{id}/classification-level/reset"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5241,7 +5241,7 @@ class ConfluenceApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/databases/{id}/classification-level"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5265,7 +5265,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{id}/classification-level"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5289,7 +5289,7 @@ class ConfluenceApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/databases/{id}/classification-level/reset"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

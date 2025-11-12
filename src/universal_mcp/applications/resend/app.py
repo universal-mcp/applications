@@ -782,7 +782,7 @@ class ResendApp(APIApplication):
         except Exception as e:
             raise ToolError(f"Failed to list contacts: {e}")
 
-    def list_tools(self) -> list[callable]:
+    def list_tools(self):
         return [
             self.send_email,
             self.send_batch_emails,

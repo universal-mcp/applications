@@ -44,7 +44,7 @@ class FigmaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -74,7 +74,7 @@ class FigmaApp(APIApplication):
             for k, v in [("ids", ids), ("version", version), ("depth", depth), ("geometry", geometry), ("plugin_data", plugin_data)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -133,7 +133,7 @@ class FigmaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -154,7 +154,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/images"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -175,7 +175,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/projects"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -197,7 +197,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/v1/projects/{project_id}/files"
         query_params = {k: v for k, v in [("branch_data", branch_data)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -221,7 +221,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/versions"
         query_params = {k: v for k, v in [("page_size", page_size), ("before", before), ("after", after)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -243,7 +243,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/comments"
         query_params = {k: v for k, v in [("as_md", as_md)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -269,7 +269,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/files/{file_key}/comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -293,7 +293,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'")
         url = f"{self.base_url}/v1/files/{file_key}/comments/{comment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -318,7 +318,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'")
         url = f"{self.base_url}/v1/files/{file_key}/comments/{comment_id}/reactions"
         query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -345,7 +345,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/files/{file_key}/comments/{comment_id}/reactions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -370,7 +370,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'")
         url = f"{self.base_url}/v1/files/{file_key}/comments/{comment_id}/reactions"
         query_params = {k: v for k, v in [("emoji", emoji)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -386,7 +386,7 @@ class FigmaApp(APIApplication):
         """
         url = f"{self.base_url}/v1/me"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -410,7 +410,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/components"
         query_params = {k: v for k, v in [("page_size", page_size), ("after", after), ("before", before)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -431,7 +431,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/components"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -452,7 +452,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/v1/components/{key}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -476,7 +476,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/component_sets"
         query_params = {k: v for k, v in [("page_size", page_size), ("after", after), ("before", before)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -497,7 +497,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/component_sets"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -518,7 +518,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/v1/component_sets/{key}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -542,7 +542,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v1/teams/{team_id}/styles"
         query_params = {k: v for k, v in [("page_size", page_size), ("after", after), ("before", before)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -563,7 +563,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/styles"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -584,7 +584,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/v1/styles/{key}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -619,7 +619,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/webhooks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -640,7 +640,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'")
         url = f"{self.base_url}/v2/webhooks/{webhook_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -670,7 +670,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/webhooks/{webhook_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -691,7 +691,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'")
         url = f"{self.base_url}/v2/webhooks/{webhook_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -712,7 +712,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/v2/teams/{team_id}/webhooks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -733,7 +733,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'")
         url = f"{self.base_url}/v2/webhooks/{webhook_id}/requests"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -760,7 +760,7 @@ class FigmaApp(APIApplication):
             for k, v in [("events", events), ("start_time", start_time), ("end_time", end_time), ("limit", limit), ("order", order)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -795,7 +795,7 @@ class FigmaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -816,7 +816,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/variables/local"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -837,7 +837,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/variables/published"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -871,7 +871,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/files/{file_key}/variables"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -893,7 +893,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'file_key'")
         url = f"{self.base_url}/v1/files/{file_key}/dev_resources"
         query_params = {k: v for k, v in [("node_ids", node_ids)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -914,7 +914,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/dev_resources"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -935,7 +935,7 @@ class FigmaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/dev_resources"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -959,7 +959,7 @@ class FigmaApp(APIApplication):
             raise ValueError("Missing required parameter 'dev_resource_id'")
         url = f"{self.base_url}/v1/files/{file_key}/dev_resources/{dev_resource_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

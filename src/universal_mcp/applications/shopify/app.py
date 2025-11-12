@@ -52,7 +52,7 @@ class ShopifyApp(APIApplication):
         """
         url = f"{self.base_url}/admin/oauth/access_scopes.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -82,7 +82,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -116,7 +116,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -152,7 +152,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'storefront_access_token_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/storefront_access_tokens/{storefront_access_token_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -208,7 +208,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -242,7 +242,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/reports.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -276,7 +276,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'report_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -313,7 +313,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -347,7 +347,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'report_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/reports/{report_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -379,7 +379,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/application_charges.json"
         query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -413,7 +413,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/application_charges.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -449,7 +449,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -488,7 +488,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/application_charges/{application_charge_id}/activate.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -519,7 +519,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/application_credits.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -553,7 +553,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/application_credits.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -587,7 +587,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'application_credit_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/application_credits/{application_credit_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -619,7 +619,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges.json"
         query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -653,7 +653,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -689,7 +689,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -723,7 +723,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -762,7 +762,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/activate.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -800,7 +800,7 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/customize.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -836,7 +836,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'recurring_application_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -875,7 +875,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -914,7 +914,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'usage_charge_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/recurring_application_charges/{recurring_application_charge_id}/usage_charges/{usage_charge_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -947,7 +947,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -986,7 +986,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1022,7 +1022,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'address_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1064,7 +1064,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1103,7 +1103,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'address_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1139,7 +1139,7 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/set.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1180,7 +1180,7 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/addresses/{address_id}/default.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1242,7 +1242,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1276,7 +1276,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1312,7 +1312,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/search.json"
         query_params = {k: v for k, v in [("order", order), ("query", query), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1346,7 +1346,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1383,7 +1383,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1417,7 +1417,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1455,7 +1455,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/account_activation_url.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1494,7 +1494,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/send_invite.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1524,7 +1524,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1557,7 +1557,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customers/{customer_id}/orders.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1592,7 +1592,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches.json"
         query_params = {k: v for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1626,7 +1626,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1657,7 +1657,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/count.json"
         query_params = {k: v for k, v in [("since_id", since_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1693,7 +1693,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1732,7 +1732,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1768,7 +1768,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1806,7 +1806,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_saved_search_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/customer_saved_searches/{customer_saved_search_id}/customers.json"
         query_params = {k: v for k, v in [("order", order), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1839,7 +1839,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1878,7 +1878,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1914,7 +1914,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'discount_code_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1956,7 +1956,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1995,7 +1995,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'discount_code_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/discount_codes/{discount_code_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2025,7 +2025,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/discount_codes/lookup.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2064,7 +2064,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2100,7 +2100,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch/{batch_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2136,7 +2136,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}/batch/{batch_id}/discount_codes.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2207,7 +2207,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2242,7 +2242,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2275,7 +2275,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2314,7 +2314,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2348,7 +2348,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'price_rule_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/{price_rule_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2378,7 +2378,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/price_rules/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2437,7 +2437,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2471,7 +2471,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/events/{event_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2505,7 +2505,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/events/count.json"
         query_params = {k: v for k, v in [("created_at_min", created_at_min), ("created_at_max", created_at_max)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2570,7 +2570,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2604,7 +2604,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/webhooks.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2638,7 +2638,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/webhooks/count.json"
         query_params = {k: v for k, v in [("address", address), ("topic", topic)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2672,7 +2672,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2709,7 +2709,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2743,7 +2743,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/webhooks/{webhook_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2777,7 +2777,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/inventory_items.json"
         query_params = {k: v for k, v in [("ids", ids), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2810,7 +2810,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'inventory_item_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2849,7 +2849,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_items/{inventory_item_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2899,7 +2899,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2930,7 +2930,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2976,7 +2976,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/adjust.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3013,7 +3013,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/connect.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3051,7 +3051,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/inventory_levels/set.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3081,7 +3081,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/locations.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3114,7 +3114,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'location_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/locations/{location_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3144,7 +3144,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/locations/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3177,7 +3177,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'location_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/locations/{location_id}/inventory_levels.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3209,7 +3209,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events.json"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3243,7 +3243,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3273,7 +3273,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3306,7 +3306,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'marketing_event_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3345,7 +3345,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3379,7 +3379,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'marketing_event_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3418,7 +3418,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/marketing_events/{marketing_event_id}/engagements.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3486,7 +3486,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3520,7 +3520,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/metafields.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3550,7 +3550,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/metafields/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3584,7 +3584,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'metafield_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3621,7 +3621,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3655,7 +3655,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'metafield_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/metafields/{metafield_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3736,7 +3736,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3774,7 +3774,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3837,7 +3837,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3874,7 +3874,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'article_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3916,7 +3916,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3953,7 +3953,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'article_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}/articles/{article_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3983,7 +3983,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/articles/authors.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4017,7 +4017,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/articles/tags.json"
         query_params = {k: v for k, v in [("limit", limit), ("popular", popular)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4051,7 +4051,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'theme_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4088,7 +4088,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4122,7 +4122,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'theme_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}/assets.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4160,7 +4160,7 @@ class ShopifyApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("since_id", since_id), ("handle", handle), ("fields", fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4194,7 +4194,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4224,7 +4224,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/blogs/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4258,7 +4258,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'blog_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4295,7 +4295,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4329,7 +4329,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'blog_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/blogs/{blog_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4400,7 +4400,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4434,7 +4434,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/comments.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4496,7 +4496,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4530,7 +4530,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4569,7 +4569,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4605,7 +4605,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/spam.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4643,7 +4643,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/not_spam.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4679,7 +4679,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/approve.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4715,7 +4715,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/remove.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4751,7 +4751,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/comments/{comment_id}/restore.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4825,7 +4825,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4860,7 +4860,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/pages.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4922,7 +4922,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4956,7 +4956,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4993,7 +4993,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5027,7 +5027,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/pages/{page_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5074,7 +5074,7 @@ class ShopifyApp(APIApplication):
             for k, v in [("limit", limit), ("since_id", since_id), ("path", path), ("target", target), ("fields", fields)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5108,7 +5108,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/redirects.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5142,7 +5142,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/redirects/count.json"
         query_params = {k: v for k, v in [("path", path), ("target", target)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5176,7 +5176,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'redirect_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5215,7 +5215,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5249,7 +5249,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'redirect_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/redirects/{redirect_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5311,7 +5311,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5345,7 +5345,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/script_tags.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5376,7 +5376,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/script_tags/count.json"
         query_params = {k: v for k, v in [("src", src)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5410,7 +5410,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'script_tag_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5447,7 +5447,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5481,7 +5481,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'script_tag_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/script_tags/{script_tag_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5512,7 +5512,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/themes.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5546,7 +5546,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/themes.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5580,7 +5580,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'theme_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5617,7 +5617,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5651,7 +5651,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'theme_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/themes/{theme_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5707,7 +5707,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5766,7 +5766,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5800,7 +5800,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5859,7 +5859,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5893,7 +5893,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5927,7 +5927,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'draft_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5966,7 +5966,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6000,7 +6000,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'draft_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6045,7 +6045,7 @@ class ShopifyApp(APIApplication):
             for k, v in [("since_id", since_id), ("status", status), ("updated_at_max", updated_at_max), ("updated_at_min", updated_at_min)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6084,7 +6084,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/send_invoice.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6120,7 +6120,7 @@ class ShopifyApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/admin/api/{api_version}/draft_orders/{draft_order_id}/complete.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="text/plain")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="text/plain")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6153,7 +6153,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6192,7 +6192,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6228,7 +6228,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'risk_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6270,7 +6270,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6309,7 +6309,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'risk_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/risks/{risk_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6392,7 +6392,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6426,7 +6426,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6459,7 +6459,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6496,7 +6496,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6530,7 +6530,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6589,7 +6589,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6625,7 +6625,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/close.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6661,7 +6661,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/open.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6702,7 +6702,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/cancel.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6740,7 +6740,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json"
         query_params = {k: v for k, v in [("limit", limit), ("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6777,7 +6777,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6817,7 +6817,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'refund_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/{refund_id}.json"
         query_params = {k: v for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6854,7 +6854,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/refunds/calculate.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6894,7 +6894,7 @@ class ShopifyApp(APIApplication):
         query_params = {
             k: v for k, v in [("since_id", since_id), ("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6933,7 +6933,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6966,7 +6966,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7006,7 +7006,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'transaction_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/transactions/{transaction_id}.json"
         query_params = {k: v for k, v in [("fields", fields), ("in_shop_currency", in_shop_currency)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7044,7 +7044,7 @@ class ShopifyApp(APIApplication):
         query_params = {
             k: v for k, v in [("status", status), ("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7078,7 +7078,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7111,7 +7111,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'gift_card_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7150,7 +7150,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7181,7 +7181,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/count.json"
         query_params = {k: v for k, v in [("status", status)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7218,7 +7218,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/{gift_card_id}/disable.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7254,7 +7254,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/gift_cards/search.json"
         query_params = {k: v for k, v in [("order", order), ("query", query), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7284,7 +7284,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/users.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7317,7 +7317,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/users/{user_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7347,7 +7347,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/users/current.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7382,7 +7382,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/collects.json"
         query_params = {k: v for k, v in [("limit", limit), ("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7416,7 +7416,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/collects.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7450,7 +7450,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collect_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collects/{collect_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7484,7 +7484,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collect_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collects/{collect_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7514,7 +7514,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/collects/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7548,7 +7548,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collections/{collection_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7582,7 +7582,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collections/{collection_id}/products.json"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7656,7 +7656,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7690,7 +7690,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/custom_collections.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7749,7 +7749,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7783,7 +7783,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_collection_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7822,7 +7822,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7858,7 +7858,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_collection_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/custom_collections/{custom_collection_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7895,7 +7895,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
         query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8122,7 +8122,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8156,7 +8156,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/count.json"
         query_params = {k: v for k, v in [("since_id", since_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8195,7 +8195,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'image_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8237,7 +8237,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8276,7 +8276,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'image_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/images/{image_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8325,7 +8325,7 @@ class ShopifyApp(APIApplication):
             for k, v in [("limit", limit), ("presentment_currencies", presentment_currencies), ("since_id", since_id), ("fields", fields)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8362,7 +8362,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8395,7 +8395,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8429,7 +8429,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'variant_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8468,7 +8468,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/variants/{variant_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8507,7 +8507,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'variant_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}/variants/{variant_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8596,7 +8596,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8630,7 +8630,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8698,7 +8698,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8732,7 +8732,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8769,7 +8769,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8803,7 +8803,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/products/{product_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8877,7 +8877,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8911,7 +8911,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8970,7 +8970,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9004,7 +9004,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'smart_collection_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9233,7 +9233,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9269,7 +9269,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'smart_collection_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9307,7 +9307,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/smart_collections/{smart_collection_id}/order.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9343,7 +9343,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/complete.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9376,7 +9376,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9413,7 +9413,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9446,7 +9446,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/shipping_rates.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9477,7 +9477,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/collection_listings.json"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9511,7 +9511,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_listing_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}/product_ids.json"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9544,7 +9544,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_listing_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9583,7 +9583,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9617,7 +9617,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_listing_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/collection_listings/{collection_listing_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9648,7 +9648,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/https:/elb.deposit.shopifycs.com/sessions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9681,7 +9681,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9718,7 +9718,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9754,7 +9754,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'payment_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments/{payment_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9787,7 +9787,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/admin/api/{api_version}/checkouts/{token}/payments/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9843,7 +9843,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9874,7 +9874,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/product_listings/product_ids.json"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9904,7 +9904,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/product_listings/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9937,7 +9937,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_listing_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9976,7 +9976,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10010,7 +10010,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'product_listing_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/product_listings/{product_listing_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10040,7 +10040,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/resource_feedback.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10074,7 +10074,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/resource_feedback.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10108,7 +10108,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/assigned_fulfillment_orders.json"
         query_params = {k: v for k, v in [("assignment_status", assignment_status), ("location_ids", location_ids)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10147,7 +10147,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10186,7 +10186,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/accept.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10225,7 +10225,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancellation_request/reject.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10255,7 +10255,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10289,7 +10289,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10322,7 +10322,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'carrier_service_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10361,7 +10361,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10395,7 +10395,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'carrier_service_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/carrier_services/{carrier_service_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10458,7 +10458,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10495,7 +10495,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10531,7 +10531,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillments.json"
         query_params = {k: v for k, v in [("fulfillment_order_id", fulfillment_order_id_query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10585,7 +10585,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10624,7 +10624,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10666,7 +10666,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10700,7 +10700,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillments.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10739,7 +10739,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/update_tracking.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10780,7 +10780,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/complete.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10821,7 +10821,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/open.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10862,7 +10862,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/cancel.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10900,7 +10900,7 @@ class ShopifyApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillments/{fulfillment_id}/cancel.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10945,7 +10945,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json"
         query_params = {k: v for k, v in [("fulfillment_id", fulfillment_id_query), ("order_id", order_id_query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10987,7 +10987,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11029,7 +11029,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json"
         query_params = {k: v for k, v in [("event_id", event_id_query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11071,7 +11071,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillments/{fulfillment_id}/events/{event_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11105,7 +11105,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/orders/{order_id}/fulfillment_orders.json"
         query_params = {k: v for k, v in [("order_id", order_id_query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11138,7 +11138,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11177,7 +11177,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/cancel.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11216,7 +11216,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/close.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11255,7 +11255,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/move.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11294,7 +11294,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11333,7 +11333,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/accept.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11372,7 +11372,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/fulfillment_request/reject.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11403,7 +11403,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services.json"
         query_params = {k: v for k, v in [("scope", scope)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11437,7 +11437,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11470,7 +11470,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_service_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11509,7 +11509,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11545,7 +11545,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_service_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_services/{fulfillment_service_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11581,7 +11581,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'fulfillment_order_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/fulfillment_orders/{fulfillment_order_id}/locations_for_move.json"
         query_params = {k: v for k, v in [("fulfillment_order_id", fulfillment_order_id_query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11611,7 +11611,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/balance.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11656,7 +11656,7 @@ class ShopifyApp(APIApplication):
             for k, v in [("since_id", since_id), ("last_id", last_id), ("status", status), ("initiated_at", initiated_at)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11689,7 +11689,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'dispute_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/disputes/{dispute_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11745,7 +11745,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11778,7 +11778,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'payout_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/shopify_payments/payouts/{payout_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11831,7 +11831,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11865,7 +11865,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries.json"
         query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11899,7 +11899,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/countries.json"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11929,7 +11929,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11963,7 +11963,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'country_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12000,7 +12000,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12034,7 +12034,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'country_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}.json"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12064,7 +12064,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/currencies.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12094,7 +12094,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/policies.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12131,7 +12131,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'country_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces.json"
         query_params = {k: v for k, v in [("since_id", since_id), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12164,7 +12164,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'country_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/count.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12203,7 +12203,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'province_id'.")
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12245,7 +12245,7 @@ class ShopifyApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/admin/api/{api_version}/countries/{country_id}/provinces/{province_id}.json"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12276,7 +12276,7 @@ class ShopifyApp(APIApplication):
             raise ValueError("Missing required parameter 'api_version'.")
         url = f"{self.base_url}/admin/api/{api_version}/shop.json"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12332,7 +12332,7 @@ class ShopifyApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

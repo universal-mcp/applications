@@ -65,8 +65,8 @@ class GoogleCalendarApp(APIApplication):
             params["timeZone"] = time_zone
         date_range = "today" if days == 1 else f"the next {days} days"
         logger.info(f"Retrieving calendar events for {date_range}")
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def get_event_by_id(self, event_id: str, max_attendees: int | None = None, time_zone: str | None = None) -> dict[str, Any]:
         """
@@ -94,8 +94,8 @@ class GoogleCalendarApp(APIApplication):
         if time_zone:
             params["timeZone"] = time_zone
         logger.info(f"Retrieving calendar event with ID: {event_id}")
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def list_events(
         self,
@@ -147,8 +147,8 @@ class GoogleCalendarApp(APIApplication):
         if page_token:
             params["pageToken"] = page_token
         logger.info(f"Retrieving calendar events with params: {params}")
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def create_event(
         self,
@@ -209,8 +209,8 @@ class GoogleCalendarApp(APIApplication):
         }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/calendars/{calendar_id}/events"
-        response = self._post(url, data=request_body_data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=request_body_data)
+        return await self._async_handle_response(response)
 
     async def create_event_from_text(self, text: str, send_updates: str = "none") -> dict[str, Any]:
         """
@@ -232,8 +232,8 @@ class GoogleCalendarApp(APIApplication):
         url = f"{self.base_api_url}/events/quickAdd"
         params = {"text": text, "sendUpdates": send_updates}
         logger.info(f"Creating event via quickAdd: '{text}'")
-        response = self._post(url, data=None, params=params)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=None, params=params)
+        return await self._async_handle_response(response)
 
     async def list_recurring_event_instances(
         self,
@@ -278,8 +278,8 @@ class GoogleCalendarApp(APIApplication):
         if page_token:
             params["pageToken"] = page_token
         logger.info(f"Retrieving instances of recurring event with ID: {event_id}")
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def delete_event(
         self,
@@ -337,8 +337,8 @@ class GoogleCalendarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_delete(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def replace_event(
         self,
@@ -403,8 +403,8 @@ class GoogleCalendarApp(APIApplication):
         if max_attendees is not None:
             params["maxAttendees"] = str(max_attendees)
         logger.info(f"Updating calendar event with ID: {event_id}")
-        response = self._put(url, data=request_body_data, params=params)
-        return self._handle_response(response)
+        response = await self._async_put(url, data=request_body_data, params=params)
+        return await self._async_handle_response(response)
 
     async def get_primary_calendar_details(self) -> dict[str, Any]:
         """
@@ -421,8 +421,8 @@ class GoogleCalendarApp(APIApplication):
         """
         url = f"{self.base_api_url}"
         logger.info("Retrieving user's calendar timezone settings")
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     async def get_free_busy_info(
         self,
@@ -503,7 +503,7 @@ class GoogleCalendarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

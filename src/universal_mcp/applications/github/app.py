@@ -36,7 +36,7 @@ class GithubApp(APIApplication):
             star, github, api, action, social, repository, important
         """
         url = f"https://api.github.com/user/starred/{repo_full_name}"
-        response = self._put(url, data={})
+        response = await self._async_put(url, data={})
         if response.status_code == 204:
             return f"Successfully starred repository {repo_full_name}"
         elif response.status_code == 404:
@@ -64,7 +64,7 @@ class GithubApp(APIApplication):
         """
         repo_full_name = repo_full_name.strip()
         url = f"{self.base_api_url}/{repo_full_name}/commits"
-        response = self._get(url)
+        response = await self._async_get(url)
         response.raise_for_status()
         commits = response.json()
         if not commits:
@@ -96,7 +96,7 @@ class GithubApp(APIApplication):
         """
         repo_full_name = repo_full_name.strip()
         url = f"{self.base_api_url}/{repo_full_name}/branches"
-        response = self._get(url)
+        response = await self._async_get(url)
         response.raise_for_status()
         branches = response.json()
         if not branches:
@@ -127,7 +127,7 @@ class GithubApp(APIApplication):
         repo_full_name = repo_full_name.strip()
         url = f"{self.base_api_url}/{repo_full_name}/pulls"
         params = {"state": state}
-        response = self._get(url, params=params)
+        response = await self._async_get(url, params=params)
         response.raise_for_status()
         pull_requests = response.json()
         if not pull_requests:
@@ -172,7 +172,7 @@ class GithubApp(APIApplication):
             params["assignee"] = assignee
         if labels:
             params["labels"] = labels
-        response = self._get(url, params=params)
+        response = await self._async_get(url, params=params)
         response.raise_for_status()
         return response.json()
 
@@ -196,7 +196,7 @@ class GithubApp(APIApplication):
         """
         repo_full_name = repo_full_name.strip()
         url = f"{self.base_api_url}/{repo_full_name}/pulls/{pull_number}"
-        response = self._get(url)
+        response = await self._async_get(url)
         response.raise_for_status()
         pr = response.json()
         pr_title = pr.get("title", "No Title")
@@ -252,7 +252,7 @@ class GithubApp(APIApplication):
             pull_request_data["title"] = title
             if body is not None:
                 pull_request_data["body"] = body
-        response = self._post(url, pull_request_data)
+        response = await self._async_post(url, pull_request_data)
         response.raise_for_status()
         return response.json()
 
@@ -284,7 +284,7 @@ class GithubApp(APIApplication):
                 issue_data["labels"] = labels_list
             else:
                 issue_data["labels"] = labels
-        response = self._post(url, issue_data)
+        response = await self._async_post(url, issue_data)
         response.raise_for_status()
         issue = response.json()
         issue_number = issue.get("number", "Unknown")
@@ -313,7 +313,7 @@ class GithubApp(APIApplication):
         repo_full_name = repo_full_name.strip()
         url = f"{self.base_api_url}/{repo_full_name}/activity"
         params = {"direction": direction, "per_page": per_page}
-        response = self._get(url, params=params)
+        response = await self._async_get(url, params=params)
         response.raise_for_status()
         activities = response.json()
         if not activities:
@@ -371,7 +371,7 @@ class GithubApp(APIApplication):
             update_data["state"] = state
         if state_reason is not None:
             update_data["state_reason"] = state_reason
-        response = self._patch(url, update_data)
+        response = await self._async_patch(url, update_data)
         response.raise_for_status()
         return response.json()
 

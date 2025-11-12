@@ -61,7 +61,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -180,7 +180,9 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/oauth2/token"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -227,7 +229,9 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/oauth2/token#refresh"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -262,7 +266,9 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/oauth2/revoke"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -310,7 +316,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -356,7 +362,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -463,7 +469,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -494,7 +500,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -534,7 +540,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/app_item_associations"
         query_params = {k: v for k, v in [("limit", limit), ("marker", marker), ("application_type", application_type)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -572,7 +578,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/content"
         query_params = {k: v for k, v in [("version", version), ("access_token", access_token)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -646,7 +652,9 @@ class BoxApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/files/{file_id}/content"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_post(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -751,7 +759,9 @@ class BoxApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/files/content"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_post(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -786,7 +796,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/upload_sessions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -823,7 +833,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/upload_sessions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -853,7 +863,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'upload_session_id'.")
         url = f"{self.base_url}/files/upload_sessions/{upload_session_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -886,7 +896,7 @@ class BoxApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/files/upload_sessions/{upload_session_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -917,7 +927,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'upload_session_id'.")
         url = f"{self.base_url}/files/upload_sessions/{upload_session_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -953,7 +963,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'upload_session_id'.")
         url = f"{self.base_url}/files/upload_sessions/{upload_session_id}/parts"
         query_params = {k: v for k, v in [("offset", offset), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -987,7 +997,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/upload_sessions/{upload_session_id}/commit"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1049,7 +1059,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/copy"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1099,7 +1109,7 @@ class BoxApp(APIApplication):
             for k, v in [("min_height", min_height), ("min_width", min_width), ("max_height", max_height), ("max_width", max_width)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1150,7 +1160,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/collaborations"
         query_params = {k: v for k, v in [("fields", fields), ("limit", limit), ("marker", marker)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1198,7 +1208,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/comments"
         query_params = {k: v for k, v in [("fields", fields), ("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1231,7 +1241,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/tasks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1272,7 +1282,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/trash"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1303,7 +1313,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/trash"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1350,7 +1360,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/versions"
         query_params = {k: v for k, v in [("fields", fields), ("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1396,7 +1406,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_version_id'.")
         url = f"{self.base_url}/files/{file_id}/versions/{file_version_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1430,7 +1440,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_version_id'.")
         url = f"{self.base_url}/files/{file_id}/versions/{file_version_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1468,7 +1478,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/versions/{file_version_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1514,7 +1524,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/versions/current"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1547,7 +1557,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/metadata"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1580,7 +1590,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1622,7 +1632,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1654,7 +1664,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/files/{file_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1685,7 +1695,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1723,7 +1733,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_key'.")
         url = f"{self.base_url}/files/{file_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1765,7 +1775,7 @@ class BoxApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/files/{file_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1806,7 +1816,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/files/{file_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1843,7 +1853,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_key'.")
         url = f"{self.base_url}/files/{file_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1876,7 +1886,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/metadata/global/boxSkillsCards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1911,7 +1921,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/metadata/global/boxSkillsCards"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1944,7 +1954,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/files/{file_id}/metadata/global/boxSkillsCards"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1975,7 +1985,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/metadata/global/boxSkillsCards"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2006,7 +2016,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/watermark"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2041,7 +2051,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}/watermark"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2071,7 +2081,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}/watermark"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2101,7 +2111,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_request_id'.")
         url = f"{self.base_url}/file_requests/{file_request_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2187,7 +2197,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/file_requests/{file_request_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2218,7 +2228,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_request_id'.")
         url = f"{self.base_url}/file_requests/{file_request_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2307,7 +2317,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/file_requests/{file_request_id}/copy"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2409,7 +2419,7 @@ class BoxApp(APIApplication):
             for k, v in [("fields", fields), ("sort", sort), ("direction", direction), ("offset", offset), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2455,7 +2465,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2584,7 +2594,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2617,7 +2627,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}"
         query_params = {k: v for k, v in [("recursive", recursive)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2657,7 +2667,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/app_item_associations"
         query_params = {k: v for k, v in [("limit", limit), ("marker", marker), ("application_type", application_type)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2770,7 +2780,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2835,7 +2845,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2893,7 +2903,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}/copy"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2944,7 +2954,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/collaborations"
         query_params = {k: v for k, v in [("fields", fields), ("limit", limit), ("marker", marker)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2985,7 +2995,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/trash"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3016,7 +3026,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/trash"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3049,7 +3059,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/metadata"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3082,7 +3092,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3124,7 +3134,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3156,7 +3166,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/folders/{folder_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3187,7 +3197,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/metadata/enterprise/securityClassification-6VMVochwUWo"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3225,7 +3235,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_key'.")
         url = f"{self.base_url}/folders/{folder_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3267,7 +3277,7 @@ class BoxApp(APIApplication):
         request_body_data = request_body if request_body is not None else {}
         url = f"{self.base_url}/folders/{folder_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3308,7 +3318,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/folders/{folder_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3345,7 +3355,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_key'.")
         url = f"{self.base_url}/folders/{folder_id}/metadata/{scope}/{template_key}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3429,7 +3439,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3460,7 +3470,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/watermark"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3495,7 +3505,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}/watermark"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3526,7 +3536,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}/watermark"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3564,7 +3574,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/folder_locks"
         query_params = {k: v for k, v in [("folder_id", folder_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3601,7 +3611,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folder_locks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3631,7 +3641,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_lock_id'.")
         url = f"{self.base_url}/folder_locks/{folder_lock_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3669,7 +3679,7 @@ class BoxApp(APIApplication):
         query_params = {
             k: v for k, v in [("metadata_instance_id", metadata_instance_id), ("marker", marker), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3696,7 +3706,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/metadata_templates/enterprise/securityClassification-6VMVochwUWo/schema"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3727,7 +3737,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/metadata_templates/enterprise/securityClassification-6VMVochwUWo/schema#add"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3758,7 +3768,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/metadata_templates/enterprise/securityClassification-6VMVochwUWo/schema#update"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3792,7 +3802,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_key'.")
         url = f"{self.base_url}/metadata_templates/{scope}/{template_key}/schema"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3828,7 +3838,7 @@ class BoxApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/metadata_templates/{scope}/{template_key}/schema"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3862,7 +3872,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_key'.")
         url = f"{self.base_url}/metadata_templates/{scope}/{template_key}/schema"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3892,7 +3902,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'.")
         url = f"{self.base_url}/metadata_templates/{template_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3925,7 +3935,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/metadata_templates/global"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3958,7 +3968,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/metadata_templates/enterprise"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4024,7 +4034,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/metadata_templates/schema"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4086,7 +4096,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/metadata_templates/schema#classifications"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4133,7 +4143,7 @@ class BoxApp(APIApplication):
             for k, v in [("folder_id", folder_id), ("owner_enterprise_id", owner_enterprise_id), ("marker", marker), ("offset", offset)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4185,7 +4195,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/metadata_cascade_policies"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4215,7 +4225,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'metadata_cascade_policy_id'.")
         url = f"{self.base_url}/metadata_cascade_policies/{metadata_cascade_policy_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4246,7 +4256,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'metadata_cascade_policy_id'.")
         url = f"{self.base_url}/metadata_cascade_policies/{metadata_cascade_policy_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4291,7 +4301,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/metadata_cascade_policies/{metadata_cascade_policy_id}/apply"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4384,7 +4394,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/metadata_queries/execute_read"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4423,7 +4433,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         url = f"{self.base_url}/comments/{comment_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4466,7 +4476,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/comments/{comment_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4496,7 +4506,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'comment_id'.")
         url = f"{self.base_url}/comments/{comment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4561,7 +4571,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/comments"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4600,7 +4610,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collaboration_id'.")
         url = f"{self.base_url}/collaborations/{collaboration_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4670,7 +4680,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/collaborations/{collaboration_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4701,7 +4711,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collaboration_id'.")
         url = f"{self.base_url}/collaborations/{collaboration_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4749,7 +4759,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/collaborations"
         query_params = {k: v for k, v in [("status", status), ("fields", fields), ("offset", offset), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4837,7 +4847,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/collaborations"
         query_params = {k: v for k, v in [("fields", fields), ("notify", notify)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5131,7 +5141,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5184,7 +5194,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/tasks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5214,7 +5224,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'task_id'.")
         url = f"{self.base_url}/tasks/{task_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5268,7 +5278,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5298,7 +5308,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'task_id'.")
         url = f"{self.base_url}/tasks/{task_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5329,7 +5339,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'task_id'.")
         url = f"{self.base_url}/tasks/{task_id}/assignments"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5361,7 +5371,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/task_assignments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5392,7 +5402,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'task_assignment_id'.")
         url = f"{self.base_url}/task_assignments/{task_assignment_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5434,7 +5444,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/task_assignments/{task_assignment_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5465,7 +5475,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'task_assignment_id'.")
         url = f"{self.base_url}/task_assignments/{task_assignment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5502,7 +5512,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/shared_items"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5535,7 +5545,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'.")
         url = f"{self.base_url}/files/{file_id}#get_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5574,7 +5584,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}#add_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5611,7 +5621,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}#update_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5648,7 +5658,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{file_id}#remove_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5685,7 +5695,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/shared_items#folders"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5718,7 +5728,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'.")
         url = f"{self.base_url}/folders/{folder_id}#get_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5760,7 +5770,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}#add_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5797,7 +5807,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}#update_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5836,7 +5846,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/folders/{folder_id}#remove_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5873,7 +5883,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/web_links"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5903,7 +5913,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'web_link_id'.")
         url = f"{self.base_url}/web_links/{web_link_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5949,7 +5959,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/web_links/{web_link_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5996,7 +6006,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/web_links/{web_link_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6027,7 +6037,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'web_link_id'.")
         url = f"{self.base_url}/web_links/{web_link_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6068,7 +6078,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'web_link_id'.")
         url = f"{self.base_url}/web_links/{web_link_id}/trash"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6099,7 +6109,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'web_link_id'.")
         url = f"{self.base_url}/web_links/{web_link_id}/trash"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6136,7 +6146,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/shared_items#web_links"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6169,7 +6179,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'web_link_id'.")
         url = f"{self.base_url}/web_links/{web_link_id}#get_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6209,7 +6219,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/web_links/{web_link_id}#add_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6246,7 +6256,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/web_links/{web_link_id}#update_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6286,7 +6296,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/web_links/{web_link_id}#remove_shared_link"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6312,7 +6322,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/shared_items#app_items"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6413,7 +6423,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6522,7 +6532,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6558,7 +6568,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/users/me"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6592,7 +6602,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/terminate_sessions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6636,7 +6646,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/users/{user_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6768,7 +6778,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{user_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6802,7 +6812,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/users/{user_id}"
         query_params = {k: v for k, v in [("notify", notify), ("force", force)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6834,7 +6844,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/users/{user_id}/avatar"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6877,7 +6887,9 @@ class BoxApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/users/{user_id}/avatar"
         query_params = {}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_post(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6907,7 +6919,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/users/{user_id}/avatar"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6955,7 +6967,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{user_id}/folders/0"
         query_params = {k: v for k, v in [("fields", fields), ("notify", notify)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6985,7 +6997,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/users/{user_id}/email_aliases"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7025,7 +7037,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{user_id}/email_aliases"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7058,7 +7070,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'email_alias_id'.")
         url = f"{self.base_url}/users/{user_id}/email_aliases/{email_alias_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7095,7 +7107,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'.")
         url = f"{self.base_url}/users/{user_id}/memberships"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7138,7 +7150,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/invites"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7177,7 +7189,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'invite_id'.")
         url = f"{self.base_url}/invites/{invite_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7226,7 +7238,7 @@ class BoxApp(APIApplication):
         query_params = {
             k: v for k, v in [("filter_term", filter_term), ("fields", fields), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7321,7 +7333,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/groups"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7352,7 +7364,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/groups/terminate_sessions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7391,7 +7403,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'.")
         url = f"{self.base_url}/groups/{group_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7490,7 +7502,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/groups/{group_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7521,7 +7533,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'.")
         url = f"{self.base_url}/groups/{group_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7558,7 +7570,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'.")
         url = f"{self.base_url}/groups/{group_id}/memberships"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7595,7 +7607,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'.")
         url = f"{self.base_url}/groups/{group_id}/collaborations"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7654,7 +7666,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/group_memberships"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7693,7 +7705,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'group_membership_id'.")
         url = f"{self.base_url}/group_memberships/{group_membership_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7752,7 +7764,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/group_memberships/{group_membership_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7783,7 +7795,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'group_membership_id'.")
         url = f"{self.base_url}/group_memberships/{group_membership_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7815,7 +7827,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/webhooks"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7851,7 +7863,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/webhooks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7881,7 +7893,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'.")
         url = f"{self.base_url}/webhooks/{webhook_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7920,7 +7932,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/webhooks/{webhook_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7951,7 +7963,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'.")
         url = f"{self.base_url}/webhooks/{webhook_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8002,7 +8014,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/skill_invocations/{skill_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8122,7 +8134,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8164,7 +8176,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/collections"
         query_params = {k: v for k, v in [("fields", fields), ("offset", offset), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8211,7 +8223,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_id'.")
         url = f"{self.base_url}/collections/{collection_id}/items"
         query_params = {k: v for k, v in [("fields", fields), ("offset", offset), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8241,7 +8253,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collection_id'.")
         url = f"{self.base_url}/collections/{collection_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8284,7 +8296,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/recent_items"
         query_params = {k: v for k, v in [("fields", fields), ("limit", limit), ("marker", marker)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8346,7 +8358,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8437,7 +8449,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/retention_policies"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8476,7 +8488,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_id'.")
         url = f"{self.base_url}/retention_policies/{retention_policy_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8577,7 +8589,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/retention_policies/{retention_policy_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8607,7 +8619,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_id'.")
         url = f"{self.base_url}/retention_policies/{retention_policy_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8658,7 +8670,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_id'.")
         url = f"{self.base_url}/retention_policies/{retention_policy_id}/assignments"
         query_params = {k: v for k, v in [("type", type), ("fields", fields), ("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8709,7 +8721,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/retention_policy_assignments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8750,7 +8762,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_assignment_id'.")
         url = f"{self.base_url}/retention_policy_assignments/{retention_policy_assignment_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8781,7 +8793,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_assignment_id'.")
         url = f"{self.base_url}/retention_policy_assignments/{retention_policy_assignment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8819,7 +8831,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_assignment_id'.")
         url = f"{self.base_url}/retention_policy_assignments/{retention_policy_assignment_id}/files_under_retention"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8857,7 +8869,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'retention_policy_assignment_id'.")
         url = f"{self.base_url}/retention_policy_assignments/{retention_policy_assignment_id}/file_versions_under_retention"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8904,7 +8916,7 @@ class BoxApp(APIApplication):
         query_params = {
             k: v for k, v in [("policy_name", policy_name), ("fields", fields), ("marker", marker), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8979,7 +8991,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legal_hold_policies"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9009,7 +9021,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'legal_hold_policy_id'.")
         url = f"{self.base_url}/legal_hold_policies/{legal_hold_policy_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9047,7 +9059,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legal_hold_policies/{legal_hold_policy_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9078,7 +9090,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'legal_hold_policy_id'.")
         url = f"{self.base_url}/legal_hold_policies/{legal_hold_policy_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9143,7 +9155,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9175,7 +9187,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legal_hold_policy_assignments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9205,7 +9217,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'legal_hold_policy_assignment_id'.")
         url = f"{self.base_url}/legal_hold_policy_assignments/{legal_hold_policy_assignment_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9236,7 +9248,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'legal_hold_policy_assignment_id'.")
         url = f"{self.base_url}/legal_hold_policy_assignments/{legal_hold_policy_assignment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9283,7 +9295,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'legal_hold_policy_assignment_id'.")
         url = f"{self.base_url}/legal_hold_policy_assignments/{legal_hold_policy_assignment_id}/files_on_hold"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9347,7 +9359,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9394,7 +9406,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'legal_hold_policy_assignment_id'.")
         url = f"{self.base_url}/legal_hold_policy_assignments/{legal_hold_policy_assignment_id}/file_versions_on_hold"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9424,7 +9436,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_version_retention_id'.")
         url = f"{self.base_url}/file_version_retentions/{file_version_retention_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9454,7 +9466,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'file_version_legal_hold_id'.")
         url = f"{self.base_url}/file_version_legal_holds/{file_version_legal_hold_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9489,7 +9501,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/file_version_legal_holds"
         query_params = {k: v for k, v in [("policy_id", policy_id), ("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9519,7 +9531,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_id'.")
         url = f"{self.base_url}/shield_information_barriers/{shield_information_barrier_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9551,7 +9563,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barriers/change_status"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9583,7 +9595,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/shield_information_barriers"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9614,7 +9626,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barriers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9653,7 +9665,7 @@ class BoxApp(APIApplication):
             for k, v in [("shield_information_barrier_id", shield_information_barrier_id), ("marker", marker), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9685,7 +9697,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barrier_reports"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9715,7 +9727,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_report_id'.")
         url = f"{self.base_url}/shield_information_barrier_reports/{shield_information_barrier_report_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9745,7 +9757,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_segment_id'.")
         url = f"{self.base_url}/shield_information_barrier_segments/{shield_information_barrier_segment_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9775,7 +9787,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_segment_id'.")
         url = f"{self.base_url}/shield_information_barrier_segments/{shield_information_barrier_segment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9815,7 +9827,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barrier_segments/{shield_information_barrier_segment_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9854,7 +9866,7 @@ class BoxApp(APIApplication):
             for k, v in [("shield_information_barrier_id", shield_information_barrier_id), ("marker", marker), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9893,7 +9905,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barrier_segments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9923,7 +9935,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_segment_member_id'.")
         url = f"{self.base_url}/shield_information_barrier_segment_members/{shield_information_barrier_segment_member_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9954,7 +9966,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_segment_member_id'.")
         url = f"{self.base_url}/shield_information_barrier_segment_members/{shield_information_barrier_segment_member_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9998,7 +10010,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10045,7 +10057,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barrier_segment_members"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10076,7 +10088,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_segment_restriction_id'.")
         url = f"{self.base_url}/shield_information_barrier_segment_restrictions/{shield_information_barrier_segment_restriction_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10106,7 +10118,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_information_barrier_segment_restriction_id'.")
         url = f"{self.base_url}/shield_information_barrier_segment_restrictions/{shield_information_barrier_segment_restriction_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10150,7 +10162,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10200,7 +10212,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_information_barrier_segment_restrictions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10230,7 +10242,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'device_pinner_id'.")
         url = f"{self.base_url}/device_pinners/{device_pinner_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10260,7 +10272,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'device_pinner_id'.")
         url = f"{self.base_url}/device_pinners/{device_pinner_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10299,7 +10311,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'enterprise_id'.")
         url = f"{self.base_url}/enterprises/{enterprise_id}/device_pinners"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit), ("direction", direction)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10328,7 +10340,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/terms_of_services"
         query_params = {k: v for k, v in [("tos_type", tos_type)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10366,7 +10378,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/terms_of_services"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10396,7 +10408,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'terms_of_service_id'.")
         url = f"{self.base_url}/terms_of_services/{terms_of_service_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10435,7 +10447,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/terms_of_services/{terms_of_service_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10464,7 +10476,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/terms_of_service_user_statuses"
         query_params = {k: v for k, v in [("tos_id", tos_id), ("user_id", user_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10499,7 +10511,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/terms_of_service_user_statuses"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10535,7 +10547,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/terms_of_service_user_statuses/{terms_of_service_user_status_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10567,7 +10579,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/collaboration_whitelist_entries"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10599,7 +10611,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/collaboration_whitelist_entries"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10629,7 +10641,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collaboration_whitelist_entry_id'.")
         url = f"{self.base_url}/collaboration_whitelist_entries/{collaboration_whitelist_entry_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10660,7 +10672,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collaboration_whitelist_entry_id'.")
         url = f"{self.base_url}/collaboration_whitelist_entries/{collaboration_whitelist_entry_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10692,7 +10704,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/collaboration_whitelist_exempt_targets"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10723,7 +10735,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/collaboration_whitelist_exempt_targets"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10753,7 +10765,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collaboration_whitelist_exempt_target_id'.")
         url = f"{self.base_url}/collaboration_whitelist_exempt_targets/{collaboration_whitelist_exempt_target_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10784,7 +10796,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'collaboration_whitelist_exempt_target_id'.")
         url = f"{self.base_url}/collaboration_whitelist_exempt_targets/{collaboration_whitelist_exempt_target_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10827,7 +10839,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/storage_policies"
         query_params = {k: v for k, v in [("fields", fields), ("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10857,7 +10869,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'storage_policy_id'.")
         url = f"{self.base_url}/storage_policies/{storage_policy_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10897,7 +10909,7 @@ class BoxApp(APIApplication):
             for k, v in [("marker", marker), ("resolved_for_type", resolved_for_type), ("resolved_for_id", resolved_for_id)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10933,7 +10945,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/storage_policy_assignments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10963,7 +10975,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'storage_policy_assignment_id'.")
         url = f"{self.base_url}/storage_policy_assignments/{storage_policy_assignment_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11000,7 +11012,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/storage_policy_assignments/{storage_policy_assignment_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11031,7 +11043,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'storage_policy_assignment_id'.")
         url = f"{self.base_url}/storage_policy_assignments/{storage_policy_assignment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11067,7 +11079,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/zip_downloads"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11098,7 +11110,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'zip_download_id'.")
         url = f"{self.base_url}/zip_downloads/{zip_download_id}/content"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11128,7 +11140,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'zip_download_id'.")
         url = f"{self.base_url}/zip_downloads/{zip_download_id}/status"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11159,7 +11171,7 @@ class BoxApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/sign_requests/{sign_request_id}/cancel"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11191,7 +11203,7 @@ class BoxApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/sign_requests/{sign_request_id}/resend"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11221,7 +11233,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'sign_request_id'.")
         url = f"{self.base_url}/sign_requests/{sign_request_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11265,7 +11277,7 @@ class BoxApp(APIApplication):
             for k, v in [("marker", marker), ("limit", limit), ("senders", senders), ("shared_requests", shared_requests)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11356,7 +11368,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/sign_requests"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11405,7 +11417,7 @@ class BoxApp(APIApplication):
             for k, v in [("folder_id", folder_id), ("trigger_type", trigger_type), ("limit", limit), ("marker", marker)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11452,7 +11464,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/workflows/{workflow_id}/start"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11484,7 +11496,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/sign_templates"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11514,7 +11526,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'.")
         url = f"{self.base_url}/sign_templates/{template_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11572,7 +11584,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11607,7 +11619,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/integration_mappings/slack"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11644,7 +11656,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/integration_mappings/slack/{integration_mapping_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11674,7 +11686,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'integration_mapping_id'.")
         url = f"{self.base_url}/integration_mappings/slack/{integration_mapping_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11720,7 +11732,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11752,7 +11764,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/integration_mappings/teams"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11786,7 +11798,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/integration_mappings/teams/{integration_mapping_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11816,7 +11828,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'integration_mapping_id'.")
         url = f"{self.base_url}/integration_mappings/teams/{integration_mapping_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11867,7 +11879,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/ai/ask"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11911,7 +11923,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/ai/text_gen"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11948,7 +11960,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/ai_agent_default"
         query_params = {k: v for k, v in [("mode", mode), ("language", language), ("model", model)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11983,7 +11995,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/ai/extract"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12025,7 +12037,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/ai/extract_structured"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12077,7 +12089,7 @@ class BoxApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12135,7 +12147,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/ai_agents"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12197,7 +12209,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/ai_agents/{agent_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12228,7 +12240,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'agent_id'.")
         url = f"{self.base_url}/ai_agents/{agent_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12258,7 +12270,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'agent_id'.")
         url = f"{self.base_url}/ai_agents/{agent_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12289,7 +12301,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/docgen_templates"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12321,7 +12333,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/docgen_templates"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12351,7 +12363,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'.")
         url = f"{self.base_url}/docgen_templates/{template_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12381,7 +12393,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'.")
         url = f"{self.base_url}/docgen_templates/{template_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12421,7 +12433,7 @@ class BoxApp(APIApplication):
         query_params = {
             k: v for k, v in [("template_version_id", template_version_id), ("marker", marker), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12451,7 +12463,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'job_id'.")
         url = f"{self.base_url}/docgen_jobs/{job_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12483,7 +12495,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/docgen_jobs"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12518,7 +12530,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'.")
         url = f"{self.base_url}/docgen_template_jobs/{template_id}"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12553,7 +12565,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'.")
         url = f"{self.base_url}/docgen_batch_jobs/{batch_id}"
         query_params = {k: v for k, v in [("marker", marker), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12604,7 +12616,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/docgen_batches"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12629,7 +12641,7 @@ class BoxApp(APIApplication):
         """
         url = f"{self.base_url}/shield_lists"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12662,7 +12674,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_lists"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12692,7 +12704,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_list_id'.")
         url = f"{self.base_url}/shield_lists/{shield_list_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12722,7 +12734,7 @@ class BoxApp(APIApplication):
             raise ValueError("Missing required parameter 'shield_list_id'.")
         url = f"{self.base_url}/shield_lists/{shield_list_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12760,7 +12772,7 @@ class BoxApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/shield_lists/{shield_list_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

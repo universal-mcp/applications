@@ -125,6 +125,6 @@ class E2bApp(APIApplication):
                 raise NotAuthorizedError(f"E2B authentication/permission failed: {e}")
             raise ToolError(f"E2B code execution failed: {e}")
 
-    def list_tools(self) -> list[callable]:
+    def list_tools(self):
         """Lists the tools available from the E2bApp."""
         return [self.execute_python_code]

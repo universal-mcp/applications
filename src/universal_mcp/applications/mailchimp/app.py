@@ -27,7 +27,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -50,7 +50,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/activity-feed/chimp-chatter"
         query_params = {k: v for k, v in [("count", count), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -77,7 +77,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -105,7 +105,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/account-exports"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -132,7 +132,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'export_id'")
         url = f"{self.base_url}/account-exports/{export_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -161,7 +161,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -188,7 +188,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'app_id'")
         url = f"{self.base_url}/authorized-apps/{app_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -243,7 +243,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -274,7 +274,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/automations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -301,7 +301,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -326,7 +326,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}/actions/pause-all-emails"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -351,7 +351,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}/actions/start-all-emails"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -376,7 +376,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}/actions/archive"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -401,7 +401,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -429,7 +429,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_email_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -457,7 +457,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_email_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -489,7 +489,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -517,7 +517,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_email_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}/queue"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -546,7 +546,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_email_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}/queue"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -577,7 +577,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}/queue/{subscriber_hash}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -605,7 +605,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_email_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}/actions/pause"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -633,7 +633,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_email_id'")
         url = f"{self.base_url}/automations/{workflow_id}/emails/{workflow_email_id}/actions/start"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -658,7 +658,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}/removed-subscribers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -684,7 +684,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow_id'")
         url = f"{self.base_url}/automations/{workflow_id}/removed-subscribers"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -712,7 +712,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/automations/{workflow_id}/removed-subscribers/{subscriber_hash}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -739,7 +739,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -766,7 +766,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/batches"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -793,7 +793,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'")
         url = f"{self.base_url}/batches/{batch_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -818,7 +818,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'")
         url = f"{self.base_url}/batches/{batch_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -845,7 +845,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -873,7 +873,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/batch-webhooks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -900,7 +900,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_webhook_id'")
         url = f"{self.base_url}/batch-webhooks/{batch_webhook_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -929,7 +929,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/batch-webhooks/{batch_webhook_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -954,7 +954,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_webhook_id'")
         url = f"{self.base_url}/batch-webhooks/{batch_webhook_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -981,7 +981,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1003,7 +1003,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/template-folders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1030,7 +1030,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/template-folders/{folder_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1056,7 +1056,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/template-folders/{folder_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1081,7 +1081,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/template-folders/{folder_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1108,7 +1108,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1130,7 +1130,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/campaign-folders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1157,7 +1157,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/campaign-folders/{folder_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1183,7 +1183,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/campaign-folders/{folder_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1208,7 +1208,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/campaign-folders/{folder_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1284,7 +1284,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1329,7 +1329,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1367,7 +1367,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1411,7 +1411,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1436,7 +1436,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1461,7 +1461,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/cancel-send"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1486,7 +1486,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/replicate"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1511,7 +1511,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/send"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1543,7 +1543,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/schedule"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1568,7 +1568,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/unschedule"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1601,7 +1601,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/test"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1626,7 +1626,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/pause"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1651,7 +1651,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/resume"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1679,7 +1679,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}/actions/create-resend"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1706,7 +1706,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/content"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1748,7 +1748,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}/content"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1775,7 +1775,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/feedback"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1807,7 +1807,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}/feedback"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1837,7 +1837,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'feedback_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/feedback/{feedback_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1872,7 +1872,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/campaigns/{campaign_id}/feedback/{feedback_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1900,7 +1900,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'feedback_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/feedback/{feedback_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1927,7 +1927,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/campaigns/{campaign_id}/send-checklist"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1954,7 +1954,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1984,7 +1984,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/connected-sites"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2011,7 +2011,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'connected_site_id'")
         url = f"{self.base_url}/connected-sites/{connected_site_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2036,7 +2036,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'connected_site_id'")
         url = f"{self.base_url}/connected-sites/{connected_site_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2061,7 +2061,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'connected_site_id'")
         url = f"{self.base_url}/connected-sites/{connected_site_id}/actions/verify-script-installation"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2103,7 +2103,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2130,7 +2130,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'conversation_id'")
         url = f"{self.base_url}/conversations/{conversation_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2172,7 +2172,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2202,7 +2202,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'message_id'")
         url = f"{self.base_url}/conversations/{conversation_id}/messages/{message_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2235,7 +2235,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/customer-journeys/journeys/{journey_id}/steps/{step_id}/actions/trigger"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2266,7 +2266,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/file-manager/files"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2293,7 +2293,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'")
         url = f"{self.base_url}/file-manager/files/{file_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2322,7 +2322,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/file-manager/files/{file_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2347,7 +2347,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'")
         url = f"{self.base_url}/file-manager/files/{file_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2389,7 +2389,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2411,7 +2411,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/file-manager/folders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2438,7 +2438,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/file-manager/folders/{folder_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2464,7 +2464,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/file-manager/folders/{folder_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2489,7 +2489,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'folder_id'")
         url = f"{self.base_url}/file-manager/folders/{folder_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2619,7 +2619,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2686,7 +2686,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2718,7 +2718,7 @@ class MailchimpApp(APIApplication):
             for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("include_total_contacts", include_total_contacts)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2789,7 +2789,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2814,7 +2814,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2854,7 +2854,7 @@ class MailchimpApp(APIApplication):
             for k, v in [("skip_merge_validation", skip_merge_validation), ("skip_duplicate_check", skip_duplicate_check)]
             if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2885,7 +2885,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2919,7 +2919,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2950,7 +2950,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("count", count), ("offset", offset), ("fields", fields), ("exclude_fields", exclude_fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2977,7 +2977,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/clients"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3021,7 +3021,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3051,7 +3051,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'month'")
         url = f"{self.base_url}/lists/{list_id}/growth-history/{month}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3087,7 +3087,7 @@ class MailchimpApp(APIApplication):
             for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset), ("type", type)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3113,7 +3113,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3143,7 +3143,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_category_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3172,7 +3172,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_category_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3200,7 +3200,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_category_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3236,7 +3236,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3265,7 +3265,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_category_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}/interests"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3299,7 +3299,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3333,7 +3333,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3364,7 +3364,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'interest_id'")
         url = f"{self.base_url}/lists/{list_id}/interest-categories/{interest_category_id}/interests/{interest_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3433,7 +3433,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3465,7 +3465,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/segments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3517,7 +3517,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3545,7 +3545,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/lists/{list_id}/segments/{segment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3580,7 +3580,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/segments/{segment_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3612,7 +3612,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/segments/{segment_id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3670,7 +3670,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3703,7 +3703,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/segments/{segment_id}/members"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3734,7 +3734,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/segments/{segment_id}/members/{subscriber_hash}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3760,7 +3760,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/tag-search"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3849,7 +3849,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3927,7 +3927,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/members"
         query_params = {k: v for k, v in [("skip_merge_validation", skip_merge_validation)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3957,7 +3957,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4040,7 +4040,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}"
         query_params = {k: v for k, v in [("skip_merge_validation", skip_merge_validation)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4116,7 +4116,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}"
         query_params = {k: v for k, v in [("skip_merge_validation", skip_merge_validation)] if v is not None}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4144,7 +4144,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4177,7 +4177,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/activity"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("action", action)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4222,7 +4222,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4258,7 +4258,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4292,7 +4292,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/tags"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4327,7 +4327,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("count", count), ("offset", offset), ("fields", fields), ("exclude_fields", exclude_fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4363,7 +4363,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/events"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4393,7 +4393,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/goals"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4440,7 +4440,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4469,7 +4469,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/notes"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4502,7 +4502,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'note_id'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4534,7 +4534,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'note_id'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4565,7 +4565,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'note_id'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/notes/{note_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4593,7 +4593,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/lists/{list_id}/members/{subscriber_hash}/actions/delete-permanent"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4637,7 +4637,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4698,7 +4698,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/merge-fields"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4728,7 +4728,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'merge_id'")
         url = f"{self.base_url}/lists/{list_id}/merge-fields/{merge_id}"
         query_params = {k: v for k, v in [("exclude_fields", exclude_fields), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4789,7 +4789,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/merge-fields/{merge_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4817,7 +4817,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'merge_id'")
         url = f"{self.base_url}/lists/{list_id}/merge-fields/{merge_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4842,7 +4842,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/webhooks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4868,7 +4868,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/webhooks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4896,7 +4896,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'")
         url = f"{self.base_url}/lists/{list_id}/webhooks/{webhook_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4924,7 +4924,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'")
         url = f"{self.base_url}/lists/{list_id}/webhooks/{webhook_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4953,7 +4953,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_id'")
         url = f"{self.base_url}/lists/{list_id}/webhooks/{webhook_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4978,7 +4978,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/signup-forms"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5008,7 +5008,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/lists/{list_id}/signup-forms"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5035,7 +5035,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/locations"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5060,7 +5060,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/lists/{list_id}/surveys"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5088,7 +5088,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'survey_id'")
         url = f"{self.base_url}/lists/{list_id}/surveys/{survey_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5116,7 +5116,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'survey_id'")
         url = f"{self.base_url}/lists/{list_id}/surveys/{survey_id}/actions/publish"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5144,7 +5144,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'survey_id'")
         url = f"{self.base_url}/lists/{list_id}/surveys/{survey_id}/actions/unpublish"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5172,7 +5172,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'survey_id'")
         url = f"{self.base_url}/lists/{list_id}/surveys/{survey_id}/actions/create-email"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5208,7 +5208,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5260,7 +5260,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/landing-pages"
         query_params = {k: v for k, v in [("use_default_list", use_default_list)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5287,7 +5287,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'")
         url = f"{self.base_url}/landing-pages/{page_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5329,7 +5329,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/landing-pages/{page_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5354,7 +5354,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'")
         url = f"{self.base_url}/landing-pages/{page_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5379,7 +5379,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'")
         url = f"{self.base_url}/landing-pages/{page_id}/actions/publish"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5404,7 +5404,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'")
         url = f"{self.base_url}/landing-pages/{page_id}/actions/unpublish"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5431,7 +5431,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'")
         url = f"{self.base_url}/landing-pages/{page_id}/content"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5473,7 +5473,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5500,7 +5500,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/reports/{campaign_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5527,7 +5527,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/reports/{campaign_id}/abuse-reports"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5557,7 +5557,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'report_id'")
         url = f"{self.base_url}/reports/{campaign_id}/abuse-reports/{report_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5584,7 +5584,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/reports/{campaign_id}/advice"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5628,7 +5628,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5658,7 +5658,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'link_id'")
         url = f"{self.base_url}/reports/{campaign_id}/click-details/{link_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5694,7 +5694,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5729,7 +5729,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/reports/{campaign_id}/click-details/{link_id}/members/{subscriber_hash}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5775,7 +5775,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5805,7 +5805,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/reports/{campaign_id}/open-details/{subscriber_hash}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5832,7 +5832,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/reports/{campaign_id}/domain-performance"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5859,7 +5859,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/reports/{campaign_id}/eepurl"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5895,7 +5895,7 @@ class MailchimpApp(APIApplication):
             for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset), ("since", since)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5928,7 +5928,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/reports/{campaign_id}/email-activity/{subscriber_hash}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("since", since)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5961,7 +5961,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5994,7 +5994,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6024,7 +6024,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/reports/{campaign_id}/sent-to/{subscriber_hash}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6051,7 +6051,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/reports/{campaign_id}/sub-reports"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6083,7 +6083,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6113,7 +6113,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'subscriber_hash'")
         url = f"{self.base_url}/reports/{campaign_id}/unsubscribed/{subscriber_hash}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6155,7 +6155,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6222,7 +6222,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6244,7 +6244,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/templates"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6271,7 +6271,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         url = f"{self.base_url}/templates/{template_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6297,7 +6297,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         url = f"{self.base_url}/templates/{template_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6322,7 +6322,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         url = f"{self.base_url}/templates/{template_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6349,7 +6349,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         url = f"{self.base_url}/templates/{template_id}/default-content"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6401,7 +6401,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6428,7 +6428,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6502,7 +6502,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6529,7 +6529,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'store_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6593,7 +6593,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6618,7 +6618,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'store_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6649,7 +6649,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6705,7 +6705,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6735,7 +6735,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'cart_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6791,7 +6791,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6819,7 +6819,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'cart_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6855,7 +6855,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6900,7 +6900,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}/lines"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6933,7 +6933,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'line_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6972,7 +6972,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7003,7 +7003,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'line_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/carts/{cart_id}/lines/{line_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7044,7 +7044,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7094,7 +7094,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/customers"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7124,7 +7124,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/customers/{customer_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7177,7 +7177,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/customers/{customer_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7220,7 +7220,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/customers/{customer_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7247,7 +7247,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'customer_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/customers/{customer_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7278,7 +7278,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7352,7 +7352,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7382,7 +7382,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'promo_rule_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7447,7 +7447,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7475,7 +7475,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'promo_rule_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7511,7 +7511,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7573,7 +7573,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7605,7 +7605,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'promo_code_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7662,7 +7662,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7693,7 +7693,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'promo_code_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/promo-rules/{promo_rule_id}/promo-codes/{promo_code_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7750,7 +7750,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7863,7 +7863,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7893,7 +7893,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7997,7 +7997,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8024,7 +8024,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'order_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8060,7 +8060,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8115,7 +8115,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}/lines"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8148,7 +8148,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'line_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8194,7 +8194,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8225,7 +8225,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'line_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/orders/{order_id}/lines/{line_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8255,7 +8255,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8325,7 +8325,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8355,7 +8355,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8420,7 +8420,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8448,7 +8448,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8484,7 +8484,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8513,7 +8513,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'product_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/variants"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8548,7 +8548,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'variant_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8580,7 +8580,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'variant_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8643,7 +8643,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8674,7 +8674,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'variant_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/variants/{variant_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8709,7 +8709,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8746,7 +8746,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/images"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8779,7 +8779,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'image_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8815,7 +8815,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8846,7 +8846,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'image_id'")
         url = f"{self.base_url}/ecommerce/stores/{store_id}/products/{product_id}/images/{image_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8873,7 +8873,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'query'")
         url = f"{self.base_url}/search-campaigns"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8905,7 +8905,7 @@ class MailchimpApp(APIApplication):
             for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("query", query), ("list_id", list_id)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8927,7 +8927,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/ping"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8967,7 +8967,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8994,7 +8994,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'outreach_id'")
         url = f"{self.base_url}/facebook-ads/{outreach_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9034,7 +9034,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9061,7 +9061,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'outreach_id'")
         url = f"{self.base_url}/reporting/facebook-ads/{outreach_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9103,7 +9103,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9130,7 +9130,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'outreach_id'")
         url = f"{self.base_url}/reporting/landing-pages/{outreach_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9157,7 +9157,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9184,7 +9184,7 @@ class MailchimpApp(APIApplication):
         query_params = {
             k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("count", count), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9210,7 +9210,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'survey_id'")
         url = f"{self.base_url}/reporting/surveys/{survey_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9237,7 +9237,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'survey_id'")
         url = f"{self.base_url}/reporting/surveys/{survey_id}/questions"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9267,7 +9267,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'question_id'")
         url = f"{self.base_url}/reporting/surveys/{survey_id}/questions/{question_id}"
         query_params = {k: v for k, v in [("fields", fields), ("exclude_fields", exclude_fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9304,7 +9304,7 @@ class MailchimpApp(APIApplication):
             for k, v in [("fields", fields), ("exclude_fields", exclude_fields), ("respondent_familiarity_is", respondent_familiarity_is)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9346,7 +9346,7 @@ class MailchimpApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9374,7 +9374,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'response_id'")
         url = f"{self.base_url}/reporting/surveys/{survey_id}/responses/{response_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9399,7 +9399,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'domain_name'")
         url = f"{self.base_url}/verified-domains/{domain_name}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9424,7 +9424,7 @@ class MailchimpApp(APIApplication):
             raise ValueError("Missing required parameter 'domain_name'")
         url = f"{self.base_url}/verified-domains/{domain_name}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9454,7 +9454,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/verified-domains/{domain_name}/actions/verify"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9476,7 +9476,7 @@ class MailchimpApp(APIApplication):
         """
         url = f"{self.base_url}/verified-domains"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9503,7 +9503,7 @@ class MailchimpApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/verified-domains"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

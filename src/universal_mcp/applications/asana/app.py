@@ -28,7 +28,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'allocation_gid'")
         url = f"{self.base_url}/allocations/{allocation_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -72,7 +72,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/allocations/{allocation_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -95,7 +95,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'allocation_gid'")
         url = f"{self.base_url}/allocations/{allocation_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -138,7 +138,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -179,7 +179,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/allocations"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -203,7 +203,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'attachment_gid'")
         url = f"{self.base_url}/attachments/{attachment_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -226,7 +226,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'attachment_gid'")
         url = f"{self.base_url}/attachments/{attachment_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -259,7 +259,7 @@ class AsanaApp(APIApplication):
             for k, v in [("limit", limit), ("offset", offset), ("parent", parent), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -317,7 +317,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -382,7 +382,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/batch"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -482,7 +482,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -506,7 +506,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_field_gid'")
         url = f"{self.base_url}/custom_fields/{custom_field_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -609,7 +609,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields/{custom_field_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -632,7 +632,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_field_gid'")
         url = f"{self.base_url}/custom_fields/{custom_field_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -665,7 +665,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -706,7 +706,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields/{custom_field_gid}/enum_options"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -743,7 +743,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/custom_fields/{custom_field_gid}/enum_options/insert"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -782,7 +782,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/enum_options/{enum_option_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -813,7 +813,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -846,7 +846,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -874,7 +874,7 @@ class AsanaApp(APIApplication):
             for k, v in [("opt_fields", opt_fields), ("resource", resource), ("sync", sync), ("opt_pretty", opt_pretty)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -898,7 +898,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'goal_gid'")
         url = f"{self.base_url}/goals/{goal_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -946,7 +946,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -969,7 +969,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'goal_gid'")
         url = f"{self.base_url}/goals/{goal_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1031,7 +1031,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1078,7 +1078,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1124,7 +1124,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/setMetric"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1161,7 +1161,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/setMetricCurrentValue"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1199,7 +1199,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/addFollowers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1237,7 +1237,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/removeFollowers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1261,7 +1261,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'goal_gid'")
         url = f"{self.base_url}/goals/{goal_gid}/parentGoals"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1285,7 +1285,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'goal_relationship_gid'")
         url = f"{self.base_url}/goal_relationships/{goal_relationship_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1338,7 +1338,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goal_relationships/{goal_relationship_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1379,7 +1379,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1417,7 +1417,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/addSupportingRelationship"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1451,7 +1451,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/goals/{goal_gid}/removeSupportingRelationship"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1475,7 +1475,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'job_gid'")
         url = f"{self.base_url}/jobs/{job_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1516,7 +1516,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1550,7 +1550,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/memberships"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1574,7 +1574,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'membership_gid'")
         url = f"{self.base_url}/memberships/{membership_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1608,7 +1608,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/memberships/{membership_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1631,7 +1631,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'membership_gid'")
         url = f"{self.base_url}/memberships/{membership_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1663,7 +1663,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organization_exports"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1687,7 +1687,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_export_gid'")
         url = f"{self.base_url}/organization_exports/{organization_export_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1728,7 +1728,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1769,7 +1769,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1793,7 +1793,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'portfolio_gid'")
         url = f"{self.base_url}/portfolios/{portfolio_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1837,7 +1837,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1860,7 +1860,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'portfolio_gid'")
         url = f"{self.base_url}/portfolios/{portfolio_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1891,7 +1891,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1927,7 +1927,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/addItem"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1961,7 +1961,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/removeItem"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1998,7 +1998,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/addCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2032,7 +2032,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/removeCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2067,7 +2067,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/addMembers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2102,7 +2102,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/portfolios/{portfolio_gid}/removeMembers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2145,7 +2145,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2169,7 +2169,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'portfolio_membership_gid'")
         url = f"{self.base_url}/portfolio_memberships/{portfolio_membership_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2205,7 +2205,7 @@ class AsanaApp(APIApplication):
             for k, v in [("opt_fields", opt_fields), ("user", user), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2248,7 +2248,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2543,7 +2543,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2567,7 +2567,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2864,7 +2864,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2887,7 +2887,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2929,7 +2929,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/duplicate"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2960,7 +2960,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3002,7 +3002,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3300,7 +3300,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}/projects"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3342,7 +3342,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3640,7 +3640,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/projects"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3678,7 +3678,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/addCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3712,7 +3712,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/removeCustomFieldSetting"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3736,7 +3736,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_gid'")
         url = f"{self.base_url}/projects/{project_gid}/task_counts"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3771,7 +3771,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/addMembers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3806,7 +3806,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/removeMembers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3841,7 +3841,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/addFollowers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3876,7 +3876,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/removeFollowers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3914,7 +3914,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/saveAsTemplate"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3938,7 +3938,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_brief_gid'")
         url = f"{self.base_url}/project_briefs/{project_brief_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3977,7 +3977,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/project_briefs/{project_brief_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4000,7 +4000,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_brief_gid'")
         url = f"{self.base_url}/project_briefs/{project_brief_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4039,7 +4039,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/project_briefs"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4063,7 +4063,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_membership_gid'")
         url = f"{self.base_url}/project_memberships/{project_membership_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4099,7 +4099,7 @@ class AsanaApp(APIApplication):
             for k, v in [("opt_fields", opt_fields), ("user", user), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4123,7 +4123,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_status_gid'")
         url = f"{self.base_url}/project_statuses/{project_status_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4146,7 +4146,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_status_gid'")
         url = f"{self.base_url}/project_statuses/{project_status_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4177,7 +4177,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset), ("opt_fields", opt_fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4217,7 +4217,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/project_statuses"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4241,7 +4241,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_template_gid'")
         url = f"{self.base_url}/project_templates/{project_template_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4264,7 +4264,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'project_template_gid'")
         url = f"{self.base_url}/project_templates/{project_template_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4305,7 +4305,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4336,7 +4336,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4397,7 +4397,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/project_templates/{project_template_gid}/instantiateProject"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4433,7 +4433,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/rule_triggers/{rule_trigger_gid}/run"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4457,7 +4457,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'section_gid'")
         url = f"{self.base_url}/sections/{section_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4494,7 +4494,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/sections/{section_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4517,7 +4517,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'section_gid'")
         url = f"{self.base_url}/sections/{section_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4548,7 +4548,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4585,7 +4585,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/sections"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4621,7 +4621,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/sections/{section_gid}/addTask"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4657,7 +4657,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_gid}/sections/insert"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4681,7 +4681,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'status_update_gid'")
         url = f"{self.base_url}/status_updates/{status_update_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4704,7 +4704,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'status_update_gid'")
         url = f"{self.base_url}/status_updates/{status_update_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4745,7 +4745,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4791,7 +4791,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4815,7 +4815,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'story_gid'")
         url = f"{self.base_url}/stories/{story_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4857,7 +4857,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/stories/{story_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4880,7 +4880,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'story_gid'")
         url = f"{self.base_url}/stories/{story_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4911,7 +4911,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4953,7 +4953,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/stories"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4990,7 +4990,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5031,7 +5031,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tags"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5055,7 +5055,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_gid'")
         url = f"{self.base_url}/tags/{tag_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5079,7 +5079,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_gid'")
         url = f"{self.base_url}/tags/{tag_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._async_put(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5102,7 +5102,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'tag_gid'")
         url = f"{self.base_url}/tags/{tag_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5133,7 +5133,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5164,7 +5164,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5207,7 +5207,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/tags"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5273,7 +5273,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5439,7 +5439,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5463,7 +5463,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5632,7 +5632,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5655,7 +5655,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_gid'")
         url = f"{self.base_url}/tasks/{task_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5691,7 +5691,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/duplicate"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5733,7 +5733,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5775,7 +5775,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5806,7 +5806,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5848,7 +5848,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5879,7 +5879,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6048,7 +6048,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/subtasks"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6085,7 +6085,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/setParent"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6116,7 +6116,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6153,7 +6153,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addDependencies"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6190,7 +6190,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeDependencies"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6221,7 +6221,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6258,7 +6258,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addDependents"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6295,7 +6295,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeDependents"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6332,7 +6332,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addProject"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6366,7 +6366,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeProject"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6400,7 +6400,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addTag"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6434,7 +6434,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeTag"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6472,7 +6472,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/addFollowers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6510,7 +6510,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/removeFollowers"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6534,7 +6534,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_id'")
         url = f"{self.base_url}/workspaces/{workspace_gid}/tasks/custom_id/{custom_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6726,7 +6726,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6757,7 +6757,7 @@ class AsanaApp(APIApplication):
             for k, v in [("limit", limit), ("offset", offset), ("project", project), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6781,7 +6781,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_template_gid'")
         url = f"{self.base_url}/task_templates/{task_template_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6804,7 +6804,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'task_template_gid'")
         url = f"{self.base_url}/task_templates/{task_template_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6839,7 +6839,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/task_templates/{task_template_gid}/instantiateTask"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6884,7 +6884,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6908,7 +6908,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_gid'")
         url = f"{self.base_url}/teams/{team_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6956,7 +6956,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6987,7 +6987,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7029,7 +7029,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7064,7 +7064,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}/addUser"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7098,7 +7098,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/teams/{team_gid}/removeUser"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7122,7 +7122,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_membership_gid'")
         url = f"{self.base_url}/team_memberships/{team_membership_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7165,7 +7165,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7196,7 +7196,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7238,7 +7238,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7262,7 +7262,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'time_period_gid'")
         url = f"{self.base_url}/time_periods/{time_period_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7305,7 +7305,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7338,7 +7338,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("offset", offset), ("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7374,7 +7374,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{task_gid}/time_tracking_entries"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7398,7 +7398,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'time_tracking_entry_gid'")
         url = f"{self.base_url}/time_tracking_entries/{time_tracking_entry_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7434,7 +7434,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/time_tracking_entries/{time_tracking_entry_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7457,7 +7457,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'time_tracking_entry_gid'")
         url = f"{self.base_url}/time_tracking_entries/{time_tracking_entry_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7498,7 +7498,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7539,7 +7539,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7563,7 +7563,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'user_gid'")
         url = f"{self.base_url}/users/{user_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7607,7 +7607,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7634,7 +7634,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'team_gid'")
         url = f"{self.base_url}/teams/{team_gid}/users"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7661,7 +7661,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}/users"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7685,7 +7685,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'user_task_list_gid'")
         url = f"{self.base_url}/user_task_lists/{user_task_list_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7712,7 +7712,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("workspace", workspace)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7753,7 +7753,7 @@ class AsanaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7808,7 +7808,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/webhooks"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7832,7 +7832,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_gid'")
         url = f"{self.base_url}/webhooks/{webhook_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7888,7 +7888,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/webhooks/{webhook_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7911,7 +7911,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'webhook_gid'")
         url = f"{self.base_url}/webhooks/{webhook_gid}"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7939,7 +7939,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7963,7 +7963,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspace_gid'")
         url = f"{self.base_url}/workspaces/{workspace_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8000,7 +8000,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8035,7 +8035,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/addUser"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8069,7 +8069,7 @@ class AsanaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspace_gid}/removeUser"
         query_params = {k: v for k, v in [("opt_pretty", opt_pretty)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8093,7 +8093,7 @@ class AsanaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspace_membership_gid'")
         url = f"{self.base_url}/workspace_memberships/{workspace_membership_gid}"
         query_params = {k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8126,7 +8126,7 @@ class AsanaApp(APIApplication):
         query_params = {
             k: v for k, v in [("opt_fields", opt_fields), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8162,7 +8162,7 @@ class AsanaApp(APIApplication):
             for k, v in [("opt_fields", opt_fields), ("user", user), ("opt_pretty", opt_pretty), ("limit", limit), ("offset", offset)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

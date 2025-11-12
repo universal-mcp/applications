@@ -56,7 +56,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/announcementBanner"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -92,7 +92,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/announcementBanner"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -152,7 +152,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -184,7 +184,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/app/field/value"
         query_params = {k: v for k, v in [("generateChangelog", generateChangelog)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -243,7 +243,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -277,7 +277,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/context/configuration"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -314,7 +314,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/value"
         query_params = {k: v for k, v in [("generateChangelog", generateChangelog)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -346,7 +346,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/application-properties"
         query_params = {k: v for k, v in [("key", key), ("permissionLevel", permissionLevel), ("keyFilter", keyFilter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -371,7 +371,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/application-properties/advanced-settings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -406,7 +406,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/application-properties/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -431,7 +431,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/applicationrole"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -461,7 +461,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'key'.")
         url = f"{self.base_url}/rest/api/3/applicationrole/{key}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -492,7 +492,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/attachment/content/{id}"
         query_params = {k: v for k, v in [("redirect", redirect)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -517,7 +517,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/attachment/meta"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -562,7 +562,7 @@ class JiraApp(APIApplication):
             for k, v in [("redirect", redirect), ("fallbackToDefault", fallbackToDefault), ("width", width), ("height", height)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -592,7 +592,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/attachment/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -622,7 +622,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/attachment/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -652,7 +652,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/attachment/{id}/expand/human"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -682,7 +682,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/attachment/{id}/expand/raw"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -723,7 +723,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("offset", offset), ("limit", limit), ("filter", filter), ("from", from_), ("to", to)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -753,7 +753,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'type'.")
         url = f"{self.base_url}/rest/api/3/avatar/{type}/system"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -787,7 +787,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/bulk/issues/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -829,7 +829,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -876,7 +876,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/bulk/issues/fields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -918,7 +918,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/bulk/issues/move"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -954,7 +954,7 @@ class JiraApp(APIApplication):
             for k, v in [("issueIdsOrKeys", issueIdsOrKeys), ("endingBefore", endingBefore), ("startingAfter", startingAfter)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -993,7 +993,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/bulk/issues/transition"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1024,7 +1024,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/bulk/issues/unwatch"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1055,7 +1055,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/bulk/issues/watch"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1085,7 +1085,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'taskId'.")
         url = f"{self.base_url}/rest/api/3/bulk/queue/{taskId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1126,7 +1126,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/changelog/bulkfetch"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1155,7 +1155,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/classification-levels"
         query_params = {k: v for k, v in [("status", status), ("orderBy", orderBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1187,7 +1187,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/comment/list"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1217,7 +1217,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1250,7 +1250,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1283,7 +1283,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1317,7 +1317,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1366,7 +1366,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1460,7 +1460,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/component"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1491,7 +1491,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/component/{id}"
         query_params = {k: v for k, v in [("moveIssuesTo", moveIssuesTo)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1521,7 +1521,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/component/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1619,7 +1619,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/component/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1649,7 +1649,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/component/{id}/relatedIssueCounts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1674,7 +1674,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/configuration"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1699,7 +1699,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/configuration/timetracking"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1732,7 +1732,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/configuration/timetracking"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1757,7 +1757,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/configuration/timetracking/list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1782,7 +1782,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/configuration/timetracking/options"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1823,7 +1823,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/configuration/timetracking/options"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1853,7 +1853,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/customFieldOption/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1885,7 +1885,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/dashboard"
         query_params = {k: v for k, v in [("filter", filter), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1932,7 +1932,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/dashboard"
         query_params = {k: v for k, v in [("extendAdminPermissions", extendAdminPermissions)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1980,7 +1980,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/dashboard/bulk/edit"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2005,7 +2005,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/dashboard/gadgets"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2072,7 +2072,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2107,7 +2107,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'dashboardId'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget"
         query_params = {k: v for k, v in [("moduleKey", moduleKey), ("uri", uri), ("gadgetId", gadgetId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2162,7 +2162,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2195,7 +2195,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'gadgetId'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget/{gadgetId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2236,7 +2236,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget/{gadgetId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2269,7 +2269,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'itemId'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2305,7 +2305,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2341,7 +2341,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2378,7 +2378,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2408,7 +2408,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2438,7 +2438,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/dashboard/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2489,7 +2489,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/dashboard/{id}"
         query_params = {k: v for k, v in [("extendAdminPermissions", extendAdminPermissions)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2540,7 +2540,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/dashboard/{id}/copy"
         query_params = {k: v for k, v in [("extendAdminPermissions", extendAdminPermissions)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2565,7 +2565,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/data-policy"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2593,7 +2593,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/data-policy/project"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2618,7 +2618,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/events"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2653,7 +2653,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/expression/analyse"
         query_params = {k: v for k, v in [("check", check)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2686,7 +2686,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/expression/eval"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2719,7 +2719,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/expression/evaluate"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2744,7 +2744,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/field"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2829,7 +2829,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2860,7 +2860,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/association"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2892,7 +2892,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/association"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2950,7 +2950,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3002,7 +3002,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3062,7 +3062,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3115,7 +3115,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3161,7 +3161,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3196,7 +3196,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/defaultValue"
         query_params = {k: v for k, v in [("contextId", contextId), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3230,7 +3230,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/defaultValue"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3265,7 +3265,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/issuetypemapping"
         query_params = {k: v for k, v in [("contextId", contextId), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3303,7 +3303,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/mapping"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3338,7 +3338,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/projectmapping"
         query_params = {k: v for k, v in [("contextId", contextId), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3371,7 +3371,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'contextId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3411,7 +3411,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3448,7 +3448,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/issuetype"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3485,7 +3485,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/issuetype/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3534,7 +3534,7 @@ class JiraApp(APIApplication):
             for k, v in [("optionId", optionId), ("onlyOptions", onlyOptions), ("startAt", startAt), ("maxResults", maxResults)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3571,7 +3571,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3608,7 +3608,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3649,7 +3649,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/move"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3685,7 +3685,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'optionId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3725,7 +3725,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'optionId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}/issue"
         query_params = {k: v for k, v in [("replaceWith", replaceWith), ("jql", jql)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3762,7 +3762,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/project"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3799,7 +3799,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/project/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3833,7 +3833,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/contexts"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3868,7 +3868,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldId}/screens"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3900,7 +3900,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldKey'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3938,7 +3938,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3973,7 +3973,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldKey'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/suggestions/edit"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4008,7 +4008,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldKey'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/suggestions/search"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4041,7 +4041,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'optionId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4074,7 +4074,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'optionId'.")
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4122,7 +4122,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4176,7 +4176,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4206,7 +4206,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/field/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4237,7 +4237,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/field/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4268,7 +4268,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/field/{id}/trash"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4311,7 +4311,7 @@ class JiraApp(APIApplication):
             for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("isDefault", isDefault), ("query", query)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4343,7 +4343,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfiguration"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4373,7 +4373,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4408,7 +4408,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4440,7 +4440,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}/fields"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4474,7 +4474,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}/fields"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4506,7 +4506,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4538,7 +4538,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4574,7 +4574,7 @@ class JiraApp(APIApplication):
             for k, v in [("startAt", startAt), ("maxResults", maxResults), ("fieldConfigurationSchemeId", fieldConfigurationSchemeId)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4606,7 +4606,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/project"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4638,7 +4638,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/project"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4668,7 +4668,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4703,7 +4703,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4737,7 +4737,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}/mapping"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4771,7 +4771,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4853,7 +4853,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/filter"
         query_params = {k: v for k, v in [("expand", expand), ("overrideSharePermissions", overrideSharePermissions)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4878,7 +4878,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/filter/defaultShareScope"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4913,7 +4913,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/filter/defaultShareScope"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4941,7 +4941,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/filter/favourite"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4970,7 +4970,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/filter/my"
         query_params = {k: v for k, v in [("expand", expand), ("includeFavourites", includeFavourites)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5043,7 +5043,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5073,7 +5073,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5105,7 +5105,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}"
         query_params = {k: v for k, v in [("expand", expand), ("overrideSharePermissions", overrideSharePermissions)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5191,7 +5191,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/filter/{id}"
         query_params = {k: v for k, v in [("expand", expand), ("overrideSharePermissions", overrideSharePermissions)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5221,7 +5221,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}/columns"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5251,7 +5251,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}/columns"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5291,7 +5291,9 @@ class JiraApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/rest/api/3/filter/{id}/columns"
         query_params = {}
-        response = self._put(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_put(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5322,7 +5324,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}/favourite"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5354,7 +5356,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/filter/{id}/favourite"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5388,7 +5390,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/filter/{id}/owner"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5418,7 +5420,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}/permission"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5483,7 +5485,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/filter/{id}/permission"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5516,7 +5518,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'permissionId'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}/permission/{permissionId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5549,7 +5551,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'permissionId'.")
         url = f"{self.base_url}/rest/api/3/filter/{id}/permission/{permissionId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5586,7 +5588,7 @@ class JiraApp(APIApplication):
             for k, v in [("groupname", groupname), ("groupId", groupId), ("swapGroup", swapGroup), ("swapGroupId", swapGroupId)]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5616,7 +5618,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/group"
         query_params = {k: v for k, v in [("groupname", groupname), ("groupId", groupId), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5647,7 +5649,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/group"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5699,7 +5701,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5748,7 +5750,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5785,7 +5787,7 @@ class JiraApp(APIApplication):
             for k, v in [("groupname", groupname), ("groupId", groupId), ("username", username), ("accountId", accountId)]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5821,7 +5823,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/group/user"
         query_params = {k: v for k, v in [("groupname", groupname), ("groupId", groupId)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5876,7 +5878,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5937,7 +5939,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5962,7 +5964,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/instance/license"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6012,7 +6014,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue"
         query_params = {k: v for k, v in [("updateHistory", updateHistory)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6043,7 +6045,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6074,7 +6076,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/archive"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6113,7 +6115,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6186,7 +6188,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/bulkfetch"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6235,7 +6237,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6269,7 +6271,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6306,7 +6308,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeId'.")
         url = f"{self.base_url}/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes/{issueTypeId}"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6334,7 +6336,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issue/limit/report"
         query_params = {k: v for k, v in [("isReturningKeys", isReturningKeys)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6386,7 +6388,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6420,7 +6422,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/properties"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6451,7 +6453,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/properties/multi"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6487,7 +6489,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6525,7 +6527,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6556,7 +6558,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/unarchive"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6587,7 +6589,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/watching"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6618,7 +6620,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}"
         query_params = {k: v for k, v in [("deleteSubtasks", deleteSubtasks)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6674,7 +6676,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6746,7 +6748,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6829,7 +6831,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/assignee"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6862,7 +6864,9 @@ class JiraApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/attachments"
         query_params = {}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_post(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6894,7 +6898,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/changelog"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6928,7 +6932,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/changelog/list"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6971,7 +6975,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("orderBy", orderBy), ("expand", expand)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7046,7 +7050,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7079,7 +7083,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7113,7 +7117,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7200,7 +7204,7 @@ class JiraApp(APIApplication):
             for k, v in [("notifyUsers", notifyUsers), ("overrideEditableFlag", overrideEditableFlag), ("expand", expand)]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7238,7 +7242,7 @@ class JiraApp(APIApplication):
             for k, v in [("overrideScreenSecurity", overrideScreenSecurity), ("overrideEditableFlag", overrideEditableFlag)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7284,7 +7288,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/notify"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7314,7 +7318,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7347,7 +7351,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7380,7 +7384,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7414,7 +7418,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7445,7 +7449,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink"
         query_params = {k: v for k, v in [("globalId", globalId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7476,7 +7480,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink"
         query_params = {k: v for k, v in [("globalId", globalId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7519,7 +7523,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7552,7 +7556,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'linkId'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7585,7 +7589,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'linkId'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7637,7 +7641,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7690,7 +7694,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7742,7 +7746,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/transitions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7772,7 +7776,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7802,7 +7806,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7833,7 +7837,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7865,7 +7869,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers"
         query_params = {k: v for k, v in [("username", username), ("accountId", accountId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7895,7 +7899,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7926,7 +7930,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7965,7 +7969,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("adjustEstimate", adjustEstimate), ("overrideEditableFlag", overrideEditableFlag)] if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8018,7 +8022,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8117,7 +8121,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8163,7 +8167,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("adjustEstimate", adjustEstimate), ("overrideEditableFlag", overrideEditableFlag)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8220,7 +8224,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8254,7 +8258,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8354,7 +8358,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8387,7 +8391,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'worklogId'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8423,7 +8427,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8459,7 +8463,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8496,7 +8500,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8535,7 +8539,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issueLink"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8565,7 +8569,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'linkId'.")
         url = f"{self.base_url}/rest/api/3/issueLink/{linkId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8595,7 +8599,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'linkId'.")
         url = f"{self.base_url}/rest/api/3/issueLink/{linkId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8620,7 +8624,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issueLinkType"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8674,7 +8678,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issueLinkType"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8704,7 +8708,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueLinkTypeId'.")
         url = f"{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8734,7 +8738,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueLinkTypeId'.")
         url = f"{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8792,7 +8796,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8840,7 +8844,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issues/archive/export"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8865,7 +8869,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8900,7 +8904,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8943,7 +8947,7 @@ class JiraApp(APIApplication):
             for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("schemeId", schemeId), ("onlyDefault", onlyDefault)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8974,7 +8978,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/level/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9026,7 +9030,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9072,7 +9076,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9107,7 +9111,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/project"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9142,7 +9146,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("projectId", projectId)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9172,7 +9176,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9207,7 +9211,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9257,7 +9261,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9287,7 +9291,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9321,7 +9325,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9355,7 +9359,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'levelId'.")
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
         query_params = {k: v for k, v in [("replaceWith", replaceWith)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9393,7 +9397,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9430,7 +9434,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9466,7 +9470,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'memberId'.")
         url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member/{memberId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9491,7 +9495,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issuetype"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9534,7 +9538,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetype"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9563,7 +9567,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issuetype/project"
         query_params = {k: v for k, v in [("projectId", projectId), ("level", level)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9594,7 +9598,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issuetype/{id}"
         query_params = {k: v for k, v in [("alternativeIssueTypeId", alternativeIssueTypeId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9624,7 +9628,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issuetype/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9662,7 +9666,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetype/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9692,7 +9696,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/issuetype/{id}/alternatives"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9730,7 +9734,7 @@ class JiraApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/rest/api/3/issuetype/{id}/avatar2"
         query_params = {k: v for k, v in [("x", x), ("y", y), ("size", size)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="*/*")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="*/*")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9760,7 +9764,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeId'.")
         url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9793,7 +9797,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9826,7 +9830,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9860,7 +9864,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9912,7 +9916,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9953,7 +9957,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9987,7 +9991,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("issueTypeSchemeId", issueTypeSchemeId)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10019,7 +10023,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issuetypescheme/project"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10051,7 +10055,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescheme/project"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10081,7 +10085,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeSchemeId'.")
         url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10119,7 +10123,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10153,7 +10157,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10191,7 +10195,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10224,7 +10228,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeId'.")
         url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/{issueTypeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10276,7 +10280,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10311,7 +10315,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10347,7 +10351,7 @@ class JiraApp(APIApplication):
             for k, v in [("startAt", startAt), ("maxResults", maxResults), ("issueTypeScreenSchemeId", issueTypeScreenSchemeId)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10379,7 +10383,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/project"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10411,7 +10415,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/project"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10441,7 +10445,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10478,7 +10482,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10512,7 +10516,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10546,7 +10550,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10580,7 +10584,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10615,7 +10619,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
         url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/project"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10640,7 +10644,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/jql/autocompletedata"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10674,7 +10678,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/autocompletedata"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10720,7 +10724,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10757,7 +10761,7 @@ class JiraApp(APIApplication):
             for k, v in [("functionKey", functionKey), ("startAt", startAt), ("maxResults", maxResults), ("orderBy", orderBy)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10791,7 +10795,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/function/computation"
         query_params = {k: v for k, v in [("skipNotFoundPrecomputations", skipNotFoundPrecomputations)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10823,7 +10827,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/function/computation/search"
         query_params = {k: v for k, v in [("orderBy", orderBy)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10855,7 +10859,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/match"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10887,7 +10891,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/parse"
         query_params = {k: v for k, v in [("validation", validation)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10918,7 +10922,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/pdcleaner"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10949,7 +10953,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/jql/sanitize"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10978,7 +10982,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/label"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11003,7 +11007,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/license/approximateLicenseCount"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11033,7 +11037,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'applicationKey'.")
         url = f"{self.base_url}/rest/api/3/license/approximateLicenseCount/product/{applicationKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11091,7 +11095,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11119,7 +11123,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/mypreferences"
         query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11147,7 +11151,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/mypreferences"
         query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11176,7 +11180,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/mypreferences"
         query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11201,7 +11205,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/mypreferences/locale"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11226,7 +11230,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/mypreferences/locale"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11257,7 +11261,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/mypreferences/locale"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11285,7 +11289,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/myself"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11337,7 +11341,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11372,7 +11376,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/notificationscheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11418,7 +11422,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11449,7 +11453,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/notificationscheme/{id}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11484,7 +11488,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/notificationscheme/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11518,7 +11522,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/notificationscheme/{id}/notification"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11548,7 +11552,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'notificationSchemeId'.")
         url = f"{self.base_url}/rest/api/3/notificationscheme/{notificationSchemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11581,7 +11585,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'notificationId'.")
         url = f"{self.base_url}/rest/api/3/notificationscheme/{notificationSchemeId}/notification/{notificationId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11606,7 +11610,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/permissions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11644,7 +11648,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/permissions/check"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11675,7 +11679,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/permissions/project"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11703,7 +11707,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/permissionscheme"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11759,7 +11763,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/permissionscheme"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11789,7 +11793,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11820,7 +11824,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11880,7 +11884,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11911,7 +11915,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11957,7 +11961,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11990,7 +11994,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'permissionId'.")
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission/{permissionId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12024,7 +12028,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'permissionId'.")
         url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission/{permissionId}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12070,7 +12074,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12129,7 +12133,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/plans/plan"
         query_params = {k: v for k, v in [("useGroupId", useGroupId)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12160,7 +12164,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}"
         query_params = {k: v for k, v in [("useGroupId", useGroupId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12194,7 +12198,7 @@ class JiraApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}"
         query_params = {k: v for k, v in [("useGroupId", useGroupId)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12225,7 +12229,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/archive"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12259,7 +12263,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/duplicate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12291,7 +12295,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team"
         query_params = {k: v for k, v in [("cursor", cursor), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12343,7 +12347,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12376,7 +12380,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'atlassianTeamId'.")
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12409,7 +12413,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'atlassianTeamId'.")
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12445,7 +12449,7 @@ class JiraApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12500,7 +12504,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12533,7 +12537,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planOnlyTeamId'.")
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12566,7 +12570,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planOnlyTeamId'.")
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12602,7 +12606,7 @@ class JiraApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12633,7 +12637,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/trash"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12658,7 +12662,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/priority"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12695,7 +12699,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priority"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12726,7 +12730,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priority/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12759,7 +12763,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priority/move"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12814,7 +12818,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12844,7 +12848,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/priority/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12874,7 +12878,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/priority/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12920,7 +12924,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priority/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12978,7 +12982,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13042,7 +13046,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priorityscheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13090,7 +13094,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priorityscheme/mappings"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13133,7 +13137,7 @@ class JiraApp(APIApplication):
             for k, v in [("startAt", startAt), ("maxResults", maxResults), ("query", query), ("schemeId", schemeId), ("exclude", exclude)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13163,7 +13167,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13235,7 +13239,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13269,7 +13273,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}/priorities"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13312,7 +13316,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId), ("query", query)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13344,7 +13348,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/project"
         query_params = {k: v for k, v in [("expand", expand), ("recent", recent), ("properties", properties)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13431,7 +13435,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13463,7 +13467,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project-template"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13492,7 +13496,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/project/recent"
         query_params = {k: v for k, v in [("expand", expand), ("properties", properties)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13565,7 +13569,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13590,7 +13594,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/project/type"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13615,7 +13619,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/project/type/accessible"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13645,7 +13649,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectTypeKey'.")
         url = f"{self.base_url}/rest/api/3/project/type/{projectTypeKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13675,7 +13679,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectTypeKey'.")
         url = f"{self.base_url}/rest/api/3/project/type/{projectTypeKey}/accessible"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13706,7 +13710,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}"
         query_params = {k: v for k, v in [("enableUndo", enableUndo)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13738,7 +13742,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}"
         query_params = {k: v for k, v in [("expand", expand), ("properties", properties)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13816,7 +13820,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13847,7 +13851,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13905,7 +13909,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13938,7 +13942,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13976,7 +13980,7 @@ class JiraApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar2"
         query_params = {k: v for k, v in [("x", x), ("y", y), ("size", size)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="*/*")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="*/*")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14006,7 +14010,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatars"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14036,7 +14040,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14066,7 +14070,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14100,7 +14104,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14153,7 +14157,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14184,7 +14188,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/components"
         query_params = {k: v for k, v in [("componentSource", componentSource)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14215,7 +14219,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14245,7 +14249,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/features"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14282,7 +14286,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/features/{featureKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14312,7 +14316,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14345,7 +14349,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14378,7 +14382,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14412,7 +14416,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14443,7 +14447,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14473,7 +14477,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14511,7 +14515,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
         query_params = {k: v for k, v in [("user", user), ("group", group), ("groupId", groupId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14545,7 +14549,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
         query_params = {k: v for k, v in [("excludeInactiveUsers", excludeInactiveUsers)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14588,7 +14592,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14637,7 +14641,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14673,7 +14677,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("currentMember", currentMember), ("excludeConnectAddons", excludeConnectAddons)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14703,7 +14707,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/statuses"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14759,7 +14763,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14790,7 +14794,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/versions"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14820,7 +14824,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         url = f"{self.base_url}/rest/api/3/project/{projectId}/email"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14857,7 +14861,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectId}/email"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14887,7 +14891,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         url = f"{self.base_url}/rest/api/3/project/{projectId}/hierarchy"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14917,7 +14921,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
         url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14948,7 +14952,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
         url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/notificationscheme"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14979,7 +14983,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
         url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/permissionscheme"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15014,7 +15018,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/permissionscheme"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15044,7 +15048,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
         url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/securitylevel"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15069,7 +15073,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/projectCategory"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15105,7 +15109,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/projectCategory"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15135,7 +15139,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/projectCategory/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15165,7 +15169,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/projectCategory/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15204,7 +15208,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/projectCategory/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15232,7 +15236,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/projectvalidate/key"
         query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15260,7 +15264,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/projectvalidate/validProjectKey"
         query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15288,7 +15292,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/projectvalidate/validProjectName"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15313,7 +15317,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/resolution"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15345,7 +15349,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/resolution"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15376,7 +15380,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/resolution/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15409,7 +15413,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/resolution/move"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15444,7 +15448,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("onlyDefault", onlyDefault)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15475,7 +15479,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/resolution/{id}"
         query_params = {k: v for k, v in [("replaceWith", replaceWith)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15505,7 +15509,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/resolution/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15540,7 +15544,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/resolution/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15565,7 +15569,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/role"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15597,7 +15601,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/role"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15628,7 +15632,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/role/{id}"
         query_params = {k: v for k, v in [("swap", swap)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15658,7 +15662,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/role/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15693,7 +15697,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/role/{id}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15728,7 +15732,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/role/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15763,7 +15767,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/role/{id}/actors"
         query_params = {k: v for k, v in [("user", user), ("groupId", groupId), ("group", group)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15793,7 +15797,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/role/{id}/actors"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15831,7 +15835,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/role/{id}/actors"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15883,7 +15887,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15915,7 +15919,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screens"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15946,7 +15950,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/screens/addToDefault/{fieldId}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15981,7 +15985,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("screenId", screenId), ("tabId", tabId), ("startAt", startAt), ("maxResult", maxResult)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16011,7 +16015,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'screenId'.")
         url = f"{self.base_url}/rest/api/3/screens/{screenId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16046,7 +16050,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screens/{screenId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16076,7 +16080,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'screenId'.")
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/availableFields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16107,7 +16111,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'screenId'.")
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs"
         query_params = {k: v for k, v in [("projectKey", projectKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16142,7 +16146,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16175,7 +16179,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'tabId'.")
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16213,7 +16217,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16247,7 +16251,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'tabId'.")
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
         query_params = {k: v for k, v in [("projectKey", projectKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16284,7 +16288,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16320,7 +16324,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16361,7 +16365,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16398,7 +16402,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/move/{pos}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16450,7 +16454,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16483,7 +16487,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screenscheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16513,7 +16517,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'screenSchemeId'.")
         url = f"{self.base_url}/rest/api/3/screenscheme/{screenSchemeId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16551,7 +16555,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/screenscheme/{screenSchemeId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16612,7 +16616,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16704,7 +16708,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/search"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16735,7 +16739,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/search/approximate-count"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16770,7 +16774,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/search/id"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16831,7 +16835,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16920,7 +16924,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/search/jql"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16950,7 +16954,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/securitylevel/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16975,7 +16979,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/serverInfo"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17000,7 +17004,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/settings/columns"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17037,7 +17041,9 @@ class JiraApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/rest/api/3/settings/columns"
         query_params = {}
-        response = self._put(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_put(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17062,7 +17068,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/status"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17092,7 +17098,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'idOrName'.")
         url = f"{self.base_url}/rest/api/3/status/{idOrName}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17117,7 +17123,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/statuscategory"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17147,7 +17153,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'idOrKey'.")
         url = f"{self.base_url}/rest/api/3/statuscategory/{idOrKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17175,7 +17181,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/statuses"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17204,7 +17210,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/statuses"
         query_params = {k: v for k, v in [("expand", expand), ("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17236,7 +17242,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/statuses"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17267,7 +17273,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/statuses"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17319,7 +17325,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17356,7 +17362,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         url = f"{self.base_url}/rest/api/3/statuses/{statusId}/project/{projectId}/issueTypeUsages"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17390,7 +17396,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'statusId'.")
         url = f"{self.base_url}/rest/api/3/statuses/{statusId}/projectUsages"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17424,7 +17430,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'statusId'.")
         url = f"{self.base_url}/rest/api/3/statuses/{statusId}/workflowUsages"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17454,7 +17460,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'taskId'.")
         url = f"{self.base_url}/rest/api/3/task/{taskId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17485,7 +17491,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/task/{taskId}/cancel"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17517,7 +17523,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/uiModifications"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17553,7 +17559,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/uiModifications"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17583,7 +17589,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'uiModificationId'.")
         url = f"{self.base_url}/rest/api/3/uiModifications/{uiModificationId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17627,7 +17633,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/uiModifications/{uiModificationId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17660,7 +17666,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'entityId'.")
         url = f"{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{entityId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17701,7 +17707,7 @@ class JiraApp(APIApplication):
         request_body_data = body_content
         url = f"{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{entityId}"
         query_params = {k: v for k, v in [("x", x), ("y", y), ("size", size)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="*/*")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="*/*")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17737,7 +17743,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{owningObjectId}/avatar/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17769,7 +17775,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'type'.")
         url = f"{self.base_url}/rest/api/3/universal_avatar/view/type/{type}"
         query_params = {k: v for k, v in [("size", size), ("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17804,7 +17810,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/universal_avatar/view/type/{type}/avatar/{id}"
         query_params = {k: v for k, v in [("size", size), ("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17841,7 +17847,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'entityId'.")
         url = f"{self.base_url}/rest/api/3/universal_avatar/view/type/{type}/owner/{entityId}"
         query_params = {k: v for k, v in [("size", size), ("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17871,7 +17877,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user"
         query_params = {k: v for k, v in [("accountId", accountId), ("username", username), ("key", key)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17906,7 +17912,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("accountId", accountId), ("username", username), ("key", key), ("expand", expand)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17963,7 +17969,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/user"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18015,7 +18021,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18082,7 +18088,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18125,7 +18131,7 @@ class JiraApp(APIApplication):
             for k, v in [("startAt", startAt), ("maxResults", maxResults), ("username", username), ("key", key), ("accountId", accountId)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18160,7 +18166,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("username", username), ("key", key)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18189,7 +18195,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/columns"
         query_params = {k: v for k, v in [("accountId", accountId), ("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18218,7 +18224,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/columns"
         query_params = {k: v for k, v in [("accountId", accountId), ("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18256,7 +18262,9 @@ class JiraApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/rest/api/3/user/columns"
         query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._put(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._async_put(
+            url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data"
+        )
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18284,7 +18292,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/email"
         query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18312,7 +18320,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/email/bulk"
         query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18342,7 +18350,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/groups"
         query_params = {k: v for k, v in [("accountId", accountId), ("username", username), ("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18373,7 +18381,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/user/nav4-opt-property/{propertyKey}"
         query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18405,7 +18413,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/user/nav4-opt-property/{propertyKey}"
         query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18463,7 +18471,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18518,7 +18526,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18550,7 +18558,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/properties"
         query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18585,7 +18593,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/user/properties/{propertyKey}"
         query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18620,7 +18628,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/api/3/user/properties/{propertyKey}"
         query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18656,7 +18664,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/user/properties/{propertyKey}"
         query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18708,7 +18716,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18738,7 +18746,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/search/query"
         query_params = {k: v for k, v in [("query", query), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18768,7 +18776,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/user/search/query/key"
         query_params = {k: v for k, v in [("query", query), ("startAt", startAt), ("maxResult", maxResult)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18823,7 +18831,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18852,7 +18860,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/users"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18881,7 +18889,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/users/search"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18978,7 +18986,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/version"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19012,7 +19020,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("moveFixIssuesTo", moveFixIssuesTo), ("moveAffectedIssuesTo", moveAffectedIssuesTo)] if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19043,7 +19051,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/version/{id}"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19144,7 +19152,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/version/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19178,7 +19186,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/version/{id}/mergeto/{moveIssuesTo}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19213,7 +19221,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/version/{id}/move"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19243,7 +19251,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/version/{id}/relatedIssueCounts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19273,7 +19281,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/version/{id}/relatedwork"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19319,7 +19327,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/version/{id}/relatedwork"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19365,7 +19373,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/version/{id}/relatedwork"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19411,7 +19419,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/version/{id}/removeAndSwap"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19441,7 +19449,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/version/{id}/unresolvedIssueCount"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19474,7 +19482,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'relatedWorkId'.")
         url = f"{self.base_url}/rest/api/3/version/{versionId}/relatedwork/{relatedWorkId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19504,7 +19512,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/webhook"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19533,7 +19541,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/webhook"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19565,7 +19573,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/webhook"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19594,7 +19602,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/webhook/failed"
         query_params = {k: v for k, v in [("maxResults", maxResults), ("after", after)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19625,7 +19633,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/webhook/refresh"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19653,7 +19661,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19699,7 +19707,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflow"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19757,7 +19765,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19788,7 +19796,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflow/rule/config"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19819,7 +19827,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflow/rule/config/delete"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19874,7 +19882,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19907,7 +19915,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'transitionId'.")
         url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
         query_params = {k: v for k, v in [("key", key), ("workflowName", workflowName), ("workflowMode", workflowMode)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19957,7 +19965,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20005,7 +20013,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
         query_params = {k: v for k, v in [("key", key), ("workflowName", workflowName), ("workflowMode", workflowMode)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20053,7 +20061,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
         query_params = {k: v for k, v in [("key", key), ("workflowName", workflowName), ("workflowMode", workflowMode)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20083,7 +20091,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'entityId'.")
         url = f"{self.base_url}/rest/api/3/workflow/{entityId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20120,7 +20128,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         url = f"{self.base_url}/rest/api/3/workflow/{workflowId}/project/{projectId}/issueTypeUsages"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20154,7 +20162,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'workflowId'.")
         url = f"{self.base_url}/rest/api/3/workflow/{workflowId}/projectUsages"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20188,7 +20196,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'workflowId'.")
         url = f"{self.base_url}/rest/api/3/workflow/{workflowId}/workflowSchemes"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20230,7 +20238,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflows"
         query_params = {k: v for k, v in [("expand", expand), ("useApprovalConfiguration", useApprovalConfiguration)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20264,7 +20272,7 @@ class JiraApp(APIApplication):
         query_params = {
             k: v for k, v in [("workflowId", workflowId), ("projectId", projectId), ("issueTypeId", issueTypeId)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20302,7 +20310,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflows/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20334,7 +20342,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflows/create/validation"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20389,7 +20397,7 @@ class JiraApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20424,7 +20432,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflows/update"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20456,7 +20464,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflows/update/validation"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20485,7 +20493,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/workflowscheme"
         query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20563,7 +20571,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20591,7 +20599,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/workflowscheme/project"
         query_params = {k: v for k, v in [("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20623,7 +20631,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/project"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20658,7 +20666,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/read"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20715,7 +20723,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20750,7 +20758,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/update/mappings"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20780,7 +20788,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20811,7 +20819,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}"
         query_params = {k: v for k, v in [("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20893,7 +20901,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20924,7 +20932,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/createdraft"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20955,7 +20963,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/default"
         query_params = {k: v for k, v in [("updateDraftIfNeeded", updateDraftIfNeeded)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20986,7 +20994,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/default"
         query_params = {k: v for k, v in [("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21021,7 +21029,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21051,7 +21059,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21081,7 +21089,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21163,7 +21171,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21193,7 +21201,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21223,7 +21231,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21258,7 +21266,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21291,7 +21299,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueType'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21324,7 +21332,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueType'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21370,7 +21378,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21407,7 +21415,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/publish"
         query_params = {k: v for k, v in [("validateOnly", validateOnly)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21438,7 +21446,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21469,7 +21477,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21520,7 +21528,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21554,7 +21562,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueType'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
         query_params = {k: v for k, v in [("updateDraftIfNeeded", updateDraftIfNeeded)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21588,7 +21596,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueType'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
         query_params = {k: v for k, v in [("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21634,7 +21642,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21666,7 +21674,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName), ("updateDraftIfNeeded", updateDraftIfNeeded)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21698,7 +21706,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName), ("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21749,7 +21757,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/workflow"
         query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21783,7 +21791,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'workflowSchemeId'.")
         url = f"{self.base_url}/rest/api/3/workflowscheme/{workflowSchemeId}/projectUsages"
         query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21811,7 +21819,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/worklog/deleted"
         query_params = {k: v for k, v in [("since", since)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21843,7 +21851,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/api/3/worklog/list"
         query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21872,7 +21880,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/api/3/worklog/updated"
         query_params = {k: v for k, v in [("since", since), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21902,7 +21910,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'addonKey'.")
         url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21935,7 +21943,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21968,7 +21976,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22002,7 +22010,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22032,7 +22040,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/atlassian-connect/1/app/module/dynamic"
         query_params = {k: v for k, v in [("moduleKey", moduleKey)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22057,7 +22065,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/atlassian-connect/1/app/module/dynamic"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22089,7 +22097,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/atlassian-connect/1/app/module/dynamic"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22120,7 +22128,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/atlassian-connect/1/migration/field"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22152,7 +22160,7 @@ class JiraApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/rest/atlassian-connect/1/migration/properties/{entityType}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22185,7 +22193,7 @@ class JiraApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/rest/atlassian-connect/1/migration/workflow/rule/search"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22213,7 +22221,7 @@ class JiraApp(APIApplication):
         """
         url = f"{self.base_url}/rest/atlassian-connect/1/service-registry"
         query_params = {k: v for k, v in [("serviceIds", serviceIds)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22243,7 +22251,7 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'propertyKey'.")
         url = f"{self.base_url}/rest/forge/1/app/properties/{propertyKey}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22274,7 +22282,7 @@ class JiraApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/rest/forge/1/app/properties/{propertyKey}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

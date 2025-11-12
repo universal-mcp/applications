@@ -40,7 +40,7 @@ class PerplexityApp(APIApplication):
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": query})
         payload = {"model": model, "messages": messages, "temperature": temperature}
-        data = self._post(endpoint, data=payload)
+        data = await self._async_post(endpoint, data=payload)
         response = data.json()
         content = response["choices"][0]["message"]["content"]
         citations = response.get("citations", [])

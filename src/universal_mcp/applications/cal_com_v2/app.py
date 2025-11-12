@@ -1,5 +1,4 @@
 from typing import Any
-
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
@@ -187,12 +186,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/oauth-clients/{clientId}/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createoauthclientuserresponse.model_validate(self._handle_response(response))
 
     def get_oauth_client_user_by_id(self, clientId: str, userId: str) -> dict[str, Any]:
@@ -329,12 +323,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/oauth-clients/{clientId}/users/{userId}/force-refresh"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Forcerefreshuserresponse.model_validate(self._handle_response(response))
 
     def refresh_oauth_client_token(self, clientId: str, refreshToken: str) -> dict[str, Any]:
@@ -357,28 +346,15 @@ class CalComV2App(APIApplication):
         if clientId is None:
             raise ValueError("Missing required parameter 'clientId'.")
         request_body_data = None
-        request_body_data = {
-            "refreshToken": refreshToken,
-        }
+        request_body_data = {"refreshToken": refreshToken}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/oauth/{clientId}/refresh"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Forcerefreshuserresponse.model_validate(self._handle_response(response))
 
     def create_oauth_client_webhook(
-        self,
-        clientId: str,
-        active: bool,
-        subscriberUrl: str,
-        triggers: str,
-        payloadTemplate: str | None = None,
-        secret: str | None = None,
+        self, clientId: str, active: bool, subscriberUrl: str, triggers: str, payloadTemplate: str | None = None, secret: str | None = None
     ) -> dict[str, Any]:
         """
         Creates a webhook for an OAuth client using the client ID specified in the path, enabling event-driven communication.
@@ -413,12 +389,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/oauth-clients/{clientId}/webhooks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createoauthclientwebhookresponse.model_validate(self._handle_response(response))
 
     def list_webhooks_by_client_id(self, clientId: str, take: float | None = None, skip: float | None = None) -> dict[str, Any]:
@@ -596,13 +567,7 @@ class CalComV2App(APIApplication):
         return Listorgattributesresponse.model_validate(self._handle_response(response))
 
     def create_org_attributes(
-        self,
-        orgId: str,
-        name: str,
-        slug: str,
-        type: str,
-        options: list[dict[str, Any]],
-        enabled: bool | None = None,
+        self, orgId: str, name: str, slug: str, type: str, options: list[dict[str, Any]], enabled: bool | None = None
     ) -> dict[str, Any]:
         """
         Adds new attributes to an organization using the API, specifying the organization ID in the path, and returns a successful creation status.
@@ -627,22 +592,11 @@ class CalComV2App(APIApplication):
         if orgId is None:
             raise ValueError("Missing required parameter 'orgId'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "slug": slug,
-            "type": type,
-            "options": options,
-            "enabled": enabled,
-        }
+        request_body_data = {"name": name, "slug": slug, "type": type, "options": options, "enabled": enabled}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/attributes"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createorgattributesresponse.model_validate(self._handle_response(response))
 
     def fetch_organization_attribute_by_id(self, orgId: str, attributeId: str) -> dict[str, Any]:
@@ -705,12 +659,7 @@ class CalComV2App(APIApplication):
         if attributeId is None:
             raise ValueError("Missing required parameter 'attributeId'.")
         request_body_data = None
-        request_body_data = {
-            "name": name,
-            "slug": slug,
-            "type": type,
-            "enabled": enabled,
-        }
+        request_body_data = {"name": name, "slug": slug, "type": type, "enabled": enabled}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/attributes/{attributeId}"
         query_params = {}
@@ -767,19 +716,11 @@ class CalComV2App(APIApplication):
         if attributeId is None:
             raise ValueError("Missing required parameter 'attributeId'.")
         request_body_data = None
-        request_body_data = {
-            "value": value,
-            "slug": slug,
-        }
+        request_body_data = {"value": value, "slug": slug}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/attributes/{attributeId}/options"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createorgattributeoptionresponse.model_validate(self._handle_response(response))
 
     def get_org_attribute_options(self, orgId: str, attributeId: str) -> dict[str, Any]:
@@ -838,12 +779,7 @@ class CalComV2App(APIApplication):
         return Createorgattributeoptionresponse.model_validate(self._handle_response(response))
 
     def patch_option_by_id(
-        self,
-        orgId: str,
-        attributeId: str,
-        optionId: str,
-        value: str | None = None,
-        slug: str | None = None,
+        self, orgId: str, attributeId: str, optionId: str, value: str | None = None, slug: str | None = None
     ) -> dict[str, Any]:
         """
         Updates a specific option for an organization's attribute using partial modifications.
@@ -871,10 +807,7 @@ class CalComV2App(APIApplication):
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
         request_body_data = None
-        request_body_data = {
-            "value": value,
-            "slug": slug,
-        }
+        request_body_data = {"value": value, "slug": slug}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/attributes/{attributeId}/options/{optionId}"
         query_params = {}
@@ -882,12 +815,7 @@ class CalComV2App(APIApplication):
         return Createorgattributeoptionresponse.model_validate(self._handle_response(response))
 
     def set_user_attribute_option(
-        self,
-        orgId: str,
-        userId: str,
-        attributeId: str,
-        value: str | None = None,
-        attributeOptionId: str | None = None,
+        self, orgId: str, userId: str, attributeId: str, value: str | None = None, attributeOptionId: str | None = None
     ) -> dict[str, Any]:
         """
         Assigns attribute options to a user within an organization using the POST method and returns a creation status.
@@ -913,20 +841,11 @@ class CalComV2App(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "value": value,
-            "attributeOptionId": attributeOptionId,
-            "attributeId": attributeId,
-        }
+        request_body_data = {"value": value, "attributeOptionId": attributeOptionId, "attributeId": attributeId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/attributes/options/{userId}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Setuserattributeoptionresponse.model_validate(self._handle_response(response))
 
     def get_user_org_attribute_options(self, orgId: str, userId: str) -> dict[str, Any]:
@@ -1122,12 +1041,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/teams/{teamId}/event-types"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createeventtyperesponse.model_validate(self._handle_response(response))
 
     def list_event_types_by_team_and_org(self, orgId: str, teamId: str, eventSlug: str | None = None) -> dict[str, Any]:
@@ -1254,12 +1168,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/teams/{teamId}/event-types/{eventTypeId}/create-phone-call"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createphonecalleventresponse.model_validate(self._handle_response(response))
 
     def list_event_types_by_org_id(self, orgId: str, take: float | None = None, skip: float | None = None) -> dict[str, Any]:
@@ -1313,12 +1222,7 @@ class CalComV2App(APIApplication):
         return Listorganizationmembershipsresponse.model_validate(self._handle_response(response))
 
     def create_membership(
-        self,
-        orgId: str,
-        userId: float,
-        role: str,
-        accepted: bool | None = None,
-        disableImpersonation: bool | None = None,
+        self, orgId: str, userId: float, role: str, accepted: bool | None = None, disableImpersonation: bool | None = None
     ) -> dict[str, Any]:
         """
         Creates a new membership for an organization identified by {orgId} using the API.
@@ -1342,21 +1246,11 @@ class CalComV2App(APIApplication):
         if orgId is None:
             raise ValueError("Missing required parameter 'orgId'.")
         request_body_data = None
-        request_body_data = {
-            "userId": userId,
-            "accepted": accepted,
-            "role": role,
-            "disableImpersonation": disableImpersonation,
-        }
+        request_body_data = {"userId": userId, "accepted": accepted, "role": role, "disableImpersonation": disableImpersonation}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/memberships"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Listorganizationmembershipsresponse.model_validate(self._handle_response(response))
 
     def get_org_membership_by_id(self, orgId: str, membershipId: str) -> dict[str, Any]:
@@ -1412,12 +1306,7 @@ class CalComV2App(APIApplication):
         return Listorganizationmembershipsresponse.model_validate(self._handle_response(response))
 
     def update_membership_by_id_org(
-        self,
-        orgId: str,
-        membershipId: str,
-        accepted: bool | None = None,
-        role: str | None = None,
-        disableImpersonation: bool | None = None,
+        self, orgId: str, membershipId: str, accepted: bool | None = None, role: str | None = None, disableImpersonation: bool | None = None
     ) -> dict[str, Any]:
         """
         Updates an organization membership's details using the PATCH method and returns the updated membership data.
@@ -1443,11 +1332,7 @@ class CalComV2App(APIApplication):
         if membershipId is None:
             raise ValueError("Missing required parameter 'membershipId'.")
         request_body_data = None
-        request_body_data = {
-            "accepted": accepted,
-            "role": role,
-            "disableImpersonation": disableImpersonation,
-        }
+        request_body_data = {"accepted": accepted, "role": role, "disableImpersonation": disableImpersonation}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/memberships/{membershipId}"
         query_params = {}
@@ -1526,12 +1411,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/users/{userId}/schedules"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createuserscheduleresponse.model_validate(self._handle_response(response))
 
     def get_user_schedule(self, orgId: str, userId: str) -> dict[str, Any]:
@@ -1780,12 +1660,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/teams"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createteaminorganizationresponse.model_validate(self._handle_response(response))
 
     def get_organization_team_me(self, orgId: str, take: float | None = None, skip: float | None = None) -> dict[str, Any]:
@@ -1959,13 +1834,7 @@ class CalComV2App(APIApplication):
         response = self._patch(url, data=request_body_data, params=query_params)
         return Createteaminorganizationresponse.model_validate(self._handle_response(response))
 
-    def list_team_memberships(
-        self,
-        orgId: str,
-        teamId: str,
-        take: float | None = None,
-        skip: float | None = None,
-    ) -> dict[str, Any]:
+    def list_team_memberships(self, orgId: str, teamId: str, take: float | None = None, skip: float | None = None) -> dict[str, Any]:
         """
         Retrieves a paginated list of memberships for a specified team within an organization, using path parameters for orgId and teamId, and query parameters for pagination (take and skip).
 
@@ -1994,13 +1863,7 @@ class CalComV2App(APIApplication):
         return Listteammembershipsresponse.model_validate(self._handle_response(response))
 
     def create_team_membership(
-        self,
-        orgId: str,
-        teamId: str,
-        userId: float,
-        role: str,
-        accepted: bool | None = None,
-        disableImpersonation: bool | None = None,
+        self, orgId: str, teamId: str, userId: float, role: str, accepted: bool | None = None, disableImpersonation: bool | None = None
     ) -> dict[str, Any]:
         """
         Adds a member to the specified team within an organization and returns the membership details.
@@ -2027,21 +1890,11 @@ class CalComV2App(APIApplication):
         if teamId is None:
             raise ValueError("Missing required parameter 'teamId'.")
         request_body_data = None
-        request_body_data = {
-            "userId": userId,
-            "accepted": accepted,
-            "role": role,
-            "disableImpersonation": disableImpersonation,
-        }
+        request_body_data = {"userId": userId, "accepted": accepted, "role": role, "disableImpersonation": disableImpersonation}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/teams/{teamId}/memberships"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createteammembershipresponse.model_validate(self._handle_response(response))
 
     def get_membership_details(self, orgId: str, teamId: str, membershipId: str) -> dict[str, Any]:
@@ -2138,11 +1991,7 @@ class CalComV2App(APIApplication):
         if membershipId is None:
             raise ValueError("Missing required parameter 'membershipId'.")
         request_body_data = None
-        request_body_data = {
-            "accepted": accepted,
-            "role": role,
-            "disableImpersonation": disableImpersonation,
-        }
+        request_body_data = {"accepted": accepted, "role": role, "disableImpersonation": disableImpersonation}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/teams/{teamId}/memberships/{membershipId}"
         query_params = {}
@@ -2179,11 +2028,7 @@ class CalComV2App(APIApplication):
         return Getorganizationschedulesresponse.model_validate(self._handle_response(response))
 
     def list_org_users(
-        self,
-        orgId: str,
-        take: float | None = None,
-        skip: float | None = None,
-        emails: list[str] | None = None,
+        self, orgId: str, take: float | None = None, skip: float | None = None, emails: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of users for a specified organization, allowing filtering by take, skip, and emails parameters, using the GET method on the "/v2/organizations/{orgId}/users" endpoint.
@@ -2282,12 +2127,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/users"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createorguserresponse.model_validate(self._handle_response(response))
 
     def delete_member_by_id(self, orgId: str, userId: str) -> dict[str, Any]:
@@ -2342,13 +2182,7 @@ class CalComV2App(APIApplication):
         return Getorgwebhooksresponse.model_validate(self._handle_response(response))
 
     def create_webhook(
-        self,
-        orgId: str,
-        active: bool,
-        subscriberUrl: str,
-        triggers: str,
-        payloadTemplate: str | None = None,
-        secret: str | None = None,
+        self, orgId: str, active: bool, subscriberUrl: str, triggers: str, payloadTemplate: str | None = None, secret: str | None = None
     ) -> dict[str, Any]:
         """
         Creates an organization webhook that triggers HTTP POST payloads for specified events and returns a success status on creation.
@@ -2383,12 +2217,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/organizations/{orgId}/webhooks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createwebhookresponse.model_validate(self._handle_response(response))
 
     def get_organization_webhook_by_id(self, orgId: str, webhookId: str) -> dict[str, Any]:
@@ -2605,12 +2434,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/bookings/{bookingUid}/reschedule"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Reschedulebookingbyuidresponse.model_validate(self._handle_response(response))
 
     def cancel_booking_by_uid(self, bookingUid: str) -> dict[str, Any]:
@@ -2634,19 +2458,11 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/bookings/{bookingUid}/cancel"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Cancelbookingbyuidresponse.model_validate(self._handle_response(response))
 
     def mark_booking_absent_by_uid(
-        self,
-        bookingUid: str,
-        host: bool | None = None,
-        attendees: list[dict[str, Any]] | None = None,
+        self, bookingUid: str, host: bool | None = None, attendees: list[dict[str, Any]] | None = None
     ) -> dict[str, Any]:
         """
         Marks a booking as absent using the provided booking UID and authentication token, indicating that the owner of the booking is absent.
@@ -2668,19 +2484,11 @@ class CalComV2App(APIApplication):
         if bookingUid is None:
             raise ValueError("Missing required parameter 'bookingUid'.")
         request_body_data = None
-        request_body_data = {
-            "host": host,
-            "attendees": attendees,
-        }
+        request_body_data = {"host": host, "attendees": attendees}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/bookings/{bookingUid}/mark-absent"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Markbookingabsentbyuidresponse.model_validate(self._handle_response(response))
 
     def reassign_booking(self, bookingUid: str) -> dict[str, Any]:
@@ -2704,12 +2512,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/bookings/{bookingUid}/reassign"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Reassignbookingresponse.model_validate(self._handle_response(response))
 
     def reassign_booking_to_user(self, bookingUid: str, userId: str, reason: str | None = None) -> dict[str, Any]:
@@ -2735,18 +2538,11 @@ class CalComV2App(APIApplication):
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
         request_body_data = None
-        request_body_data = {
-            "reason": reason,
-        }
+        request_body_data = {"reason": reason}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/bookings/{bookingUid}/reassign/{userId}"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Reassignbookingresponse.model_validate(self._handle_response(response))
 
     def confirm_booking(self, bookingUid: str) -> dict[str, Any]:
@@ -2770,12 +2566,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/bookings/{bookingUid}/confirm"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Getbookingbyuidresponse.model_validate(self._handle_response(response))
 
     def decline_booking(self, bookingUid: str, reason: str | None = None) -> dict[str, Any]:
@@ -2798,18 +2589,11 @@ class CalComV2App(APIApplication):
         if bookingUid is None:
             raise ValueError("Missing required parameter 'bookingUid'.")
         request_body_data = None
-        request_body_data = {
-            "reason": reason,
-        }
+        request_body_data = {"reason": reason}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/bookings/{bookingUid}/decline"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Getbookingbyuidresponse.model_validate(self._handle_response(response))
 
     def save_ics_feed_post(self, urls: list[str], readOnly: bool | None = None) -> dict[str, Any]:
@@ -2830,19 +2614,11 @@ class CalComV2App(APIApplication):
             Calendars
         """
         request_body_data = None
-        request_body_data = {
-            "urls": urls,
-            "readOnly": readOnly,
-        }
+        request_body_data = {"urls": urls, "readOnly": readOnly}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/calendars/ics-feed/save"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Saveicsfeedpostresponse.model_validate(self._handle_response(response))
 
     def check_ics_feed(self) -> dict[str, Any]:
@@ -2864,12 +2640,7 @@ class CalComV2App(APIApplication):
         return Checkicsfeedresponse.model_validate(self._handle_response(response))
 
     def get_calendars_busy_times(
-        self,
-        loggedInUsersTz: str,
-        credentialId: float,
-        externalId: str,
-        dateFrom: str | None = None,
-        dateTo: str | None = None,
+        self, loggedInUsersTz: str, credentialId: float, externalId: str, dateFrom: str | None = None, dateTo: str | None = None
     ) -> dict[str, Any]:
         """
         Retrieves a list of busy times for specified calendars within a given date range using the "GET" method at "/v2/calendars/busy-times," allowing for time zone and credential specification.
@@ -2992,12 +2763,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/calendars/{calendar}/credentials"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     def calendars_controller_check(self, calendar: str) -> dict[str, Any]:
@@ -3043,18 +2809,11 @@ class CalComV2App(APIApplication):
         if calendar is None:
             raise ValueError("Missing required parameter 'calendar'.")
         request_body_data = None
-        request_body_data = {
-            "id": id,
-        }
+        request_body_data = {"id": id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/calendars/{calendar}/disconnect"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Disconnectcalendarresponse.model_validate(self._handle_response(response))
 
     def conferencing_controller_connect(self, app: str) -> dict[str, Any]:
@@ -3078,12 +2837,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/conferencing/{app}/connect"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return ConferencingcontrollerConnectresponse.model_validate(self._handle_response(response))
 
     def get_auth_url(self, app: str, returnTo: str, onErrorReturnTo: str) -> dict[str, Any]:
@@ -3175,12 +2929,7 @@ class CalComV2App(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v2/conferencing/{app}/default"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Getprovideraccesstokenresponse.model_validate(self._handle_response(response))
 
     def get_default_conferencing(self) -> dict[str, Any]:
@@ -3242,19 +2991,11 @@ class CalComV2App(APIApplication):
             Destination Calendars
         """
         request_body_data = None
-        request_body_data = {
-            "integration": integration,
-            "externalId": externalId,
-        }
+        request_body_data = {"integration": integration, "externalId": externalId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/destination-calendars"
         query_params = {}
-        response = self._put(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
         return Updatedestinationcalendarsresponse.model_validate(self._handle_response(response))
 
     def list_event_types(
@@ -3287,13 +3028,7 @@ class CalComV2App(APIApplication):
         url = f"{self.base_url}/v2/event-types"
         query_params = {
             k: v
-            for k, v in [
-                ("username", username),
-                ("eventSlug", eventSlug),
-                ("usernames", usernames),
-                ("orgSlug", orgSlug),
-                ("orgId", orgId),
-            ]
+            for k, v in [("username", username), ("eventSlug", eventSlug), ("usernames", usernames), ("orgSlug", orgSlug), ("orgId", orgId)]
             if v is not None
         }
         response = self._get(url, params=query_params)
@@ -3387,20 +3122,10 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/event-types/{eventTypeId}/webhooks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createeventtypewebhookresponse.model_validate(self._handle_response(response))
 
-    def get_event_webhooks(
-        self,
-        eventTypeId: str,
-        take: float | None = None,
-        skip: float | None = None,
-    ) -> dict[str, Any]:
+    def get_event_webhooks(self, eventTypeId: str, take: float | None = None, skip: float | None = None) -> dict[str, Any]:
         """
         Retrieves a list of webhooks configured for a specific event type, supporting pagination via take and skip parameters.
 
@@ -3656,12 +3381,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/schedules"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createuserscheduleresponse.model_validate(self._handle_response(response))
 
     def list_schedules(self) -> dict[str, Any]:
@@ -3810,20 +3530,11 @@ class CalComV2App(APIApplication):
             Selected Calendars
         """
         request_body_data = None
-        request_body_data = {
-            "integration": integration,
-            "externalId": externalId,
-            "credentialId": credentialId,
-        }
+        request_body_data = {"integration": integration, "externalId": externalId, "credentialId": credentialId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/selected-calendars"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Updatedestinationcalendarsresponse.model_validate(self._handle_response(response))
 
     def delete_selected_calendars(self, integration: str, externalId: str, credentialId: str) -> dict[str, Any]:
@@ -3846,23 +3557,13 @@ class CalComV2App(APIApplication):
         """
         url = f"{self.base_url}/v2/selected-calendars"
         query_params = {
-            k: v
-            for k, v in [
-                ("integration", integration),
-                ("externalId", externalId),
-                ("credentialId", credentialId),
-            ]
-            if v is not None
+            k: v for k, v in [("integration", integration), ("externalId", externalId), ("credentialId", credentialId)] if v is not None
         }
         response = self._delete(url, params=query_params)
         return Updatedestinationcalendarsresponse.model_validate(self._handle_response(response))
 
     def slots_controller_reserve_slot(
-        self,
-        eventTypeId: float,
-        slotUtcStartDate: str,
-        slotUtcEndDate: str,
-        bookingUid: str | None = None,
+        self, eventTypeId: float, slotUtcStartDate: str, slotUtcEndDate: str, bookingUid: str | None = None
     ) -> dict[str, Any]:
         """
         Reserves a slot using the "POST" method at "/v2/slots/reserve", creating a new reservation and returning a successful response when the operation is completed.
@@ -3892,12 +3593,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/slots/reserve"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return SlotscontrollerReserveslotresponse.model_validate(self._handle_response(response))
 
     def delete_selected_slot(self, uid: str) -> dict[str, Any]:
@@ -4139,12 +3835,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/teams"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return TeamscontrollerCreateteamresponse.model_validate(self._handle_response(response))
 
     def teams_controller_get_teams(self) -> dict[str, Any]:
@@ -4435,12 +4126,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/teams/{teamId}/event-types"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createeventtyperesponse.model_validate(self._handle_response(response))
 
     def get_team_event_types(self, teamId: str, eventSlug: str | None = None) -> dict[str, Any]:
@@ -4583,21 +4269,11 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/teams/{teamId}/event-types/{eventTypeId}/create-phone-call"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createphonecalleventresponse.model_validate(self._handle_response(response))
 
     def add_team_membership(
-        self,
-        teamId: str,
-        userId: float,
-        accepted: bool | None = None,
-        role: str | None = None,
-        disableImpersonation: bool | None = None,
+        self, teamId: str, userId: float, accepted: bool | None = None, role: str | None = None, disableImpersonation: bool | None = None
     ) -> dict[str, Any]:
         """
         Adds multiple users to a team using their organization membership IDs through a POST request to the specified team endpoint.
@@ -4621,21 +4297,11 @@ class CalComV2App(APIApplication):
         if teamId is None:
             raise ValueError("Missing required parameter 'teamId'.")
         request_body_data = None
-        request_body_data = {
-            "userId": userId,
-            "accepted": accepted,
-            "role": role,
-            "disableImpersonation": disableImpersonation,
-        }
+        request_body_data = {"userId": userId, "accepted": accepted, "role": role, "disableImpersonation": disableImpersonation}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/teams/{teamId}/memberships"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Listorganizationmembershipsresponse.model_validate(self._handle_response(response))
 
     def get_team_memberships(self, teamId: str, take: float | None = None, skip: float | None = None) -> dict[str, Any]:
@@ -4721,11 +4387,7 @@ class CalComV2App(APIApplication):
         if membershipId is None:
             raise ValueError("Missing required parameter 'membershipId'.")
         request_body_data = None
-        request_body_data = {
-            "accepted": accepted,
-            "role": role,
-            "disableImpersonation": disableImpersonation,
-        }
+        request_body_data = {"accepted": accepted, "role": role, "disableImpersonation": disableImpersonation}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/teams/{teamId}/memberships/{membershipId}"
         query_params = {}
@@ -4777,12 +4439,7 @@ class CalComV2App(APIApplication):
         return Checkicsfeedresponse.model_validate(self._handle_response(response))
 
     def createandconfigure_webhook(
-        self,
-        active: bool,
-        subscriberUrl: str,
-        triggers: str,
-        payloadTemplate: str | None = None,
-        secret: str | None = None,
+        self, active: bool, subscriberUrl: str, triggers: str, payloadTemplate: str | None = None, secret: str | None = None
     ) -> dict[str, Any]:
         """
         Creates and configures a webhook endpoint to receive HTTP POST notifications for specific events, returning a success response upon creation.
@@ -4814,12 +4471,7 @@ class CalComV2App(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/webhooks"
         query_params = {}
-        response = self._post(
-            url,
-            data=request_body_data,
-            params=query_params,
-            content_type="application/json",
-        )
+        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
         return Createandconfigurewebhookresponse.model_validate(self._handle_response(response))
 
     def webhooks_controller_get_webhooks(self, take: float | None = None, skip: float | None = None) -> dict[str, Any]:

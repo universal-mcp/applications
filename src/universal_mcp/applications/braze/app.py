@@ -53,7 +53,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/templates/email/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -91,7 +91,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/track"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -121,7 +121,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'catalog_name'.")
         url = f"{self.base_url}/catalogs/{catalog_name}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -146,7 +146,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/catalogs"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -177,7 +177,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -207,7 +207,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'catalog_name'.")
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -241,7 +241,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._patch(url, data=request_body_data, params=query_params)
+        response = await self._async_patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -275,7 +275,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -309,7 +309,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -339,7 +339,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'catalog_name'.")
         url = f"{self.base_url}/catalogs/{catalog_name}/items"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -372,7 +372,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'item_id'.")
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -405,7 +405,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'item_id'.")
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -442,7 +442,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._patch(url, data=request_body_data, params=query_params)
+        response = await self._async_patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -479,7 +479,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -516,7 +516,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/catalogs/{catalog_name}/items/{item_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -559,7 +559,7 @@ class BrazeApp(APIApplication):
             for k, v in [("start_date", start_date), ("end_date", end_date), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -611,7 +611,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -643,7 +643,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/status"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -674,7 +674,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/bounce/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -705,7 +705,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/spam/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -736,7 +736,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/blocklist"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -767,7 +767,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/email/blacklist"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -799,7 +799,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/campaigns/data_series"
         query_params = {k: v for k, v in [("campaign_id", campaign_id), ("length", length), ("ending_at", ending_at)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -827,7 +827,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/campaigns/details"
         query_params = {k: v for k, v in [("campaign_id", campaign_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -874,7 +874,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -911,7 +911,7 @@ class BrazeApp(APIApplication):
             for k, v in [("campaign_id", campaign_id), ("send_id", send_id), ("length", length), ("ending_at", ending_at)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -966,7 +966,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1022,7 +1022,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1050,7 +1050,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/canvas/details"
         query_params = {k: v for k, v in [("canvas_id", canvas_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1097,7 +1097,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1125,7 +1125,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/events/list"
         query_params = {k: v for k, v in [("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1177,7 +1177,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1209,7 +1209,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/kpi/new_users/data_series"
         query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1242,7 +1242,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/kpi/dau/data_series"
         query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1274,7 +1274,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/kpi/mau/data_series"
         query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1306,7 +1306,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/kpi/uninstalls/data_series"
         query_params = {k: v for k, v in [("length", length), ("ending_at", ending_at), ("app_id", app_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1341,7 +1341,7 @@ class BrazeApp(APIApplication):
         query_params = {
             k: v for k, v in [("card_id", card_id), ("length", length), ("unit", unit), ("ending_at", ending_at)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1369,7 +1369,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/feed/details"
         query_params = {k: v for k, v in [("card_id", card_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1404,7 +1404,7 @@ class BrazeApp(APIApplication):
         query_params = {
             k: v for k, v in [("page", page), ("include_archived", include_archived), ("sort_direction", sort_direction)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1432,7 +1432,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/purchases/product_list"
         query_params = {k: v for k, v in [("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1480,7 +1480,7 @@ class BrazeApp(APIApplication):
             for k, v in [("ending_at", ending_at), ("length", length), ("unit", unit), ("app_id", app_id), ("product", product)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1528,7 +1528,7 @@ class BrazeApp(APIApplication):
             for k, v in [("ending_at", ending_at), ("length", length), ("unit", unit), ("app_id", app_id), ("product", product)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1558,7 +1558,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/segments/list"
         query_params = {k: v for k, v in [("page", page), ("sort_direction", sort_direction)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1590,7 +1590,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/segments/data_series"
         query_params = {k: v for k, v in [("segment_id", segment_id), ("length", length), ("ending_at", ending_at)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1618,7 +1618,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/segments/details"
         query_params = {k: v for k, v in [("segment_id", segment_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1661,7 +1661,7 @@ class BrazeApp(APIApplication):
             for k, v in [("length", length), ("unit", unit), ("ending_at", ending_at), ("app_id", app_id), ("segment_id", segment_id)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1715,7 +1715,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/export/ids"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1760,7 +1760,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/export/segment"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1795,7 +1795,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/export/global_control_group"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1849,7 +1849,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/live_activity/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1877,7 +1877,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/messages/scheduled_broadcasts"
         query_params = {k: v for k, v in [("end_time", end_time)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1908,7 +1908,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/schedule/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1940,7 +1940,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/schedule/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1972,7 +1972,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/schedule/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2038,7 +2038,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/schedule/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2092,7 +2092,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/schedule/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2143,7 +2143,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/schedule/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2178,7 +2178,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/schedule/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2213,7 +2213,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/schedule/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2248,7 +2248,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/schedule/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2280,7 +2280,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/sends/id/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2343,7 +2343,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/messages/send"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2385,7 +2385,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/transactional/v1/campaigns/{campaign_id}/send"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2436,7 +2436,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/campaigns/trigger/send"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2484,7 +2484,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/canvas/trigger/send"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2523,7 +2523,7 @@ class BrazeApp(APIApplication):
         query_params = {
             k: v for k, v in [("preference_center_api_id", preference_center_api_id), ("external_id", external_id)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2548,7 +2548,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/preference_center/v1/list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2578,7 +2578,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'PreferenceCenterExternalID'.")
         url = f"{self.base_url}/preference_center/v1/{PreferenceCenterExternalID}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2620,7 +2620,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/preference_center/v1/{PreferenceCenterExternalID}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2671,7 +2671,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/preference_center/v1"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2701,7 +2701,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/scim/v2/Users/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2731,7 +2731,7 @@ class BrazeApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/scim/v2/Users/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2775,7 +2775,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/scim/v2/Users/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_put(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2803,7 +2803,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/scim/v2/Users"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2845,7 +2845,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/scim/v2/Users"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2897,7 +2897,7 @@ class BrazeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2928,7 +2928,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/sms/invalid_phone_numbers/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2964,7 +2964,7 @@ class BrazeApp(APIApplication):
             for k, v in [("subscription_group_id", subscription_group_id), ("external_id", external_id), ("phone", phone)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2999,7 +2999,7 @@ class BrazeApp(APIApplication):
         query_params = {
             k: v for k, v in [("external_id", external_id), ("limit", limit), ("offset", offset), ("phone", phone)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3044,7 +3044,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscription/status/set"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3075,7 +3075,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v2/subscription/status/set"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3112,7 +3112,7 @@ class BrazeApp(APIApplication):
             for k, v in [("modified_after", modified_after), ("modified_before", modified_before), ("limit", limit), ("offset", offset)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3145,7 +3145,7 @@ class BrazeApp(APIApplication):
         query_params = {
             k: v for k, v in [("content_block_id", content_block_id), ("include_inclusion_data", include_inclusion_data)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3187,7 +3187,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/content_blocks/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3238,7 +3238,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/content_blocks/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3275,7 +3275,7 @@ class BrazeApp(APIApplication):
             for k, v in [("modified_after", modified_after), ("modified_before", modified_before), ("limit", limit), ("offset", offset)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3303,7 +3303,7 @@ class BrazeApp(APIApplication):
         """
         url = f"{self.base_url}/templates/email/info"
         query_params = {k: v for k, v in [("email_template_id", email_template_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3354,7 +3354,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/templates/email/create"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3385,7 +3385,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/external_ids/rename"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3416,7 +3416,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/external_ids/remove"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3447,7 +3447,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/alias/update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3478,7 +3478,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/alias/new"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3513,7 +3513,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3544,7 +3544,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/identify"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3575,7 +3575,7 @@ class BrazeApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/merge"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

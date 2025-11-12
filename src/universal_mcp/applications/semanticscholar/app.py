@@ -26,7 +26,7 @@ class SemanticscholarApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/author/batch"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -48,7 +48,7 @@ class SemanticscholarApp(APIApplication):
         """
         url = f"{self.base_url}/author/search"
         query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields), ("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -70,7 +70,7 @@ class SemanticscholarApp(APIApplication):
             raise ValueError("Missing required parameter 'author_id'")
         url = f"{self.base_url}/author/{author_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -94,7 +94,7 @@ class SemanticscholarApp(APIApplication):
             raise ValueError("Missing required parameter 'author_id'")
         url = f"{self.base_url}/author/{author_id}/papers"
         query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -113,7 +113,7 @@ class SemanticscholarApp(APIApplication):
         """
         url = f"{self.base_url}/paper/autocomplete"
         query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -135,7 +135,7 @@ class SemanticscholarApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/paper/batch"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -193,7 +193,7 @@ class SemanticscholarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -251,7 +251,7 @@ class SemanticscholarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -303,7 +303,7 @@ class SemanticscholarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -325,7 +325,7 @@ class SemanticscholarApp(APIApplication):
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -349,7 +349,7 @@ class SemanticscholarApp(APIApplication):
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}/authors"
         query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -373,7 +373,7 @@ class SemanticscholarApp(APIApplication):
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}/citations"
         query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -397,7 +397,7 @@ class SemanticscholarApp(APIApplication):
             raise ValueError("Missing required parameter 'paper_id'")
         url = f"{self.base_url}/paper/{paper_id}/references"
         query_params = {k: v for k, v in [("offset", offset), ("limit", limit), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -417,7 +417,7 @@ class SemanticscholarApp(APIApplication):
         """
         url = f"{self.base_url}/snippet/search"
         query_params = {k: v for k, v in [("query", query), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

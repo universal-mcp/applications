@@ -31,8 +31,8 @@ class SharepointApp(APIApplication):
         """
         url = f"{self.base_url}/me"
         query_params = {"$select": "id,userPrincipalName"}
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def get_drive_info(self) -> dict[str, Any]:
         """
@@ -45,8 +45,8 @@ class SharepointApp(APIApplication):
             drive, storage, quota, info
         """
         url = f"{self.base_url}/me/drive"
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     def _list_drive_items(self, item_id: str = "root") -> dict[str, Any]:
         """
@@ -78,8 +78,8 @@ class SharepointApp(APIApplication):
         if not query:
             raise ValueError("Search query cannot be empty.")
         url = f"{self.base_url}/me/drive/root/search(q='{query}')"
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     async def get_item_metadata(self, item_id: str) -> dict[str, Any]:
         """
@@ -97,8 +97,8 @@ class SharepointApp(APIApplication):
         if not item_id:
             raise ValueError("Missing required parameter 'item_id'.")
         url = f"{self.base_url}/me/drive/items/{item_id}"
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     async def create_folder(self, name: str, parent_id: str = "root") -> dict[str, Any]:
         """
@@ -118,8 +118,8 @@ class SharepointApp(APIApplication):
             raise ValueError("Folder name cannot be empty.")
         url = f"{self.base_url}/me/drive/items/{parent_id}/children"
         data = {"name": name, "folder": {}, "@microsoft.graph.conflictBehavior": "rename"}
-        response = self._post(url, data=data)
-        return self._handle_response(response)
+        response = await self._async_post(url, data=data)
+        return await self._async_handle_response(response)
 
     async def delete_item(self, item_id: str) -> dict[str, Any]:
         """
@@ -137,8 +137,8 @@ class SharepointApp(APIApplication):
         if not item_id:
             raise ValueError("Missing required parameter 'item_id'.")
         url = f"{self.base_url}/me/drive/items/{item_id}"
-        response = self._delete(url)
-        return self._handle_response(response)
+        response = await self._async_delete(url)
+        return await self._async_handle_response(response)
 
     async def download_file(self, item_id: str) -> dict[str, Any]:
         """
@@ -156,7 +156,7 @@ class SharepointApp(APIApplication):
         if not item_id:
             raise ValueError("Missing required parameter 'item_id'.")
         url = f"{self.base_url}/me/drive/items/{item_id}"
-        response = self._get(url)
+        response = await self._async_get(url)
         metadata = self._handle_response(response)
         download_url = metadata.get("@microsoft.graph.downloadUrl")
         if not download_url:
@@ -185,8 +185,8 @@ class SharepointApp(APIApplication):
         url = f"{self.base_url}/me/drive/items/{parent_id}:/{file_name}:/content"
         with open(file_path, "rb") as f:
             data = f.read()
-        response = self._put(url, data=data, content_type="application/octet-stream")
-        return self._handle_response(response)
+        response = await self._async_put(url, data=data, content_type="application/octet-stream")
+        return await self._async_handle_response(response)
 
     async def list_folders(self, item_id: str = "root") -> dict[str, Any]:
         """
@@ -258,8 +258,8 @@ class SharepointApp(APIApplication):
             raise ValueError("File name cannot be empty.")
         url = f"{self.base_url}/me/drive/items/{parent_id}:/{file_name}:/content"
         data = content.encode("utf-8")
-        response = self._put(url, data=data, content_type="text/plain")
-        return self._handle_response(response)
+        response = await self._async_put(url, data=data, content_type="text/plain")
+        return await self._async_handle_response(response)
 
     async def get_document_content(self, item_id: str) -> dict[str, Any]:
         """
@@ -290,7 +290,7 @@ class SharepointApp(APIApplication):
         if not download_url:
             logger.error(f"Could not find @microsoft.graph.downloadUrl in metadata for item {item_id}")
             raise ValueError("Could not retrieve download URL for the item.")
-        response = self._get(download_url)
+        response = await self._async_get(download_url)
         response.raise_for_status()
         content = response.content
         attachment_type = file_mime_type.split("/")[0] if "/" in file_mime_type else "file"

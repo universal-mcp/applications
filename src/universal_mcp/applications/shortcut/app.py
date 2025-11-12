@@ -30,7 +30,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/categories"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -60,7 +60,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/categories"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -84,7 +84,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'category-public-id'")
         url = f"{self.base_url}/api/v3/categories/{category_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -114,7 +114,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/categories/{category_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -139,7 +139,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'category-public-id'")
         url = f"{self.base_url}/api/v3/categories/{category_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -164,7 +164,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'category-public-id'")
         url = f"{self.base_url}/api/v3/categories/{category_public_id}/milestones"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -188,7 +188,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'category-public-id'")
         url = f"{self.base_url}/api/v3/categories/{category_public_id}/objectives"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -210,7 +210,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/custom-fields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -235,7 +235,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'custom-field-public-id'")
         url = f"{self.base_url}/api/v3/custom-fields/{custom_field_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -287,7 +287,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/custom-fields/{custom_field_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -312,7 +312,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'custom-field-public-id'")
         url = f"{self.base_url}/api/v3/custom-fields/{custom_field_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -334,7 +334,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/entity-templates"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -365,7 +365,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/entity-templates"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -387,7 +387,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/entity-templates/disable"
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._async_put(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -409,7 +409,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/entity-templates/enable"
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._async_put(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -434,7 +434,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'entity-template-public-id'")
         url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -462,7 +462,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -486,7 +486,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'entity-template-public-id'")
         url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -508,7 +508,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/epic-workflow"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -530,7 +530,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/epics"
         query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -616,7 +616,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/epics"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -640,7 +640,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -731,7 +731,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -756,7 +756,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -781,7 +781,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -822,7 +822,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -850,7 +850,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -883,7 +883,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -928,7 +928,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -956,7 +956,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -982,7 +982,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/stories"
         query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1007,7 +1007,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         url = f"{self.base_url}/api/v3/epics/{epic_public_id}/unlink-productboard"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1032,7 +1032,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'external_link'")
         url = f"{self.base_url}/api/v3/external-link/stories"
         query_params = {k: v for k, v in [("external_link", external_link)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1054,7 +1054,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/files"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1078,7 +1078,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'file-public-id'")
         url = f"{self.base_url}/api/v3/files/{file_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1120,7 +1120,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/files/{file_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1145,7 +1145,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'file-public-id'")
         url = f"{self.base_url}/api/v3/files/{file_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1167,7 +1167,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/groups"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1214,7 +1214,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/groups"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1239,7 +1239,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'group-public-id'")
         url = f"{self.base_url}/api/v3/groups/{group_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1297,7 +1297,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/groups/{group_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1324,7 +1324,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'group-public-id'")
         url = f"{self.base_url}/api/v3/groups/{group_public_id}/stories"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1346,7 +1346,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/iterations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1393,7 +1393,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/iterations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1415,7 +1415,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/iterations/disable"
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._async_put(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1437,7 +1437,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/iterations/enable"
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._async_put(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1462,7 +1462,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'iteration-public-id'")
         url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1514,7 +1514,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1539,7 +1539,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'iteration-public-id'")
         url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1565,7 +1565,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'iteration-public-id'")
         url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}/stories"
         query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1590,7 +1590,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'key-result-public-id'")
         url = f"{self.base_url}/api/v3/key-results/{key_result_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1627,7 +1627,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/key-results/{key_result_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1649,7 +1649,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/labels"
         query_params = {k: v for k, v in [("slim", slim)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1679,7 +1679,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/labels"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1704,7 +1704,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'label-public-id'")
         url = f"{self.base_url}/api/v3/labels/{label_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1735,7 +1735,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/labels/{label_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1760,7 +1760,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'label-public-id'")
         url = f"{self.base_url}/api/v3/labels/{label_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1785,7 +1785,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'label-public-id'")
         url = f"{self.base_url}/api/v3/labels/{label_public_id}/epics"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1811,7 +1811,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'label-public-id'")
         url = f"{self.base_url}/api/v3/labels/{label_public_id}/stories"
         query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1833,7 +1833,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/linked-files"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1884,7 +1884,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/linked-files"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1909,7 +1909,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'linked-file-public-id'")
         url = f"{self.base_url}/api/v3/linked-files/{linked_file_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1964,7 +1964,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/linked-files/{linked_file_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1989,7 +1989,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'linked-file-public-id'")
         url = f"{self.base_url}/api/v3/linked-files/{linked_file_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2011,7 +2011,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/member"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2033,7 +2033,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/milestones"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2074,7 +2074,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/milestones"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2099,7 +2099,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'milestone-public-id'")
         url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2157,7 +2157,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2182,7 +2182,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'milestone-public-id'")
         url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2207,7 +2207,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'milestone-public-id'")
         url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}/epics"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2229,7 +2229,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/objectives"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2270,7 +2270,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/objectives"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2295,7 +2295,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'objective-public-id'")
         url = f"{self.base_url}/api/v3/objectives/{objective_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2353,7 +2353,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/objectives/{objective_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2378,7 +2378,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'objective-public-id'")
         url = f"{self.base_url}/api/v3/objectives/{objective_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2403,7 +2403,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'objective-public-id'")
         url = f"{self.base_url}/api/v3/objectives/{objective_public_id}/epics"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2425,7 +2425,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/projects"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2488,7 +2488,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/projects"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2513,7 +2513,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'project-public-id'")
         url = f"{self.base_url}/api/v3/projects/{project_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2571,7 +2571,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/projects/{project_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2596,7 +2596,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'project-public-id'")
         url = f"{self.base_url}/api/v3/projects/{project_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2622,7 +2622,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'project-public-id'")
         url = f"{self.base_url}/api/v3/projects/{project_public_id}/stories"
         query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2644,7 +2644,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/repositories"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2669,7 +2669,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'repo-public-id'")
         url = f"{self.base_url}/api/v3/repositories/{repo_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2701,7 +2701,7 @@ class ShortcutApp(APIApplication):
             for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2734,7 +2734,7 @@ class ShortcutApp(APIApplication):
             for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2767,7 +2767,7 @@ class ShortcutApp(APIApplication):
             for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2800,7 +2800,7 @@ class ShortcutApp(APIApplication):
             for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2833,7 +2833,7 @@ class ShortcutApp(APIApplication):
             for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2866,7 +2866,7 @@ class ShortcutApp(APIApplication):
             for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2988,7 +2988,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3086,7 +3086,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/bulk"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3113,7 +3113,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/bulk"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3276,7 +3276,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/from-template"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3386,7 +3386,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3410,7 +3410,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3522,7 +3522,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3547,7 +3547,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3572,7 +3572,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3615,7 +3615,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3643,7 +3643,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3675,7 +3675,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3703,7 +3703,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3735,7 +3735,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/reactions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3763,7 +3763,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/unlink-from-slack"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3788,7 +3788,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/history"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3832,7 +3832,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3860,7 +3860,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'task-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3903,7 +3903,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3930,7 +3930,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'task-public-id'")
         url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3963,7 +3963,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/story-links"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3988,7 +3988,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-link-public-id'")
         url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4018,7 +4018,7 @@ class ShortcutApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4043,7 +4043,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-link-public-id'")
         url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4065,7 +4065,7 @@ class ShortcutApp(APIApplication):
         """
         url = f"{self.base_url}/api/v3/workflows"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4090,7 +4090,7 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'workflow-public-id'")
         url = f"{self.base_url}/api/v3/workflows/{workflow_public_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

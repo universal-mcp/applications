@@ -876,8 +876,8 @@ class FplApp(APIApplication):
             teams, important
         """
         url = f"https://fantasy.premierleague.com/api/entry/{team_id}/"
-        response = self._get(url)
-        return self._handle_response(response)
+        response = await self._async_get(url)
+        return await self._async_handle_response(response)
 
     def list_tools(self):
         """

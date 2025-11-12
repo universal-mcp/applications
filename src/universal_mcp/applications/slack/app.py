@@ -54,8 +54,10 @@ class SlackApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chat.delete"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
-        return self._handle_response(response)
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
+        return await self._async_handle_response(response)
 
     async def chat_post_message(
         self,
@@ -125,8 +127,10 @@ class SlackApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chat.postMessage"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
-        return self._handle_response(response)
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
+        return await self._async_handle_response(response)
 
     async def chat_update(
         self,
@@ -175,8 +179,10 @@ class SlackApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chat.update"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
-        return self._handle_response(response)
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
+        return await self._async_handle_response(response)
 
     async def conversations_history(
         self,
@@ -223,8 +229,8 @@ class SlackApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def conversations_list(
         self,
@@ -259,8 +265,8 @@ class SlackApp(APIApplication):
             for k, v in [("token", token), ("exclude_archived", exclude_archived), ("types", types), ("limit", limit), ("cursor", cursor)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def reactions_add(self, channel: str, name: str, timestamp: str) -> dict[str, Any]:
         """
@@ -285,8 +291,10 @@ class SlackApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/reactions.add"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
-        return self._handle_response(response)
+        response = await self._async_post(
+            url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded"
+        )
+        return await self._async_handle_response(response)
 
     async def get_reactions_for_item(
         self,
@@ -330,8 +338,8 @@ class SlackApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def get_user_reactions(
         self,
@@ -378,8 +386,8 @@ class SlackApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def search_messages(
         self,
@@ -426,8 +434,8 @@ class SlackApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def team_info(self, token: str, team: str | None = None) -> dict[str, Any]:
         """
@@ -448,8 +456,8 @@ class SlackApp(APIApplication):
         """
         url = f"{self.base_url}/team.info"
         query_params = {k: v for k, v in [("token", token), ("team", team)] if v is not None}
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def get_user_info(self, token: str, include_locale: bool | None = None, user: str | None = None) -> dict[str, Any]:
         """
@@ -471,8 +479,8 @@ class SlackApp(APIApplication):
         """
         url = f"{self.base_url}/users.info"
         query_params = {k: v for k, v in [("token", token), ("include_locale", include_locale), ("user", user)] if v is not None}
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     async def users_list(
         self, token: str | None = None, limit: int | None = None, cursor: str | None = None, include_locale: bool | None = None
@@ -499,8 +507,8 @@ class SlackApp(APIApplication):
         query_params = {
             k: v for k, v in [("token", token), ("limit", limit), ("cursor", cursor), ("include_locale", include_locale)] if v is not None
         }
-        response = self._get(url, params=query_params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=query_params)
+        return await self._async_handle_response(response)
 
     def list_tools(self):
         return [

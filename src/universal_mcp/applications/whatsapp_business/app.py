@@ -33,7 +33,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'waba-id'.")
         url = f"{self.base_url}/{api_version}/{waba_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -66,7 +66,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-account-id'.")
         url = f"{self.base_url}/{api_version}/{business_account_id}/extendedcredits"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -100,7 +100,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-account-id'.")
         url = f"{self.base_url}/{api_version}/{business_account_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -133,7 +133,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         url = f"{self.base_url}/{api_version}/{business_phone_number_id}/whatsapp_commerce_settings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -173,7 +173,7 @@ class WhatsappBusinessApp(APIApplication):
         query_params = {
             k: v for k, v in [("is_cart_enabled", is_cart_enabled), ("is_catalog_visible", is_catalog_visible)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -211,7 +211,7 @@ class WhatsappBusinessApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/{api_version}/{app_id}/uploads"
         query_params = {k: v for k, v in [("file_length", file_length), ("file_type", file_type)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -242,7 +242,7 @@ class WhatsappBusinessApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/{api_version}/<SESSION_ID>"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -276,7 +276,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         url = f"{self.base_url}/{api_version}/{business_phone_number_id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -313,7 +313,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'waba-id'.")
         url = f"{self.base_url}/{api_version}/{waba_id}/phone_numbers"
         query_params = {k: v for k, v in [("fields", fields), ("filtering", filtering)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -346,7 +346,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls/<QR_CODE_ID>"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -379,7 +379,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls/<QR_CODE_ID>"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -416,7 +416,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-phone-number-id'.")
         url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls"
         query_params = {k: v for k, v in [("fields", fields), ("code", code)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -456,7 +456,7 @@ class WhatsappBusinessApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/{api_version}/{business_phone_number_id}/message_qrdls"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -486,7 +486,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'api-version'.")
         url = f"{self.base_url}/{api_version}/<TEMPLATE_ID>"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -530,7 +530,7 @@ class WhatsappBusinessApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/{api_version}/<TEMPLATE_ID>"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -564,7 +564,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'waba-id'.")
         url = f"{self.base_url}/{api_version}/{waba_id}/message_templates"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -612,7 +612,7 @@ class WhatsappBusinessApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/{api_version}/{waba_id}/message_templates"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -649,7 +649,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'waba-id'.")
         url = f"{self.base_url}/{api_version}/{waba_id}/message_templates"
         query_params = {k: v for k, v in [("name", name), ("hsm_id", hsm_id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -682,7 +682,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'waba-id'.")
         url = f"{self.base_url}/{api_version}/{waba_id}/subscribed_apps"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -716,7 +716,7 @@ class WhatsappBusinessApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/{api_version}/{waba_id}/subscribed_apps"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._async_post(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -749,7 +749,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'waba-id'.")
         url = f"{self.base_url}/{api_version}/{waba_id}/subscribed_apps"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -782,7 +782,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-account-id'.")
         url = f"{self.base_url}/{api_version}/{business_account_id}/client_whatsapp_business_accounts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -815,7 +815,7 @@ class WhatsappBusinessApp(APIApplication):
             raise ValueError("Missing required parameter 'business-account-id'.")
         url = f"{self.base_url}/{api_version}/{business_account_id}/owned_whatsapp_business_accounts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

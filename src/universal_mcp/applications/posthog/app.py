@@ -28,7 +28,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/projects/{id}/is_generating_demo_data/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -819,7 +819,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/projects/{id}/reset_token/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -842,7 +842,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -884,7 +884,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -908,7 +908,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -953,7 +953,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1008,7 +1008,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1032,7 +1032,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/proxy_records/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1055,7 +1055,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1093,7 +1093,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1117,7 +1117,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1158,7 +1158,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1199,7 +1199,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1223,7 +1223,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1249,7 +1249,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'role_id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1292,7 +1292,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1319,7 +1319,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/organizations/{organization_id}/roles/{role_id}/role_memberships/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1343,7 +1343,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/actions/"
         query_params = {k: v for k, v in [("format", format), ("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1426,7 +1426,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/actions/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1468,7 +1468,7 @@ class PosthogApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1534,7 +1534,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1558,7 +1558,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1628,7 +1628,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1698,7 +1698,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1722,7 +1722,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1746,7 +1746,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/{short_id}/activity/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1767,7 +1767,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/activity/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1788,7 +1788,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/notebooks/recording_comments/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1830,7 +1830,7 @@ class PosthogApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1855,7 +1855,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1897,7 +1897,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1939,7 +1939,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1965,7 +1965,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/"
         query_params = {k: v for k, v in [("delete_events", delete_events), ("format", format)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1990,7 +1990,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/activity/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2032,7 +2032,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/delete_events/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2075,7 +2075,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/delete_property/"
         query_params = {k: v for k, v in [("$unset", unset), ("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2100,7 +2100,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/properties_timeline/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2142,7 +2142,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/split/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2197,7 +2197,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/{id}/update_property/"
         query_params = {k: v for k, v in [("format", format), ("key", key), ("value", value)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2219,7 +2219,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/activity/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2276,7 +2276,7 @@ class PosthogApp(APIApplication):
             for k, v in [("delete_events", delete_events), ("distinct_ids", distinct_ids), ("format", format), ("ids", ids)]
             if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2298,7 +2298,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/cohorts/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2320,7 +2320,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2359,7 +2359,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2381,7 +2381,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/correlation/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2420,7 +2420,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/funnel/correlation/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2442,7 +2442,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/lifecycle/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2481,7 +2481,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/persons/reset_person_distinct_id/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2503,7 +2503,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/stickiness/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2525,7 +2525,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/trends/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2547,7 +2547,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/persons/values/"
         query_params = {k: v for k, v in [("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2573,7 +2573,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'plugin_config_id'")
         url = f"{self.base_url}/api/projects/{project_id}/plugin_configs/{plugin_config_id}/logs/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2644,7 +2644,7 @@ class PosthogApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2668,7 +2668,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2709,7 +2709,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2750,7 +2750,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2774,7 +2774,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/property_definitions/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2795,7 +2795,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/property_definitions/seen_together/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2849,7 +2849,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/query/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2873,7 +2873,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/query/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2897,7 +2897,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/query/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2918,7 +2918,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/query/check_auth_for_async/"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2939,7 +2939,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/query/draft_sql/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2966,7 +2966,7 @@ class PosthogApp(APIApplication):
         query_params = {
             k: v for k, v in [("created_by", created_by), ("limit", limit), ("offset", offset), ("short_id", short_id)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3035,7 +3035,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3059,7 +3059,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3132,7 +3132,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3205,7 +3205,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3229,7 +3229,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3253,7 +3253,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3330,7 +3330,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/{session_recording_id}/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3357,7 +3357,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'session_recording_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recording_playlists/{short_id}/recordings/{session_recording_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3380,7 +3380,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3404,7 +3404,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3498,7 +3498,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3592,7 +3592,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3616,7 +3616,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3640,7 +3640,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{id}/analyze/similar/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3664,7 +3664,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'recording_id'")
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/{recording_id}/sharing/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3754,7 +3754,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/session_recordings/ai/regex/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3775,7 +3775,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/sessions/property_definitions/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3796,7 +3796,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/sessions/values/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3819,7 +3819,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3908,7 +3908,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3932,7 +3932,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4025,7 +4025,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4118,7 +4118,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4142,7 +4142,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/subscriptions/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4166,7 +4166,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("search", search)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4377,7 +4377,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/surveys/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4401,7 +4401,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4607,7 +4607,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4822,7 +4822,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4846,7 +4846,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4870,7 +4870,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/activity/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4894,7 +4894,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/stats/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5109,7 +5109,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/surveys/{id}/summarize_responses/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5130,7 +5130,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/activity/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5151,7 +5151,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/responses_count/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5172,7 +5172,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/surveys/stats/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5195,7 +5195,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5223,7 +5223,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5247,7 +5247,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5280,7 +5280,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5313,7 +5313,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5337,7 +5337,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/api/projects/{project_id}/web_experiments/{id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5358,7 +5358,7 @@ class PosthogApp(APIApplication):
         """
         url = f"{self.base_url}/api/users/"
         query_params = {k: v for k, v in [("is_staff", is_staff), ("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5379,7 +5379,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'uuid'")
         url = f"{self.base_url}/api/users/{uuid}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5506,7 +5506,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5633,7 +5633,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5654,7 +5654,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'uuid'")
         url = f"{self.base_url}/api/users/{uuid}/hedgehog_config/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5781,7 +5781,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/hedgehog_config/"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5908,7 +5908,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/scene_personalisation/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5929,7 +5929,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'uuid'")
         url = f"{self.base_url}/api/users/{uuid}/start_2fa_setup/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6056,7 +6056,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/two_factor_backup_codes/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6183,7 +6183,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/two_factor_disable/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6204,7 +6204,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'uuid'")
         url = f"{self.base_url}/api/users/{uuid}/two_factor_start_setup/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6225,7 +6225,7 @@ class PosthogApp(APIApplication):
             raise ValueError("Missing required parameter 'uuid'")
         url = f"{self.base_url}/api/users/{uuid}/two_factor_status/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6352,7 +6352,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/two_factor_validate/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6479,7 +6479,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/{uuid}/validate_2fa/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6602,7 +6602,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/request_email_verification/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6725,7 +6725,7 @@ class PosthogApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/users/verify_email/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

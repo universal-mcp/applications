@@ -23,7 +23,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/access_settings/activity"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -44,7 +44,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/access_settings/whitelist"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -60,7 +60,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/access_settings/whitelist"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -81,7 +81,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/access_settings/whitelist"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -102,7 +102,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'rule_id'")
         url = f"{self.base_url}/v3/access_settings/whitelist/{rule_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -123,7 +123,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'rule_id'")
         url = f"{self.base_url}/v3/access_settings/whitelist/{rule_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -139,7 +139,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/alerts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -166,7 +166,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/alerts"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -187,7 +187,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'alert_id'")
         url = f"{self.base_url}/v3/alerts/{alert_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -208,7 +208,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'alert_id'")
         url = f"{self.base_url}/v3/alerts/{alert_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -237,7 +237,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/alerts/{alert_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -256,7 +256,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/api_keys"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -278,7 +278,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/api_keys"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -299,7 +299,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'api_key_id'")
         url = f"{self.base_url}/v3/api_keys/{api_key_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -320,7 +320,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'api_key_id'")
         url = f"{self.base_url}/v3/api_keys/{api_key_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -344,7 +344,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/api_keys/{api_key_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -369,7 +369,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/api_keys/{api_key_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -388,7 +388,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/asm/groups"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -411,7 +411,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -432,7 +432,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'")
         url = f"{self.base_url}/v3/asm/groups/{group_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -453,7 +453,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'")
         url = f"{self.base_url}/v3/asm/groups/{group_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -479,7 +479,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups/{group_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -500,7 +500,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'")
         url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -524,7 +524,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -548,7 +548,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -572,7 +572,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions/{email}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -588,7 +588,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/asm/suppressions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -609,7 +609,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/asm/suppressions/global"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -630,7 +630,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/asm/suppressions/global/{email}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -651,7 +651,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/asm/suppressions/global/{email}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -672,7 +672,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/asm/suppressions/{email}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -707,7 +707,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -727,7 +727,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/campaigns"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -786,7 +786,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -807,7 +807,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/v3/campaigns/{campaign_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -828,7 +828,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/v3/campaigns/{campaign_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -864,7 +864,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -885,7 +885,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -906,7 +906,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -930,7 +930,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -954,7 +954,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -975,7 +975,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'campaign_id'")
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules/now"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -999,7 +999,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules/test"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1025,7 +1025,7 @@ class SendgridApp(APIApplication):
             for k, v in [("start_date", start_date), ("end_date", end_date), ("categories", categories), ("aggregated_by", aggregated_by)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1064,7 +1064,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1087,7 +1087,7 @@ class SendgridApp(APIApplication):
         query_params = {
             k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("aggregated_by", aggregated_by)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1113,7 +1113,7 @@ class SendgridApp(APIApplication):
         query_params = {
             k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("aggregated_by", aggregated_by)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1129,7 +1129,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/custom_fields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1151,7 +1151,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/custom_fields"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1172,7 +1172,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_field_id'")
         url = f"{self.base_url}/v3/contactdb/custom_fields/{custom_field_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1193,7 +1193,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_field_id'")
         url = f"{self.base_url}/v3/contactdb/custom_fields/{custom_field_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1211,7 +1211,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/lists"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1227,7 +1227,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/lists"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1248,7 +1248,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/lists"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1270,7 +1270,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
         query_params = {k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1291,7 +1291,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1315,7 +1315,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1338,7 +1338,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients"
         query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1360,7 +1360,7 @@ class SendgridApp(APIApplication):
         request_body = items
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1384,7 +1384,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'recipient_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients/{recipient_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1408,7 +1408,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'recipient_id'")
         url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients/{recipient_id}"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1426,7 +1426,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1446,7 +1446,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1465,7 +1465,7 @@ class SendgridApp(APIApplication):
         request_body = items
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1484,7 +1484,7 @@ class SendgridApp(APIApplication):
         request_body = items
         url = f"{self.base_url}/v3/contactdb/recipients"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1500,7 +1500,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/recipients/billable_count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1516,7 +1516,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/recipients/count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1535,7 +1535,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/recipients/search"
         query_params = {k: v for k, v in [("field_name", field_name)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1557,7 +1557,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/recipients/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1578,7 +1578,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'recipient_id'")
         url = f"{self.base_url}/v3/contactdb/recipients/{recipient_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1599,7 +1599,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'recipient_id'")
         url = f"{self.base_url}/v3/contactdb/recipients/{recipient_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1620,7 +1620,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'recipient_id'")
         url = f"{self.base_url}/v3/contactdb/recipients/{recipient_id}/lists"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1636,7 +1636,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/reserved_fields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1652,7 +1652,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/segments"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1676,7 +1676,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/contactdb/segments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1699,7 +1699,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/v3/contactdb/segments/{segment_id}/recipients"
         query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1715,7 +1715,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/contactdb/status"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1736,7 +1736,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/designs"
         query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token), ("summary", summary)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1760,7 +1760,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1781,7 +1781,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/designs/pre-builts"
         query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token), ("summary", summary)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1802,7 +1802,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/designs/pre-builts/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1827,7 +1827,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs/pre-builts/{id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1848,7 +1848,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/designs/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1869,7 +1869,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/designs/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1907,7 +1907,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1932,7 +1932,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/designs/{id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1965,7 +1965,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1985,7 +1985,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/engagementquality/scores"
         query_params = {k: v for k, v in [("from", from_), ("to", to)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2006,7 +2006,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/engagementquality/subusers/scores"
         query_params = {k: v for k, v in [("limit", limit), ("date", date), ("after_key", after_key)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2041,7 +2041,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2057,7 +2057,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/ips/assigned"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2073,7 +2073,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/ips/pools"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2097,7 +2097,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/ips/pools/{pool_name}/ips"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2121,7 +2121,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'ip'")
         url = f"{self.base_url}/v3/ips/pools/{pool_name}/ips/{ip}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2137,7 +2137,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/ips/remaining"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2153,7 +2153,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/ips/warmup"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2174,7 +2174,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/ips/warmup"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2195,7 +2195,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'ip_address'")
         url = f"{self.base_url}/v3/ips/warmup/{ip_address}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2216,7 +2216,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'ip_address'")
         url = f"{self.base_url}/v3/ips/warmup/{ip_address}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2232,7 +2232,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail/batch"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2253,7 +2253,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'")
         url = f"{self.base_url}/v3/mail/batch/{batch_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2406,7 +2406,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail/send"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2426,7 +2426,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2442,7 +2442,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings/address_whitelist"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2464,7 +2464,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/address_whitelist"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2480,7 +2480,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings/bounce_purge"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2503,7 +2503,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/bounce_purge"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2519,7 +2519,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings/footer"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2542,7 +2542,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/footer"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2558,7 +2558,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings/forward_bounce"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2580,7 +2580,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/forward_bounce"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2596,7 +2596,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings/forward_spam"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2618,7 +2618,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/forward_spam"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2634,7 +2634,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mail_settings/template"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2656,7 +2656,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/mail_settings/template"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2693,7 +2693,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2713,7 +2713,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/contacts"
         query_params = {k: v for k, v in [("delete_all_contacts", delete_all_contacts), ("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2729,7 +2729,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/contacts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2751,7 +2751,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2772,7 +2772,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/batch"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2788,7 +2788,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/contacts/exports"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2821,7 +2821,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/exports"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2842,7 +2842,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/contacts/exports/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2865,7 +2865,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/imports"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2886,7 +2886,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/contacts/imports/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2907,7 +2907,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2931,7 +2931,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/search/emails"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2955,7 +2955,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/search/identifiers/{identifier_type}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2980,7 +2980,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/contacts/{contact_id}/identifiers"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3001,7 +3001,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/contacts/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3017,7 +3017,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/field_definitions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3039,7 +3039,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/field_definitions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3060,7 +3060,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'custom_field_id'")
         url = f"{self.base_url}/v3/marketing/field_definitions/{custom_field_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3084,7 +3084,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/field_definitions/{custom_field_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3103,7 +3103,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/integrations"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3119,7 +3119,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/integrations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3163,7 +3163,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/integrations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3184,7 +3184,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/integrations/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3228,7 +3228,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/integrations/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3248,7 +3248,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/lists"
         query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3269,7 +3269,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/lists"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3291,7 +3291,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/lists/{id}"
         query_params = {k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3313,7 +3313,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/lists/{id}"
         query_params = {k: v for k, v in [("contact_sample", contact_sample)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3337,7 +3337,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/lists/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3358,7 +3358,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/lists/{id}/contacts/count"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3405,7 +3405,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/segments/2.0/refresh/{segment_id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3426,7 +3426,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3448,7 +3448,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
         query_params = {k: v for k, v in [("contacts_sample", contacts_sample)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3473,7 +3473,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3514,7 +3514,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/senders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3535,7 +3535,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/senders/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3556,7 +3556,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/senders/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3600,7 +3600,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/senders/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3621,7 +3621,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/senders/{id}/resend_verification"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3640,7 +3640,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/singlesends"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3660,7 +3660,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/singlesends"
         query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3685,7 +3685,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3701,7 +3701,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/singlesends/categories"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3730,7 +3730,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/search"
         query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3751,7 +3751,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/singlesends/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3772,7 +3772,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/singlesends/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3800,7 +3800,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3824,7 +3824,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/{id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3845,7 +3845,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/marketing/singlesends/{id}/schedule"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3869,7 +3869,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/singlesends/{id}/schedule"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3892,7 +3892,7 @@ class SendgridApp(APIApplication):
         query_params = {
             k: v for k, v in [("automation_ids", automation_ids), ("page_size", page_size), ("page_token", page_token)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3912,7 +3912,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/stats/automations/export"
         query_params = {k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3965,7 +3965,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3994,7 +3994,7 @@ class SendgridApp(APIApplication):
             for k, v in [("group_by", group_by), ("step_ids", step_ids), ("page_size", page_size), ("page_token", page_token)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4017,7 +4017,7 @@ class SendgridApp(APIApplication):
         query_params = {
             k: v for k, v in [("singlesend_ids", singlesend_ids), ("page_size", page_size), ("page_token", page_token)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4037,7 +4037,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/marketing/stats/singlesends/export"
         query_params = {k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4079,7 +4079,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4117,7 +4117,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4161,7 +4161,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/marketing/test/send_email"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4181,7 +4181,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/messages"
         query_params = {k: v for k, v in [("query", query), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4200,7 +4200,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/messages/download"
         query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4221,7 +4221,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'download_uuid'")
         url = f"{self.base_url}/v3/messages/download/{download_uuid}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4242,7 +4242,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'msg_id'")
         url = f"{self.base_url}/v3/messages/{msg_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4262,7 +4262,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/partner_settings"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4304,7 +4304,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/partners/accounts"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4325,7 +4325,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'accountID'")
         url = f"{self.base_url}/v3/partners/accounts/{accountID}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4346,7 +4346,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'accountID'")
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/offerings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4382,7 +4382,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/offerings"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4403,7 +4403,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'accountID'")
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/sso"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4424,7 +4424,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'accountID'")
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/state"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4448,7 +4448,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/partners/accounts/{accountID}/state"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4464,7 +4464,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/partners/offerings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4494,7 +4494,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/recipients/erasejob"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4510,7 +4510,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/scopes"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4530,7 +4530,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/scopes/requests"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4551,7 +4551,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'request_id'")
         url = f"{self.base_url}/v3/scopes/requests/{request_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4572,7 +4572,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'request_id'")
         url = f"{self.base_url}/v3/scopes/requests/{request_id}/approve"
         query_params = {}
-        response = self._patch(url, data={}, params=query_params)
+        response = await self._async_patch(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4633,7 +4633,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4674,7 +4674,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4696,7 +4696,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'ip'")
         url = f"{self.base_url}/v3/send_ips/ips/{ip}"
         query_params = {k: v for k, v in [("include_region", include_region)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4730,7 +4730,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips/{ip}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4753,7 +4753,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'ip'")
         url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers"
         query_params = {k: v for k, v in [("after_key", after_key), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4786,7 +4786,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchAdd"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4819,7 +4819,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchDelete"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4851,7 +4851,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4872,7 +4872,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'poolid'")
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4894,7 +4894,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'poolid'")
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
         query_params = {k: v for k, v in [("include_region", include_region)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4924,7 +4924,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4948,7 +4948,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'poolid'")
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips"
         query_params = {k: v for k, v in [("limit", limit), ("after_key", after_key), ("include_region", include_region)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4983,7 +4983,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchAdd"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5018,7 +5018,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchDelete"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5034,7 +5034,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/senders"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5057,7 +5057,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/certificates"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5078,7 +5078,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'cert_id'")
         url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5099,7 +5099,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'cert_id'")
         url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5125,7 +5125,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5144,7 +5144,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/sso/integrations"
         query_params = {k: v for k, v in [("si", si)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5179,7 +5179,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/integrations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5200,7 +5200,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/sso/integrations/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5222,7 +5222,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/sso/integrations/{id}"
         query_params = {k: v for k, v in [("si", si)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5261,7 +5261,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/integrations/{id}"
         query_params = {k: v for k, v in [("si", si)] if v is not None}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5282,7 +5282,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'integration_id'")
         url = f"{self.base_url}/v3/sso/integrations/{integration_id}/certificates"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5339,7 +5339,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/teammates"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5396,7 +5396,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/sso/teammates/{username}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5429,7 +5429,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5462,7 +5462,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5481,7 +5481,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/subusers/reputations"
         query_params = {k: v for k, v in [("usernames", usernames)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5516,7 +5516,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5553,7 +5553,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5592,7 +5592,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5613,7 +5613,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'subuser_name'")
         url = f"{self.base_url}/v3/subusers/{subuser_name}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5637,7 +5637,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5658,7 +5658,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'subuser_name'")
         url = f"{self.base_url}/v3/subusers/{subuser_name}/credits"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5684,7 +5684,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}/credits"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5708,7 +5708,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}/credits/remaining"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5730,7 +5730,7 @@ class SendgridApp(APIApplication):
         request_body = items
         url = f"{self.base_url}/v3/subusers/{subuser_name}/ips"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5768,7 +5768,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5792,7 +5792,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/subusers/{subuser_name}/website_access"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5814,7 +5814,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/blocks"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5841,7 +5841,7 @@ class SendgridApp(APIApplication):
             for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5862,7 +5862,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/blocks/{email}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5883,7 +5883,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/blocks/{email}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5905,7 +5905,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/bounces"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5932,7 +5932,7 @@ class SendgridApp(APIApplication):
             for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5952,7 +5952,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/suppression/bounces/classifications"
         query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5975,7 +5975,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'classification'")
         url = f"{self.base_url}/v3/suppression/bounces/classifications/{classification}"
         query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5996,7 +5996,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/bounces/{email}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6017,7 +6017,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/bounces/{email}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6039,7 +6039,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/invalid_emails"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6066,7 +6066,7 @@ class SendgridApp(APIApplication):
             for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6087,7 +6087,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/invalid_emails/{email}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6108,7 +6108,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/invalid_emails/{email}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6130,7 +6130,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/suppression/spam_reports"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6157,7 +6157,7 @@ class SendgridApp(APIApplication):
             for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6178,7 +6178,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/spam_reports/{email}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6199,7 +6199,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         url = f"{self.base_url}/v3/suppression/spam_reports/{email}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6226,7 +6226,7 @@ class SendgridApp(APIApplication):
             for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6246,7 +6246,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/teammates"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6269,7 +6269,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/teammates"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6285,7 +6285,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/teammates/pending"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6306,7 +6306,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'token'")
         url = f"{self.base_url}/v3/teammates/pending/{token}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6327,7 +6327,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'token'")
         url = f"{self.base_url}/v3/teammates/pending/{token}/resend"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6348,7 +6348,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'teammate_name'")
         url = f"{self.base_url}/v3/teammates/{teammate_name}/subuser_access"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6369,7 +6369,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'username'")
         url = f"{self.base_url}/v3/teammates/{username}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6390,7 +6390,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'username'")
         url = f"{self.base_url}/v3/teammates/{username}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6415,7 +6415,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/teammates/{username}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6437,7 +6437,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/templates"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6458,7 +6458,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         url = f"{self.base_url}/v3/templates/{template_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6479,7 +6479,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         url = f"{self.base_url}/v3/templates/{template_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6503,7 +6503,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/templates/{template_id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6554,7 +6554,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/templates/{template_id}/versions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6578,7 +6578,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'version_id'")
         url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6602,7 +6602,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'version_id'")
         url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6626,7 +6626,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'version_id'")
         url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}/activate"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6642,7 +6642,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/tracking_settings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6658,7 +6658,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/tracking_settings/click"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6679,7 +6679,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/tracking_settings/click"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6695,7 +6695,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/tracking_settings/google_analytics"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6730,7 +6730,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/tracking_settings/google_analytics"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6746,7 +6746,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/tracking_settings/open"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6767,7 +6767,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/tracking_settings/open"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6783,7 +6783,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/tracking_settings/subscription"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6818,7 +6818,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/tracking_settings/subscription"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6834,7 +6834,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/account"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6850,7 +6850,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/credits"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6866,7 +6866,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/email"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6887,7 +6887,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/email"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6909,7 +6909,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/password"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6925,7 +6925,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/profile"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6981,7 +6981,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/profile"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6997,7 +6997,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/scheduled_sends"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7019,7 +7019,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/scheduled_sends"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7040,7 +7040,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'")
         url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7061,7 +7061,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'batch_id'")
         url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7085,7 +7085,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7101,7 +7101,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/settings/enforced_tls"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7124,7 +7124,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/settings/enforced_tls"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7140,7 +7140,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/username"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7161,7 +7161,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/username"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7257,7 +7257,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/event/settings"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7276,7 +7276,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/webhooks/event/settings/all"
         query_params = {k: v for k, v in [("include", include)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7297,7 +7297,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/user/webhooks/event/settings/signed/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7327,7 +7327,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/event/settings/signed/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7348,7 +7348,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/user/webhooks/event/settings/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7370,7 +7370,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/user/webhooks/event/settings/{id}"
         query_params = {k: v for k, v in [("include", include)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7450,7 +7450,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/event/settings/{id}"
         query_params = {k: v for k, v in [("include", include)] if v is not None}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7481,7 +7481,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/event/test"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7497,7 +7497,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/user/webhooks/parse/settings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7521,7 +7521,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/parse/settings"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7542,7 +7542,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'hostname'")
         url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7563,7 +7563,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'hostname'")
         url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7590,7 +7590,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7623,7 +7623,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7645,7 +7645,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/validations/email"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7661,7 +7661,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/validations/email/jobs"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7682,7 +7682,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/validations/email/jobs"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._async_put(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7703,7 +7703,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'job_id'")
         url = f"{self.base_url}/v3/validations/email/jobs/{job_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7724,7 +7724,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/verified_senders"
         query_params = {k: v for k, v in [("limit", limit), ("lastSeenID", lastSeenID), ("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7780,7 +7780,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/verified_senders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7796,7 +7796,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/verified_senders/domains"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7817,7 +7817,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/verified_senders/resend/{id}"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7833,7 +7833,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/verified_senders/steps_completed"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7854,7 +7854,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'token'")
         url = f"{self.base_url}/v3/verified_senders/verify/{token}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7875,7 +7875,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/verified_senders/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7935,7 +7935,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/verified_senders/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7959,7 +7959,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/dns/email"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7992,7 +7992,7 @@ class SendgridApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8042,7 +8042,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8061,7 +8061,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/domains/default"
         query_params = {k: v for k, v in [("domain", domain)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8080,7 +8080,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/domains/subuser"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8099,7 +8099,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/domains/subuser"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8118,7 +8118,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/domains/subuser/all"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8139,7 +8139,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'domain_id'")
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8160,7 +8160,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'domain_id'")
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8185,7 +8185,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8207,7 +8207,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'domain_id'")
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8231,7 +8231,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8255,7 +8255,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser:add"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8279,7 +8279,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/domains/{id}/ips"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8303,7 +8303,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'ip'")
         url = f"{self.base_url}/v3/whitelabel/domains/{id}/ips/{ip}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8324,7 +8324,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/domains/{id}/validate"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8345,7 +8345,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/ips"
         query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("ip", ip)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8368,7 +8368,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/ips"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8389,7 +8389,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/ips/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8410,7 +8410,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/ips/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8431,7 +8431,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/ips/{id}/validate"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8450,7 +8450,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/links"
         query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8474,7 +8474,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/links"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8493,7 +8493,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/links/default"
         query_params = {k: v for k, v in [("domain", domain)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8512,7 +8512,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/links/subuser"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8531,7 +8531,7 @@ class SendgridApp(APIApplication):
         """
         url = f"{self.base_url}/v3/whitelabel/links/subuser"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8552,7 +8552,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/links/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._async_delete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8573,7 +8573,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/links/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._async_get(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8597,7 +8597,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/links/{id}"
         query_params = {}
-        response = self._patch(url, data=request_body, params=query_params)
+        response = await self._async_patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8618,7 +8618,7 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v3/whitelabel/links/{id}/validate"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._async_post(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8642,7 +8642,7 @@ class SendgridApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v3/whitelabel/links/{link_id}/subuser"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._async_post(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

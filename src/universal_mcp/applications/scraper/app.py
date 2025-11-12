@@ -106,7 +106,7 @@ class ScraperApp(APIApplication):
             params["limit"] = limit
         if is_company is not None:
             params["is_company"] = is_company
-        response = self._get(url, params=params)
+        response = await self._async_get(url, params=params)
         return response.json()
 
     async def linkedin_retrieve_profile(self, identifier: str) -> dict[str, Any]:
@@ -127,8 +127,8 @@ class ScraperApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/users/{identifier}"
         params: dict[str, Any] = {"account_id": self.account_id}
-        response = self._get(url, params=params)
-        return self._handle_response(response)
+        response = await self._async_get(url, params=params)
+        return await self._async_handle_response(response)
 
     async def linkedin_list_post_comments(
         self, post_id: str, comment_id: str | None = None, cursor: str | None = None, limit: int | None = None
@@ -159,7 +159,7 @@ class ScraperApp(APIApplication):
             params["limit"] = str(limit)
         if comment_id:
             params["comment_id"] = comment_id
-        response = self._get(url, params=params)
+        response = await self._async_get(url, params=params)
         return response.json()
 
     async def linkedin_search_people(
@@ -206,8 +206,8 @@ class ScraperApp(APIApplication):
         if company:
             company_id = self._get_search_parameter_id("COMPANY", company)
             payload["company"] = [company_id]
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
+        response = await self._async_post(url, params=params, data=payload)
+        return await self._async_handle_response(response)
 
     async def linkedin_search_companies(
         self,
@@ -248,8 +248,8 @@ class ScraperApp(APIApplication):
         if industry:
             industry_id = self._get_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
+        response = await self._async_post(url, params=params, data=payload)
+        return await self._async_handle_response(response)
 
     async def linkedin_search_posts(
         self,
@@ -288,8 +288,8 @@ class ScraperApp(APIApplication):
             payload["date_posted"] = date_posted
         if sort_by:
             payload["sort_by"] = sort_by
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
+        response = await self._async_post(url, params=params, data=payload)
+        return await self._async_handle_response(response)
 
     async def linkedin_search_jobs(
         self,
@@ -341,8 +341,8 @@ class ScraperApp(APIApplication):
         if industry:
             industry_id = self._get_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
-        response = self._post(url, params=params, data=payload)
-        return self._handle_response(response)
+        response = await self._async_post(url, params=params, data=payload)
+        return await self._async_handle_response(response)
 
     def list_tools(self):
         """
