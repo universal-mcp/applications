@@ -29,7 +29,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/v1/branches/{branch_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -94,7 +94,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/v1/branches/{branch_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -119,7 +119,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/v1/branches/{branch_id}/reset"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -141,7 +141,7 @@ class SupabaseApp(APIApplication):
         """
         url = f"{self.base_url}/v1/projects"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -206,7 +206,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -228,7 +228,7 @@ class SupabaseApp(APIApplication):
         """
         url = f"{self.base_url}/v1/organizations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -255,7 +255,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/organizations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -314,7 +314,7 @@ class SupabaseApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -336,7 +336,7 @@ class SupabaseApp(APIApplication):
         """
         url = f"{self.base_url}/v1/snippets"
         query_params = {k: v for k, v in [("project_ref", project_ref)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -361,7 +361,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/snippets/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -386,7 +386,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/api-keys"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -418,7 +418,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/api-keys"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -478,7 +478,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/projects/{ref}/api-keys/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -503,7 +503,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/branches"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -557,7 +557,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/branches"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -582,7 +582,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/branches"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -607,7 +607,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/custom-hostname"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -632,7 +632,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/custom-hostname/reverify"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -657,7 +657,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/custom-hostname/activate"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -682,7 +682,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/network-bans/retrieve"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -712,7 +712,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/network-bans"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -737,7 +737,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/network-restrictions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -766,7 +766,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/network-restrictions/apply"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -791,7 +791,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/pgsodium"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -821,7 +821,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/pgsodium"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -846,7 +846,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/postgrest"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -904,7 +904,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -929,7 +929,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/secrets"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -958,7 +958,7 @@ class SupabaseApp(APIApplication):
         request_body = items
         url = f"{self.base_url}/v1/projects/{ref}/secrets"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -986,7 +986,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'items'")
         url = f"{self.base_url}/v1/projects/{ref}/secrets"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1011,7 +1011,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/ssl-enforcement"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1041,7 +1041,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/ssl-enforcement"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1067,7 +1067,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/types/typescript"
         query_params = {k: v for k, v in [("included_schemas", included_schemas)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1092,7 +1092,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1117,7 +1117,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1147,7 +1147,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain/check-availability"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1177,7 +1177,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/vanity-subdomain/activate"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1210,7 +1210,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/upgrade"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1235,7 +1235,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/upgrade/eligibility"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1260,7 +1260,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/upgrade/status"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1285,7 +1285,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/readonly"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1310,7 +1310,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/readonly/temporary-disable"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1340,7 +1340,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/read-replicas/setup"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1370,7 +1370,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/read-replicas/remove"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1399,7 +1399,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'services'")
         url = f"{self.base_url}/v1/projects/{ref}/health"
         query_params = {k: v for k, v in [("timeout_ms", timeout_ms), ("services", services)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1424,7 +1424,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/config/database/postgres"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1506,7 +1506,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/config/database/postgres"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1531,7 +1531,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/config/database/pgbouncer"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1556,7 +1556,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/config/database/pooler"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1610,7 +1610,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2178,7 +2178,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2203,7 +2203,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2231,7 +2231,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'tpa_id'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth/{tpa_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2259,7 +2259,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'tpa_id'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/third-party-auth/{tpa_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2289,7 +2289,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/database/query"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2314,7 +2314,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/database/webhooks/enable"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2339,7 +2339,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/functions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2367,7 +2367,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'function_slug'")
         url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2454,7 +2454,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'function_slug'")
         url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2482,7 +2482,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'function_slug'")
         url = f"{self.base_url}/v1/projects/{ref}/functions/{function_slug}/body"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2507,7 +2507,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/storage/buckets"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2549,7 +2549,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2574,7 +2574,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2602,7 +2602,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'provider_id'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2643,7 +2643,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2671,7 +2671,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'provider_id'")
         url = f"{self.base_url}/v1/projects/{ref}/config/auth/sso/providers/{provider_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2696,7 +2696,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'ref'")
         url = f"{self.base_url}/v1/projects/{ref}/database/backups"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2726,7 +2726,7 @@ class SupabaseApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/projects/{ref}/database/backups/restore-pitr"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2751,7 +2751,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'slug'")
         url = f"{self.base_url}/v1/organizations/{slug}/members"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2776,7 +2776,7 @@ class SupabaseApp(APIApplication):
             raise ValueError("Missing required parameter 'slug'")
         url = f"{self.base_url}/v1/organizations/{slug}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

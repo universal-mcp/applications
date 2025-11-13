@@ -26,7 +26,7 @@ class SentryApp(APIApplication):
         """
         url = f"{self.base_url}/api/0/organizations/"
         query_params = {k: v for k, v in [("owner", owner), ("cursor", cursor), ("query", query), ("sortBy", sortBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -48,7 +48,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/"
         query_params = {k: v for k, v in [("detailed", detailed)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -222,7 +222,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -243,7 +243,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/alert-rules/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -371,7 +371,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/alert-rules/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -395,7 +395,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'alert_rule_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/alert-rules/{alert_rule_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -528,7 +528,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/alert-rules/{alert_rule_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -552,7 +552,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'alert_rule_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/alert-rules/{alert_rule_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -576,7 +576,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'alert_rule_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/alert-rules/{alert_rule_id}/activations/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -598,7 +598,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/config/integrations/"
         query_params = {k: v for k, v in [("providerKey", providerKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -621,7 +621,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/"
         query_params = {k: v for k, v in [("per_page", per_page), ("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -681,7 +681,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -705,7 +705,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'dashboard_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/{dashboard_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -769,7 +769,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/{dashboard_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -793,7 +793,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'dashboard_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/dashboards/{dashboard_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -822,7 +822,7 @@ class SentryApp(APIApplication):
         query_params = {
             k: v for k, v in [("per_page", per_page), ("cursor", cursor), ("query", query), ("sortBy", sortBy)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -915,7 +915,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/discover/saved/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -939,7 +939,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'query_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/discover/saved/{query_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1036,7 +1036,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/discover/saved/{query_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1060,7 +1060,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'query_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/discover/saved/{query_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1082,7 +1082,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/environments/"
         query_params = {k: v for k, v in [("visibility", visibility)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1138,7 +1138,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1183,7 +1183,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/external-users/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1231,7 +1231,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/external-users/{external_user_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1255,7 +1255,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'external_user_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/external-users/{external_user_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1283,7 +1283,7 @@ class SentryApp(APIApplication):
         query_params = {
             k: v for k, v in [("providerKey", providerKey), ("features", features), ("includeConfig", includeConfig)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1307,7 +1307,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'integration_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/integrations/{integration_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1331,7 +1331,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'integration_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/integrations/{integration_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1352,7 +1352,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1396,7 +1396,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1420,7 +1420,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1480,7 +1480,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1504,7 +1504,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1531,7 +1531,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/teams/{team_id_or_slug}/"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1566,7 +1566,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/teams/{team_id_or_slug}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1593,7 +1593,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/members/{member_id}/teams/{team_id_or_slug}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1617,7 +1617,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/"
         query_params = {k: v for k, v in [("project", project), ("environment", environment), ("owner", owner)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1651,7 +1651,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1676,7 +1676,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {k: v for k, v in [("environment", environment)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1713,7 +1713,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1738,7 +1738,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {k: v for k, v in [("environment", environment)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1762,7 +1762,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/monitors/{monitor_id_or_slug}/checkins/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1792,7 +1792,7 @@ class SentryApp(APIApplication):
             for k, v in [("project", project), ("project_id_or_slug", project_id_or_slug), ("triggerType", triggerType)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1854,7 +1854,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/notifications/actions/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1878,7 +1878,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'action_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/notifications/actions/{action_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1944,7 +1944,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/notifications/actions/{action_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1968,7 +1968,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'action_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/notifications/actions/{action_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1990,7 +1990,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/projects/"
         query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2011,7 +2011,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/relay_usage/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2043,7 +2043,7 @@ class SentryApp(APIApplication):
             for k, v in [("start", start), ("end", end), ("environment", environment), ("projectSlug", projectSlug), ("release", release)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2100,7 +2100,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2133,7 +2133,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2157,7 +2157,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2197,7 +2197,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2253,7 +2253,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2312,7 +2312,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2375,7 +2375,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2406,7 +2406,7 @@ class SentryApp(APIApplication):
             for k, v in [("startIndex", startIndex), ("count", count), ("filter", filter), ("excludedAttributes", excludedAttributes)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2430,7 +2430,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Groups"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2454,7 +2454,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Groups/{team_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2561,7 +2561,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Groups/{team_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2592,7 +2592,7 @@ class SentryApp(APIApplication):
             for k, v in [("startIndex", startIndex), ("count", count), ("filter", filter), ("excludedAttributes", excludedAttributes)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2627,7 +2627,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Users"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2651,7 +2651,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Users/{member_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2713,7 +2713,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/scim/v2/Users/{member_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2781,7 +2781,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2840,7 +2840,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2899,7 +2899,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2922,7 +2922,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/teams/"
         query_params = {k: v for k, v in [("detailed", detailed), ("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2949,7 +2949,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/teams/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2970,7 +2970,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/user-teams/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2994,7 +2994,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3059,7 +3059,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3083,7 +3083,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3108,7 +3108,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/environments/"
         query_params = {k: v for k, v in [("visibility", visibility)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3135,7 +3135,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'environment'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/environments/{environment}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3165,7 +3165,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/environments/{environment}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3194,7 +3194,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/events/"
         query_params = {k: v for k, v in [("cursor", cursor), ("full", full), ("sample", sample)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3225,7 +3225,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/events/{event_id}/source-map-debug/"
         query_params = {k: v for k, v in [("frame_idx", frame_idx), ("exception_idx", exception_idx)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3249,7 +3249,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/filters/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3304,7 +3304,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/filters/{filter_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3330,7 +3330,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/"
         query_params = {k: v for k, v in [("cursor", cursor), ("status", status)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3367,7 +3367,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3394,7 +3394,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'key_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/{key_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3468,7 +3468,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/{key_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3495,7 +3495,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'key_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/keys/{key_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3519,7 +3519,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/members/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3546,7 +3546,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3586,7 +3586,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3616,7 +3616,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/monitors/{monitor_id_or_slug}/"
         query_params = {k: v for k, v in [("environment", environment)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3645,7 +3645,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'monitor_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/monitors/{monitor_id_or_slug}/checkins/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3669,7 +3669,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/ownership/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3704,7 +3704,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/ownership/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3731,7 +3731,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'replay_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/replays/{replay_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3766,7 +3766,7 @@ class SentryApp(APIApplication):
         query_params = {
             k: v for k, v in [("cursor", cursor), ("environment", environment), ("per_page", per_page), ("query", query)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3797,7 +3797,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'replay_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/replays/{replay_id}/recording-segments/"
         query_params = {k: v for k, v in [("cursor", cursor), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3827,7 +3827,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'segment_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/replays/{replay_id}/recording-segments/{segment_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3854,7 +3854,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'replay_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/replays/{replay_id}/viewed-by/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3878,7 +3878,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/rules/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4291,7 +4291,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/rules/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4318,7 +4318,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'rule_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/rules/{rule_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4388,7 +4388,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/rules/{rule_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4415,7 +4415,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'rule_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/rules/{rule_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4440,7 +4440,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/symbol-sources/"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4561,7 +4561,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/symbol-sources/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4684,7 +4684,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/symbol-sources/"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4709,7 +4709,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/symbol-sources/"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4733,7 +4733,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/teams/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4760,7 +4760,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/teams/{team_id_or_slug}/"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4787,7 +4787,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/teams/{team_id_or_slug}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4813,7 +4813,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
         query_params = {k: v for k, v in [("expand", expand), ("collapse", collapse)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4840,7 +4840,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4864,7 +4864,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4903,7 +4903,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/external-teams/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4945,7 +4945,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/external-teams/{external_team_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4972,7 +4972,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'external_team_id'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/external-teams/{external_team_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4997,7 +4997,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/members/"
         query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5022,7 +5022,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/projects/"
         query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5059,7 +5059,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/projects/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5080,7 +5080,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'")
         url = f"{self.base_url}/api/0/users/{user_id}/emails/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5104,7 +5104,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/users/{user_id}/emails/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5128,7 +5128,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/users/{user_id}/emails/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5149,7 +5149,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'user_id'")
         url = f"{self.base_url}/api/0/users/{user_id}/emails/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5179,7 +5179,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'team_id_or_slug'")
         url = f"{self.base_url}/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/stats/"
         query_params = {k: v for k, v in [("stat", stat), ("since", since), ("until", until), ("resolution", resolution)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5203,7 +5203,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/eventids/{event_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5224,7 +5224,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/repos/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5248,7 +5248,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'repo_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/repos/{repo_id}/commits/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5272,7 +5272,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'short_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/shortids/{short_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5291,7 +5291,7 @@ class SentryApp(APIApplication):
         """
         url = f"{self.base_url}/api/0/projects/"
         query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5315,7 +5315,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/files/dsyms/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5340,7 +5340,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/files/dsyms/"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5365,7 +5365,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/users/"
         query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5392,7 +5392,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/tags/{key}/values/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5422,7 +5422,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/stats/"
         query_params = {k: v for k, v in [("stat", stat), ("since", since), ("until", until), ("resolution", resolution)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5446,7 +5446,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/user-feedback/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5487,7 +5487,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/user-feedback/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5512,7 +5512,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/"
         query_params = {k: v for k, v in [("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5550,7 +5550,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5577,7 +5577,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'hook_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/{hook_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5618,7 +5618,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/{hook_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5645,7 +5645,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'hook_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/hooks/{hook_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5672,7 +5672,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/events/{event_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5713,7 +5713,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5779,7 +5779,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/issues/"
         query_params = {k: v for k, v in [("id", id), ("status", status)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5804,7 +5804,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id_or_slug'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/issues/"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5831,7 +5831,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/issues/{issue_id}/tags/{key}/values/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5857,7 +5857,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'issue_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/issues/{issue_id}/hashes/"
         query_params = {k: v for k, v in [("full", full), ("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5881,7 +5881,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'issue_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/issues/{issue_id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5939,7 +5939,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/issues/{issue_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5963,7 +5963,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'issue_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/issues/{issue_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5985,7 +5985,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/"
         query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6035,7 +6035,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6059,7 +6059,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/files/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6086,7 +6086,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/releases/{version}/files/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6114,7 +6114,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {k: v for k, v in [("download", download)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6151,7 +6151,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6178,7 +6178,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6211,7 +6211,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {k: v for k, v in [("download", download)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6253,7 +6253,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6283,7 +6283,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'file_id'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/releases/{version}/files/{file_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6307,7 +6307,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/commits/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6334,7 +6334,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/projects/{organization_id_or_slug}/{project_id_or_slug}/releases/{version}/commits/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6358,7 +6358,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/commitfiles/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6382,7 +6382,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'version'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/deploys/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6429,7 +6429,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/releases/{version}/deploys/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6450,7 +6450,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id_or_slug'")
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/sentry-app-installations/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6486,7 +6486,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/sentry-app-installations/{uuid}/external-issues/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6510,7 +6510,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'external_issue_id'")
         url = f"{self.base_url}/api/0/sentry-app-installations/{uuid}/external-issues/{external_issue_id}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6534,7 +6534,7 @@ class SentryApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api/0/organizations/{organization_id_or_slug}/spike-protections/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6576,7 +6576,7 @@ class SentryApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6601,7 +6601,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'event_id'")
         url = f"{self.base_url}/api/0/issues/{issue_id}/events/{event_id}/"
         query_params = {k: v for k, v in [("environment", environment)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6626,7 +6626,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/api/0/issues/{issue_id}/tags/{key}/"
         query_params = {k: v for k, v in [("environment", environment)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6652,7 +6652,7 @@ class SentryApp(APIApplication):
             raise ValueError("Missing required parameter 'key'")
         url = f"{self.base_url}/api/0/issues/{issue_id}/tags/{key}/values/"
         query_params = {k: v for k, v in [("sort", sort), ("environment", environment)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

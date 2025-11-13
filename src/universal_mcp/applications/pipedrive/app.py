@@ -31,7 +31,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/oauth/authorize"
         query_params = {k: v for k, v in [("client_id", client_id), ("redirect_uri", redirect_uri), ("state", state)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -63,7 +63,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/oauth/token"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -91,7 +91,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/activities"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -149,7 +149,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -236,7 +236,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activities"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -291,7 +291,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -321,7 +321,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/activities/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -351,7 +351,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/activities/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -442,7 +442,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activities/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -467,7 +467,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/activityFields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -495,7 +495,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/activityTypes"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -520,7 +520,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/activityTypes"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -553,7 +553,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activityTypes"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -583,7 +583,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/activityTypes/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -622,7 +622,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/activityTypes/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -647,7 +647,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/billing/subscriptions/addons"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -722,7 +722,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/callLogs"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -751,7 +751,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/callLogs"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -781,7 +781,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/callLogs/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -811,7 +811,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/callLogs/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -851,7 +851,7 @@ class PipedriveApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/callLogs/{id}/recordings"
         query_params = {}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._apost(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -899,7 +899,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/channels"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -929,7 +929,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/channels/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -992,7 +992,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/channels/messages/receive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1025,7 +1025,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'conversation-id'.")
         url = f"{self.base_url}/channels/{channel_id}/conversations/{conversation_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1053,7 +1053,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/currencies"
         query_params = {k: v for k, v in [("term", term)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1111,7 +1111,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1198,7 +1198,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1226,7 +1226,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/deals"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1281,7 +1281,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1342,7 +1342,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1377,7 +1377,7 @@ class PipedriveApp(APIApplication):
         query_params = {
             k: v for k, v in [("status", status), ("filter_id", filter_id), ("user_id", user_id), ("stage_id", stage_id)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1438,7 +1438,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1468,7 +1468,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1498,7 +1498,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1586,7 +1586,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1622,7 +1622,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/activities"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("done", done), ("exclude", exclude)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1653,7 +1653,7 @@ class PipedriveApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/deals/{id}/duplicate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1686,7 +1686,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/files"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1724,7 +1724,7 @@ class PipedriveApp(APIApplication):
         query_params = {
             k: v for k, v in [("start", start), ("limit", limit), ("all_changes", all_changes), ("items", items)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1756,7 +1756,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/participantsChangelog"
         query_params = {k: v for k, v in [("limit", limit), ("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1786,7 +1786,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/followers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1820,7 +1820,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/followers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1853,7 +1853,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'follower_id'.")
         url = f"{self.base_url}/deals/{id}/followers/{follower_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1885,7 +1885,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/mailMessages"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1919,7 +1919,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/merge"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1951,7 +1951,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/participants"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1985,7 +1985,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/participants"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2018,7 +2018,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'deal_participant_id'.")
         url = f"{self.base_url}/deals/{id}/participants/{deal_participant_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2048,7 +2048,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/permittedUsers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2080,7 +2080,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/deals/{id}/persons"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2117,7 +2117,7 @@ class PipedriveApp(APIApplication):
         query_params = {
             k: v for k, v in [("start", start), ("limit", limit), ("include_product_data", include_product_data)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2190,7 +2190,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/products"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2267,7 +2267,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/deals/{id}/products/{product_attachment_id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2300,7 +2300,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'product_attachment_id'.")
         url = f"{self.base_url}/deals/{id}/products/{product_attachment_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2329,7 +2329,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/dealFields"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2369,7 +2369,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/dealFields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2397,7 +2397,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/dealFields"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2427,7 +2427,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/dealFields/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2457,7 +2457,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/dealFields/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2495,7 +2495,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/dealFields/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2525,7 +2525,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/files"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2589,7 +2589,7 @@ class PipedriveApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/files"
         query_params = {}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._apost(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2637,7 +2637,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/remote"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2673,7 +2673,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/remoteLink"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2703,7 +2703,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/files/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2733,7 +2733,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/files/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2768,7 +2768,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/files/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2798,7 +2798,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/files/{id}/download"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2826,7 +2826,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/filters"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2854,7 +2854,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/filters"
         query_params = {k: v for k, v in [("type", type)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2889,7 +2889,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/filters"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2914,7 +2914,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/filters/helpers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2944,7 +2944,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/filters/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2974,7 +2974,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/filters/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3009,7 +3009,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/filters/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3060,7 +3060,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/goals"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3133,7 +3133,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3188,7 +3188,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/goals/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3218,7 +3218,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/goals/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3250,7 +3250,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/goals/{id}/results"
         query_params = {k: v for k, v in [("period.start", period_start), ("period.end", period_end)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3308,7 +3308,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3363,7 +3363,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3421,7 +3421,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3481,7 +3481,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/leads"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3511,7 +3511,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/leads/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3609,7 +3609,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/leads/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3639,7 +3639,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/leads/{id}/permittedUsers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3697,7 +3697,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3722,7 +3722,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/leadLabels"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3754,7 +3754,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/leadLabels"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3819,7 +3819,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/leadLabels/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3844,7 +3844,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/leadSources"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3873,7 +3873,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/legacyTeams"
         query_params = {k: v for k, v in [("order_by", order_by), ("skip_users", skip_users)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3909,7 +3909,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legacyTeams"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3940,7 +3940,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/legacyTeams/{id}"
         query_params = {k: v for k, v in [("skip_users", skip_users)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3995,7 +3995,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legacyTeams/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4025,7 +4025,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/legacyTeams/{id}/users"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4059,7 +4059,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/legacyTeams/{id}/users"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4091,7 +4091,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/legacyTeams/user/{id}"
         query_params = {k: v for k, v in [("order_by", order_by), ("skip_users", skip_users)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4122,7 +4122,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/mailbox/mailMessages/{id}"
         query_params = {k: v for k, v in [("include_body", include_body)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4152,7 +4152,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/mailbox/mailThreads"
         query_params = {k: v for k, v in [("folder", folder), ("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4182,7 +4182,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/mailbox/mailThreads/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4212,7 +4212,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/mailbox/mailThreads/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4264,7 +4264,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/mailbox/mailThreads/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/x-www-form-urlencoded")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4294,7 +4294,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/mailbox/mailThreads/{id}/mailMessages"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4339,7 +4339,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/meetings/userProviderLinks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4369,7 +4369,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/meetings/userProviderLinks/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4445,7 +4445,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4511,7 +4511,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4541,7 +4541,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notes/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4571,7 +4571,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notes/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4641,7 +4641,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4673,7 +4673,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notes/{id}/comments"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4707,7 +4707,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes/{id}/comments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4740,7 +4740,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         url = f"{self.base_url}/notes/{id}/comments/{commentId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4777,7 +4777,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/notes/{id}/comments/{commentId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4810,7 +4810,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         url = f"{self.base_url}/notes/{id}/comments/{commentId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4835,7 +4835,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/noteFields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4863,7 +4863,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/organizations"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4915,7 +4915,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4957,7 +4957,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5009,7 +5009,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5047,7 +5047,7 @@ class PipedriveApp(APIApplication):
             for k, v in [("term", term), ("fields", fields), ("exact_match", exact_match), ("start", start), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5077,7 +5077,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5107,7 +5107,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5146,7 +5146,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5182,7 +5182,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/activities"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("done", done), ("exclude", exclude)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5235,7 +5235,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5268,7 +5268,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/files"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5306,7 +5306,7 @@ class PipedriveApp(APIApplication):
         query_params = {
             k: v for k, v in [("start", start), ("limit", limit), ("all_changes", all_changes), ("items", items)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5336,7 +5336,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/followers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5370,7 +5370,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations/{id}/followers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5403,7 +5403,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'follower_id'.")
         url = f"{self.base_url}/organizations/{id}/followers/{follower_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5435,7 +5435,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/mailMessages"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5469,7 +5469,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizations/{id}/merge"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5499,7 +5499,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/permittedUsers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5531,7 +5531,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/persons"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5560,7 +5560,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/organizationFields"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5600,7 +5600,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationFields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5628,7 +5628,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/organizationFields"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5658,7 +5658,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizationFields/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5688,7 +5688,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizationFields/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5726,7 +5726,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationFields/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5754,7 +5754,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/organizationRelationships"
         query_params = {k: v for k, v in [("org_id", org_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5790,7 +5790,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationRelationships"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5820,7 +5820,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizationRelationships/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5851,7 +5851,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizationRelationships/{id}"
         query_params = {k: v for k, v in [("org_id", org_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5895,7 +5895,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/organizationRelationships/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5923,7 +5923,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/permissionSets"
         query_params = {k: v for k, v in [("app", app)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5953,7 +5953,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/permissionSets/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5985,7 +5985,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/permissionSets/{id}/assignments"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6013,7 +6013,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/persons"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6065,7 +6065,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6125,7 +6125,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6177,7 +6177,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6232,7 +6232,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6262,7 +6262,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6292,7 +6292,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6356,7 +6356,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6392,7 +6392,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/activities"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("done", done), ("exclude", exclude)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6428,7 +6428,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/deals"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("status", status), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6461,7 +6461,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/files"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6499,7 +6499,7 @@ class PipedriveApp(APIApplication):
         query_params = {
             k: v for k, v in [("start", start), ("limit", limit), ("all_changes", all_changes), ("items", items)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6529,7 +6529,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/followers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6563,7 +6563,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons/{id}/followers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6596,7 +6596,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'follower_id'.")
         url = f"{self.base_url}/persons/{id}/followers/{follower_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6628,7 +6628,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/mailMessages"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6662,7 +6662,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/persons/{id}/merge"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6692,7 +6692,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/permittedUsers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6722,7 +6722,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/picture"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6782,7 +6782,7 @@ class PipedriveApp(APIApplication):
             files_data = None
         url = f"{self.base_url}/persons/{id}/picture"
         query_params = {}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._apost(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6814,7 +6814,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/persons/{id}/products"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6843,7 +6843,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/personFields"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6883,7 +6883,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/personFields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6911,7 +6911,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/personFields"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6941,7 +6941,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/personFields/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6971,7 +6971,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/personFields/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7009,7 +7009,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/personFields/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7034,7 +7034,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/pipelines"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7070,7 +7070,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/pipelines"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7100,7 +7100,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7131,7 +7131,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}"
         query_params = {k: v for k, v in [("totals_convert_currency", totals_convert_currency)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7170,7 +7170,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/pipelines/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7205,7 +7205,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}/conversion_statistics"
         query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("user_id", user_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7267,7 +7267,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7300,7 +7300,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/pipelines/{id}/movement_statistics"
         query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("user_id", user_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7355,7 +7355,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7415,7 +7415,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/products"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7467,7 +7467,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7497,7 +7497,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7527,7 +7527,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7591,7 +7591,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/products/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7624,7 +7624,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/deals"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("status", status)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7659,7 +7659,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/files"
         query_params = {k: v for k, v in [("start", start), ("limit", limit), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7691,7 +7691,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/followers"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7725,7 +7725,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/products/{id}/followers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7758,7 +7758,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'follower_id'.")
         url = f"{self.base_url}/products/{id}/followers/{follower_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7788,7 +7788,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/products/{id}/permittedUsers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7816,7 +7816,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/productFields"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7845,7 +7845,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/productFields"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7880,7 +7880,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/productFields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7910,7 +7910,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/productFields/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7940,7 +7940,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/productFields/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7977,7 +7977,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/productFields/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8029,7 +8029,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8101,7 +8101,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8131,7 +8131,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8204,7 +8204,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8234,7 +8234,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8265,7 +8265,7 @@ class PipedriveApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/projects/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8295,7 +8295,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/{id}/plan"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8335,7 +8335,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects/{id}/plan/activities/{activityId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8375,7 +8375,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/projects/{id}/plan/tasks/{taskId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8405,7 +8405,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/{id}/groups"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8435,7 +8435,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/{id}/tasks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8465,7 +8465,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/{id}/activities"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8490,7 +8490,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/projects/boards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8520,7 +8520,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/boards/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8548,7 +8548,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/projects/phases"
         query_params = {k: v for k, v in [("board_id", board_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8578,7 +8578,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projects/phases/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8607,7 +8607,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/projectTemplates"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8637,7 +8637,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/projectTemplates/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8672,7 +8672,7 @@ class PipedriveApp(APIApplication):
         query_params = {
             k: v for k, v in [("since_timestamp", since_timestamp), ("items", items), ("start", start), ("limit", limit)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8701,7 +8701,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/roles"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8733,7 +8733,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8763,7 +8763,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/roles/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8793,7 +8793,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/roles/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8828,7 +8828,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8860,7 +8860,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/roles/{id}/assignments"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8894,7 +8894,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}/assignments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8924,7 +8924,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/roles/{id}/settings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8959,7 +8959,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}/settings"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8990,7 +8990,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/roles/{id}/pipelines"
         query_params = {k: v for k, v in [("visible", visible)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9024,7 +9024,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/roles/{id}/pipelines"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9052,7 +9052,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/stages"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9082,7 +9082,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/stages"
         query_params = {k: v for k, v in [("pipeline_id", pipeline_id), ("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9130,7 +9130,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/stages"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9160,7 +9160,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/stages/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9191,7 +9191,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/stages/{id}"
         query_params = {k: v for k, v in [("everyone", everyone)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9246,7 +9246,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/stages/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9293,7 +9293,7 @@ class PipedriveApp(APIApplication):
             for k, v in [("filter_id", filter_id), ("user_id", user_id), ("everyone", everyone), ("start", start), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9323,7 +9323,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/subscriptions/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9353,7 +9353,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/subscriptions/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9383,7 +9383,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'dealId'.")
         url = f"{self.base_url}/subscriptions/find/{dealId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9413,7 +9413,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/subscriptions/{id}/payments"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9476,7 +9476,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/recurring"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9516,7 +9516,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/installment"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9568,7 +9568,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/recurring/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9605,7 +9605,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/installment/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9639,7 +9639,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/subscriptions/recurring/{id}/cancel"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9691,7 +9691,7 @@ class PipedriveApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9745,7 +9745,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/tasks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9775,7 +9775,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/tasks/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9833,7 +9833,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/tasks/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9863,7 +9863,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/tasks/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9888,7 +9888,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/users"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9924,7 +9924,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9953,7 +9953,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/users/find"
         query_params = {k: v for k, v in [("term", term), ("search_by_email", search_by_email)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9978,7 +9978,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/users/me"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10008,7 +10008,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/users/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10042,7 +10042,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/users/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10072,7 +10072,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/users/{id}/followers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10102,7 +10102,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/users/{id}/permissions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10134,7 +10134,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/users/{id}/roleAssignments"
         query_params = {k: v for k, v in [("start", start), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10164,7 +10164,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/users/{id}/roleSettings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10189,7 +10189,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/userConnections"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10214,7 +10214,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/userSettings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10239,7 +10239,7 @@ class PipedriveApp(APIApplication):
         """
         url = f"{self.base_url}/webhooks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10293,7 +10293,7 @@ class PipedriveApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/webhooks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10323,7 +10323,7 @@ class PipedriveApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/webhooks/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

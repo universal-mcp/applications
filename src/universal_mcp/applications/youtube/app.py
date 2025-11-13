@@ -67,7 +67,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -96,7 +96,7 @@ class YoutubeApp(APIApplication):
             raise ValueError("Missing required parameter 'reportId'")
         url = f"{self.base_url}/v1/jobs/{jobId}/reports/{reportId}"
         query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -122,7 +122,7 @@ class YoutubeApp(APIApplication):
             raise ValueError("Missing required parameter 'jobId'")
         url = f"{self.base_url}/v1/jobs/{jobId}"
         query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -156,7 +156,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -181,7 +181,7 @@ class YoutubeApp(APIApplication):
             raise ValueError("Missing required parameter 'resourceName'")
         url = f"{self.base_url}/v1/media/{resourceName}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -215,7 +215,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -241,7 +241,7 @@ class YoutubeApp(APIApplication):
         query_params = {
             k: v for k, v in [("id", id), ("onBehalfOf", onBehalfOf), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -297,7 +297,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/comments"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def mark_comment_as_spam(self, id=None) -> Any:
@@ -318,7 +318,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/comments/markAsSpam"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -342,7 +342,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/comments/setModerationStatus"
         query_params = {k: v for k, v in [("banAuthor", banAuthor), ("id", id), ("moderationStatus", moderationStatus)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -374,7 +374,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -412,7 +412,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -461,7 +461,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -499,7 +499,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -521,7 +521,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/liveChat/bans"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -543,7 +543,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/liveChat/messages"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -565,7 +565,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/liveChat/moderators"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -588,7 +588,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/videos"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -611,7 +611,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/videos/getRating"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -634,7 +634,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/videos/rate"
         query_params = {k: v for k, v in [("id", id), ("rating", rating)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -656,7 +656,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/videos/reportAbuse"
         query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -679,7 +679,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/watermarks/set"
         query_params = {k: v for k, v in [("channelId", channelId), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -702,7 +702,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/watermarks/unset"
         query_params = {k: v for k, v in [("channelId", channelId), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -757,7 +757,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -780,7 +780,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/channelBanners/insert"
         query_params = {k: v for k, v in [("channelId", channelId), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -803,7 +803,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/channelSections"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -864,7 +864,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -925,7 +925,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -952,7 +952,7 @@ class YoutubeApp(APIApplication):
         query_params = {
             k: v for k, v in [("hl", hl), ("maxResults", maxResults), ("pageToken", pageToken), ("part", part)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -977,7 +977,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/guideCategories"
         query_params = {k: v for k, v in [("hl", hl), ("id", id), ("part", part), ("regionCode", regionCode)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1000,7 +1000,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/i18nLanguages"
         query_params = {k: v for k, v in [("hl", hl), ("part", part)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1023,7 +1023,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/i18nRegions"
         query_params = {k: v for k, v in [("hl", hl), ("part", part)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1055,7 +1055,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1078,7 +1078,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/playlistItems"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1101,7 +1101,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/playlists"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1222,7 +1222,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1249,7 +1249,7 @@ class YoutubeApp(APIApplication):
         query_params = {
             k: v for k, v in [("filter", filter), ("maxResults", maxResults), ("pageToken", pageToken), ("part", part)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1271,7 +1271,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/subscriptions"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1298,7 +1298,7 @@ class YoutubeApp(APIApplication):
         query_params = {
             k: v for k, v in [("hl", hl), ("maxResults", maxResults), ("pageToken", pageToken), ("part", part)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1321,7 +1321,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/thumbnails/set"
         query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner), ("videoId", videoId)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1344,7 +1344,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/videoAbuseReportReasons"
         query_params = {k: v for k, v in [("hl", hl), ("part", part)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1369,7 +1369,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/videoCategories"
         query_params = {k: v for k, v in [("hl", hl), ("id", id), ("part", part), ("regionCode", regionCode)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1392,7 +1392,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/groupItems"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1415,7 +1415,7 @@ class YoutubeApp(APIApplication):
         """
         url = f"{self.base_url}/groups"
         query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1463,7 +1463,7 @@ class YoutubeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

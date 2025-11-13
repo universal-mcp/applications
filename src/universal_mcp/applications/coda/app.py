@@ -26,7 +26,7 @@ class CodaApp(APIApplication):
         """
         url = f"{self.base_url}/categories"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -84,7 +84,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -112,7 +112,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -137,7 +137,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -162,7 +162,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -216,7 +216,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/acl/metadata"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -243,7 +243,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/acl/permissions"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -277,7 +277,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/acl/permissions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -305,7 +305,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'permissionId'")
         url = f"{self.base_url}/docs/{docId}/acl/permissions/{permissionId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -331,7 +331,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/acl/principals/search"
         query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -356,7 +356,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/acl/settings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -424,7 +424,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/publish"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -449,7 +449,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/publish"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -476,7 +476,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/pages"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -518,7 +518,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/pages"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -546,7 +546,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'pageIdOrName'")
         url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -591,7 +591,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -619,7 +619,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'pageIdOrName'")
         url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -652,7 +652,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -683,7 +683,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'requestId'")
         url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export/{requestId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -714,7 +714,7 @@ class CodaApp(APIApplication):
         query_params = {
             k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy), ("tableTypes", tableTypes)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -743,7 +743,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}"
         query_params = {k: v for k, v in [("useUpdatedTableLayouts", useUpdatedTableLayouts)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -774,7 +774,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/columns"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("visibleOnly", visibleOnly)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -835,7 +835,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -870,7 +870,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
         query_params = {k: v for k, v in [("disableParsing", disableParsing)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -903,7 +903,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -936,7 +936,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'rowIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
         query_params = {k: v for k, v in [("useColumnNames", useColumnNames), ("valueFormat", valueFormat)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -972,7 +972,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
         query_params = {k: v for k, v in [("disableParsing", disableParsing)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1003,7 +1003,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'rowIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1037,7 +1037,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'columnIdOrName'")
         url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}/buttons/{columnIdOrName}"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1065,7 +1065,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/formulas"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1093,7 +1093,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'formulaIdOrName'")
         url = f"{self.base_url}/docs/{docId}/formulas/{formulaIdOrName}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1121,7 +1121,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/{docId}/controls"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1149,7 +1149,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'controlIdOrName'")
         url = f"{self.base_url}/docs/{docId}/controls/{controlIdOrName}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1174,7 +1174,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         url = f"{self.base_url}/docs/${docId}/domains"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1204,7 +1204,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/docs/${docId}/domains"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1232,7 +1232,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'customDocDomain'")
         url = f"{self.base_url}/docs/{docId}/domains/{customDocDomain}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1257,7 +1257,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'customDocDomain'")
         url = f"{self.base_url}/domains/provider/{customDocDomain}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1276,7 +1276,7 @@ class CodaApp(APIApplication):
         """
         url = f"{self.base_url}/whoami"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1302,7 +1302,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'url'")
         url = f"{self.base_url}/resolveBrowserLink"
         query_params = {k: v for k, v in [("url", url), ("degradeGracefully", degradeGracefully)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1327,7 +1327,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'requestId'")
         url = f"{self.base_url}/mutationStatus/{requestId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1356,7 +1356,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'ruleId'")
         url = f"{self.base_url}/docs/{docId}/hooks/automation/{ruleId}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1389,7 +1389,7 @@ class CodaApp(APIApplication):
             for k, v in [("sinceDate", sinceDate), ("untilDate", untilDate), ("pageToken", pageToken), ("limit", limit)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1418,7 +1418,7 @@ class CodaApp(APIApplication):
             for k, v in [("isPublished", isPublished), ("sinceDate", sinceDate), ("untilDate", untilDate), ("workspaceId", workspaceId)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1479,7 +1479,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1517,7 +1517,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1577,7 +1577,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1599,7 +1599,7 @@ class CodaApp(APIApplication):
         """
         url = f"{self.base_url}/analytics/updated"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1626,7 +1626,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspaceId'")
         url = f"{self.base_url}/workspaces/{workspaceId}/users"
         query_params = {k: v for k, v in [("includedRoles", includedRoles), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1659,7 +1659,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/workspaces/{workspaceId}/users/role"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1684,7 +1684,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'workspaceId'")
         url = f"{self.base_url}/workspaces/{workspaceId}/roles"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1748,7 +1748,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1775,7 +1775,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1800,7 +1800,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1892,7 +1892,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1917,7 +1917,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/configurations/schema"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1944,7 +1944,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/versions"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1975,7 +1975,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/nextVersion"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2006,7 +2006,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'targetPackVersion'")
         url = f"{self.base_url}/packs/{packId}/versions/{basePackVersion}/diff/{targetPackVersion}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2039,7 +2039,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/register"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2072,7 +2072,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/uploadComplete"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2103,7 +2103,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/releases"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2130,7 +2130,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/releases"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2161,7 +2161,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/releases/{packReleaseId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2191,7 +2191,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/oauthConfig"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2216,7 +2216,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/oauthConfig"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2246,7 +2246,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/systemConnection"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2271,7 +2271,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/systemConnection"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2296,7 +2296,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/permissions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2329,7 +2329,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/permissions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2357,7 +2357,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'permissionId'")
         url = f"{self.base_url}/packs/{packId}/permissions/{permissionId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2382,7 +2382,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/makers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2412,7 +2412,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/maker"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2440,7 +2440,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'loginId'")
         url = f"{self.base_url}/packs/{packId}/maker/{loginId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2465,7 +2465,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/categories"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2495,7 +2495,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/category"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2523,7 +2523,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'categoryName'")
         url = f"{self.base_url}/packs/{packId}/category/{categoryName}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2562,7 +2562,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/uploadAsset"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2596,7 +2596,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/uploadSourceCode"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2627,7 +2627,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packAssetType'")
         url = f"{self.base_url}/packs/{packId}/assets/{packAssetId}/assetType/{packAssetType}/uploadComplete"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2663,7 +2663,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode/uploadComplete"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2691,7 +2691,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packVersion'")
         url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2761,7 +2761,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2799,7 +2799,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2860,7 +2860,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2928,7 +2928,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2975,7 +2975,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3037,7 +3037,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3111,7 +3111,7 @@ class CodaApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3150,7 +3150,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'ingestionExecutionId'")
         url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/ingestionExecutionId/{ingestionExecutionId}/attempts"
         query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("order", order)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3187,7 +3187,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'detailsKey'")
         url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/logs/{logId}"
         query_params = {k: v for k, v in [("detailsKey", detailsKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3211,7 +3211,7 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         url = f"{self.base_url}/packs/{packId}/featuredDocs"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3241,7 +3241,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/packs/{packId}/featuredDocs"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3285,7 +3285,7 @@ class CodaApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organizations/{organizationId}/goLinks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

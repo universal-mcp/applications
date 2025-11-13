@@ -58,7 +58,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -87,7 +87,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/actions/{id}"
         query_params = {k: v for k, v in [("text", text)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -114,7 +114,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -144,7 +144,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/actions/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -172,7 +172,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}/board"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -200,7 +200,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}/card"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -228,7 +228,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}/list"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -256,7 +256,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}/member"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -284,7 +284,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}/memberCreator"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -312,7 +312,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{id}/organization"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -341,7 +341,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/actions/{id}/text"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -370,7 +370,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idAction'.")
         url = f"{self.base_url}/actions/{idAction}/reactions"
         query_params = {k: v for k, v in [("member", member), ("emoji", emoji)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -411,7 +411,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/actions/{idAction}/reactions"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -443,7 +443,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{idAction}/reactions/{id}"
         query_params = {k: v for k, v in [("member", member), ("emoji", emoji)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -473,7 +473,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/actions/{idAction}/reactions/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -500,7 +500,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idAction'.")
         url = f"{self.base_url}/actions/{idAction}/reactionsSummary"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -527,7 +527,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'key'.")
         url = f"{self.base_url}/applications/{key}/compliance"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -552,7 +552,7 @@ class TrelloApp(APIApplication):
         """
         url = f"{self.base_url}/batch"
         query_params = {k: v for k, v in [("urls", urls)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -602,7 +602,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -685,7 +685,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -784,7 +784,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -811,7 +811,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -841,7 +841,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/boards/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -915,7 +915,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -943,7 +943,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'boardId'.")
         url = f"{self.base_url}/boards/{boardId}/boardStars"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -970,7 +970,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/checklists"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -997,7 +997,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/cards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1027,7 +1027,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'filter'.")
         url = f"{self.base_url}/boards/{id}/cards/{filter}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1054,7 +1054,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/customFields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1083,7 +1083,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/labels"
         query_params = {k: v for k, v in [("fields", fields), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1113,7 +1113,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/labels"
         query_params = {k: v for k, v in [("name", name), ("color", color)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1148,7 +1148,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("cards", cards), ("card_fields", card_fields), ("filter", filter), ("fields", fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1178,7 +1178,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/lists"
         query_params = {k: v for k, v in [("name", name), ("pos", pos)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1208,7 +1208,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'filter'.")
         url = f"{self.base_url}/boards/{id}/lists/{filter}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1235,7 +1235,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/members"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1268,7 +1268,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/boards/{id}/members"
         query_params = {k: v for k, v in [("email", email), ("type", type)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1301,7 +1301,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/members/{idMember}"
         query_params = {k: v for k, v in [("type", type), ("allowBillableGuest", allowBillableGuest)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1331,7 +1331,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMember'.")
         url = f"{self.base_url}/boards/{id}/members/{idMember}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1364,7 +1364,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/memberships/{idMembership}"
         query_params = {k: v for k, v in [("type", type), ("member_fields", member_fields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1393,7 +1393,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/myPrefs/emailPosition"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1422,7 +1422,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/myPrefs/idEmailList"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1451,7 +1451,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/myPrefs/showSidebar"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1480,7 +1480,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/myPrefs/showSidebarActivity"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1509,7 +1509,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/myPrefs/showSidebarBoardActions"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1538,7 +1538,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/myPrefs/showSidebarMembers"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1618,7 +1618,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1646,7 +1646,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/calendarKey/generate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1674,7 +1674,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/emailKey/generate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1703,7 +1703,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/idTags"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1731,7 +1731,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/markedAsViewed"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1758,7 +1758,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/boardPlugins"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1787,7 +1787,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/boards/{id}/boardPlugins"
         query_params = {k: v for k, v in [("idPlugin", idPlugin)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1817,7 +1817,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idPlugin'.")
         url = f"{self.base_url}/boards/{id}/boardPlugins/{idPlugin}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1845,7 +1845,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/boards/{id}/plugins"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1928,7 +1928,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2017,7 +2017,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2104,7 +2104,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2131,7 +2131,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2161,7 +2161,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/cards/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2190,7 +2190,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/actions"
         query_params = {k: v for k, v in [("filter", filter), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2219,7 +2219,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/attachments"
         query_params = {k: v for k, v in [("fields", fields), ("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2262,7 +2262,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("name", name), ("file", file), ("mimeType", mimeType), ("url", url), ("setCover", setCover)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2293,7 +2293,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idAttachment'.")
         url = f"{self.base_url}/cards/{id}/attachments/{idAttachment}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2323,7 +2323,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idAttachment'.")
         url = f"{self.base_url}/cards/{id}/attachments/{idAttachment}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2351,7 +2351,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/board"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2379,7 +2379,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/checkItemStates"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2421,7 +2421,7 @@ class TrelloApp(APIApplication):
             for k, v in [("checkItems", checkItems), ("checkItem_fields", checkItem_fields), ("filter", filter), ("fields", fields)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2454,7 +2454,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/checklists"
         query_params = {k: v for k, v in [("name", name), ("idChecklistSource", idChecklistSource), ("pos", pos)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2488,7 +2488,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idCheckItem'.")
         url = f"{self.base_url}/cards/{id}/checkItem/{idCheckItem}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2549,7 +2549,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2579,7 +2579,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idCheckItem'.")
         url = f"{self.base_url}/cards/{id}/checkItem/{idCheckItem}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2607,7 +2607,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/list"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2635,7 +2635,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/members"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2663,7 +2663,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/membersVoted"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2692,7 +2692,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/membersVoted"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2719,7 +2719,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/pluginData"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2747,7 +2747,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/stickers"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2782,7 +2782,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("image", image), ("top", top), ("left", left), ("zIndex", zIndex), ("rotate", rotate)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2813,7 +2813,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idSticker'.")
         url = f"{self.base_url}/cards/{id}/stickers/{idSticker}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2843,7 +2843,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idSticker'.")
         url = f"{self.base_url}/cards/{id}/stickers/{idSticker}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2880,7 +2880,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/stickers/{idSticker}"
         query_params = {k: v for k, v in [("top", top), ("left", left), ("zIndex", zIndex), ("rotate", rotate)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2912,7 +2912,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/actions/{idAction}/comments"
         query_params = {k: v for k, v in [("text", text)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2942,7 +2942,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idAction'.")
         url = f"{self.base_url}/cards/{id}/actions/{idAction}/comments"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2979,7 +2979,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/cards/{idCard}/customField/{idCustomField}/item"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3010,7 +3010,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/cards/{idCard}/customFields"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3037,7 +3037,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/cards/{id}/customFieldItems"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3066,7 +3066,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/actions/comments"
         query_params = {k: v for k, v in [("text", text)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3095,7 +3095,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/idLabels"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3124,7 +3124,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/idMembers"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3154,7 +3154,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/labels"
         query_params = {k: v for k, v in [("color", color), ("name", name)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3182,7 +3182,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{id}/markAssociatedNotificationsRead"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3212,7 +3212,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idLabel'.")
         url = f"{self.base_url}/cards/{id}/idLabels/{idLabel}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3242,7 +3242,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMember'.")
         url = f"{self.base_url}/cards/{id}/idMembers/{idMember}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3272,7 +3272,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMember'.")
         url = f"{self.base_url}/cards/{id}/membersVoted/{idMember}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3307,7 +3307,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/cards/{idCard}/checklist/{idChecklist}/checkItem/{idCheckItem}"
         query_params = {k: v for k, v in [("pos", pos)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3337,7 +3337,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idChecklist'.")
         url = f"{self.base_url}/cards/{id}/checklists/{idChecklist}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3370,7 +3370,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("idCard", idCard), ("name", name), ("pos", pos), ("idChecklistSource", idChecklistSource)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3412,7 +3412,7 @@ class TrelloApp(APIApplication):
             for k, v in [("cards", cards), ("checkItems", checkItems), ("checkItem_fields", checkItem_fields), ("fields", fields)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3442,7 +3442,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/checklists/{id}"
         query_params = {k: v for k, v in [("name", name), ("pos", pos)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3469,7 +3469,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/checklists/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3499,7 +3499,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/checklists/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3531,7 +3531,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/checklists/{id}/{field}"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3559,7 +3559,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/checklists/{id}/board"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3586,7 +3586,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/checklists/{id}/cards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3615,7 +3615,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/checklists/{id}/checkItems"
         query_params = {k: v for k, v in [("filter", filter), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3669,7 +3669,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3700,7 +3700,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idCheckItem'.")
         url = f"{self.base_url}/checklists/{id}/checkItems/{idCheckItem}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3730,7 +3730,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idCheckItem'.")
         url = f"{self.base_url}/checklists/{id}/checkItems/{idCheckItem}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3781,7 +3781,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/customFields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3808,7 +3808,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/customFields/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3843,7 +3843,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/customFields/{id}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3870,7 +3870,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/customFields/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3898,7 +3898,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/customFields/{id}/options"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3925,7 +3925,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/customFields/{id}/options"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3955,7 +3955,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idCustomFieldOption'.")
         url = f"{self.base_url}/customFields/{id}/options/{idCustomFieldOption}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3985,7 +3985,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idCustomFieldOption'.")
         url = f"{self.base_url}/customFields/{id}/options/{idCustomFieldOption}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4011,7 +4011,7 @@ class TrelloApp(APIApplication):
         """
         url = f"{self.base_url}/emoji"
         query_params = {k: v for k, v in [("locale", locale), ("spritesheets", spritesheets)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4085,7 +4085,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4112,7 +4112,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/enterprises/{id}/auditlog"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4140,7 +4140,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/enterprises/{id}/admins"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4187,7 +4187,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4249,7 +4249,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4311,7 +4311,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4350,7 +4350,7 @@ class TrelloApp(APIApplication):
             for k, v in [("fields", fields), ("organization_fields", organization_fields), ("board_fields", board_fields)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4380,7 +4380,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idOrganization'.")
         url = f"{self.base_url}/enterprises/{id}/transferrable/organization/{idOrganization}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4410,7 +4410,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idOrganizations'.")
         url = f"{self.base_url}/enterprises/{id}/transferrable/bulk/{idOrganizations}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4439,7 +4439,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/enterprises/${id}/enterpriseJoinRequest/bulk"
         query_params = {k: v for k, v in [("idOrganizations", idOrganizations)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4489,7 +4489,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4518,7 +4518,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/enterprises/{id}/pendingOrganizations"
         query_params = {k: v for k, v in [("activeSince", activeSince), ("inactiveSince", inactiveSince)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4547,7 +4547,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/enterprises/{id}/tokens"
         query_params = {k: v for k, v in [("expiration", expiration)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4576,7 +4576,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/enterprises/{id}/organizations"
         query_params = {k: v for k, v in [("idOrganization", idOrganization)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4608,7 +4608,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/enterprises/{id}/members/{idMember}/licensed"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4655,7 +4655,7 @@ class TrelloApp(APIApplication):
             for k, v in [("value", value), ("fields", fields), ("organization_fields", organization_fields), ("board_fields", board_fields)]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4686,7 +4686,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/enterprises/{id}/admins/{idMember}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4716,7 +4716,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMember'.")
         url = f"{self.base_url}/enterprises/{id}/admins/{idMember}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4746,7 +4746,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idOrg'.")
         url = f"{self.base_url}/enterprises/{id}/organizations/{idOrg}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4776,7 +4776,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idOrganizations'.")
         url = f"{self.base_url}/enterprises/{id}/organizations/bulk/{idOrganizations}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4804,7 +4804,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/labels/{id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4834,7 +4834,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/labels/{id}"
         query_params = {k: v for k, v in [("name", name), ("color", color)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4861,7 +4861,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/labels/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4893,7 +4893,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/labels/{id}/{field}"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4921,7 +4921,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/labels"
         query_params = {k: v for k, v in [("name", name), ("color", color), ("idBoard", idBoard)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4949,7 +4949,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/lists/{id}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4994,7 +4994,7 @@ class TrelloApp(APIApplication):
             for k, v in [("name", name), ("closed", closed), ("idBoard", idBoard), ("pos", pos), ("subscribed", subscribed)]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5025,7 +5025,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("name", name), ("idBoard", idBoard), ("idListSource", idListSource), ("pos", pos)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5053,7 +5053,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/lists/{id}/archiveAllCards"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5083,7 +5083,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/lists/{id}/moveAllCards"
         query_params = {k: v for k, v in [("idBoard", idBoard), ("idList", idList)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5112,7 +5112,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/lists/{id}/closed"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5141,7 +5141,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/lists/{id}/idBoard"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5173,7 +5173,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/lists/{id}/{field}"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5201,7 +5201,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/lists/{id}/actions"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5229,7 +5229,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/lists/{id}/board"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5256,7 +5256,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/lists/{id}/cards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5351,7 +5351,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5411,7 +5411,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5441,7 +5441,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/members/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5469,7 +5469,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/actions"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5497,7 +5497,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/boardBackgrounds"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5526,7 +5526,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/boardBackgrounds"
         query_params = {k: v for k, v in [("file", file)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5557,7 +5557,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idBackground'.")
         url = f"{self.base_url}/members/{id}/boardBackgrounds/{idBackground}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5592,7 +5592,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/boardBackgrounds/{idBackground}"
         query_params = {k: v for k, v in [("brightness", brightness), ("tile", tile)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5622,7 +5622,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idBackground'.")
         url = f"{self.base_url}/members/{id}/boardBackgrounds/{idBackground}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5649,7 +5649,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/boardStars"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5679,7 +5679,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/boardStars"
         query_params = {k: v for k, v in [("idBoard", idBoard), ("pos", pos)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5709,7 +5709,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idStar'.")
         url = f"{self.base_url}/members/{id}/boardStars/{idStar}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5741,7 +5741,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/boardStars/{idStar}"
         query_params = {k: v for k, v in [("pos", pos)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5771,7 +5771,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idStar'.")
         url = f"{self.base_url}/members/{id}/boardStars/{idStar}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5821,7 +5821,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5849,7 +5849,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/boardsInvited"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5877,7 +5877,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/cards"
         query_params = {k: v for k, v in [("filter", filter)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5904,7 +5904,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/customBoardBackgrounds"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5933,7 +5933,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/customBoardBackgrounds"
         query_params = {k: v for k, v in [("file", file)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5963,7 +5963,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idBackground'.")
         url = f"{self.base_url}/members/{id}/customBoardBackgrounds/{idBackground}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5998,7 +5998,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/customBoardBackgrounds/{idBackground}"
         query_params = {k: v for k, v in [("brightness", brightness), ("tile", tile)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6028,7 +6028,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idBackground'.")
         url = f"{self.base_url}/members/{id}/customBoardBackgrounds/{idBackground}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6055,7 +6055,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/customEmoji"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6085,7 +6085,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/customEmoji"
         query_params = {k: v for k, v in [("file", file), ("name", name)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6116,7 +6116,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idEmoji'.")
         url = f"{self.base_url}/members/{id}/customEmoji/{idEmoji}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6143,7 +6143,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/customStickers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6172,7 +6172,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/customStickers"
         query_params = {k: v for k, v in [("file", file)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6203,7 +6203,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idSticker'.")
         url = f"{self.base_url}/members/{id}/customStickers/{idSticker}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6233,7 +6233,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idSticker'.")
         url = f"{self.base_url}/members/{id}/customStickers/{idSticker}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6301,7 +6301,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6333,7 +6333,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/organizations"
         query_params = {k: v for k, v in [("filter", filter), ("fields", fields), ("paid_account", paid_account)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6361,7 +6361,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/organizationsInvited"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6388,7 +6388,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/savedSearches"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6419,7 +6419,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/savedSearches"
         query_params = {k: v for k, v in [("name", name), ("query", query), ("pos", pos)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6449,7 +6449,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idSearch'.")
         url = f"{self.base_url}/members/{id}/savedSearches/{idSearch}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6485,7 +6485,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/savedSearches/{idSearch}"
         query_params = {k: v for k, v in [("name", name), ("query", query), ("pos", pos)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6515,7 +6515,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idSearch'.")
         url = f"{self.base_url}/members/{id}/savedSearches/{idSearch}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6543,7 +6543,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/tokens"
         query_params = {k: v for k, v in [("webhooks", webhooks)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6572,7 +6572,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/avatar"
         query_params = {k: v for k, v in [("file", file)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6601,7 +6601,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/oneTimeMessagesDismissed"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6628,7 +6628,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/members/{id}/notificationsChannelSettings"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6660,7 +6660,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/members/{id}/notificationsChannelSettings"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6690,7 +6690,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'channel'.")
         url = f"{self.base_url}/members/{id}/notificationsChannelSettings/{channel}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6724,7 +6724,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/members/{id}/notificationsChannelSettings/{channel}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6758,7 +6758,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/members/{id}/notificationsChannelSettings/{channel}/{blockedKeys}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6835,7 +6835,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6864,7 +6864,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/notifications/{id}"
         query_params = {k: v for k, v in [("unread", unread)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6894,7 +6894,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/notifications/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6921,7 +6921,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/notifications/all/read"
         query_params = {k: v for k, v in [("read", read), ("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6950,7 +6950,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/notifications/{id}/unread"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6978,7 +6978,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notifications/{id}/board"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7006,7 +7006,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notifications/{id}/card"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7034,7 +7034,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notifications/{id}/list"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7062,7 +7062,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notifications/{id}/member"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7090,7 +7090,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notifications/{id}/memberCreator"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7118,7 +7118,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/notifications/{id}/organization"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7151,7 +7151,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("displayName", displayName), ("desc", desc), ("name", name), ("website", website)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7178,7 +7178,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7250,7 +7250,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7277,7 +7277,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7307,7 +7307,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/organizations/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7334,7 +7334,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/actions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7363,7 +7363,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/boards"
         query_params = {k: v for k, v in [("filter", filter), ("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7392,7 +7392,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/{id}/exports"
         query_params = {k: v for k, v in [("attachments", attachments)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7419,7 +7419,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/exports"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7446,7 +7446,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/members"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7477,7 +7477,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/{id}/members"
         query_params = {k: v for k, v in [("email", email), ("fullName", fullName), ("type", type)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7506,7 +7506,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/memberships"
         query_params = {k: v for k, v in [("filter", filter), ("member", member)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7537,7 +7537,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMembership'.")
         url = f"{self.base_url}/organizations/{id}/memberships/{idMembership}"
         query_params = {k: v for k, v in [("member", member)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7564,7 +7564,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/pluginData"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7591,7 +7591,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/tags"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7619,7 +7619,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/{id}/tags"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7651,7 +7651,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/{id}/members/{idMember}"
         query_params = {k: v for k, v in [("type", type)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7681,7 +7681,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMember'.")
         url = f"{self.base_url}/organizations/{id}/members/{idMember}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7713,7 +7713,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/{id}/members/{idMember}/deactivated"
         query_params = {k: v for k, v in [("value", value)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7742,7 +7742,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/{id}/logo"
         query_params = {k: v for k, v in [("file", file)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7769,7 +7769,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/logo"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7799,7 +7799,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idMember'.")
         url = f"{self.base_url}/organizations/{id}/members/{idMember}/all"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7826,7 +7826,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/prefs/associatedDomain"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7853,7 +7853,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/organizations/{id}/prefs/orgInviteRestrict"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7883,7 +7883,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idTag'.")
         url = f"{self.base_url}/organizations/{id}/tags/{idTag}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7913,7 +7913,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idBoard'.")
         url = f"{self.base_url}/organizations/{id}/newBillableGuests/{idBoard}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7940,7 +7940,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/plugins/{id}/"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7968,7 +7968,7 @@ class TrelloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/plugins/{id}/"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8004,7 +8004,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/plugins/{idPlugin}/listing"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8031,7 +8031,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/plugins/{id}/compliance/memberPrivacy"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8076,7 +8076,7 @@ class TrelloApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/plugins/{idPlugin}/listings/{idListing}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8173,7 +8173,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8219,7 +8219,7 @@ class TrelloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8248,7 +8248,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/tokens/{token}"
         query_params = {k: v for k, v in [("fields", fields), ("webhooks", webhooks)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8276,7 +8276,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/tokens/{token}/member"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8303,7 +8303,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/tokens/{token}/webhooks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8338,7 +8338,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("description", description), ("callbackURL", callbackURL), ("idModel", idModel)] if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8368,7 +8368,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idWebhook'.")
         url = f"{self.base_url}/tokens/{token}/webhooks/{idWebhook}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8398,7 +8398,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'idWebhook'.")
         url = f"{self.base_url}/tokens/{token}/webhooks/{idWebhook}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8436,7 +8436,7 @@ class TrelloApp(APIApplication):
         query_params = {
             k: v for k, v in [("description", description), ("callbackURL", callbackURL), ("idModel", idModel)] if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8463,7 +8463,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'token'.")
         url = f"{self.base_url}/tokens/{token}/"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8498,7 +8498,7 @@ class TrelloApp(APIApplication):
             for k, v in [("description", description), ("callbackURL", callbackURL), ("idModel", idModel), ("active", active)]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8525,7 +8525,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/webhooks/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8568,7 +8568,7 @@ class TrelloApp(APIApplication):
             for k, v in [("description", description), ("callbackURL", callbackURL), ("idModel", idModel), ("active", active)]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8595,7 +8595,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/webhooks/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8625,7 +8625,7 @@ class TrelloApp(APIApplication):
             raise ValueError("Missing required parameter 'field'.")
         url = f"{self.base_url}/webhooks/{id}/{field}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

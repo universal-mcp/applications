@@ -38,7 +38,7 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/contacts"
         query_params = {k: v for k, v in [("deleted", deleted), ("fields", fields), ("metadata", metadata)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -63,7 +63,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'contactId'")
         url = f"{self.base_url}/contacts/{contactId}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -105,7 +105,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/contacts/{contactId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -130,7 +130,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'")
         url = f"{self.base_url}/users/{userId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -158,7 +158,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/users/{userId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -185,7 +185,7 @@ class WrikeApp(APIApplication):
         query_params = {
             k: v for k, v in [("metadata", metadata), ("pageSize", pageSize), ("pageToken", pageToken), ("fields", fields)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -215,7 +215,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/groups"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -240,7 +240,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'groupId'")
         url = f"{self.base_url}/groups/{groupId}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -294,7 +294,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/groups/{groupId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -318,7 +318,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'groupId'")
         url = f"{self.base_url}/groups/{groupId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -344,7 +344,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/groups_bulk"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -366,7 +366,7 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/invitations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -410,7 +410,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/invitations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -441,7 +441,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/invitations/{invitationId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -466,7 +466,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'invitationId'")
         url = f"{self.base_url}/invitations/{invitationId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -488,7 +488,7 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/account"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -512,7 +512,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/account"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -534,7 +534,7 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/workflows"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -557,7 +557,7 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/workflows"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -584,7 +584,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'workflowId'")
         url = f"{self.base_url}/workflows/{workflowId}"
         query_params = {k: v for k, v in [("name", name), ("hidden", hidden)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -606,7 +606,7 @@ class WrikeApp(APIApplication):
         """
         url = f"{self.base_url}/customfields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -649,7 +649,7 @@ class WrikeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -673,7 +673,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'")
         url = f"{self.base_url}/customfields/{customFieldId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -735,7 +735,7 @@ class WrikeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data={}, params=query_params)
+        response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -759,7 +759,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'")
         url = f"{self.base_url}/customfields/{customFieldId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -829,7 +829,7 @@ class WrikeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -900,7 +900,7 @@ class WrikeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -968,7 +968,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{folderId}/folders"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -993,7 +993,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'folderId'")
         url = f"{self.base_url}/folders/{folderId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1078,7 +1078,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{folderId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1196,7 +1196,7 @@ class WrikeApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1221,7 +1221,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'taskId'")
         url = f"{self.base_url}/tasks/{taskId}"
         query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1339,7 +1339,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/tasks/{taskId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1364,7 +1364,7 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'taskId'")
         url = f"{self.base_url}/tasks/{taskId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1466,7 +1466,7 @@ class WrikeApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/folders/{folderId}/tasks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

@@ -29,7 +29,7 @@ class RetellApp(APIApplication):
             raise ValueError("Missing required parameter 'call_id'")
         url = f"{self.base_url}/v2/get-call/{call_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -69,7 +69,7 @@ class RetellApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/create-phone-call"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -97,7 +97,7 @@ class RetellApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/create-web-call"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -121,7 +121,7 @@ class RetellApp(APIApplication):
             raise ValueError("Missing required parameter 'voice_id'")
         url = f"{self.base_url}/get-voice/{voice_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -148,7 +148,7 @@ class RetellApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/list-calls"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -183,7 +183,7 @@ class RetellApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/create-phone-number"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -208,7 +208,7 @@ class RetellApp(APIApplication):
             raise ValueError("Missing required parameter 'phone_number'")
         url = f"{self.base_url}/get-phone-number/{phone_number}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -230,7 +230,7 @@ class RetellApp(APIApplication):
         """
         url = f"{self.base_url}/list-phone-numbers"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -287,7 +287,7 @@ class RetellApp(APIApplication):
             raise ValueError("Missing required parameter 'phone_number'")
         url = f"{self.base_url}/delete-phone-number/{phone_number}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

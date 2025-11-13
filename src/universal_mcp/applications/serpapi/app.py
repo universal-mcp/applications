@@ -149,7 +149,7 @@ class SerpapiApp(APIApplication):
             query_params["ll"] = ll
         if place_id is not None:
             query_params["place_id"] = place_id
-        response = self._get(self.base_url, params=query_params)
+        response = await self._aget(self.base_url, params=query_params)
         data = self._handle_response(response)
         if "local_results" in data:
             for place in data["local_results"]:
@@ -181,7 +181,7 @@ class SerpapiApp(APIApplication):
             query_params["hl"] = hl
         else:
             query_params["hl"] = "en"
-        response = self._get(self.base_url, params=query_params)
+        response = await self._aget(self.base_url, params=query_params)
         return self._handle_response(response)
 
     def list_tools(self) -> list[callable]:

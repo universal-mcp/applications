@@ -165,7 +165,7 @@ class GhostContentApp(APIApplication):
         params = self._build_common_params(
             include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats
         )
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_post_by_id(
@@ -191,7 +191,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}posts/{id}/"
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_post_by_slug(
@@ -217,7 +217,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}posts/slug/{slug}/"
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def browse_authors(
@@ -251,7 +251,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}authors/"
         params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_author_by_id(self, id: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
@@ -274,7 +274,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}authors/{id}/"
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_author_by_slug(self, slug: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
@@ -297,7 +297,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}authors/slug/{slug}/"
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def browse_tags(
@@ -331,7 +331,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}tags/"
         params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_tag_by_id(self, id: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
@@ -354,7 +354,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}tags/{id}/"
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_tag_by_slug(self, slug: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
@@ -377,7 +377,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}tags/slug/{slug}/"
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def browse_pages(
@@ -415,7 +415,7 @@ class GhostContentApp(APIApplication):
         params = self._build_common_params(
             include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats
         )
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_page_by_id(
@@ -441,7 +441,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}pages/{id}/"
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def read_page_by_slug(
@@ -467,7 +467,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}pages/slug/{slug}/"
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def browse_tiers(
@@ -501,7 +501,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}tiers/"
         params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def browse_settings(self) -> dict[str, Any]:
@@ -522,7 +522,7 @@ class GhostContentApp(APIApplication):
         """
         url = f"{self.base_url}settings/"
         params = self._build_common_params()
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     def list_tools(self) -> list[Callable]:

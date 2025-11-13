@@ -38,7 +38,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/users/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -61,7 +61,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/users"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -81,7 +81,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/users/me"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -106,7 +106,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/databases/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -158,7 +158,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/databases/{id}/query"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -182,7 +182,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/databases/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -205,7 +205,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/pages/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -230,7 +230,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/pages/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -285,7 +285,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'property_id'")
         url = f"{self.base_url}/v1/pages/{page_id}/properties/{property_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -311,7 +311,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/blocks/{id}/children"
         query_params = {k: v for k, v in [("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -362,7 +362,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/blocks/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -387,7 +387,7 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v1/blocks/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -436,7 +436,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -461,7 +461,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/comments"
         query_params = {k: v for k, v in [("block_id", block_id), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -484,7 +484,7 @@ class NotionApp(APIApplication):
         """
         url = f"{self.base_url}/v1/comments"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

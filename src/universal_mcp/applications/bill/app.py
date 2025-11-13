@@ -30,7 +30,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customerId'.")
         url = f"{self.base_url}/v3/attachments/customers/{customerId}"
         query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_customer_attachment(self, customerId: str, name: str, items: list[bytes]) -> dict[str, Any]:
@@ -56,7 +56,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/attachments/customers/{customerId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
     async def list_invoice_attachments(self, invoiceId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
@@ -81,7 +81,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'invoiceId'.")
         url = f"{self.base_url}/v3/attachments/invoices/{invoiceId}"
         query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_invoice_attachment(self, invoiceId: str, name: str, items: list[bytes]) -> dict[str, Any]:
@@ -107,7 +107,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/attachments/invoices/{invoiceId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
     async def list_vendor_attachments(self, vendorId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
@@ -132,7 +132,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/attachments/vendors/{vendorId}"
         query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_vendor_attachment(self, vendorId: str, name: str, items: list[bytes]) -> dict[str, Any]:
@@ -158,7 +158,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/attachments/vendors/{vendorId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
     async def get_attachment(self, attachmentId: str) -> dict[str, Any]:
@@ -181,7 +181,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'attachmentId'.")
         url = f"{self.base_url}/v3/attachments/{attachmentId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_bills(
@@ -207,7 +207,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/bills"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_bill(
@@ -254,7 +254,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/bills"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def create_bulk_bills(self, items: list[dict[str, Any]]) -> list[Any]:
@@ -276,7 +276,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/bills/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_bill(self, billId: str) -> dict[str, Any]:
@@ -299,7 +299,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'billId'.")
         url = f"{self.base_url}/v3/bills/{billId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def replace_bill(
@@ -350,7 +350,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/bills/{billId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def update_bill(
@@ -425,7 +425,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/bills/{billId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_bill(self, billId: str) -> dict[str, Any]:
@@ -449,7 +449,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/bills/{billId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_accounting_classes(
@@ -475,7 +475,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/accounting-classes"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_accounting_class(
@@ -504,7 +504,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/accounting-classes"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_accounting_class(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -526,7 +526,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_accounting_class(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -570,7 +570,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_accounting_class(self, ids: str) -> dict[str, Any]:
@@ -592,7 +592,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_accounting_class(self, id: str) -> dict[str, Any]:
@@ -615,7 +615,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/accounting-classes/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_accounting_class(
@@ -671,7 +671,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_accounting_class(self, id: str) -> dict[str, Any]:
@@ -695,7 +695,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/accounting-classes/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_chart_of_accounts(
@@ -721,7 +721,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/chart-of-accounts"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_chart_of_accounts(
@@ -750,7 +750,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/chart-of-accounts"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_chart_of_accounts(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -772,7 +772,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_chart_of_accounts(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -816,7 +816,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_chart_of_accounts(self, ids: str) -> dict[str, Any]:
@@ -838,7 +838,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
@@ -861,7 +861,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_chart_of_accounts(
@@ -917,7 +917,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_chart_of_accounts(self, id: str) -> dict[str, Any]:
@@ -941,7 +941,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/chart-of-accounts/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_departments(
@@ -967,7 +967,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/departments"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_department(
@@ -996,7 +996,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/departments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_department(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1018,7 +1018,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/departments/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_department(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1062,7 +1062,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_department(self, ids: str) -> dict[str, Any]:
@@ -1084,7 +1084,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_department(self, id: str) -> dict[str, Any]:
@@ -1107,7 +1107,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/departments/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_department(
@@ -1163,7 +1163,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_department(self, id: str) -> dict[str, Any]:
@@ -1187,7 +1187,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/departments/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_employees(
@@ -1213,7 +1213,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/employees"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_employee(
@@ -1242,7 +1242,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/employees"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_employee(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1264,7 +1264,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/employees/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_employee(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1308,7 +1308,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_employee(self, ids: str) -> dict[str, Any]:
@@ -1330,7 +1330,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_employee(self, id: str) -> dict[str, Any]:
@@ -1353,7 +1353,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/employees/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_employee(
@@ -1409,7 +1409,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_employee(self, id: str) -> dict[str, Any]:
@@ -1433,7 +1433,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/employees/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_items(
@@ -1459,7 +1459,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/items"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_item(
@@ -1518,7 +1518,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/items"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_item(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1540,7 +1540,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/items/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_item(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1584,7 +1584,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_item(self, ids: str) -> dict[str, Any]:
@@ -1606,7 +1606,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_item(self, id: str) -> dict[str, Any]:
@@ -1629,7 +1629,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/items/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_item(
@@ -1716,7 +1716,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_item(self, id: str) -> dict[str, Any]:
@@ -1740,7 +1740,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/items/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_jobs(
@@ -1766,7 +1766,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/jobs"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_job(
@@ -1795,7 +1795,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/jobs"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_job(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1817,7 +1817,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/jobs/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_job(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1861,7 +1861,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_job(self, ids: str) -> dict[str, Any]:
@@ -1883,7 +1883,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_job(self, id: str) -> dict[str, Any]:
@@ -1906,7 +1906,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/jobs/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_job(
@@ -1962,7 +1962,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_job(self, id: str) -> dict[str, Any]:
@@ -1986,7 +1986,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/jobs/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_classification_locations(
@@ -2012,7 +2012,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/classifications/locations"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_classification_location(
@@ -2041,7 +2041,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/classifications/locations"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_create_classification_location(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -2063,7 +2063,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/classifications/locations/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_update_classification_location(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -2107,7 +2107,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/bulk/archive"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def bulk_restore_classification_location(self, ids: str) -> dict[str, Any]:
@@ -2129,7 +2129,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/bulk/restore"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_classification_location(self, id: str) -> dict[str, Any]:
@@ -2152,7 +2152,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         url = f"{self.base_url}/v3/classifications/locations/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_classification_location(
@@ -2208,7 +2208,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/{id}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_classification_location(self, id: str) -> dict[str, Any]:
@@ -2232,7 +2232,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/classifications/locations/{id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_customers(
@@ -2258,7 +2258,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/customers"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_customer(
@@ -2323,7 +2323,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/customers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_customer(self, customerId: str) -> dict[str, Any]:
@@ -2346,7 +2346,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customerId'.")
         url = f"{self.base_url}/v3/customers/{customerId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_customer(
@@ -2439,7 +2439,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/customers/{customerId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_customer(self, customerId: str) -> dict[str, Any]:
@@ -2463,7 +2463,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/customers/{customerId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_documents(self, billId: str, max: int | None = None, page: str | None = None) -> dict[str, Any]:
@@ -2488,7 +2488,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'billId'.")
         url = f"{self.base_url}/v3/documents/bills/{billId}"
         query_params = {k: v for k, v in [("max", max), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_bill_document(self, billId: str, name: str, items: list[bytes]) -> dict[str, Any]:
@@ -2514,7 +2514,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/documents/bills/{billId}"
         query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/octet-stream")
         return self._handle_response(response)
 
     async def upload_status(self, ids: str) -> list[Any]:
@@ -2535,7 +2535,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/documents/upload-status"
         query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_document(self, documentId: str) -> dict[str, Any]:
@@ -2558,7 +2558,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'documentId'.")
         url = f"{self.base_url}/v3/documents/{documentId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_payable_apcards(self) -> list[Any]:
@@ -2576,7 +2576,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/funding-accounts/ap-cards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_bank_accounts(
@@ -2602,7 +2602,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/funding-accounts/banks"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_bank_account(
@@ -2652,7 +2652,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_bank_account_users(
@@ -2688,7 +2688,7 @@ class BillApp(APIApplication):
             for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page), ("currentUser", currentUser)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def nominate_bank_account_user(self, userId: str, bankAccountId: str) -> dict[str, Any]:
@@ -2716,7 +2716,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks/users/nominate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def archive_bank_account_user(self, bankAccountUserId: str) -> dict[str, Any]:
@@ -2740,7 +2740,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/funding-accounts/banks/users/{bankAccountUserId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_bank_account(self, bankAccountId: str) -> dict[str, Any]:
@@ -2763,7 +2763,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'bankAccountId'.")
         url = f"{self.base_url}/v3/funding-accounts/banks/{bankAccountId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_bank_account(
@@ -2835,7 +2835,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/funding-accounts/banks/{bankAccountId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def verify_bank_account(self, bankAccountId: str, depositAmount: float) -> dict[str, Any]:
@@ -2864,7 +2864,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/funding-accounts/banks/{bankAccountId}/verify"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_payable_card_accounts(self, cardUserStatus: Any) -> dict[str, Any]:
@@ -2885,7 +2885,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/funding-accounts/cards"
         query_params = {k: v for k, v in [("cardUserStatus", cardUserStatus)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_card_funding_purposes(self, vendorId: str, brand: str) -> dict[str, Any]:
@@ -2907,7 +2907,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/funding-accounts/cards/funding-purposes"
         query_params = {k: v for k, v in [("vendorId", vendorId), ("brand", brand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_card_account_users(
@@ -2943,7 +2943,7 @@ class BillApp(APIApplication):
             for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page), ("currentUser", currentUser)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_card_account(self, cardAccountId: str) -> dict[str, Any]:
@@ -2966,7 +2966,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'cardAccountId'.")
         url = f"{self.base_url}/v3/funding-accounts/cards/{cardAccountId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_funding_account_permission(self) -> dict[str, Any]:
@@ -2984,7 +2984,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/funding-accounts/permissions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_health_check(self) -> dict[str, Any]:
@@ -3002,7 +3002,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/health"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_invoices(
@@ -3028,7 +3028,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/invoices"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_invoice(
@@ -3084,7 +3084,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def record_invoice(
@@ -3128,7 +3128,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/record-payment"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_invoice(self, invoiceId: str) -> dict[str, Any]:
@@ -3151,7 +3151,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'invoiceId'.")
         url = f"{self.base_url}/v3/invoices/{invoiceId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def replace_invoice(
@@ -3211,7 +3211,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/{invoiceId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def update_invoice(
@@ -3295,7 +3295,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/invoices/{invoiceId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def send_invoice(self, invoiceId: str, replyTo: Any, recipient: Any) -> Any:
@@ -3323,7 +3323,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/invoices/{invoiceId}/email"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_invoice(self, invoiceId: str) -> dict[str, Any]:
@@ -3347,7 +3347,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/invoices/{invoiceId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def login(
@@ -3389,7 +3389,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/login"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_session_info(self) -> dict[str, Any]:
@@ -3407,7 +3407,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/login/session"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def logout(self) -> Any:
@@ -3426,7 +3426,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/logout"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def generate_challenge(self, useBackup: bool | None = None) -> dict[str, Any]:
@@ -3450,7 +3450,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/challenge"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def validate_challenge(
@@ -3486,7 +3486,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/challenge/validate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_mfa_phones(self) -> dict[str, Any]:
@@ -3504,7 +3504,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/mfa/phones"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def setup(self, phone: str, type: Any, primary: bool) -> dict[str, Any]:
@@ -3531,7 +3531,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/setup"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def validate(self, setupId: str, type: Any, token: str) -> dict[str, Any]:
@@ -3557,7 +3557,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/setup/validate"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def step_up_session(self, rememberMeId: str | None = None, device: str | None = None) -> dict[str, Any]:
@@ -3586,7 +3586,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/mfa/step-up"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def search(
@@ -3616,7 +3616,7 @@ class BillApp(APIApplication):
             for k, v in [("name", name), ("scope", scope), ("zipOrPostalCode", zipOrPostalCode), ("accountNumber", accountNumber)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def accept_invitation(self, networkId: str, type: Any, id: str | None = None, name: str | None = None) -> Any:
@@ -3649,7 +3649,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/network/invitation/accept"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_customer_invitation(self, customerId: str) -> dict[str, Any]:
@@ -3672,7 +3672,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customerId'.")
         url = f"{self.base_url}/v3/network/invitation/customer/{customerId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_customer_invitation(
@@ -3705,7 +3705,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/network/invitation/customer/{customerId}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def delete_customer_invitation(self, customerId: str) -> Any:
@@ -3728,7 +3728,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customerId'.")
         url = f"{self.base_url}/v3/network/invitation/customer/{customerId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def get_vendor_invitation(self, vendorId: str) -> dict[str, Any]:
@@ -3751,7 +3751,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/network/invitation/vendor/{vendorId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_vendor_invitation(self, vendorId: str, networkId: str, networkType: Any, rppsInformation: Any | None = None) -> Any:
@@ -3782,7 +3782,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/network/invitation/vendor/{vendorId}"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def delete_vendor_invitation(self, vendorId: str) -> Any:
@@ -3805,7 +3805,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/network/invitation/vendor/{vendorId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def list_industries(self) -> dict[str, Any]:
@@ -3823,7 +3823,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/organizations/industries"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_organization(self, organizationId: str) -> dict[str, Any]:
@@ -3846,7 +3846,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'organizationId'.")
         url = f"{self.base_url}/v3/organizations/{organizationId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_organization(
@@ -3932,7 +3932,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'organizationId'.")
         url = f"{self.base_url}/v3/organizations/{organizationId}/price-plan"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def partner_login(self, appKey: str, username: str, password: str) -> dict[str, Any]:
@@ -3958,7 +3958,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/login"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def login_as_user(
@@ -3991,7 +3991,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/login-as-user"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_partner_organizations(
@@ -4017,7 +4017,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/partner/organizations"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_organization(
@@ -4076,7 +4076,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/organizations"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def create_phone(self, userId: str, phoneNumber: str, phoneType: Any) -> Any:
@@ -4104,7 +4104,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/risk-verifications/{userId}/phone"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_partner_user_roles(
@@ -4130,7 +4130,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/partner/roles"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_partner_user_role(self, roleId: str) -> dict[str, Any]:
@@ -4153,7 +4153,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'roleId'.")
         url = f"{self.base_url}/v3/partner/roles/{roleId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_partner_users(
@@ -4179,7 +4179,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/partner/users"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_partner_user(
@@ -4230,7 +4230,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/partner/users"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_partner_user(self, userId: str) -> dict[str, Any]:
@@ -4253,7 +4253,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/v3/partner/users/{userId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_partner_user(
@@ -4311,7 +4311,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/partner/users/{userId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_partner_user(self, userId: str) -> dict[str, Any]:
@@ -4335,7 +4335,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/partner/users/{userId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_payments(
@@ -4361,7 +4361,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/payments"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_payment(
@@ -4425,7 +4425,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/payments"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def create_bulk_payment(
@@ -4483,7 +4483,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/payments/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_payment_options(self, vendorId: str, amount: float) -> dict[str, Any]:
@@ -4505,7 +4505,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/payments/options"
         query_params = {k: v for k, v in [("vendorId", vendorId), ("amount", amount)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_payment(self, paymentId: str) -> dict[str, Any]:
@@ -4528,7 +4528,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'paymentId'.")
         url = f"{self.base_url}/v3/payments/{paymentId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def cancel_payment(self, paymentId: str) -> dict[str, Any]:
@@ -4552,7 +4552,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/payments/{paymentId}/cancel"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_check_image_data(self, paymentId: str) -> dict[str, Any]:
@@ -4575,7 +4575,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'paymentId'.")
         url = f"{self.base_url}/v3/payments/{paymentId}/check-image"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def void_payment(self, paymentId: str, type: Any, reason: str) -> dict[str, Any]:
@@ -4603,7 +4603,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/payments/{paymentId}/void"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_recurring_bills(
@@ -4629,7 +4629,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/recurringbills"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_recurring_bill(
@@ -4673,7 +4673,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/recurringbills"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
@@ -4696,7 +4696,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'recurringBillId'.")
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def replace_recurring_bill(
@@ -4744,7 +4744,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def update_recurring_bill(
@@ -4816,7 +4816,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_recurring_bill(self, recurringBillId: str) -> dict[str, Any]:
@@ -4840,7 +4840,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/recurringbills/{recurringBillId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_vendor_audit_trail(
@@ -4868,7 +4868,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/reports/audit-trail/vendor/{vendorId}"
         query_params = {k: v for k, v in [("includeArchived", includeArchived), ("start", start), ("max", max)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_risk_verifications(self) -> dict[str, Any]:
@@ -4886,7 +4886,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/risk-verifications"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def initiate_risk_verifications(self) -> dict[str, Any]:
@@ -4905,7 +4905,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/risk-verifications"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_risk_verification_phone(self) -> dict[str, Any]:
@@ -4923,7 +4923,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/risk-verifications/phone"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_risk_verification_phone(self, phoneNumber: str, phoneType: Any) -> Any:
@@ -4948,7 +4948,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/risk-verifications/phone"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_organization_user_roles(
@@ -4974,7 +4974,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/roles"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_organization_user_role(self, roleId: str) -> dict[str, Any]:
@@ -4997,7 +4997,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'roleId'.")
         url = f"{self.base_url}/v3/roles/{roleId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_budgets(
@@ -5033,7 +5033,7 @@ class BillApp(APIApplication):
             for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("sort", sort), ("filters", filters)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_budget(
@@ -5122,7 +5122,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_budget(self, budgetId: str) -> dict[str, Any]:
@@ -5145,7 +5145,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'budgetId'.")
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def delete_budget(self, budgetId: str) -> Any:
@@ -5168,7 +5168,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'budgetId'.")
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def update_budget(
@@ -5286,7 +5286,7 @@ class BillApp(APIApplication):
             for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage), ("sort", sort), ("filters", filters)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def upsert_bulk_budget_users(self, budgetId: str, members: list[dict[str, Any]]) -> Any:
@@ -5313,7 +5313,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members/bulk"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_budget_member(self, budgetId: str, userId: str) -> dict[str, Any]:
@@ -5339,7 +5339,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members/{userId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def upsert_budget_member(
@@ -5380,7 +5380,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members/{userId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def delete_budget_member(self, budgetId: str, userId: str) -> Any:
@@ -5406,7 +5406,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/v3/spend/budgets/{budgetId}/members/{userId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def list_cards(
@@ -5442,7 +5442,7 @@ class BillApp(APIApplication):
             for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("sort", sort), ("filters", filters)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_budget_card(
@@ -5489,7 +5489,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/cards"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_card(self, cardId: str) -> dict[str, Any]:
@@ -5512,7 +5512,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'cardId'.")
         url = f"{self.base_url}/v3/spend/cards/{cardId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def delete_card(self, cardId: str, reason: Any | None = None) -> Any:
@@ -5536,7 +5536,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'cardId'.")
         url = f"{self.base_url}/v3/spend/cards/{cardId}"
         query_params = {k: v for k, v in [("reason", reason)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def update_card(
@@ -5610,7 +5610,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'cardId'.")
         url = f"{self.base_url}/v3/spend/cards/{cardId}/pan-jwt"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_custom_fields(
@@ -5646,7 +5646,7 @@ class BillApp(APIApplication):
             for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage), ("sort", sort), ("filters", filters)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_custom_field(
@@ -5702,7 +5702,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/custom-fields"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_custom_field(self, customFieldId: str) -> dict[str, Any]:
@@ -5725,7 +5725,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'.")
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def delete_custom_field(self, customFieldId: str) -> Any:
@@ -5748,7 +5748,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'.")
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def update_custom_field(
@@ -5838,7 +5838,7 @@ class BillApp(APIApplication):
         query_params = {
             k: v for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage), ("filters", filters)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_custom_field_values(self, customFieldId: str, values: list[str]) -> dict[str, Any]:
@@ -5865,7 +5865,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}/values"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def delete_custom_field_value(self, customFieldId: str) -> Any:
@@ -5888,7 +5888,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'.")
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}/values"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def get_custom_field_values(self, customFieldId: str, customFieldValueId: str) -> dict[str, Any]:
@@ -5914,7 +5914,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldValueId'.")
         url = f"{self.base_url}/v3/spend/custom-fields/{customFieldId}/values/{customFieldValueId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_reimbursements(
@@ -5950,7 +5950,7 @@ class BillApp(APIApplication):
             for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("sort", sort), ("filters", filters)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_reimbursement(
@@ -6000,7 +6000,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/reimbursements"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def create_image_upload_url(self) -> dict[str, Any]:
@@ -6019,7 +6019,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/spend/reimbursements/image-upload-url"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_reimbursement(self, reimbursementId: str) -> dict[str, Any]:
@@ -6042,7 +6042,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'reimbursementId'.")
         url = f"{self.base_url}/v3/spend/reimbursements/{reimbursementId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def delete_reimbursement(self, reimbursementId: str) -> Any:
@@ -6065,7 +6065,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'reimbursementId'.")
         url = f"{self.base_url}/v3/spend/reimbursements/{reimbursementId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def update_reimbursement(
@@ -6147,7 +6147,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/reimbursements/{reimbursementId}/action"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_transactions(
@@ -6192,7 +6192,7 @@ class BillApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_transaction(self, transactionId: str, showCustomFieldIds: str | None = None) -> dict[str, Any]:
@@ -6216,7 +6216,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'transactionId'.")
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}"
         query_params = {k: v for k, v in [("showCustomFieldIds", showCustomFieldIds)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_transaction(self, transactionId: str, budgetId: str) -> dict[str, Any]:
@@ -6243,7 +6243,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_transaction_custom_fields(self, transactionId: str, filters: str | None = None) -> dict[str, Any]:
@@ -6267,7 +6267,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'transactionId'.")
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}/custom-fields"
         query_params = {k: v for k, v in [("filters", filters)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_transaction_custom_fields(self, transactionId: str, customFields: list[dict[str, Any]]) -> dict[str, Any]:
@@ -6294,7 +6294,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}/custom-fields"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_transaction_custom_field_values(
@@ -6325,7 +6325,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'customFieldId'.")
         url = f"{self.base_url}/v3/spend/transactions/{transactionId}/custom-fields/{customFieldId}/values"
         query_params = {k: v for k, v in [("max", max), ("nextPage", nextPage), ("prevPage", prevPage)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_users(
@@ -6353,7 +6353,7 @@ class BillApp(APIApplication):
         query_params = {
             k: v for k, v in [("nextPage", nextPage), ("prevPage", prevPage), ("max", max), ("filters", filters)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_user(self, firstName: str, lastName: str, email: str, role: Any, dateOfBirth: str | None = None) -> dict[str, Any]:
@@ -6381,7 +6381,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/spend/users"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_current_user(self) -> dict[str, Any]:
@@ -6399,7 +6399,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/spend/users/current"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_user(self, userId: str) -> dict[str, Any]:
@@ -6422,7 +6422,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/v3/spend/users/{userId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def delete_user(self, userId: str) -> Any:
@@ -6445,7 +6445,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/v3/spend/users/{userId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def update_user(
@@ -6510,7 +6510,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/users"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_organization_user(
@@ -6548,7 +6548,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/users"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_organization_user(self, userId: str) -> dict[str, Any]:
@@ -6571,7 +6571,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/v3/users/{userId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_organization_user(
@@ -6628,7 +6628,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/users/{userId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def restore_organization_user(self, userId: str) -> dict[str, Any]:
@@ -6652,7 +6652,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/users/{userId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def list_vendors(
@@ -6678,7 +6678,7 @@ class BillApp(APIApplication):
         """
         url = f"{self.base_url}/v3/vendors"
         query_params = {k: v for k, v in [("max", max), ("sort", sort), ("filters", filters), ("page", page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_vendor(
@@ -6739,7 +6739,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/vendors"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def create_bulk_vendor(self, items: list[dict[str, Any]]) -> dict[str, Any]:
@@ -6761,7 +6761,7 @@ class BillApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/v3/vendors/bulk"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_intl_config(self, country: Any, billCurrency: Any, accountType: Any) -> dict[str, Any]:
@@ -6786,7 +6786,7 @@ class BillApp(APIApplication):
         query_params = {
             k: v for k, v in [("country", country), ("billCurrency", billCurrency), ("accountType", accountType)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_vendor(self, vendorId: str) -> dict[str, Any]:
@@ -6809,7 +6809,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/vendors/{vendorId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_vendor(
@@ -6898,7 +6898,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/vendors/{vendorId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_vendor_bank_account(self, vendorId: str) -> dict[str, Any]:
@@ -6921,7 +6921,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/vendors/{vendorId}/bank-account"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_vendor_bank_account(
@@ -6978,7 +6978,7 @@ class BillApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/v3/vendors/{vendorId}/bank-account"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def delete_vendor_bank_account(self, vendorId: str) -> Any:
@@ -7001,7 +7001,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/vendors/{vendorId}/bank-account"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def get_configuration_by_vendor_id(self, vendorId: str) -> dict[str, Any]:
@@ -7024,7 +7024,7 @@ class BillApp(APIApplication):
             raise ValueError("Missing required parameter 'vendorId'.")
         url = f"{self.base_url}/v3/vendors/{vendorId}/configuration"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def restore_vendor(self, vendorId: str) -> dict[str, Any]:
@@ -7048,7 +7048,7 @@ class BillApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/v3/vendors/{vendorId}/restore"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     def list_tools(self):

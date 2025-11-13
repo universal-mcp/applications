@@ -30,7 +30,7 @@ class GoogleSearchconsoleApp(APIApplication):
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         feedpath_encoded = urllib.parse.quote(feedpath, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
 
     async def get_sitemap(self, siteUrl: str, feedpath: str) -> dict[str, Any]:
@@ -50,7 +50,7 @@ class GoogleSearchconsoleApp(APIApplication):
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         feedpath_encoded = urllib.parse.quote(feedpath, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
-        response = self._get(url)
+        response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
@@ -74,7 +74,7 @@ class GoogleSearchconsoleApp(APIApplication):
         query_params = {}
         if sitemapIndex is not None:
             query_params["sitemapIndex"] = sitemapIndex
-        response = self._get(url, params=query_params if query_params else None)
+        response = await self._aget(url, params=query_params if query_params else None)
         response.raise_for_status()
         return response.json()
 
@@ -95,7 +95,7 @@ class GoogleSearchconsoleApp(APIApplication):
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         feedpath_encoded = urllib.parse.quote(feedpath, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}/sitemaps/{feedpath_encoded}"
-        response = self._put(url, data=None)
+        response = await self._aput(url, data=None)
         response.raise_for_status()
 
     async def add_site(self, siteUrl: str) -> dict[str, Any]:
@@ -113,7 +113,7 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
-        response = self._put(url, data=None)
+        response = await self._aput(url, data=None)
         response.raise_for_status()
         return response.json()
 
@@ -132,7 +132,7 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
-        response = self._delete(url)
+        response = await self._adelete(url)
         response.raise_for_status()
 
     async def get_site(self, siteUrl: str) -> dict[str, Any]:
@@ -150,7 +150,7 @@ class GoogleSearchconsoleApp(APIApplication):
         """
         siteUrl_encoded = urllib.parse.quote(siteUrl, safe="")
         url = f"{self.webmasters_base_url}/sites/{siteUrl_encoded}"
-        response = self._get(url)
+        response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
@@ -165,7 +165,7 @@ class GoogleSearchconsoleApp(APIApplication):
             site_management
         """
         url = f"{self.webmasters_base_url}/sites"
-        response = self._get(url)
+        response = await self._aget(url)
         response.raise_for_status()
         return response.json()
 
@@ -189,7 +189,7 @@ class GoogleSearchconsoleApp(APIApplication):
         request_body: dict[str, Any] = {"inspectionUrl": inspectionUrl, "siteUrl": siteUrl}
         if languageCode is not None:
             request_body["languageCode"] = languageCode
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         response.raise_for_status()
         return response.json()
 
@@ -262,7 +262,7 @@ class GoogleSearchconsoleApp(APIApplication):
             request_body["dataState"] = dataState
         if search_type is not None:
             request_body["type"] = search_type
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         response.raise_for_status()
         return response.json()
 

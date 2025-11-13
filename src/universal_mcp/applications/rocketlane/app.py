@@ -50,7 +50,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'timeEntryId'.")
         url = f"{self.base_url}/1.0/time-entries/{timeEntryId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -112,7 +112,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/time-entries/{timeEntryId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -142,7 +142,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'timeEntryId'.")
         url = f"{self.base_url}/1.0/time-entries/{timeEntryId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -174,7 +174,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'taskId'.")
         url = f"{self.base_url}/1.0/tasks/{taskId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -257,7 +257,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -287,7 +287,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'taskId'.")
         url = f"{self.base_url}/1.0/tasks/{taskId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -317,7 +317,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'spaceId'.")
         url = f"{self.base_url}/1.0/spaces/{spaceId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -351,7 +351,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/spaces/{spaceId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -381,7 +381,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'spaceId'.")
         url = f"{self.base_url}/1.0/spaces/{spaceId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -411,7 +411,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'spaceDocumentId'.")
         url = f"{self.base_url}/1.0/space-documents/{spaceDocumentId}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -449,7 +449,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/space-documents/{spaceDocumentId}"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -479,7 +479,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'spaceDocumentId'.")
         url = f"{self.base_url}/1.0/space-documents/{spaceDocumentId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -513,7 +513,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         url = f"{self.base_url}/1.0/projects/{projectId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -590,7 +590,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/projects/{projectId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -620,7 +620,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         url = f"{self.base_url}/1.0/projects/{projectId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -652,7 +652,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'phaseId'.")
         url = f"{self.base_url}/1.0/phases/{phaseId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -702,7 +702,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/phases/{phaseId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -732,7 +732,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'phaseId'.")
         url = f"{self.base_url}/1.0/phases/{phaseId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -764,7 +764,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/1.0/fields/{fieldId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -812,7 +812,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/fields/{fieldId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -842,7 +842,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         url = f"{self.base_url}/1.0/fields/{fieldId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -945,7 +945,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1006,7 +1006,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/time-offs"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1169,7 +1169,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1239,7 +1239,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/time-entries"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1273,7 +1273,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/remove-followers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1307,7 +1307,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/remove-dependencies"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1345,7 +1345,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/remove-assignees"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1379,7 +1379,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/move-phase"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1413,7 +1413,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/add-followers"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1447,7 +1447,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/add-dependencies"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1485,7 +1485,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks/{taskId}/add-assignees"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1687,7 +1687,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1781,7 +1781,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/tasks"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1872,7 +1872,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1908,7 +1908,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/spaces"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2002,7 +2002,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2053,7 +2053,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/space-documents"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2085,7 +2085,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/1.0/projects/{projectId}/unassign-placeholders"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2119,7 +2119,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/projects/{projectId}/remove-members"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2151,7 +2151,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/1.0/projects/{projectId}/import-template"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2183,7 +2183,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = items
         url = f"{self.base_url}/1.0/projects/{projectId}/assign-placeholders"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2214,7 +2214,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/1.0/projects/{projectId}/archive"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2251,7 +2251,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/projects/{projectId}/add-members"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2534,7 +2534,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2638,7 +2638,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/projects"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2795,7 +2795,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2853,7 +2853,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/phases"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2891,7 +2891,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/fields/{fieldId}/update-option"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2926,7 +2926,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/fields/{fieldId}/add-option"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3023,7 +3023,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3087,7 +3087,7 @@ class RocketlaneApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/1.0/fields"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3119,7 +3119,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'userId'.")
         url = f"{self.base_url}/1.0/users/{userId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3279,7 +3279,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3313,7 +3313,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'timeOffId'.")
         url = f"{self.base_url}/1.0/time-offs/{timeOffId}"
         query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3343,7 +3343,7 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'timeOffId'.")
         url = f"{self.base_url}/1.0/time-offs/{timeOffId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3443,7 +3443,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3472,7 +3472,7 @@ class RocketlaneApp(APIApplication):
         """
         url = f"{self.base_url}/1.0/time-entries/categories"
         query_params = {k: v for k, v in [("pageSize", pageSize), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3560,7 +3560,7 @@ class RocketlaneApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

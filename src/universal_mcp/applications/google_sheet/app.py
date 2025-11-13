@@ -33,7 +33,7 @@ class GoogleSheetApp(APIApplication):
         """
         url = self.base_url
         spreadsheet_data = {"properties": {"title": title}}
-        response = self._post(url, data=spreadsheet_data)
+        response = await self._apost(url, data=spreadsheet_data)
         payload = self._handle_response(response)
         payload["Note"] = "You must load and call other google_sheet content functions (like `google_sheet__write_values_to_sheet`)"
         return payload
@@ -57,7 +57,7 @@ class GoogleSheetApp(APIApplication):
             get, retrieve, spreadsheet, api, metadata, read, important
         """
         url = f"{self.base_url}/{spreadsheetId}"
-        response = self._get(url)
+        response = await self._aget(url)
         return self._handle_response(response)
 
     async def get_values(
@@ -96,7 +96,7 @@ class GoogleSheetApp(APIApplication):
             params["valueRenderOption"] = valueRenderOption
         if dateTimeRenderOption:
             params["dateTimeRenderOption"] = dateTimeRenderOption
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def batch_get_values_by_range(self, spreadsheetId: str, ranges: list[str] | None = None) -> dict[str, Any]:
@@ -121,7 +121,7 @@ class GoogleSheetApp(APIApplication):
         params = {}
         if ranges:
             params["ranges"] = ranges
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def insert_dimensions(
@@ -188,7 +188,7 @@ class GoogleSheetApp(APIApplication):
             request_body["responseIncludeGridData"] = response_include_grid_data
         if response_ranges is not None:
             request_body["responseRanges"] = response_ranges
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def append_dimensions(self, spreadsheetId: str, sheet_id: int, dimension: str, length: int) -> dict[str, Any]:
@@ -222,7 +222,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("length must be a positive integer")
         url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
         request_body = {"requests": [{"appendDimension": {"sheetId": sheet_id, "dimension": dimension, "length": length}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def delete_dimensions(
@@ -283,7 +283,7 @@ class GoogleSheetApp(APIApplication):
             request_body["responseIncludeGridData"] = response_include_grid_data
         if response_ranges is not None:
             request_body["responseRanges"] = response_ranges
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def add_sheet(
@@ -391,7 +391,7 @@ class GoogleSheetApp(APIApplication):
             "includeSpreadsheetInResponse": includeSpreadsheetInResponse,
             "responseIncludeGridData": responseIncludeGridData,
         }
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def add_basic_chart(
@@ -503,7 +503,7 @@ class GoogleSheetApp(APIApplication):
                 }
             }
         request_body = {"requests": [{"addChart": {"chart": {"spec": chart_spec, "position": position_spec}}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def add_pie_chart(
@@ -597,7 +597,7 @@ class GoogleSheetApp(APIApplication):
                 }
             }
         request_body = {"requests": [{"addChart": {"chart": {"spec": chart_spec, "position": position_spec}}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def add_table(
@@ -672,7 +672,7 @@ class GoogleSheetApp(APIApplication):
         if column_properties:
             table_spec["columnProperties"] = column_properties
         request_body = {"requests": [{"addTable": {"table": table_spec}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def update_table(
@@ -759,7 +759,7 @@ class GoogleSheetApp(APIApplication):
         if not fields_to_update:
             raise ValueError("At least one field must be provided for update (table_name, range indices, or column_properties)")
         request_body = {"requests": [{"updateTable": {"table": table_spec, "fields": ",".join(fields_to_update)}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def clear_values(self, spreadsheetId: str, range: str) -> dict[str, Any]:
@@ -781,7 +781,7 @@ class GoogleSheetApp(APIApplication):
             clear, modify, spreadsheet, api, sheets, data-management, important
         """
         url = f"{self.base_url}/{spreadsheetId}/values/{range}:clear"
-        response = self._post(url, data={})
+        response = await self._apost(url, data={})
         return self._handle_response(response)
 
     async def update_values(
@@ -809,7 +809,7 @@ class GoogleSheetApp(APIApplication):
         url = f"{self.base_url}/{spreadsheetId}/values/{range}"
         params = {"valueInputOption": value_input_option}
         data = {"range": range, "values": values}
-        response = self._put(url, data=data, params=params)
+        response = await self._aput(url, data=data, params=params)
         return self._handle_response(response)
 
     async def batch_clear_values(self, spreadsheetId: str, ranges: list[str]) -> dict[str, Any]:
@@ -836,7 +836,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("ranges must be a non-empty list")
         url = f"{self.base_url}/{spreadsheetId}/values:batchClear"
         request_body = {"ranges": ranges}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def batch_get_values_by_data_filter(
@@ -887,7 +887,7 @@ class GoogleSheetApp(APIApplication):
             request_body["valueRenderOption"] = value_render_option
         if date_time_render_option:
             request_body["dateTimeRenderOption"] = date_time_render_option
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def copy_sheet_to_spreadsheet(self, spreadsheetId: str, sheet_id: int, destination_spreadsheetId: str) -> dict[str, Any]:
@@ -918,7 +918,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("destination_spreadsheetId cannot be empty")
         url = f"{self.base_url}/{spreadsheetId}/sheets/{sheet_id}:copyTo"
         request_body = {"destinationSpreadsheetId": destination_spreadsheetId}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def write_values_to_sheet(
@@ -966,7 +966,7 @@ class GoogleSheetApp(APIApplication):
         url = f"{self.base_url}/{spreadsheetId}/values/{range_str}"
         params = {"valueInputOption": value_input_option, "includeValuesInResponse": include_values_in_response}
         data = {"values": values}
-        response = self._put(url, data=data, params=params)
+        response = await self._aput(url, data=data, params=params)
         return self._handle_response(response)
 
     async def append_values(
@@ -1030,7 +1030,7 @@ class GoogleSheetApp(APIApplication):
         if response_date_time_render_option:
             params["responseDateTimeRenderOption"] = response_date_time_render_option
         data = {"values": values}
-        response = self._post(url, data=data, params=params)
+        response = await self._apost(url, data=data, params=params)
         return self._handle_response(response)
 
     async def clear_basic_filter(self, spreadsheetId: str, sheet_id: int) -> dict[str, Any]:
@@ -1057,7 +1057,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("sheet_id must be non-negative")
         url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
         request_body = {"requests": [{"clearBasicFilter": {"sheetId": sheet_id}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def delete_sheet(self, spreadsheetId: str, sheet_id: int) -> dict[str, Any]:
@@ -1084,7 +1084,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("sheet_id must be non-negative")
         url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
         request_body = {"requests": [{"deleteSheet": {"sheetId": sheet_id}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def discover_tables(
@@ -1229,7 +1229,7 @@ class GoogleSheetApp(APIApplication):
             raise ValueError("filter range must contain 'sheetId' field")
         url = f"{self.base_url}/{spreadsheetId}:batchUpdate"
         request_body = {"requests": [{"setBasicFilter": {"filter": filter}}]}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     async def format_cells(
@@ -1424,7 +1424,7 @@ class GoogleSheetApp(APIApplication):
                 }
             )
         request_body = {"requests": requests}
-        response = self._post(url, data=request_body)
+        response = await self._apost(url, data=request_body)
         return self._handle_response(response)
 
     def list_tools(self):

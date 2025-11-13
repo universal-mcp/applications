@@ -26,7 +26,7 @@ class NeonApp(APIApplication):
         """
         url = f"{self.base_url}/api_keys"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -53,7 +53,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/api_keys"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -78,7 +78,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'key_id'")
         url = f"{self.base_url}/api_keys/{key_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -106,7 +106,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'operation_id'")
         url = f"{self.base_url}/projects/{project_id}/operations/{operation_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -136,7 +136,7 @@ class NeonApp(APIApplication):
             for k, v in [("cursor", cursor), ("limit", limit), ("search", search), ("org_id", org_id), ("timeout", timeout)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -163,7 +163,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -187,7 +187,7 @@ class NeonApp(APIApplication):
         """
         url = f"{self.base_url}/projects/shared"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit), ("search", search)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -212,7 +212,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -267,7 +267,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -294,7 +294,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}/operations"
         query_params = {k: v for k, v in [("cursor", cursor), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -319,7 +319,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}/permissions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -349,7 +349,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/permissions"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -377,7 +377,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'permission_id'")
         url = f"{self.base_url}/projects/{project_id}/permissions/{permission_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -402,7 +402,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}/jwks"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -446,7 +446,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/jwks"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -474,7 +474,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'jwks_id'")
         url = f"{self.base_url}/projects/{project_id}/jwks/{jwks_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -520,7 +520,7 @@ class NeonApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -548,7 +548,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -576,7 +576,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -652,7 +652,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/restore"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -685,7 +685,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'db_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/schema"
         query_params = {k: v for k, v in [("db_name", db_name), ("lsn", lsn), ("timestamp", timestamp)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -713,7 +713,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/set_as_default"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -741,7 +741,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/endpoints"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -769,7 +769,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/databases"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -802,7 +802,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/databases"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -833,7 +833,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'database_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/databases/{database_name}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -900,7 +900,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'database_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/databases/{database_name}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -928,7 +928,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'branch_id'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -961,7 +961,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -992,7 +992,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'role_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles/{role_name}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1023,7 +1023,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'role_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles/{role_name}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1054,7 +1054,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'role_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles/{role_name}/reveal_password"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1085,7 +1085,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'role_name'")
         url = f"{self.base_url}/projects/{project_id}/branches/{branch_id}/roles/{role_name}/reset_password"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1110,7 +1110,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}/vpc-endpoints"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1143,7 +1143,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1171,7 +1171,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'vpc_endpoint_id'")
         url = f"{self.base_url}/projects/{project_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1201,7 +1201,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/projects/{project_id}/endpoints"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1226,7 +1226,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'project_id'")
         url = f"{self.base_url}/projects/{project_id}/endpoints"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1254,7 +1254,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         url = f"{self.base_url}/projects/{project_id}/endpoints/{endpoint_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1282,7 +1282,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         url = f"{self.base_url}/projects/{project_id}/endpoints/{endpoint_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1343,7 +1343,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         url = f"{self.base_url}/projects/{project_id}/endpoints/{endpoint_id}/start"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1371,7 +1371,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         url = f"{self.base_url}/projects/{project_id}/endpoints/{endpoint_id}/suspend"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1399,7 +1399,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         url = f"{self.base_url}/projects/{project_id}/endpoints/{endpoint_id}/restart"
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1424,7 +1424,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         url = f"{self.base_url}/organizations/{org_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1452,7 +1452,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'key_id'")
         url = f"{self.base_url}/organizations/{org_id}/api_keys/{key_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1477,7 +1477,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         url = f"{self.base_url}/organizations/{org_id}/members"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1505,7 +1505,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         url = f"{self.base_url}/organizations/{org_id}/members/{member_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1566,7 +1566,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'member_id'")
         url = f"{self.base_url}/organizations/{org_id}/members/{member_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1591,7 +1591,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'org_id'")
         url = f"{self.base_url}/organizations/{org_id}/invitations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1621,7 +1621,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organizations/{org_id}/invitations"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1649,7 +1649,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'region_id'")
         url = f"{self.base_url}/organizations/{org_id}/vpc/region/{region_id}/vpc-endpoints"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1680,7 +1680,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'vpc_endpoint_id'")
         url = f"{self.base_url}/organizations/{org_id}/vpc/region/{region_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1716,7 +1716,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/organizations/{org_id}/vpc/region/{region_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1747,7 +1747,7 @@ class NeonApp(APIApplication):
             raise ValueError("Missing required parameter 'vpc_endpoint_id'")
         url = f"{self.base_url}/organizations/{org_id}/vpc/region/{region_id}/vpc-endpoints/{vpc_endpoint_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1766,7 +1766,7 @@ class NeonApp(APIApplication):
         """
         url = f"{self.base_url}/regions"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1788,7 +1788,7 @@ class NeonApp(APIApplication):
         """
         url = f"{self.base_url}/users/me"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1810,7 +1810,7 @@ class NeonApp(APIApplication):
         """
         url = f"{self.base_url}/users/me/organizations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1840,7 +1840,7 @@ class NeonApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/users/me/projects/transfer"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

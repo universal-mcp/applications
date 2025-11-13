@@ -31,7 +31,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/voice.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -53,7 +53,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/avatar.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -75,7 +75,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v2/voices"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -97,7 +97,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v2/avatars"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -119,7 +119,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/video.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -158,7 +158,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/video/generate"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -180,7 +180,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/video.delete"
         query_params = {k: v for k, v in [("video_id", video_id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -202,7 +202,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v2/templates"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -227,7 +227,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v2/template/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -263,7 +263,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/template/{id}/generate"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -285,7 +285,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v2/video_translate/target_languages"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -324,7 +324,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/video_translate"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -349,7 +349,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v2/video_translate/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -373,7 +373,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.new"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -395,7 +395,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/streaming.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -425,7 +425,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.ice"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -455,7 +455,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.task"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -482,7 +482,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.stop"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -509,7 +509,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.interrupt"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -533,7 +533,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/streaming.create_token"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -555,7 +555,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/streaming/avatar.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -577,7 +577,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/webhook/webhook.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -607,7 +607,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/webhook/endpoint.add"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -632,7 +632,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'endpoint_id'")
         url = f"{self.base_url}/v1/webhook/endpoint.delete/{endpoint_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -654,7 +654,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/webhook/endpoint.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -676,7 +676,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/talking_photo.list"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -701,7 +701,7 @@ class HeygenApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v2/talking_photo/{id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -731,7 +731,7 @@ class HeygenApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v1/personalized_video/add_contact"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -753,7 +753,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/personalized_video/audience/detail"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -775,7 +775,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/personalized_video/project/detail"
         query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -797,7 +797,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v2/user/remaining_quota"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -819,7 +819,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/asset"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -841,7 +841,7 @@ class HeygenApp(APIApplication):
         """
         url = f"{self.base_url}/v1/video_status.get"
         query_params = {k: v for k, v in [("video_id", video_id)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

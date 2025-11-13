@@ -44,7 +44,7 @@ class GongApp(APIApplication):
         query_params = {
             k: v for k, v in [("fromDateTime", fromDateTime), ("toDateTime", toDateTime), ("workspaceId", workspaceId)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -138,7 +138,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -163,7 +163,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v2/calls/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -192,7 +192,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/extensive"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -217,7 +217,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'profileId'")
         url = f"{self.base_url}/v2/permission-profile"
         query_params = {k: v for k, v in [("profileId", profileId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -395,7 +395,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/permission-profile"
         query_params = {k: v for k, v in [("profileId", profileId)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -573,7 +573,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/permission-profile"
         query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -620,7 +620,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/meetings/{meetingId}"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -648,7 +648,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/meetings/{meetingId}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -757,7 +757,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/customer-engagement/content/viewed"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -863,7 +863,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/customer-engagement/content/shared"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -963,7 +963,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/customer-engagement/action"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -985,7 +985,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/crm/integrations"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1015,7 +1015,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/crm/integrations"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1043,7 +1043,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'clientRequestId'")
         url = f"{self.base_url}/v2/crm/integrations"
         query_params = {k: v for k, v in [("integrationId", integrationId), ("clientRequestId", clientRequestId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1067,7 +1067,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1094,7 +1094,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1118,7 +1118,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/users-access"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1146,7 +1146,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/users/extensive"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1174,7 +1174,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/interaction"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1202,7 +1202,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/scorecards"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1230,7 +1230,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/day-by-day"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1258,7 +1258,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/aggregate"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1289,7 +1289,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/stats/activity/aggregate-by-period"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1334,7 +1334,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/meetings"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1358,7 +1358,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/meetings/integration/status"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1385,7 +1385,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/integration-settings"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1412,7 +1412,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/flows/prospects"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1445,7 +1445,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/flows/prospects/assign"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1510,7 +1510,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/digital-interaction"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1535,7 +1535,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'phoneNumber'")
         url = f"{self.base_url}/v2/data-privacy/erase-data-for-phone-number"
         query_params = {k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1560,7 +1560,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'emailAddress'")
         url = f"{self.base_url}/v2/data-privacy/erase-data-for-email-address"
         query_params = {k: v for k, v in [("emailAddress", emailAddress)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1588,7 +1588,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'objectType'")
         url = f"{self.base_url}/v2/crm/entity-schema"
         query_params = {k: v for k, v in [("integrationId", integrationId), ("objectType", objectType)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1620,7 +1620,7 @@ class GongApp(APIApplication):
         request_body = items
         url = f"{self.base_url}/v2/crm/entity-schema"
         query_params = {k: v for k, v in [("integrationId", integrationId), ("objectType", objectType)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1654,7 +1654,7 @@ class GongApp(APIApplication):
             for k, v in [("integrationId", integrationId), ("objectType", objectType), ("objectsCrmIds", objectsCrmIds)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1682,7 +1682,7 @@ class GongApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/v2/calls/transcript"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1701,7 +1701,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/workspaces"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1724,7 +1724,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/users"
         query_params = {k: v for k, v in [("cursor", cursor), ("includeAvatars", includeAvatars)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1749,7 +1749,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v2/users/{id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1774,7 +1774,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         url = f"{self.base_url}/v2/users/{id}/settings-history"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1796,7 +1796,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/settings/trackers"
         query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1818,7 +1818,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/settings/scorecards"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1843,7 +1843,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'profileId'")
         url = f"{self.base_url}/v2/permission-profile/users"
         query_params = {k: v for k, v in [("profileId", profileId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1877,7 +1877,7 @@ class GongApp(APIApplication):
             for k, v in [("logType", logType), ("fromDateTime", fromDateTime), ("toDateTime", toDateTime), ("cursor", cursor)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1899,7 +1899,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/library/folders"
         query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1921,7 +1921,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/library/folder-content"
         query_params = {k: v for k, v in [("folderId", folderId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1950,7 +1950,7 @@ class GongApp(APIApplication):
         query_params = {
             k: v for k, v in [("flowOwnerEmail", flowOwnerEmail), ("cursor", cursor), ("workspaceId", workspaceId)] if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1975,7 +1975,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'phoneNumber'")
         url = f"{self.base_url}/v2/data-privacy/data-for-phone-number"
         query_params = {k: v for k, v in [("phoneNumber", phoneNumber)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2000,7 +2000,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'emailAddress'")
         url = f"{self.base_url}/v2/data-privacy/data-for-email-address"
         query_params = {k: v for k, v in [("emailAddress", emailAddress)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2028,7 +2028,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'clientRequestId'")
         url = f"{self.base_url}/v2/crm/request-status"
         query_params = {k: v for k, v in [("integrationId", integrationId), ("clientRequestId", clientRequestId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2051,7 +2051,7 @@ class GongApp(APIApplication):
         """
         url = f"{self.base_url}/v2/calls/manual-crm-associations"
         query_params = {k: v for k, v in [("fromDateTime", fromDateTime), ("cursor", cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2076,7 +2076,7 @@ class GongApp(APIApplication):
             raise ValueError("Missing required parameter 'workspaceId'")
         url = f"{self.base_url}/v2/all-permission-profiles"
         query_params = {k: v for k, v in [("workspaceId", workspaceId)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

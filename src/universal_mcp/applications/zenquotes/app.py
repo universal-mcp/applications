@@ -22,7 +22,7 @@ class ZenquotesApp(APIApplication):
             fetch, quotes, api, http, important
         """
         url = "https://zenquotes.io/api/random"
-        response = self._get(url)
+        response = await self._aget(url)
         data = response.json()
         quote = data[0]
         return {"quote": quote["q"], "author": quote["a"]}

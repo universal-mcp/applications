@@ -84,50 +84,37 @@ class LinkedinApp(APIApplication):
             return items[0]["id"]
         raise ValueError(f'Could not find a matching ID for {param_type}: "{keywords}"')
 
-    async def start_new_chat(
-            self,
-            provider_id: str,
-            text: str,
-        ) -> dict[str, Any]:
-            """
-            Starts a new chat conversation with a specified user by sending an initial message.
-            This function constructs a multipart/form-data request using the `files` parameter
-            to ensure correct formatting and headers, working around potential issues in the
-            underlying request method.
+    async def start_new_chat(self, provider_id: str, text: str) -> dict[str, Any]:
+        """
+        Starts a new chat conversation with a specified user by sending an initial message.
+        This function constructs a multipart/form-data request using the `files` parameter
+        to ensure correct formatting and headers, working around potential issues in the
+        underlying request method.
 
-            Args:
-                provider_id: The LinkedIn provider ID of the user to start the chat with.
-                            This is available in the response of the `retrieve_user_profile` tool.
-                text: The initial message content. For LinkedIn Recruiter accounts, this can include
-                    HTML tags like <strong>, <em>, <a>, <ul>, <ol>, and <li>.
+        Args:
+            provider_id: The LinkedIn provider ID of the user to start the chat with.
+                        This is available in the response of the `retrieve_user_profile` tool.
+            text: The initial message content. For LinkedIn Recruiter accounts, this can include
+                HTML tags like <strong>, <em>, <a>, <ul>, <ol>, and <li>.
 
-            Returns:
-                A dictionary containing the details of the newly created chat.
+        Returns:
+            A dictionary containing the details of the newly created chat.
 
-            Raises:
-                httpx.HTTPError: If the API request fails.
+        Raises:
+            httpx.HTTPError: If the API request fails.
 
-            Tags:
-                linkedin, chat, create, start, new, messaging, api, important
-            """
-            url = f"{self.base_url}/api/v1/chats"
-
-            form_payload = {
-                "account_id": (None, self.account_id),
-                "text": (None, text),
-                "attendees_ids": (None, provider_id),
-            }
-
-            api_key = os.getenv("UNIPILE_API_KEY")
-            if not api_key:
-                raise ValueError("UNIPILE_API_KEY environment variable is not set.")
-
-            headers = {
-                "x-api-key": api_key,
-            }
-            response = requests.post(url, files=form_payload, headers=headers)
-            response.raise_for_status()
-            return response.json()
+        Tags:
+            linkedin, chat, create, start, new, messaging, api, important
+        """
+        url = f"{self.base_url}/api/v1/chats"
+        form_payload = {"account_id": (None, self.account_id), "text": (None, text), "attendees_ids": (None, provider_id)}
+        api_key = os.getenv("UNIPILE_API_KEY")
+        if not api_key:
+            raise ValueError("UNIPILE_API_KEY environment variable is not set.")
+        headers = {"x-api-key": api_key}
+        response = requests.post(url, files=form_payload, headers=headers)
+        response.raise_for_status()
+        return response.json()
 
     async def list_all_chats(
         self,
@@ -173,7 +160,7 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if account_type:
             params["account_type"] = account_type
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def list_chat_messages(
@@ -217,7 +204,7 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if sender_id:
             params["sender_id"] = sender_id
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def send_chat_message(self, chat_id: str, text: str) -> dict[str, Any]:
@@ -240,7 +227,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/chats/{chat_id}/messages"
         payload: dict[str, Any] = {"text": text}
-        response = self._post(url, data=payload)
+        response = await self._apost(url, data=payload)
         return response.json()
 
     async def retrieve_chat(self, chat_id: str) -> dict[str, Any]:
@@ -263,7 +250,7 @@ class LinkedinApp(APIApplication):
         params: dict[str, Any] = {}
         if self.account_id:
             params["account_id"] = self.account_id
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def list_all_messages(
@@ -307,7 +294,7 @@ class LinkedinApp(APIApplication):
             params["sender_id"] = sender_id
         if self.account_id:
             params["account_id"] = self.account_id
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def list_profile_posts(
@@ -339,7 +326,7 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if is_company is not None:
             params["is_company"] = is_company
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def retrieve_own_profile(self) -> dict[str, Any]:
@@ -357,7 +344,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/users/me"
         params: dict[str, Any] = {"account_id": self.account_id}
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def retrieve_post(self, post_id: str) -> dict[str, Any]:
@@ -378,7 +365,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/posts/{post_id}"
         params: dict[str, Any] = {"account_id": self.account_id}
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def list_post_comments(
@@ -410,7 +397,7 @@ class LinkedinApp(APIApplication):
             params["limit"] = str(limit)
         if comment_id:
             params["comment_id"] = comment_id
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def create_post(
@@ -440,7 +427,7 @@ class LinkedinApp(APIApplication):
             params["mentions"] = mentions
         if external_link:
             params["external_link"] = external_link
-        response = self._post(url, data=params)
+        response = await self._apost(url, data=params)
         return response.json()
 
     async def list_content_reactions(
@@ -472,7 +459,7 @@ class LinkedinApp(APIApplication):
             params["limit"] = limit
         if comment_id:
             params["comment_id"] = comment_id
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def create_post_comment(
@@ -503,7 +490,7 @@ class LinkedinApp(APIApplication):
             params["comment_id"] = comment_id
         if mentions_body:
             params = {"mentions": mentions_body}
-        response = self._post(url, data=params)
+        response = await self._apost(url, data=params)
         try:
             return response.json()
         except json.JSONDecodeError:
@@ -536,7 +523,7 @@ class LinkedinApp(APIApplication):
         params: dict[str, str] = {"account_id": self.account_id, "post_id": post_social_id, "reaction_type": reaction_type}
         if comment_id:
             params["comment_id"] = comment_id
-        response = self._post(url, data=params)
+        response = await self._apost(url, data=params)
         try:
             return response.json()
         except json.JSONDecodeError:
@@ -560,7 +547,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/users/{public_identifier}"
         params: dict[str, Any] = {"account_id": self.account_id}
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def search_people(
@@ -607,7 +594,7 @@ class LinkedinApp(APIApplication):
         if company:
             company_id = self._get_search_parameter_id("COMPANY", company)
             payload["company"] = [company_id]
-        response = self._post(url, params=params, data=payload)
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
     async def search_companies(
@@ -649,7 +636,7 @@ class LinkedinApp(APIApplication):
         if industry:
             industry_id = self._get_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
-        response = self._post(url, params=params, data=payload)
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
     async def search_posts(
@@ -689,7 +676,7 @@ class LinkedinApp(APIApplication):
             payload["date_posted"] = date_posted
         if sort_by:
             payload["sort_by"] = sort_by
-        response = self._post(url, params=params, data=payload)
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
     async def search_jobs(
@@ -742,7 +729,7 @@ class LinkedinApp(APIApplication):
         if industry:
             industry_id = self._get_search_parameter_id("INDUSTRY", industry)
             payload["industry"] = [industry_id]
-        response = self._post(url, params=params, data=payload)
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
     async def send_invitation(self, provider_id: str, user_email: str | None = None, message: str | None = None) -> dict[str, Any]:
@@ -772,7 +759,7 @@ class LinkedinApp(APIApplication):
             if len(message) > 300:
                 raise ValueError("Message cannot exceed 300 characters.")
             payload["message"] = message
-        response = self._post(url, data=payload)
+        response = await self._apost(url, data=payload)
         try:
             return response.json()
         except json.JSONDecodeError:
@@ -801,7 +788,7 @@ class LinkedinApp(APIApplication):
             params["cursor"] = cursor
         if limit is not None:
             params["limit"] = limit
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def list_received_invitations(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
@@ -827,7 +814,7 @@ class LinkedinApp(APIApplication):
             params["cursor"] = cursor
         if limit is not None:
             params["limit"] = limit
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def handle_received_invitation(
@@ -852,7 +839,7 @@ class LinkedinApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/users/invite/received/{invitation_id}"
         payload: dict[str, Any] = {"provider": "LINKEDIN", "action": action, "shared_secret": shared_secret, "account_id": self.account_id}
-        response = self._post(url, data=payload)
+        response = await self._apost(url, data=payload)
         try:
             return response.json()
         except json.JSONDecodeError:
@@ -881,7 +868,7 @@ class LinkedinApp(APIApplication):
             params["cursor"] = cursor
         if limit is not None:
             params["limit"] = limit
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def list_following(self, cursor: str | None = None, limit: int | None = None) -> dict[str, Any]:
@@ -936,5 +923,5 @@ class LinkedinApp(APIApplication):
             self.list_received_invitations,
             self.handle_received_invitation,
             self.list_followers,
-            # self.list_following,      not implemented by unipile
+            # self.list_following       this endpoint is not yet implemented by unipile
         ]

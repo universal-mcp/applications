@@ -87,7 +87,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -135,7 +135,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -163,7 +163,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/organizations/enrich"
         query_params = {k: v for k, v in [("domain", domain)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -192,7 +192,7 @@ class ApolloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/organizations/bulk_enrich"
         query_params = {k: v for k, v in [("domains[]", domains_)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -263,7 +263,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -331,7 +331,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -365,7 +365,7 @@ class ApolloApp(APIApplication):
             raise ValueError("Missing required parameter 'organization_id'.")
         url = f"{self.base_url}/organizations/{organization_id}/job_postings"
         query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -418,7 +418,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -475,7 +475,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -528,7 +528,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -558,7 +558,7 @@ class ApolloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/accounts/bulk_update"
         query_params = {k: v for k, v in [("account_ids[]", account_ids_), ("account_stage_id", account_stage_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -588,7 +588,7 @@ class ApolloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/accounts/update_owners"
         query_params = {k: v for k, v in [("account_ids[]", account_ids_), ("owner_id", owner_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -613,7 +613,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/account_stages"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -693,7 +693,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -777,7 +777,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -830,7 +830,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -860,7 +860,7 @@ class ApolloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/contacts/update_stages"
         query_params = {k: v for k, v in [("contact_ids[]", contact_ids_), ("contact_stage_id", contact_stage_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -890,7 +890,7 @@ class ApolloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/contacts/update_owners"
         query_params = {k: v for k, v in [("contact_ids[]", contact_ids_), ("owner_id", owner_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -915,7 +915,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/contact_stages"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -968,7 +968,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1000,7 +1000,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/opportunities/search"
         query_params = {k: v for k, v in [("sort_by_field", sort_by_field), ("page", page), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1091,7 +1091,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/opportunity_stages"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1157,7 +1157,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1192,7 +1192,7 @@ class ApolloApp(APIApplication):
             for k, v in [("emailer_campaign_ids[]", emailer_campaign_ids_), ("contact_ids[]", contact_ids_), ("mode", mode)]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1241,7 +1241,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1288,7 +1288,7 @@ class ApolloApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1317,7 +1317,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/users/search"
         query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1342,7 +1342,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/email_accounts"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1367,7 +1367,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/labels"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1392,7 +1392,7 @@ class ApolloApp(APIApplication):
         """
         url = f"{self.base_url}/typed_custom_fields"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1419,7 +1419,7 @@ class ApolloApp(APIApplication):
             raise ValueError("Missing required parameter 'opportunity_id'.")
         url = f"{self.base_url}/opportunities/{opportunity_id}"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1447,7 +1447,7 @@ class ApolloApp(APIApplication):
         request_body_data = None
         url = f"{self.base_url}/emailer_campaigns/search"
         query_params = {k: v for k, v in [("q_name", q_name), ("page", page), ("per_page", per_page)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None

@@ -66,7 +66,7 @@ class RedditApp(APIApplication):
         url = f"{self.base_api_url}/r/{subreddit}/top"
         params = {"limit": limit, "t": timeframe}
         logger.info(f"Requesting top {limit} posts from r/{subreddit} for timeframe '{timeframe}'")
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def search_subreddits(self, query: str, limit: int = 5, sort: str = "relevance") -> dict[str, Any]:
@@ -97,7 +97,7 @@ class RedditApp(APIApplication):
         url = f"{self.base_api_url}/subreddits/search"
         params = {"q": query, "limit": limit, "sort": sort}
         logger.info(f"Searching for subreddits matching '{query}' (limit: {limit}, sort: {sort})")
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def get_post_flairs(self, subreddit: str):
@@ -119,7 +119,7 @@ class RedditApp(APIApplication):
         """
         url = f"{self.base_api_url}/r/{subreddit}/api/link_flair_v2"
         logger.info(f"Fetching post flairs for subreddit: r/{subreddit}")
-        response = self._get(url)
+        response = await self._aget(url)
         flairs = response.json()
         if not flairs:
             return f"No post flairs available for r/{subreddit}."
@@ -156,7 +156,7 @@ class RedditApp(APIApplication):
         data = {k: v for k, v in data.items() if v is not None}
         url_api = f"{self.base_api_url}/api/submit"
         logger.info(f"Submitting a new post to r/{subreddit}")
-        response = self._post(url_api, data=data)
+        response = await self._apost(url_api, data=data)
         response_json = response.json()
         if response_json and "json" in response_json and ("errors" in response_json["json"]):
             errors = response_json["json"]["errors"]
@@ -183,7 +183,7 @@ class RedditApp(APIApplication):
             retrieve, get, reddit, comment, api, fetch, single-item, important
         """
         url = f"https://oauth.reddit.com/api/info.json?id={comment_id}"
-        response = self._get(url)
+        response = await self._aget(url)
         data = response.json()
         comments = data.get("data", {}).get("children", [])
         if comments:
@@ -212,7 +212,7 @@ class RedditApp(APIApplication):
         url = f"{self.base_api_url}/api/comment"
         data = {"parent": parent_id, "text": text}
         logger.info(f"Posting comment to {parent_id}")
-        response = self._post(url, data=data)
+        response = await self._apost(url, data=data)
         return response.json()
 
     async def edit_content(self, content_id: str, text: str) -> dict:
@@ -236,7 +236,7 @@ class RedditApp(APIApplication):
         url = f"{self.base_api_url}/api/editusertext"
         data = {"thing_id": content_id, "text": text}
         logger.info(f"Editing content {content_id}")
-        response = self._post(url, data=data)
+        response = await self._apost(url, data=data)
         return response.json()
 
     async def delete_content(self, content_id: str) -> dict:
@@ -259,7 +259,7 @@ class RedditApp(APIApplication):
         url = f"{self.base_api_url}/api/del"
         data = {"id": content_id}
         logger.info(f"Deleting content {content_id}")
-        response = self._post(url, data=data)
+        response = await self._apost(url, data=data)
         response.raise_for_status()
         return {"message": f"Content {content_id} deleted successfully."}
 
@@ -275,7 +275,7 @@ class RedditApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/me"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -291,7 +291,7 @@ class RedditApp(APIApplication):
         """
         url = f"{self.base_url}/api/v1/me/karma"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -310,7 +310,7 @@ class RedditApp(APIApplication):
         """
         url = f"{self.base_url}/comments/{post_id}.json"
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_controversial_posts(
@@ -339,7 +339,7 @@ class RedditApp(APIApplication):
             for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -385,7 +385,7 @@ class RedditApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -415,7 +415,7 @@ class RedditApp(APIApplication):
             for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -465,7 +465,7 @@ class RedditApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -505,7 +505,7 @@ class RedditApp(APIApplication):
             for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -545,7 +545,7 @@ class RedditApp(APIApplication):
             for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -575,7 +575,7 @@ class RedditApp(APIApplication):
             for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -605,7 +605,7 @@ class RedditApp(APIApplication):
             for k, v in [("after", after), ("before", before), ("count", count), ("limit", limit), ("show", show), ("sr_detail", sr_detail)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -669,7 +669,7 @@ class RedditApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -690,7 +690,7 @@ class RedditApp(APIApplication):
             raise ValueError("Missing required parameter 'username'")
         url = f"{self.base_url}/user/{username}/about"
         query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 

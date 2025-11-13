@@ -47,7 +47,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/screen/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -83,7 +83,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/headcount_timeseries/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -119,7 +119,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/headcount_by_facet_timeseries/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -155,7 +155,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/funding_milestone_timeseries/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -200,7 +200,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/decision_makers/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -236,7 +236,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/webtraffic/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -261,7 +261,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'investor_name'")
         url = f"{self.base_url}/data_lab/investor_portfolio"
         query_params = {k: v for k, v in [("investor_name", investor_name)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -303,7 +303,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/data_lab/job_listings/Table/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -330,7 +330,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/person/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -360,7 +360,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/company/search"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -395,7 +395,7 @@ class CrustdataApp(APIApplication):
             for k, v in [("linkedin_profile_url", linkedin_profile_url), ("enrich_realtime", enrich_realtime), ("fields", fields)]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -423,7 +423,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'enrich_realtime'")
         url = f"{self.base_url}/screener/company"
         query_params = {k: v for k, v in [("company_domain", company_domain), ("enrich_realtime", enrich_realtime)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -448,7 +448,7 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'company_linkedin_url'")
         url = f"{self.base_url}/screener/linkedin_posts"
         query_params = {k: v for k, v in [("company_linkedin_url", company_linkedin_url)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -484,7 +484,7 @@ class CrustdataApp(APIApplication):
         request_body = {k: v for k, v in request_body.items() if v is not None}
         url = f"{self.base_url}/screener/linkedin_posts/keyword_search/"
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

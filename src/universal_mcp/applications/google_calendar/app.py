@@ -65,7 +65,7 @@ class GoogleCalendarApp(APIApplication):
             params["timeZone"] = time_zone
         date_range = "today" if days == 1 else f"the next {days} days"
         logger.info(f"Retrieving calendar events for {date_range}")
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def get_event_by_id(self, event_id: str, max_attendees: int | None = None, time_zone: str | None = None) -> dict[str, Any]:
@@ -94,7 +94,7 @@ class GoogleCalendarApp(APIApplication):
         if time_zone:
             params["timeZone"] = time_zone
         logger.info(f"Retrieving calendar event with ID: {event_id}")
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def list_events(
@@ -147,7 +147,7 @@ class GoogleCalendarApp(APIApplication):
         if page_token:
             params["pageToken"] = page_token
         logger.info(f"Retrieving calendar events with params: {params}")
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def create_event(
@@ -209,7 +209,7 @@ class GoogleCalendarApp(APIApplication):
         }
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/calendars/{calendar_id}/events"
-        response = self._post(url, data=request_body_data)
+        response = await self._apost(url, data=request_body_data)
         return self._handle_response(response)
 
     async def create_event_from_text(self, text: str, send_updates: str = "none") -> dict[str, Any]:
@@ -232,7 +232,7 @@ class GoogleCalendarApp(APIApplication):
         url = f"{self.base_api_url}/events/quickAdd"
         params = {"text": text, "sendUpdates": send_updates}
         logger.info(f"Creating event via quickAdd: '{text}'")
-        response = self._post(url, data=None, params=params)
+        response = await self._apost(url, data=None, params=params)
         return self._handle_response(response)
 
     async def list_recurring_event_instances(
@@ -278,7 +278,7 @@ class GoogleCalendarApp(APIApplication):
         if page_token:
             params["pageToken"] = page_token
         logger.info(f"Retrieving instances of recurring event with ID: {event_id}")
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
     async def delete_event(
@@ -337,7 +337,7 @@ class GoogleCalendarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def replace_event(
@@ -403,7 +403,7 @@ class GoogleCalendarApp(APIApplication):
         if max_attendees is not None:
             params["maxAttendees"] = str(max_attendees)
         logger.info(f"Updating calendar event with ID: {event_id}")
-        response = self._put(url, data=request_body_data, params=params)
+        response = await self._aput(url, data=request_body_data, params=params)
         return self._handle_response(response)
 
     async def get_primary_calendar_details(self) -> dict[str, Any]:
@@ -421,7 +421,7 @@ class GoogleCalendarApp(APIApplication):
         """
         url = f"{self.base_api_url}"
         logger.info("Retrieving user's calendar timezone settings")
-        response = self._get(url)
+        response = await self._aget(url)
         return self._handle_response(response)
 
     async def get_free_busy_info(
@@ -503,7 +503,7 @@ class GoogleCalendarApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

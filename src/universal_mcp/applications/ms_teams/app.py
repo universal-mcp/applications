@@ -56,7 +56,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_joined_teams(self) -> list[dict[str, Any]]:
@@ -73,7 +73,7 @@ class MsTeamsApp(APIApplication):
             read, list, teams, microsoft-teams, api, important
         """
         url = f"{self.base_url}/me/joinedTeams"
-        response = self._get(url)
+        response = await self._aget(url)
         data = self._handle_response(response)
         return data.get("value", [])
 
@@ -129,7 +129,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def send_chat_message(self, chat_id: str, content: str) -> dict[str, Any]:
@@ -151,7 +151,7 @@ class MsTeamsApp(APIApplication):
         """
         url = f"{self.base_url}/chats/{chat_id}/messages"
         payload = {"body": {"content": content}}
-        response = self._post(url, data=payload)
+        response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
     async def send_channel_message(self, team_id: str, channel_id: str, content: str) -> dict[str, Any]:
@@ -174,7 +174,7 @@ class MsTeamsApp(APIApplication):
         """
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages"
         payload = {"body": {"content": content}}
-        response = self._post(url, data=payload)
+        response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
     async def reply_to_channel_message(self, team_id: str, channel_id: str, message_id: str, content: str) -> dict[str, Any]:
@@ -198,7 +198,7 @@ class MsTeamsApp(APIApplication):
         """
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/messages/{message_id}/replies"
         payload = {"body": {"content": content}}
-        response = self._post(url, data=payload)
+        response = await self._apost(url, data=payload)
         return self._handle_response(response)
 
     async def create_chat(
@@ -275,7 +275,7 @@ class MsTeamsApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_chat_details(self, chat_id: str, select: list[str] | None = None, expand: list[str] | None = None) -> Any:
@@ -300,7 +300,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'chat-id'.")
         url = f"{self.base_url}/chats/{chat_id}"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_chat_details(
@@ -436,7 +436,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_chat_members(
@@ -491,7 +491,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def add_member_to_chat(
@@ -533,7 +533,7 @@ class MsTeamsApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats/{chat_id}/members"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_chat_member(
@@ -563,7 +563,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'conversationMember-id'.")
         url = f"{self.base_url}/chats/{chat_id}/members/{conversationMember_id}"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def delete_chat_member(self, chat_id: str, conversationMember_id: str) -> Any:
@@ -589,7 +589,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'conversationMember-id'.")
         url = f"{self.base_url}/chats/{chat_id}/members/{conversationMember_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def list_chat_messages(
@@ -644,7 +644,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_chat_message(
@@ -674,7 +674,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'chatMessage-id'.")
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_chat_message_replies(
@@ -733,7 +733,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def reply_to_chat_message(
@@ -842,7 +842,7 @@ class MsTeamsApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}/replies"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_chat_reply_details(
@@ -875,7 +875,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'chatMessage-id1'.")
         url = f"{self.base_url}/chats/{chat_id}/messages/{chatMessage_id}/replies/{chatMessage_id1}"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_team_from_group(
@@ -995,7 +995,7 @@ class MsTeamsApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/groups/{group_id}/team"
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def create_team(
@@ -1111,7 +1111,7 @@ class MsTeamsApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/teams"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_channel_details(
@@ -1141,7 +1141,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'channel-id'.")
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_channel_message(
@@ -1430,7 +1430,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def create_channel_tab(
@@ -1473,7 +1473,7 @@ class MsTeamsApp(APIApplication):
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs"
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type="application/json")
         return self._handle_response(response)
 
     async def get_channel_tab_details(
@@ -1506,7 +1506,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'teamsTab-id'.")
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def update_channel_tab(
@@ -1582,7 +1582,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'teamsTab-id'.")
         url = f"{self.base_url}/teams/{team_id}/channels/{channel_id}/tabs/{teamsTab_id}"
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def get_primary_team_channel(self, team_id: str, select: list[str] | None = None, expand: list[str] | None = None) -> Any:
@@ -1607,7 +1607,7 @@ class MsTeamsApp(APIApplication):
             raise ValueError("Missing required parameter 'team-id'.")
         url = f"{self.base_url}/teams/{team_id}/primaryChannel"
         query_params = {k: v for k, v in [("$select", select), ("$expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def list_user_installed_apps(
@@ -1662,7 +1662,7 @@ class MsTeamsApp(APIApplication):
             ]
             if v is not None
         }
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     def list_tools(self):
