@@ -5079,7 +5079,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp"
-version = "0.1.24rc29"
+version = "0.1.24"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "agentevals" },
@@ -5109,9 +5109,9 @@ dependencies = [
     { name = "streamlit" },
     { name = "typer" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f2/11/68b20ba072217f6197d320e095cadf501c645c534c5903765df23abd35f9/universal_mcp-0.1.24rc29.tar.gz", hash = "sha256:151507659ab13561f5a1b228de9d90e91951894bda8ca065aab632a9bf44fb57", size = 116887, upload-time = "2025-10-27T14:28:10.268Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fd/fe/d9d148cac1b07fdcfcb2f94c76003aaf23cc7e228c481496e21592ae5a83/universal_mcp-0.1.24.tar.gz", hash = "sha256:fe9f9030e2c377feec1df7010da9bc2c8ccb329e6bdbc55dd46e491b25bdb580", size = 110660, upload-time = "2025-11-10T10:26:18.002Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/d2/6b/0c97e0ddcfea5ce9e88e6e243ed358bf1fff6f1bafa8c4997ae5cb902621/universal_mcp-0.1.24rc29-py3-none-any.whl", hash = "sha256:8759cdb5b79937ab61109054578c223fa8890c9bb16bc17a9692bea883ebc90f", size = 133382, upload-time = "2025-10-27T14:28:08.284Z" },
+    { url = "https://files.pythonhosted.org/packages/ac/28/8adf9c0fe0327230c51ecc67e9f5da916194fb1e0dc572da14f24ed0b105/universal_mcp-0.1.24-py3-none-any.whl", hash = "sha256:10dbbbed9e022d038c11e77da24e658d1bbff4929032252a9d1cf7be9611e5b3", size = 123911, upload-time = "2025-11-10T10:26:15.992Z" },
 ]
 
 [[package]]
@@ -5134,7 +5134,7 @@ wheels = [
 
 [[package]]
 name = "universal-mcp-applications"
-version = "0.1.36rc3"
+version = "0.1.36rc4"
 source = { editable = "." }
 dependencies = [
     { name = "boto3" },
@@ -5209,7 +5209,7 @@ requires-dist = [
     { name = "resend", specifier = ">=2.10.0" },
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "twilio", specifier = ">=9.8.0" },
-    { name = "universal-mcp", specifier = ">=0.1.24rc29" },
+    { name = "universal-mcp", specifier = ">=0.1.24" },
     { name = "yfinance", specifier = ">=0.2.66" },
     { name = "youtube-transcript-api", specifier = "==1.2.2" },
 ]
