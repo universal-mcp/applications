@@ -2,29 +2,13 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class ExaApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="exa", integration=integration, **kwargs)
-        self.base_url = "https://api.exa.ai"
 
-    async def search_with_filters(
-        self,
-        query,
-        useAutoprompt=None,
-        type=None,
-        category=None,
-        numResults=None,
-        includeDomains=None,
-        excludeDomains=None,
-        startCrawlDate=None,
-        endCrawlDate=None,
-        startPublishedDate=None,
-        endPublishedDate=None,
-        includeText=None,
-        excludeText=None,
-        contents=None,
-    ) -> dict[str, Any]:
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='exa', integration=integration, **kwargs)
+        self.base_url = 'https://api.exa.ai'
+
+    async def search_with_filters(self, query, useAutoprompt=None, type=None, category=None, numResults=None, includeDomains=None, excludeDomains=None, startCrawlDate=None, endCrawlDate=None, startPublishedDate=None, endPublishedDate=None, includeText=None, excludeText=None, contents=None) -> dict[str, Any]:
         """
         Executes a query against the Exa API's `/search` endpoint, returning a list of results. This function supports extensive filtering by search type, category, domains, publication dates, and specific text content to refine the search query and tailor the API's response.
 
@@ -50,43 +34,15 @@ class ExaApp(APIApplication):
         Tags:
             important
         """
-        request_body = {
-            "query": query,
-            "useAutoprompt": useAutoprompt,
-            "type": type,
-            "category": category,
-            "numResults": numResults,
-            "includeDomains": includeDomains,
-            "excludeDomains": excludeDomains,
-            "startCrawlDate": startCrawlDate,
-            "endCrawlDate": endCrawlDate,
-            "startPublishedDate": startPublishedDate,
-            "endPublishedDate": endPublishedDate,
-            "includeText": includeText,
-            "excludeText": excludeText,
-            "contents": contents,
-        }
+        request_body = {'query': query, 'useAutoprompt': useAutoprompt, 'type': type, 'category': category, 'numResults': numResults, 'includeDomains': includeDomains, 'excludeDomains': excludeDomains, 'startCrawlDate': startCrawlDate, 'endCrawlDate': endCrawlDate, 'startPublishedDate': startPublishedDate, 'endPublishedDate': endPublishedDate, 'includeText': includeText, 'excludeText': excludeText, 'contents': contents}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/search"
+        url = f'{self.base_url}/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def find_similar_by_url(
-        self,
-        url,
-        numResults=None,
-        includeDomains=None,
-        excludeDomains=None,
-        startCrawlDate=None,
-        endCrawlDate=None,
-        startPublishedDate=None,
-        endPublishedDate=None,
-        includeText=None,
-        excludeText=None,
-        contents=None,
-    ) -> dict[str, Any]:
+    async def find_similar_by_url(self, url, numResults=None, includeDomains=None, excludeDomains=None, startCrawlDate=None, endCrawlDate=None, startPublishedDate=None, endPublishedDate=None, includeText=None, excludeText=None, contents=None) -> dict[str, Any]:
         """
         Finds web pages semantically similar to a given URL. Unlike the `search` function, which uses a text query, this method takes a specific link and returns a list of related results, with options to filter by domain, publication date, and content.
 
@@ -109,39 +65,15 @@ class ExaApp(APIApplication):
         Tags:
             important
         """
-        request_body = {
-            "url": url,
-            "numResults": numResults,
-            "includeDomains": includeDomains,
-            "excludeDomains": excludeDomains,
-            "startCrawlDate": startCrawlDate,
-            "endCrawlDate": endCrawlDate,
-            "startPublishedDate": startPublishedDate,
-            "endPublishedDate": endPublishedDate,
-            "includeText": includeText,
-            "excludeText": excludeText,
-            "contents": contents,
-        }
+        request_body = {'url': url, 'numResults': numResults, 'includeDomains': includeDomains, 'excludeDomains': excludeDomains, 'startCrawlDate': startCrawlDate, 'endCrawlDate': endCrawlDate, 'startPublishedDate': startPublishedDate, 'endPublishedDate': endPublishedDate, 'includeText': includeText, 'excludeText': excludeText, 'contents': contents}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/findSimilar"
+        url = f'{self.base_url}/findSimilar'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def fetch_page_content(
-        self,
-        urls,
-        ids=None,
-        text=None,
-        highlights=None,
-        summary=None,
-        livecrawl=None,
-        livecrawlTimeout=None,
-        subpages=None,
-        subpageTarget=None,
-        extras=None,
-    ) -> dict[str, Any]:
+    async def fetch_page_content(self, urls, ids=None, text=None, highlights=None, summary=None, livecrawl=None, livecrawlTimeout=None, subpages=None, subpageTarget=None, extras=None) -> dict[str, Any]:
         """
         Retrieves and processes content from a list of URLs, returning full text, summaries, or highlights. Unlike the search function which finds links, this function fetches the actual page content, with optional support for live crawling to get the most up-to-date information.
 
@@ -168,22 +100,11 @@ class ExaApp(APIApplication):
         Tags:
             important
         """
-        request_body = {
-            "urls": urls,
-            "ids": ids,
-            "text": text,
-            "highlights": highlights,
-            "summary": summary,
-            "livecrawl": livecrawl,
-            "livecrawlTimeout": livecrawlTimeout,
-            "subpages": subpages,
-            "subpageTarget": subpageTarget,
-            "extras": extras,
-        }
+        request_body = {'urls': urls, 'ids': ids, 'text': text, 'highlights': highlights, 'summary': summary, 'livecrawl': livecrawl, 'livecrawlTimeout': livecrawlTimeout, 'subpages': subpages, 'subpageTarget': subpageTarget, 'extras': extras}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/contents"
+        url = f'{self.base_url}/contents'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -203,11 +124,11 @@ class ExaApp(APIApplication):
         Tags:
             important
         """
-        request_body = {"query": query, "stream": stream, "text": text, "model": model}
+        request_body = {'query': query, 'stream': stream, 'text': text, 'model': model}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/answer"
+        url = f'{self.base_url}/answer'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 

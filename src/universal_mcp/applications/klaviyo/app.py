@@ -2,21 +2,21 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class KlaviyoApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="klaviyo", integration=integration, **kwargs)
-        self.base_url = "https://a.klaviyo.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='klaviyo', integration=integration, **kwargs)
+        self.base_url = 'https://a.klaviyo.com'
 
     def _get_headers(self):
         if not self.integration:
-            raise ValueError("Integration not configured for KlaviyoApp")
+            raise ValueError('Integration not configured for KlaviyoApp')
         credentials = self.integration.get_credentials()
-        if "headers" in credentials:
-            return credentials["headers"]
-        if "access_token" not in credentials:
-            raise ValueError("Access token not found in KlaviyoApp credentials")
-        return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/json", "revision": "2024-07-15"}
+        if 'headers' in credentials:
+            return credentials['headers']
+        if 'access_token' not in credentials:
+            raise ValueError('Access token not found in KlaviyoApp credentials')
+        return {'Authorization': f"Bearer {credentials['access_token']}", 'Accept': 'application/json', 'revision': '2024-07-15'}
 
     async def create_client_review(self, company_id=None, data=None) -> Any:
         """
@@ -81,11 +81,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Beta APIs
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/reviews"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/reviews'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -102,9 +102,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Accounts, important
         """
-        url = f"{self.base_url}/api/accounts"
-        query_params = {k: v for k, v in [("fields[account]", fields_account)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/accounts'
+        query_params = {k: v for k, v in [('fields[account]', fields_account)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -124,15 +124,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/accounts/{id}"
-        query_params = {k: v for k, v in [("fields[account]", fields_account)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/accounts/{id}'
+        query_params = {k: v for k, v in [('fields[account]', fields_account)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_campaigns(
-        self, fields_campaign_message=None, fields_campaign=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_campaigns(self, fields_campaign_message=None, fields_campaign=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieve a list of campaigns using optional filtering, sorting, and inclusion parameters, with the option to specify fields for campaign messages, campaigns, and tags.
 
@@ -151,21 +149,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, important
         """
-        url = f"{self.base_url}/api/campaigns"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[campaign-message]", fields_campaign_message),
-                ("fields[campaign]", fields_campaign),
-                ("fields[tag]", fields_tag),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaigns'
+        query_params = {k: v for k, v in [('fields[campaign-message]', fields_campaign_message), ('fields[campaign]', fields_campaign), ('fields[tag]', fields_tag), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -285,11 +271,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, important
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaigns"
+        url = f'{self.base_url}/api/campaigns'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -312,18 +298,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaigns/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[campaign-message]", fields_campaign_message),
-                ("fields[campaign]", fields_campaign),
-                ("fields[tag]", fields_tag),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaigns/{id}'
+        query_params = {k: v for k, v in [('fields[campaign-message]', fields_campaign_message), ('fields[campaign]', fields_campaign), ('fields[tag]', fields_tag), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -342,9 +319,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaigns/{id}"
+        url = f'{self.base_url}/api/campaigns/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -412,9 +389,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaigns/{id}"
+        url = f'{self.base_url}/api/campaigns/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -436,9 +413,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-recipient-estimations/{id}"
-        query_params = {k: v for k, v in [("fields[campaign-recipient-estimation]", fields_campaign_recipient_estimation)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-recipient-estimations/{id}'
+        query_params = {k: v for k, v in [('fields[campaign-recipient-estimation]', fields_campaign_recipient_estimation)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -467,11 +444,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Campaigns1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-clone"
+        url = f'{self.base_url}/api/campaign-clone'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -491,9 +468,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaigns/{id}/tags"
-        query_params = {k: v for k, v in [("fields[tag]", fields_tag)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaigns/{id}/tags'
+        query_params = {k: v for k, v in [('fields[tag]', fields_tag)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -512,15 +489,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaigns/{id}/relationships/tags"
+        url = f'{self.base_url}/api/campaigns/{id}/relationships/tags'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_messages_for_campaign(
-        self, id, fields_campaign_message=None, fields_campaign=None, fields_image=None, fields_template=None, include=None
-    ) -> dict[str, Any]:
+    async def get_messages_for_campaign(self, id, fields_campaign_message=None, fields_campaign=None, fields_image=None, fields_template=None, include=None) -> dict[str, Any]:
         """
         Retrieves campaign messages associated with a specific campaign ID, allowing optional field selection and resource inclusion via query parameters, with support for header-based versioning.
 
@@ -540,19 +515,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaigns/{id}/campaign-messages"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[campaign-message]", fields_campaign_message),
-                ("fields[campaign]", fields_campaign),
-                ("fields[image]", fields_image),
-                ("fields[template]", fields_template),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaigns/{id}/campaign-messages'
+        query_params = {k: v for k, v in [('fields[campaign-message]', fields_campaign_message), ('fields[campaign]', fields_campaign), ('fields[image]', fields_image), ('fields[template]', fields_template), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -571,15 +536,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaigns/{id}/relationships/campaign-messages"
+        url = f'{self.base_url}/api/campaigns/{id}/relationships/campaign-messages'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_campaign_message(
-        self, id, fields_campaign_message=None, fields_campaign=None, fields_image=None, fields_template=None, include=None
-    ) -> dict[str, Any]:
+    async def get_campaign_message(self, id, fields_campaign_message=None, fields_campaign=None, fields_image=None, fields_template=None, include=None) -> dict[str, Any]:
         """
         This API operation uses the "GET" method to retrieve a campaign message by its ID, allowing for customizable field selection via query parameters and revision specification in the header.
 
@@ -599,19 +562,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[campaign-message]", fields_campaign_message),
-                ("fields[campaign]", fields_campaign),
-                ("fields[image]", fields_image),
-                ("fields[template]", fields_template),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-messages/{id}'
+        query_params = {k: v for k, v in [('fields[campaign-message]', fields_campaign_message), ('fields[campaign]', fields_campaign), ('fields[image]', fields_image), ('fields[template]', fields_template), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -663,9 +616,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-messages/{id}"
+        url = f'{self.base_url}/api/campaign-messages/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -701,11 +654,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Messages
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-message-assign-template"
+        url = f'{self.base_url}/api/campaign-message-assign-template'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -725,9 +678,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}/campaign"
-        query_params = {k: v for k, v in [("fields[campaign]", fields_campaign)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-messages/{id}/campaign'
+        query_params = {k: v for k, v in [('fields[campaign]', fields_campaign)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -746,9 +699,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}/relationships/campaign"
+        url = f'{self.base_url}/api/campaign-messages/{id}/relationships/campaign'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -768,9 +721,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}/template"
-        query_params = {k: v for k, v in [("fields[template]", fields_template)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-messages/{id}/template'
+        query_params = {k: v for k, v in [('fields[template]', fields_template)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -789,9 +742,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}/relationships/template"
+        url = f'{self.base_url}/api/campaign-messages/{id}/relationships/template'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -811,9 +764,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}/image"
-        query_params = {k: v for k, v in [("fields[image]", fields_image)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-messages/{id}/image'
+        query_params = {k: v for k, v in [('fields[image]', fields_image)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -832,9 +785,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-messages/{id}/relationships/image"
+        url = f'{self.base_url}/api/campaign-messages/{id}/relationships/image'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -863,9 +816,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-messages/{id}/relationships/image"
+        url = f'{self.base_url}/api/campaign-messages/{id}/relationships/image'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -887,9 +840,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-send-jobs/{id}"
-        query_params = {k: v for k, v in [("fields[campaign-send-job]", fields_campaign_send_job)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-send-jobs/{id}'
+        query_params = {k: v for k, v in [('fields[campaign-send-job]', fields_campaign_send_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -921,9 +874,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-send-jobs/{id}"
+        url = f'{self.base_url}/api/campaign-send-jobs/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -945,11 +898,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/campaign-recipient-estimation-jobs/{id}"
-        query_params = {
-            k: v for k, v in [("fields[campaign-recipient-estimation-job]", fields_campaign_recipient_estimation_job)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/campaign-recipient-estimation-jobs/{id}'
+        query_params = {k: v for k, v in [('fields[campaign-recipient-estimation-job]', fields_campaign_recipient_estimation_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -975,11 +926,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Jobs
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-send-jobs"
+        url = f'{self.base_url}/api/campaign-send-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1005,17 +956,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Campaigns, Jobs
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-recipient-estimation-jobs"
+        url = f'{self.base_url}/api/campaign-recipient-estimation-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_catalog_items(
-        self, fields_catalog_item=None, fields_catalog_variant=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_catalog_items(self, fields_catalog_item=None, fields_catalog_variant=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         This API operation retrieves a list of catalog items, allowing for customizable fields, filtering, sorting, and pagination, with optional inclusion of related resources and version control through a revision header.
 
@@ -1033,20 +982,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        url = f"{self.base_url}/api/catalog-items"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item]", fields_catalog_item),
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-items'
+        query_params = {k: v for k, v in [('fields[catalog-item]', fields_catalog_item), ('fields[catalog-variant]', fields_catalog_variant), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1102,11 +1040,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-items"
+        url = f'{self.base_url}/api/catalog-items'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1128,17 +1066,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-items/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item]", fields_catalog_item),
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-items/{id}'
+        query_params = {k: v for k, v in [('fields[catalog-item]', fields_catalog_item), ('fields[catalog-variant]', fields_catalog_variant), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1157,9 +1087,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-items/{id}"
+        url = f'{self.base_url}/api/catalog-items/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1216,17 +1146,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-items/{id}"
+        url = f'{self.base_url}/api/catalog-items/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_create_catalog_items_jobs(
-        self, fields_catalog_item_bulk_create_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_bulk_create_catalog_items_jobs(self, fields_catalog_item_bulk_create_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         The "/api/catalog-item-bulk-create-jobs" API operation using the "GET" method retrieves a list of catalog item bulk create jobs, allowing for filtering, pagination, and customization of returned fields based on provided parameters.
 
@@ -1241,17 +1169,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        url = f"{self.base_url}/api/catalog-item-bulk-create-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item-bulk-create-job]", fields_catalog_item_bulk_create_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-item-bulk-create-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-item-bulk-create-job]', fields_catalog_item_bulk_create_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1350,17 +1270,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-item-bulk-create-jobs"
+        url = f'{self.base_url}/api/catalog-item-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_create_catalog_items_job(
-        self, job_id, fields_catalog_item_bulk_create_job=None, fields_catalog_item=None, include=None
-    ) -> dict[str, Any]:
+    async def get_bulk_create_catalog_items_job(self, job_id, fields_catalog_item_bulk_create_job=None, fields_catalog_item=None, include=None) -> dict[str, Any]:
         """
         This API operation retrieves a catalog item bulk creation job by its ID, allowing optional fields and included resources to be specified for detailed job information.
 
@@ -1378,23 +1296,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-item-bulk-create-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item-bulk-create-job]", fields_catalog_item_bulk_create_job),
-                ("fields[catalog-item]", fields_catalog_item),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-item-bulk-create-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-item-bulk-create-job]', fields_catalog_item_bulk_create_job), ('fields[catalog-item]', fields_catalog_item), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_update_catalog_items_jobs(
-        self, fields_catalog_item_bulk_update_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_bulk_update_catalog_items_jobs(self, fields_catalog_item_bulk_update_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of catalog item bulk update jobs with optional filtering, cursor-based pagination, and field selection.
 
@@ -1409,17 +1317,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        url = f"{self.base_url}/api/catalog-item-bulk-update-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item-bulk-update-job]", fields_catalog_item_bulk_update_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-item-bulk-update-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-item-bulk-update-job]', fields_catalog_item_bulk_update_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1514,17 +1414,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-item-bulk-update-jobs"
+        url = f'{self.base_url}/api/catalog-item-bulk-update-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_update_catalog_items_job(
-        self, job_id, fields_catalog_item_bulk_update_job=None, fields_catalog_item=None, include=None
-    ) -> dict[str, Any]:
+    async def get_bulk_update_catalog_items_job(self, job_id, fields_catalog_item_bulk_update_job=None, fields_catalog_item=None, include=None) -> dict[str, Any]:
         """
         Retrieves the status and details of a specific catalog item bulk update job, including optional related items and field filtering via query parameters.
 
@@ -1542,23 +1440,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-item-bulk-update-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item-bulk-update-job]", fields_catalog_item_bulk_update_job),
-                ("fields[catalog-item]", fields_catalog_item),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-item-bulk-update-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-item-bulk-update-job]', fields_catalog_item_bulk_update_job), ('fields[catalog-item]', fields_catalog_item), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_delete_catalog_items_jobs(
-        self, fields_catalog_item_bulk_delete_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_bulk_delete_catalog_items_jobs(self, fields_catalog_item_bulk_delete_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of catalog item bulk delete jobs with optional field filtering, pagination, and revision header support.
 
@@ -1573,17 +1461,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        url = f"{self.base_url}/api/catalog-item-bulk-delete-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item-bulk-delete-job]", fields_catalog_item_bulk_delete_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-item-bulk-delete-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-item-bulk-delete-job]', fields_catalog_item_bulk_delete_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1622,11 +1502,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Items
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-item-bulk-delete-jobs"
+        url = f'{self.base_url}/api/catalog-item-bulk-delete-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1646,15 +1526,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-item-bulk-delete-jobs/{job_id}"
-        query_params = {k: v for k, v in [("fields[catalog-item-bulk-delete-job]", fields_catalog_item_bulk_delete_job)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-item-bulk-delete-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-item-bulk-delete-job]', fields_catalog_item_bulk_delete_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_items_for_catalog_category(
-        self, id, fields_catalog_item=None, fields_catalog_variant=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_items_for_catalog_category(self, id, fields_catalog_item=None, fields_catalog_variant=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieve a list of items within a specified catalog category by ID, allowing optional filtering, sorting, and inclusion of additional details.
 
@@ -1675,20 +1553,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-categories/{id}/items"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-item]", fields_catalog_item),
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-categories/{id}/items'
+        query_params = {k: v for k, v in [('fields[catalog-item]', fields_catalog_item), ('fields[catalog-variant]', fields_catalog_variant), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1710,9 +1577,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
-        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-items/{id}/relationships/categories'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1747,11 +1614,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
+        url = f'{self.base_url}/api/catalog-items/{id}/relationships/categories'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1786,11 +1653,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
+        url = f'{self.base_url}/api/catalog-items/{id}/relationships/categories'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1825,9 +1692,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-items/{id}/relationships/categories"
+        url = f'{self.base_url}/api/catalog-items/{id}/relationships/categories'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1849,18 +1716,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        url = f"{self.base_url}/api/catalog-variants"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variants'
+        query_params = {k: v for k, v in [('fields[catalog-variant]', fields_catalog_variant), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1913,11 +1771,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-variants"
+        url = f'{self.base_url}/api/catalog-variants'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1937,9 +1795,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-variants/{id}"
-        query_params = {k: v for k, v in [("fields[catalog-variant]", fields_catalog_variant)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variants/{id}'
+        query_params = {k: v for k, v in [('fields[catalog-variant]', fields_catalog_variant)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1958,9 +1816,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-variants/{id}"
+        url = f'{self.base_url}/api/catalog-variants/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2006,9 +1864,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-variants/{id}"
+        url = f'{self.base_url}/api/catalog-variants/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2029,17 +1887,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        url = f"{self.base_url}/api/catalog-variant-bulk-create-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant-bulk-create-job]", fields_catalog_variant_bulk_create_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variant-bulk-create-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-variant-bulk-create-job]', fields_catalog_variant_bulk_create_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2132,17 +1982,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-variant-bulk-create-jobs"
+        url = f'{self.base_url}/api/catalog-variant-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_create_variants_job(
-        self, job_id, fields_catalog_variant_bulk_create_job=None, fields_catalog_variant=None, include=None
-    ) -> dict[str, Any]:
+    async def get_create_variants_job(self, job_id, fields_catalog_variant_bulk_create_job=None, fields_catalog_variant=None, include=None) -> dict[str, Any]:
         """
         Retrieve details of a specific catalog variant bulk creation job by its ID, supporting optional field selection, inclusion of related resources, and requiring a revision header.
 
@@ -2160,17 +2008,9 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-variant-bulk-create-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant-bulk-create-job]", fields_catalog_variant_bulk_create_job),
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variant-bulk-create-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-variant-bulk-create-job]', fields_catalog_variant_bulk_create_job), ('fields[catalog-variant]', fields_catalog_variant), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2189,17 +2029,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        url = f"{self.base_url}/api/catalog-variant-bulk-update-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant-bulk-update-job]", fields_catalog_variant_bulk_update_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variant-bulk-update-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-variant-bulk-update-job]', fields_catalog_variant_bulk_update_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2272,17 +2104,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-variant-bulk-update-jobs"
+        url = f'{self.base_url}/api/catalog-variant-bulk-update-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_update_variants_job(
-        self, job_id, fields_catalog_variant_bulk_update_job=None, fields_catalog_variant=None, include=None
-    ) -> dict[str, Any]:
+    async def get_update_variants_job(self, job_id, fields_catalog_variant_bulk_update_job=None, fields_catalog_variant=None, include=None) -> dict[str, Any]:
         """
         The API operation defined at path "/api/catalog-variant-bulk-update-jobs/{job_id}" using the "GET" method retrieves details about a specific catalog variant bulk update job, allowing optional specification of fields to include and related objects.
 
@@ -2300,17 +2130,9 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-variant-bulk-update-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant-bulk-update-job]", fields_catalog_variant_bulk_update_job),
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variant-bulk-update-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-variant-bulk-update-job]', fields_catalog_variant_bulk_update_job), ('fields[catalog-variant]', fields_catalog_variant), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2329,17 +2151,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        url = f"{self.base_url}/api/catalog-variant-bulk-delete-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant-bulk-delete-job]", fields_catalog_variant_bulk_delete_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variant-bulk-delete-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-variant-bulk-delete-job]', fields_catalog_variant_bulk_delete_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2378,11 +2192,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Variants
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-variant-bulk-delete-jobs"
+        url = f'{self.base_url}/api/catalog-variant-bulk-delete-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2402,17 +2216,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-variant-bulk-delete-jobs/{job_id}"
-        query_params = {
-            k: v for k, v in [("fields[catalog-variant-bulk-delete-job]", fields_catalog_variant_bulk_delete_job)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-variant-bulk-delete-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-variant-bulk-delete-job]', fields_catalog_variant_bulk_delete_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_variants_for_catalog_item(
-        self, id, fields_catalog_variant=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_variants_for_catalog_item(self, id, fields_catalog_variant=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a catalog item's variants with optional filtering, sorting, pagination, and field selection.
 
@@ -2431,18 +2241,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-items/{id}/variants"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-variant]", fields_catalog_variant),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-items/{id}/variants'
+        query_params = {k: v for k, v in [('fields[catalog-variant]', fields_catalog_variant), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2464,9 +2265,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-items/{id}/relationships/variants"
-        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-items/{id}/relationships/variants'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2486,18 +2287,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        url = f"{self.base_url}/api/catalog-categories"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category]", fields_catalog_category),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-categories'
+        query_params = {k: v for k, v in [('fields[catalog-category]', fields_catalog_category), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2542,11 +2334,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-categories"
+        url = f'{self.base_url}/api/catalog-categories'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2566,9 +2358,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-categories/{id}"
-        query_params = {k: v for k, v in [("fields[catalog-category]", fields_catalog_category)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-categories/{id}'
+        query_params = {k: v for k, v in [('fields[catalog-category]', fields_catalog_category)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2587,9 +2379,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-categories/{id}"
+        url = f'{self.base_url}/api/catalog-categories/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2635,17 +2427,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-categories/{id}"
+        url = f'{self.base_url}/api/catalog-categories/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_create_categories_jobs(
-        self, fields_catalog_category_bulk_create_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_create_categories_jobs(self, fields_catalog_category_bulk_create_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of catalog category bulk creation jobs with support for filtering, field selection, pagination via cursor, and revision headers.
 
@@ -2660,17 +2450,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        url = f"{self.base_url}/api/catalog-category-bulk-create-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category-bulk-create-job]", fields_catalog_category_bulk_create_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-category-bulk-create-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-category-bulk-create-job]', fields_catalog_category_bulk_create_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2747,17 +2529,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-category-bulk-create-jobs"
+        url = f'{self.base_url}/api/catalog-category-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_create_categories_job(
-        self, job_id, fields_catalog_category_bulk_create_job=None, fields_catalog_category=None, include=None
-    ) -> dict[str, Any]:
+    async def get_create_categories_job(self, job_id, fields_catalog_category_bulk_create_job=None, fields_catalog_category=None, include=None) -> dict[str, Any]:
         """
         The **`GET /api/catalog-category-bulk-create-jobs/{job_id}`** operation retrieves a specific catalog category bulk create job by its job ID, optionally including related resources such as categories based on the provided query parameters.
 
@@ -2775,23 +2555,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-category-bulk-create-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category-bulk-create-job]", fields_catalog_category_bulk_create_job),
-                ("fields[catalog-category]", fields_catalog_category),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-category-bulk-create-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-category-bulk-create-job]', fields_catalog_category_bulk_create_job), ('fields[catalog-category]', fields_catalog_category), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_update_categories_jobs(
-        self, fields_catalog_category_bulk_update_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_update_categories_jobs(self, fields_catalog_category_bulk_update_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         The API operation at "/api/catalog-category-bulk-update-jobs" using the "GET" method retrieves details of catalog category bulk update jobs, allowing for customization through query parameters such as fields, filters, and pagination, while also accepting a revision header.
 
@@ -2806,17 +2576,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        url = f"{self.base_url}/api/catalog-category-bulk-update-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category-bulk-update-job]", fields_catalog_category_bulk_update_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-category-bulk-update-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-category-bulk-update-job]', fields_catalog_category_bulk_update_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2889,17 +2651,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-category-bulk-update-jobs"
+        url = f'{self.base_url}/api/catalog-category-bulk-update-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_update_categories_job(
-        self, job_id, fields_catalog_category_bulk_update_job=None, fields_catalog_category=None, include=None
-    ) -> dict[str, Any]:
+    async def get_update_categories_job(self, job_id, fields_catalog_category_bulk_update_job=None, fields_catalog_category=None, include=None) -> dict[str, Any]:
         """
         Retrieve the status and details of a specific catalog category bulk update job by its ID, supporting optional inclusion of related resources and field filtering.
 
@@ -2917,23 +2677,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-category-bulk-update-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category-bulk-update-job]", fields_catalog_category_bulk_update_job),
-                ("fields[catalog-category]", fields_catalog_category),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-category-bulk-update-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-category-bulk-update-job]', fields_catalog_category_bulk_update_job), ('fields[catalog-category]', fields_catalog_category), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_delete_categories_jobs(
-        self, fields_catalog_category_bulk_delete_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_delete_categories_jobs(self, fields_catalog_category_bulk_delete_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of catalog category bulk delete jobs based on specified fields, filters, and pagination, with an optional revision header.
 
@@ -2948,17 +2698,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        url = f"{self.base_url}/api/catalog-category-bulk-delete-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category-bulk-delete-job]", fields_catalog_category_bulk_delete_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-category-bulk-delete-jobs'
+        query_params = {k: v for k, v in [('fields[catalog-category-bulk-delete-job]', fields_catalog_category_bulk_delete_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2997,11 +2739,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Categories
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-category-bulk-delete-jobs"
+        url = f'{self.base_url}/api/catalog-category-bulk-delete-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3021,11 +2763,9 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/catalog-category-bulk-delete-jobs/{job_id}"
-        query_params = {
-            k: v for k, v in [("fields[catalog-category-bulk-delete-job]", fields_catalog_category_bulk_delete_job)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-category-bulk-delete-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[catalog-category-bulk-delete-job]', fields_catalog_category_bulk_delete_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3047,9 +2787,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
-        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-categories/{id}/relationships/items'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3084,11 +2824,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
+        url = f'{self.base_url}/api/catalog-categories/{id}/relationships/items'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3123,11 +2863,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
+        url = f'{self.base_url}/api/catalog-categories/{id}/relationships/items'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3162,17 +2902,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/catalog-categories/{id}/relationships/items"
+        url = f'{self.base_url}/api/catalog-categories/{id}/relationships/items'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_categories_for_catalog_item(
-        self, id, fields_catalog_category=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_categories_for_catalog_item(self, id, fields_catalog_category=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves categories associated with a catalog item by ID, allowing for query customization via fields, filters, pagination, sorting, and revision specification.
 
@@ -3191,18 +2929,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/catalog-items/{id}/categories"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[catalog-category]", fields_catalog_category),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/catalog-items/{id}/categories'
+        query_params = {k: v for k, v in [('fields[catalog-category]', fields_catalog_category), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3253,11 +2982,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Catalogs, Back In Stock
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/back-in-stock-subscriptions"
+        url = f'{self.base_url}/api/back-in-stock-subscriptions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3351,11 +3080,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/subscriptions"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/subscriptions'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3441,11 +3170,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/push-tokens"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/push-tokens'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3515,11 +3244,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/push-token-unregister"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/push-token-unregister'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3600,11 +3329,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/events"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/events'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3664,11 +3393,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/profiles"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/profiles'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3777,11 +3506,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/event-bulk-create"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/event-bulk-create'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3833,11 +3562,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Client
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/client/back-in-stock-subscriptions"
-        query_params = {k: v for k, v in [("company_id", company_id)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/client/back-in-stock-subscriptions'
+        query_params = {k: v for k, v in [('company_id', company_id)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3855,9 +3584,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        url = f"{self.base_url}/api/coupons"
-        query_params = {k: v for k, v in [("fields[coupon]", fields_coupon), ("page[cursor]", page_cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupons'
+        query_params = {k: v for k, v in [('fields[coupon]', fields_coupon), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3886,11 +3615,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/coupons"
+        url = f'{self.base_url}/api/coupons'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3910,9 +3639,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupons/{id}"
-        query_params = {k: v for k, v in [("fields[coupon]", fields_coupon)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupons/{id}'
+        query_params = {k: v for k, v in [('fields[coupon]', fields_coupon)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3931,9 +3660,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupons/{id}"
+        url = f'{self.base_url}/api/coupons/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3965,17 +3694,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/coupons/{id}"
+        url = f'{self.base_url}/api/coupons/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_coupon_codes(
-        self, fields_coupon_code=None, fields_coupon=None, filter=None, include=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_coupon_codes(self, fields_coupon_code=None, fields_coupon=None, filter=None, include=None, page_cursor=None) -> dict[str, Any]:
         """
         This API operation retrieves a list of coupon codes using the GET method at the "/api/coupon-codes" path, supporting filters and pagination through query parameters such as fields, filter, include, and page cursor, with a required revision header.
 
@@ -3992,19 +3719,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        url = f"{self.base_url}/api/coupon-codes"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[coupon-code]", fields_coupon_code),
-                ("fields[coupon]", fields_coupon),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupon-codes'
+        query_params = {k: v for k, v in [('fields[coupon-code]', fields_coupon_code), ('fields[coupon]', fields_coupon), ('filter', filter), ('include', include), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4041,11 +3758,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/coupon-codes"
+        url = f'{self.base_url}/api/coupon-codes'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4067,13 +3784,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupon-codes/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[coupon-code]", fields_coupon_code), ("fields[coupon]", fields_coupon), ("include", include)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupon-codes/{id}'
+        query_params = {k: v for k, v in [('fields[coupon-code]', fields_coupon_code), ('fields[coupon]', fields_coupon), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4092,9 +3805,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupon-codes/{id}"
+        url = f'{self.base_url}/api/coupon-codes/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4127,17 +3840,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/coupon-codes/{id}"
+        url = f'{self.base_url}/api/coupon-codes/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_create_coupon_code_jobs(
-        self, fields_coupon_code_bulk_create_job=None, filter=None, page_cursor=None
-    ) -> dict[str, Any]:
+    async def get_bulk_create_coupon_code_jobs(self, fields_coupon_code_bulk_create_job=None, filter=None, page_cursor=None) -> dict[str, Any]:
         """
         Retrieves a list of bulk coupon code creation jobs, allowing for filtering, pagination, and specification of fields to include in the response.
 
@@ -4152,17 +3863,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        url = f"{self.base_url}/api/coupon-code-bulk-create-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[coupon-code-bulk-create-job]", fields_coupon_code_bulk_create_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupon-code-bulk-create-jobs'
+        query_params = {k: v for k, v in [('fields[coupon-code-bulk-create-job]', fields_coupon_code_bulk_create_job), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4223,17 +3926,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Coupons
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/coupon-code-bulk-create-jobs"
+        url = f'{self.base_url}/api/coupon-code-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_create_coupon_codes_job(
-        self, job_id, fields_coupon_code_bulk_create_job=None, fields_coupon_code=None, include=None
-    ) -> dict[str, Any]:
+    async def get_bulk_create_coupon_codes_job(self, job_id, fields_coupon_code_bulk_create_job=None, fields_coupon_code=None, include=None) -> dict[str, Any]:
         """
         Retrieves information about a specific coupon code bulk create job by ID, allowing optional filtering of fields and inclusion of related data.
 
@@ -4251,17 +3952,9 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/coupon-code-bulk-create-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[coupon-code-bulk-create-job]", fields_coupon_code_bulk_create_job),
-                ("fields[coupon-code]", fields_coupon_code),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupon-code-bulk-create-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[coupon-code-bulk-create-job]', fields_coupon_code_bulk_create_job), ('fields[coupon-code]', fields_coupon_code), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4281,9 +3974,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupon-codes/{id}/coupon"
-        query_params = {k: v for k, v in [("fields[coupon]", fields_coupon)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupon-codes/{id}/coupon'
+        query_params = {k: v for k, v in [('fields[coupon]', fields_coupon)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4302,9 +3995,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupon-codes/{id}/relationships/coupon"
+        url = f'{self.base_url}/api/coupon-codes/{id}/relationships/coupon'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4326,13 +4019,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupons/{id}/coupon-codes"
-        query_params = {
-            k: v
-            for k, v in [("fields[coupon-code]", fields_coupon_code), ("filter", filter), ("page[cursor]", page_cursor)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupons/{id}/coupon-codes'
+        query_params = {k: v for k, v in [('fields[coupon-code]', fields_coupon_code), ('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4353,9 +4042,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/coupons/{id}/relationships/coupon-codes"
-        query_params = {k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/coupons/{id}/relationships/coupon-codes'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4392,17 +4081,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Data Privacy
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/data-privacy-deletion-jobs"
+        url = f'{self.base_url}/api/data-privacy-deletion-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_events(
-        self, fields_event=None, fields_metric=None, fields_profile=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_events(self, fields_event=None, fields_metric=None, fields_profile=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a filtered list of events with customizable fields, pagination, sorting, and related resources.
 
@@ -4421,21 +4108,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Events
         """
-        url = f"{self.base_url}/api/events"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[event]", fields_event),
-                ("fields[metric]", fields_metric),
-                ("fields[profile]", fields_profile),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/events'
+        query_params = {k: v for k, v in [('fields[event]', fields_event), ('fields[metric]', fields_metric), ('fields[profile]', fields_profile), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4515,11 +4190,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Events
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/events"
+        url = f'{self.base_url}/api/events'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4542,18 +4217,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/events/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[event]", fields_event),
-                ("fields[metric]", fields_metric),
-                ("fields[profile]", fields_profile),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/events/{id}'
+        query_params = {k: v for k, v in [('fields[event]', fields_event), ('fields[metric]', fields_metric), ('fields[profile]', fields_profile), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4756,11 +4422,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Events
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/event-bulk-create-jobs"
+        url = f'{self.base_url}/api/event-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4780,9 +4446,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/events/{id}/metric"
-        query_params = {k: v for k, v in [("fields[metric]", fields_metric)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/events/{id}/metric'
+        query_params = {k: v for k, v in [('fields[metric]', fields_metric)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4801,9 +4467,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/events/{id}/relationships/metric"
+        url = f'{self.base_url}/api/events/{id}/relationships/metric'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4824,13 +4490,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/events/{id}/profile"
-        query_params = {
-            k: v
-            for k, v in [("additional-fields[profile]", additional_fields_profile), ("fields[profile]", fields_profile)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/events/{id}/profile'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile), ('fields[profile]', fields_profile)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4849,23 +4511,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/events/{id}/relationships/profile"
+        url = f'{self.base_url}/api/events/{id}/relationships/profile'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_flows(
-        self,
-        fields_flow_action=None,
-        fields_flow=None,
-        fields_tag=None,
-        filter=None,
-        include=None,
-        page_cursor=None,
-        page_size=None,
-        sort=None,
-    ) -> dict[str, Any]:
+    async def get_flows(self, fields_flow_action=None, fields_flow=None, fields_tag=None, filter=None, include=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves flows with optional query parameters for field filtering, pagination, sorting, and inclusion of related resources, supporting cursor-based pagination and custom header-based revision tracking.
 
@@ -4885,22 +4537,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Flows
         """
-        url = f"{self.base_url}/api/flows"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow-action]", fields_flow_action),
-                ("fields[flow]", fields_flow),
-                ("fields[tag]", fields_tag),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flows'
+        query_params = {k: v for k, v in [('fields[flow-action]', fields_flow_action), ('fields[flow]', fields_flow), ('fields[tag]', fields_tag), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5008,17 +4647,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Flows
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/flows"
-        query_params = {k: v for k, v in [("additional-fields[flow]", additional_fields_flow)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/api/flows'
+        query_params = {k: v for k, v in [('additional-fields[flow]', additional_fields_flow)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_flow(
-        self, id, additional_fields_flow=None, fields_flow_action=None, fields_flow=None, fields_tag=None, include=None
-    ) -> dict[str, Any]:
+    async def get_flow(self, id, additional_fields_flow=None, fields_flow_action=None, fields_flow=None, fields_tag=None, include=None) -> dict[str, Any]:
         """
         Retrieves a flow by ID with optional filtering by additional fields, flow actions, flow details, tags, and includes, using a specified revision from the header.
 
@@ -5038,19 +4675,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flows/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[flow]", additional_fields_flow),
-                ("fields[flow-action]", fields_flow_action),
-                ("fields[flow]", fields_flow),
-                ("fields[tag]", fields_tag),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flows/{id}'
+        query_params = {k: v for k, v in [('additional-fields[flow]', additional_fields_flow), ('fields[flow-action]', fields_flow_action), ('fields[flow]', fields_flow), ('fields[tag]', fields_tag), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5069,9 +4696,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flows/{id}"
+        url = f'{self.base_url}/api/flows/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5103,17 +4730,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/flows/{id}"
+        url = f'{self.base_url}/api/flows/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_flow_action(
-        self, id, fields_flow_action=None, fields_flow_message=None, fields_flow=None, include=None
-    ) -> dict[str, Any]:
+    async def get_flow_action(self, id, fields_flow_action=None, fields_flow_message=None, fields_flow=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific flow action by ID, optionally including additional fields and related resources, with support for revision tracking via a header.
 
@@ -5132,24 +4757,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-actions/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow-action]", fields_flow_action),
-                ("fields[flow-message]", fields_flow_message),
-                ("fields[flow]", fields_flow),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-actions/{id}'
+        query_params = {k: v for k, v in [('fields[flow-action]', fields_flow_action), ('fields[flow-message]', fields_flow_message), ('fields[flow]', fields_flow), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_flow_message(
-        self, id, fields_flow_action=None, fields_flow_message=None, fields_template=None, include=None
-    ) -> dict[str, Any]:
+    async def get_flow_message(self, id, fields_flow_action=None, fields_flow_message=None, fields_template=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific flow message by ID with optional filtering (fields selection) and related resource inclusion (include parameter).
 
@@ -5168,24 +4782,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-messages/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow-action]", fields_flow_action),
-                ("fields[flow-message]", fields_flow_message),
-                ("fields[template]", fields_template),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-messages/{id}'
+        query_params = {k: v for k, v in [('fields[flow-action]', fields_flow_action), ('fields[flow-message]', fields_flow_message), ('fields[template]', fields_template), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_actions_for_flow(
-        self, id, fields_flow_action=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_actions_for_flow(self, id, fields_flow_action=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves flow actions for a specific flow with filtering, pagination, and field selection capabilities.
 
@@ -5205,19 +4808,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flows/{id}/flow-actions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow-action]", fields_flow_action),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flows/{id}/flow-actions'
+        query_params = {k: v for k, v in [('fields[flow-action]', fields_flow_action), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5240,11 +4833,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flows/{id}/relationships/flow-actions"
-        query_params = {
-            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flows/{id}/relationships/flow-actions'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5264,9 +4855,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flows/{id}/tags"
-        query_params = {k: v for k, v in [("fields[tag]", fields_tag)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flows/{id}/tags'
+        query_params = {k: v for k, v in [('fields[tag]', fields_tag)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5285,9 +4876,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flows/{id}/relationships/tags"
+        url = f'{self.base_url}/api/flows/{id}/relationships/tags'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5307,9 +4898,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-actions/{id}/flow"
-        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-actions/{id}/flow'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5328,15 +4919,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-actions/{id}/relationships/flow"
+        url = f'{self.base_url}/api/flow-actions/{id}/relationships/flow'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_messages_for_flow_action(
-        self, id, fields_flow_message=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_messages_for_flow_action(self, id, fields_flow_message=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         This API operation, accessible via GET method at the "/api/flow-actions/{id}/flow-messages" path, retrieves flow messages associated with a specific flow action identified by "id," allowing customization through query parameters for fields, filtering, pagination, and sorting, with additional revision details provided in the header.
 
@@ -5356,19 +4945,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-actions/{id}/flow-messages"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow-message]", fields_flow_message),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-actions/{id}/flow-messages'
+        query_params = {k: v for k, v in [('fields[flow-message]', fields_flow_message), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5391,11 +4970,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-actions/{id}/relationships/flow-messages"
-        query_params = {
-            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-actions/{id}/relationships/flow-messages'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5415,9 +4992,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-messages/{id}/flow-action"
-        query_params = {k: v for k, v in [("fields[flow-action]", fields_flow_action)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-messages/{id}/flow-action'
+        query_params = {k: v for k, v in [('fields[flow-action]', fields_flow_action)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5436,9 +5013,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-messages/{id}/relationships/flow-action"
+        url = f'{self.base_url}/api/flow-messages/{id}/relationships/flow-action'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5458,9 +5035,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-messages/{id}/template"
-        query_params = {k: v for k, v in [("fields[template]", fields_template)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/flow-messages/{id}/template'
+        query_params = {k: v for k, v in [('fields[template]', fields_template)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5479,9 +5056,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/flow-messages/{id}/relationships/template"
+        url = f'{self.base_url}/api/flow-messages/{id}/relationships/template'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5502,19 +5079,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Forms
         """
-        url = f"{self.base_url}/api/forms"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[form]", fields_form),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/forms'
+        query_params = {k: v for k, v in [('fields[form]', fields_form), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5536,13 +5103,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/forms/{id}"
-        query_params = {
-            k: v
-            for k, v in [("fields[form-version]", fields_form_version), ("fields[form]", fields_form), ("include", include)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/forms/{id}'
+        query_params = {k: v for k, v in [('fields[form-version]', fields_form_version), ('fields[form]', fields_form), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5562,15 +5125,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/form-versions/{id}"
-        query_params = {k: v for k, v in [("fields[form-version]", fields_form_version)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/form-versions/{id}'
+        query_params = {k: v for k, v in [('fields[form-version]', fields_form_version)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_versions_for_form(
-        self, id, fields_form_version=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_versions_for_form(self, id, fields_form_version=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves paginated form versions for a specific form with filtering, sorting, field selection, and pagination options.
 
@@ -5590,19 +5151,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/forms/{id}/form-versions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[form-version]", fields_form_version),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/forms/{id}/form-versions'
+        query_params = {k: v for k, v in [('fields[form-version]', fields_form_version), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5625,11 +5176,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/forms/{id}/relationships/form-versions"
-        query_params = {
-            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/forms/{id}/relationships/form-versions'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5649,9 +5198,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/form-versions/{id}/form"
-        query_params = {k: v for k, v in [("fields[form]", fields_form)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/form-versions/{id}/form'
+        query_params = {k: v for k, v in [('fields[form]', fields_form)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5670,9 +5219,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/form-versions/{id}/relationships/form"
+        url = f'{self.base_url}/api/form-versions/{id}/relationships/form'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5693,19 +5242,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Images
         """
-        url = f"{self.base_url}/api/images"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[image]", fields_image),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/images'
+        query_params = {k: v for k, v in [('fields[image]', fields_image), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5735,11 +5274,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Images
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/images"
+        url = f'{self.base_url}/api/images'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5759,9 +5298,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/images/{id}"
-        query_params = {k: v for k, v in [("fields[image]", fields_image)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/images/{id}'
+        query_params = {k: v for k, v in [('fields[image]', fields_image)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5794,17 +5333,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/images/{id}"
+        url = f'{self.base_url}/api/images/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_lists(
-        self, fields_flow=None, fields_list=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_lists(self, fields_flow=None, fields_list=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         The API operation at "/api/lists" using the "GET" method retrieves a list of items based on specified query parameters for fields, filters, sorting, and pagination, with optional headers for revision control.
 
@@ -5823,21 +5360,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Lists
         """
-        url = f"{self.base_url}/api/lists"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow]", fields_flow),
-                ("fields[list]", fields_list),
-                ("fields[tag]", fields_tag),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/lists'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow), ('fields[list]', fields_list), ('fields[tag]', fields_tag), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5865,17 +5390,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Lists
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/lists"
+        url = f'{self.base_url}/api/lists'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_list(
-        self, id, additional_fields_list=None, fields_flow=None, fields_list=None, fields_tag=None, include=None
-    ) -> dict[str, Any]:
+    async def get_list(self, id, additional_fields_list=None, fields_flow=None, fields_list=None, fields_tag=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific list by ID with customizable response fields, optional related resources to include, and support for specifying data revisions via headers.
 
@@ -5895,19 +5418,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[list]", additional_fields_list),
-                ("fields[flow]", fields_flow),
-                ("fields[list]", fields_list),
-                ("fields[tag]", fields_tag),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/lists/{id}'
+        query_params = {k: v for k, v in [('additional-fields[list]', additional_fields_list), ('fields[flow]', fields_flow), ('fields[list]', fields_list), ('fields[tag]', fields_tag), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5926,9 +5439,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}"
+        url = f'{self.base_url}/api/lists/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5960,9 +5473,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/lists/{id}"
+        url = f'{self.base_url}/api/lists/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -5984,9 +5497,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}/tags"
-        query_params = {k: v for k, v in [("fields[tag]", fields_tag)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/lists/{id}/tags'
+        query_params = {k: v for k, v in [('fields[tag]', fields_tag)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6005,15 +5518,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}/relationships/tags"
+        url = f'{self.base_url}/api/lists/{id}/relationships/tags'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_profiles_for_list(
-        self, id, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_profiles_for_list(self, id, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of profiles associated with the specified list ID, allowing optional filtering, sorting, and pagination, with customizable fields and revision tracking.
 
@@ -6034,20 +5545,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}/profiles"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[profile]", additional_fields_profile),
-                ("fields[profile]", fields_profile),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/lists/{id}/profiles'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile), ('fields[profile]', fields_profile), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6070,11 +5570,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}/relationships/profiles"
-        query_params = {
-            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/lists/{id}/relationships/profiles'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6109,11 +5607,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/lists/{id}/relationships/profiles"
+        url = f'{self.base_url}/api/lists/{id}/relationships/profiles'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6148,11 +5646,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/lists/{id}/relationships/profiles"
+        url = f'{self.base_url}/api/lists/{id}/relationships/profiles'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6172,9 +5670,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}/flow-triggers"
-        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/lists/{id}/flow-triggers'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6193,9 +5691,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/lists/{id}/relationships/flow-triggers"
+        url = f'{self.base_url}/api/lists/{id}/relationships/flow-triggers'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6216,19 +5714,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Metrics
         """
-        url = f"{self.base_url}/api/metrics"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow]", fields_flow),
-                ("fields[metric]", fields_metric),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/metrics'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow), ('fields[metric]', fields_metric), ('filter', filter), ('include', include), ('page[cursor]', page_cursor)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6250,17 +5738,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metrics/{id}"
-        query_params = {
-            k: v for k, v in [("fields[flow]", fields_flow), ("fields[metric]", fields_metric), ("include", include)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/metrics/{id}'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow), ('fields[metric]', fields_metric), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_metric_property(
-        self, id, additional_fields_metric_property=None, fields_metric_property=None, fields_metric=None, include=None
-    ) -> dict[str, Any]:
+    async def get_metric_property(self, id, additional_fields_metric_property=None, fields_metric_property=None, fields_metric=None, include=None) -> dict[str, Any]:
         """
         Retrieves a metric property by ID, allowing optional filtering of fields and inclusion of additional data through query parameters, with support for revision specification via a header.
 
@@ -6279,18 +5763,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metric-properties/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[metric-property]", additional_fields_metric_property),
-                ("fields[metric-property]", fields_metric_property),
-                ("fields[metric]", fields_metric),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/metric-properties/{id}'
+        query_params = {k: v for k, v in [('additional-fields[metric-property]', additional_fields_metric_property), ('fields[metric-property]', fields_metric_property), ('fields[metric]', fields_metric), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6339,11 +5814,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Metrics
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/metric-aggregates"
+        url = f'{self.base_url}/api/metric-aggregates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6363,9 +5838,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metrics/{id}/flow-triggers"
-        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/metrics/{id}/flow-triggers'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6384,9 +5859,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metrics/{id}/relationships/flow-triggers"
+        url = f'{self.base_url}/api/metrics/{id}/relationships/flow-triggers'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6407,16 +5882,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metrics/{id}/metric-properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[metric-property]", additional_fields_metric_property),
-                ("fields[metric-property]", fields_metric_property),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/metrics/{id}/metric-properties'
+        query_params = {k: v for k, v in [('additional-fields[metric-property]', additional_fields_metric_property), ('fields[metric-property]', fields_metric_property)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6435,9 +5903,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metrics/{id}/relationships/metric-properties"
+        url = f'{self.base_url}/api/metrics/{id}/relationships/metric-properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6457,9 +5925,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metric-properties/{id}/metric"
-        query_params = {k: v for k, v in [("fields[metric]", fields_metric)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/metric-properties/{id}/metric'
+        query_params = {k: v for k, v in [('fields[metric]', fields_metric)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6478,15 +5946,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/metric-properties/{id}/relationships/metric"
+        url = f'{self.base_url}/api/metric-properties/{id}/relationships/metric'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_profiles(
-        self, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_profiles(self, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves profiles with support for field filtering, pagination, sorting, and custom filtering via query parameters.
 
@@ -6504,20 +5970,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        url = f"{self.base_url}/api/profiles"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[profile]", additional_fields_profile),
-                ("fields[profile]", fields_profile),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profiles'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile), ('fields[profile]', fields_profile), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6567,17 +6022,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profiles"
-        query_params = {k: v for k, v in [("additional-fields[profile]", additional_fields_profile)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/api/profiles'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_profile(
-        self, id, additional_fields_profile=None, fields_list=None, fields_profile=None, fields_segment=None, include=None
-    ) -> dict[str, Any]:
+    async def get_profile(self, id, additional_fields_profile=None, fields_list=None, fields_profile=None, fields_segment=None, include=None) -> dict[str, Any]:
         """
         Retrieves a specific profile by ID with customizable field selection through query parameters for enhanced data filtering.
 
@@ -6597,19 +6050,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profiles/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[profile]", additional_fields_profile),
-                ("fields[list]", fields_list),
-                ("fields[profile]", fields_profile),
-                ("fields[segment]", fields_segment),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profiles/{id}'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile), ('fields[list]', fields_list), ('fields[profile]', fields_profile), ('fields[segment]', fields_segment), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6671,17 +6114,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profiles/{id}"
-        query_params = {k: v for k, v in [("additional-fields[profile]", additional_fields_profile)] if v is not None}
+        url = f'{self.base_url}/api/profiles/{id}'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile)] if v is not None}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_suppress_profiles_jobs(
-        self, fields_profile_suppression_bulk_create_job=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_bulk_suppress_profiles_jobs(self, fields_profile_suppression_bulk_create_job=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         The GET operation at the "/api/profile-suppression-bulk-create-jobs" path retrieves a list of bulk profile suppression jobs, allowing for filtering, sorting, and pagination of the results through query parameters.
 
@@ -6697,18 +6138,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        url = f"{self.base_url}/api/profile-suppression-bulk-create-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[profile-suppression-bulk-create-job]", fields_profile_suppression_bulk_create_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-suppression-bulk-create-jobs'
+        query_params = {k: v for k, v in [('fields[profile-suppression-bulk-create-job]', fields_profile_suppression_bulk_create_job), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6765,11 +6197,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-suppression-bulk-create-jobs"
+        url = f'{self.base_url}/api/profile-suppression-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6789,17 +6221,13 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/profile-suppression-bulk-create-jobs/{job_id}"
-        query_params = {
-            k: v for k, v in [("fields[profile-suppression-bulk-create-job]", fields_profile_suppression_bulk_create_job)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-suppression-bulk-create-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[profile-suppression-bulk-create-job]', fields_profile_suppression_bulk_create_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_unsuppress_profiles_jobs(
-        self, fields_profile_suppression_bulk_delete_job=None, filter=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_bulk_unsuppress_profiles_jobs(self, fields_profile_suppression_bulk_delete_job=None, filter=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of bulk profile suppression deletion jobs with optional filtering, sorting, and field selection.
 
@@ -6815,18 +6243,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        url = f"{self.base_url}/api/profile-suppression-bulk-delete-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[profile-suppression-bulk-delete-job]", fields_profile_suppression_bulk_delete_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-suppression-bulk-delete-jobs'
+        query_params = {k: v for k, v in [('fields[profile-suppression-bulk-delete-job]', fields_profile_suppression_bulk_delete_job), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6883,11 +6302,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-suppression-bulk-delete-jobs"
+        url = f'{self.base_url}/api/profile-suppression-bulk-delete-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6907,11 +6326,9 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/profile-suppression-bulk-delete-jobs/{job_id}"
-        query_params = {
-            k: v for k, v in [("fields[profile-suppression-bulk-delete-job]", fields_profile_suppression_bulk_delete_job)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-suppression-bulk-delete-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[profile-suppression-bulk-delete-job]', fields_profile_suppression_bulk_delete_job)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6971,11 +6388,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-import"
-        query_params = {k: v for k, v in [("additional-fields[profile]", additional_fields_profile)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/api/profile-import'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7015,11 +6432,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-merge"
+        url = f'{self.base_url}/api/profile-merge'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7104,11 +6521,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Profiles1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/push-tokens"
+        url = f'{self.base_url}/api/push-tokens'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7128,9 +6545,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profiles/{id}/lists"
-        query_params = {k: v for k, v in [("fields[list]", fields_list)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profiles/{id}/lists'
+        query_params = {k: v for k, v in [('fields[list]', fields_list)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7149,9 +6566,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profiles/{id}/relationships/lists"
+        url = f'{self.base_url}/api/profiles/{id}/relationships/lists'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7171,9 +6588,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profiles/{id}/segments"
-        query_params = {k: v for k, v in [("fields[segment]", fields_segment)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profiles/{id}/segments'
+        query_params = {k: v for k, v in [('fields[segment]', fields_segment)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7192,15 +6609,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profiles/{id}/relationships/segments"
+        url = f'{self.base_url}/api/profiles/{id}/relationships/segments'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_import_profiles_jobs(
-        self, fields_profile_bulk_import_job=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_bulk_import_profiles_jobs(self, fields_profile_bulk_import_job=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         The GET operation on `/api/profile-bulk-import-jobs` retrieves and filters paginated bulk profile import job records with customizable sorting, field selection, and cursor-based pagination.
 
@@ -7217,19 +6632,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Bulk Import Profiles
         """
-        url = f"{self.base_url}/api/profile-bulk-import-jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[profile-bulk-import-job]", fields_profile_bulk_import_job),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-bulk-import-jobs'
+        query_params = {k: v for k, v in [('fields[profile-bulk-import-job]', fields_profile_bulk_import_job), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7348,17 +6753,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Bulk Import Profiles
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-bulk-import-jobs"
+        url = f'{self.base_url}/api/profile-bulk-import-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_bulk_import_profiles_job(
-        self, job_id, fields_list=None, fields_profile_bulk_import_job=None, include=None
-    ) -> dict[str, Any]:
+    async def get_bulk_import_profiles_job(self, job_id, fields_list=None, fields_profile_bulk_import_job=None, include=None) -> dict[str, Any]:
         """
         Retrieves the status and details of a specific bulk profile import job, including optional field selection and resource inclusion via query parameters.
 
@@ -7376,17 +6779,9 @@ class KlaviyoApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/api/profile-bulk-import-jobs/{job_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[list]", fields_list),
-                ("fields[profile-bulk-import-job]", fields_profile_bulk_import_job),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-bulk-import-jobs/{job_id}'
+        query_params = {k: v for k, v in [('fields[list]', fields_list), ('fields[profile-bulk-import-job]', fields_profile_bulk_import_job), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7406,9 +6801,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/lists"
-        query_params = {k: v for k, v in [("fields[list]", fields_list)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-bulk-import-jobs/{id}/lists'
+        query_params = {k: v for k, v in [('fields[list]', fields_list)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7427,15 +6822,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/relationships/lists"
+        url = f'{self.base_url}/api/profile-bulk-import-jobs/{id}/relationships/lists'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_profiles_for_bulk_import_profiles_job(
-        self, id, additional_fields_profile=None, fields_profile=None, page_cursor=None, page_size=None
-    ) -> dict[str, Any]:
+    async def get_profiles_for_bulk_import_profiles_job(self, id, additional_fields_profile=None, fields_profile=None, page_cursor=None, page_size=None) -> dict[str, Any]:
         """
         The API operation defined at path "/api/profile-bulk-import-jobs/{id}/profiles" using the "GET" method retrieves a list of profiles associated with a specific bulk import job, allowing for pagination and customization of returned fields.
 
@@ -7454,18 +6847,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/profiles"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[profile]", additional_fields_profile),
-                ("fields[profile]", fields_profile),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-bulk-import-jobs/{id}/profiles'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile), ('fields[profile]', fields_profile), ('page[cursor]', page_cursor), ('page[size]', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7486,15 +6870,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/relationships/profiles"
-        query_params = {k: v for k, v in [("page[cursor]", page_cursor), ("page[size]", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-bulk-import-jobs/{id}/relationships/profiles'
+        query_params = {k: v for k, v in [('page[cursor]', page_cursor), ('page[size]', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_errors_for_bulk_import_profiles_job(
-        self, id, fields_import_error=None, page_cursor=None, page_size=None
-    ) -> dict[str, Any]:
+    async def get_errors_for_bulk_import_profiles_job(self, id, fields_import_error=None, page_cursor=None, page_size=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of import errors for a specific bulk import job, supporting optional filtering and pagination parameters.
 
@@ -7512,13 +6894,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/profile-bulk-import-jobs/{id}/import-errors"
-        query_params = {
-            k: v
-            for k, v in [("fields[import-error]", fields_import_error), ("page[cursor]", page_cursor), ("page[size]", page_size)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/profile-bulk-import-jobs/{id}/import-errors'
+        query_params = {k: v for k, v in [('fields[import-error]', fields_import_error), ('page[cursor]', page_cursor), ('page[size]', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7613,11 +6991,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-subscription-bulk-create-jobs"
+        url = f'{self.base_url}/api/profile-subscription-bulk-create-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7700,11 +7078,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Profiles, Consent
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/profile-subscription-bulk-delete-jobs"
+        url = f'{self.base_url}/api/profile-subscription-bulk-delete-jobs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7741,11 +7119,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/campaign-values-reports"
-        query_params = {k: v for k, v in [("page_cursor", page_cursor)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/api/campaign-values-reports'
+        query_params = {k: v for k, v in [('page_cursor', page_cursor)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7782,11 +7160,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/flow-values-reports"
-        query_params = {k: v for k, v in [("page_cursor", page_cursor)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/api/flow-values-reports'
+        query_params = {k: v for k, v in [('page_cursor', page_cursor)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7824,11 +7202,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/flow-series-reports"
-        query_params = {k: v for k, v in [("page_cursor", page_cursor)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/api/flow-series-reports'
+        query_params = {k: v for k, v in [('page_cursor', page_cursor)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7867,11 +7245,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/form-values-reports"
+        url = f'{self.base_url}/api/form-values-reports'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7911,11 +7289,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/form-series-reports"
+        url = f'{self.base_url}/api/form-series-reports'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7950,11 +7328,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/segment-values-reports"
+        url = f'{self.base_url}/api/segment-values-reports'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7990,17 +7368,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reporting
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/segment-series-reports"
+        url = f'{self.base_url}/api/segment-series-reports'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_reviews(
-        self, fields_event=None, fields_review=None, filter=None, include=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_reviews(self, fields_event=None, fields_review=None, filter=None, include=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves review data with optional filtering, pagination, sorting, and field selection parameters for events and reviews.
 
@@ -8019,21 +7395,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Reviews
         """
-        url = f"{self.base_url}/api/reviews"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[event]", fields_event),
-                ("fields[review]", fields_review),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/reviews'
+        query_params = {k: v for k, v in [('fields[event]', fields_event), ('fields[review]', fields_review), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8055,11 +7419,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/reviews/{id}"
-        query_params = {
-            k: v for k, v in [("fields[event]", fields_event), ("fields[review]", fields_review), ("include", include)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/reviews/{id}'
+        query_params = {k: v for k, v in [('fields[event]', fields_event), ('fields[review]', fields_review), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8097,17 +7459,15 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/reviews/{id}"
+        url = f'{self.base_url}/api/reviews/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_segments(
-        self, fields_flow=None, fields_segment=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_segments(self, fields_flow=None, fields_segment=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Use this API endpoint to retrieve a list of segments, allowing you to filter the results by various criteria and customize the output with specific fields and sorting options.
 
@@ -8126,21 +7486,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Segments
         """
-        url = f"{self.base_url}/api/segments"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[flow]", fields_flow),
-                ("fields[segment]", fields_segment),
-                ("fields[tag]", fields_tag),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/segments'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow), ('fields[segment]', fields_segment), ('fields[tag]', fields_tag), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8233,17 +7581,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Segments
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/segments"
+        url = f'{self.base_url}/api/segments'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_segment(
-        self, id, additional_fields_segment=None, fields_flow=None, fields_segment=None, fields_tag=None, include=None
-    ) -> dict[str, Any]:
+    async def get_segment(self, id, additional_fields_segment=None, fields_flow=None, fields_segment=None, fields_tag=None, include=None) -> dict[str, Any]:
         """
         Retrieve a segment by its ID, optionally including additional fields, flows, segment details, tags, and related data, with support for specifying a revision in the request header.
 
@@ -8263,19 +7609,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[segment]", additional_fields_segment),
-                ("fields[flow]", fields_flow),
-                ("fields[segment]", fields_segment),
-                ("fields[tag]", fields_tag),
-                ("include", include),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/segments/{id}'
+        query_params = {k: v for k, v in [('additional-fields[segment]', additional_fields_segment), ('fields[flow]', fields_flow), ('fields[segment]', fields_segment), ('fields[tag]', fields_tag), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8294,9 +7630,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}"
+        url = f'{self.base_url}/api/segments/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8393,9 +7729,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/segments/{id}"
+        url = f'{self.base_url}/api/segments/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -8417,9 +7753,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}/tags"
-        query_params = {k: v for k, v in [("fields[tag]", fields_tag)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/segments/{id}/tags'
+        query_params = {k: v for k, v in [('fields[tag]', fields_tag)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8438,15 +7774,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}/relationships/tags"
+        url = f'{self.base_url}/api/segments/{id}/relationships/tags'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_profiles_for_segment(
-        self, id, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_profiles_for_segment(self, id, additional_fields_profile=None, fields_profile=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of profiles associated with a specific segment, supporting filtering, sorting, and field selection.
 
@@ -8467,20 +7801,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}/profiles"
-        query_params = {
-            k: v
-            for k, v in [
-                ("additional-fields[profile]", additional_fields_profile),
-                ("fields[profile]", fields_profile),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/segments/{id}/profiles'
+        query_params = {k: v for k, v in [('additional-fields[profile]', additional_fields_profile), ('fields[profile]', fields_profile), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8503,11 +7826,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}/relationships/profiles"
-        query_params = {
-            k: v for k, v in [("filter", filter), ("page[cursor]", page_cursor), ("page[size]", page_size), ("sort", sort)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/segments/{id}/relationships/profiles'
+        query_params = {k: v for k, v in [('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8527,9 +7848,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}/flow-triggers"
-        query_params = {k: v for k, v in [("fields[flow]", fields_flow)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/segments/{id}/flow-triggers'
+        query_params = {k: v for k, v in [('fields[flow]', fields_flow)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8548,15 +7869,13 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/segments/{id}/relationships/flow-triggers"
+        url = f'{self.base_url}/api/segments/{id}/relationships/flow-triggers'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_tags(
-        self, fields_tag_group=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_tags(self, fields_tag_group=None, fields_tag=None, filter=None, include=None, page_cursor=None, sort=None) -> dict[str, Any]:
         """
         Retrieves a list of tags filtered, sorted, and paginated via query parameters while supporting selective field inclusion and specific API revisions via headers.
 
@@ -8574,20 +7893,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tags, Tags1
         """
-        url = f"{self.base_url}/api/tags"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[tag-group]", fields_tag_group),
-                ("fields[tag]", fields_tag),
-                ("filter", filter),
-                ("include", include),
-                ("page[cursor]", page_cursor),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tags'
+        query_params = {k: v for k, v in [('fields[tag-group]', fields_tag_group), ('fields[tag]', fields_tag), ('filter', filter), ('include', include), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8623,11 +7931,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tags, Tags1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags"
+        url = f'{self.base_url}/api/tags'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8649,11 +7957,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}"
-        query_params = {
-            k: v for k, v in [("fields[tag-group]", fields_tag_group), ("fields[tag]", fields_tag), ("include", include)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tags/{id}'
+        query_params = {k: v for k, v in [('fields[tag-group]', fields_tag_group), ('fields[tag]', fields_tag), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8672,9 +7978,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}"
+        url = f'{self.base_url}/api/tags/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8706,9 +8012,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}"
+        url = f'{self.base_url}/api/tags/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -8729,9 +8035,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}/relationships/flows"
+        url = f'{self.base_url}/api/tags/{id}/relationships/flows'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8766,11 +8072,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/flows"
+        url = f'{self.base_url}/api/tags/{id}/relationships/flows'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8805,11 +8111,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/flows"
+        url = f'{self.base_url}/api/tags/{id}/relationships/flows'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8828,9 +8134,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}/relationships/campaigns"
+        url = f'{self.base_url}/api/tags/{id}/relationships/campaigns'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8865,11 +8171,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/campaigns"
+        url = f'{self.base_url}/api/tags/{id}/relationships/campaigns'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8904,11 +8210,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/campaigns"
+        url = f'{self.base_url}/api/tags/{id}/relationships/campaigns'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8927,9 +8233,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}/relationships/lists"
+        url = f'{self.base_url}/api/tags/{id}/relationships/lists'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8964,11 +8270,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/lists"
+        url = f'{self.base_url}/api/tags/{id}/relationships/lists'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9003,11 +8309,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/lists"
+        url = f'{self.base_url}/api/tags/{id}/relationships/lists'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9026,9 +8332,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}/relationships/segments"
+        url = f'{self.base_url}/api/tags/{id}/relationships/segments'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9063,11 +8369,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/segments"
+        url = f'{self.base_url}/api/tags/{id}/relationships/segments'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9102,11 +8408,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tags/{id}/relationships/segments"
+        url = f'{self.base_url}/api/tags/{id}/relationships/segments'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9126,9 +8432,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}/tag-group"
-        query_params = {k: v for k, v in [("fields[tag-group]", fields_tag_group)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tags/{id}/tag-group'
+        query_params = {k: v for k, v in [('fields[tag-group]', fields_tag_group)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9147,9 +8453,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tags/{id}/relationships/tag-group"
+        url = f'{self.base_url}/api/tags/{id}/relationships/tag-group'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9169,13 +8475,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tags, Tag Groups
         """
-        url = f"{self.base_url}/api/tag-groups"
-        query_params = {
-            k: v
-            for k, v in [("fields[tag-group]", fields_tag_group), ("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tag-groups'
+        query_params = {k: v for k, v in [('fields[tag-group]', fields_tag_group), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9204,11 +8506,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tags, Tag Groups
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tag-groups"
+        url = f'{self.base_url}/api/tag-groups'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9228,9 +8530,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tag-groups/{id}"
-        query_params = {k: v for k, v in [("fields[tag-group]", fields_tag_group)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tag-groups/{id}'
+        query_params = {k: v for k, v in [('fields[tag-group]', fields_tag_group)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9249,9 +8551,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tag-groups/{id}"
+        url = f'{self.base_url}/api/tag-groups/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9287,9 +8589,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tag-groups/{id}"
+        url = f'{self.base_url}/api/tag-groups/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -9311,9 +8613,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tag-groups/{id}/tags"
-        query_params = {k: v for k, v in [("fields[tag]", fields_tag)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tag-groups/{id}/tags'
+        query_params = {k: v for k, v in [('fields[tag]', fields_tag)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9332,9 +8634,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tag-groups/{id}/relationships/tags"
+        url = f'{self.base_url}/api/tag-groups/{id}/relationships/tags'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9354,13 +8656,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        url = f"{self.base_url}/api/templates"
-        query_params = {
-            k: v
-            for k, v in [("fields[template]", fields_template), ("filter", filter), ("page[cursor]", page_cursor), ("sort", sort)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/templates'
+        query_params = {k: v for k, v in [('fields[template]', fields_template), ('filter', filter), ('page[cursor]', page_cursor), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9391,11 +8689,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/templates"
+        url = f'{self.base_url}/api/templates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9415,9 +8713,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/templates/{id}"
-        query_params = {k: v for k, v in [("fields[template]", fields_template)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/templates/{id}'
+        query_params = {k: v for k, v in [('fields[template]', fields_template)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9436,9 +8734,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/templates/{id}"
+        url = f'{self.base_url}/api/templates/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9472,9 +8770,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/templates/{id}"
+        url = f'{self.base_url}/api/templates/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -9505,11 +8803,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/template-render"
+        url = f'{self.base_url}/api/template-render'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9538,17 +8836,15 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Templates1
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/template-clone"
+        url = f'{self.base_url}/api/template-clone'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_all_universal_content(
-        self, fields_template_universal_content=None, filter=None, page_cursor=None, page_size=None, sort=None
-    ) -> dict[str, Any]:
+    async def get_all_universal_content(self, fields_template_universal_content=None, filter=None, page_cursor=None, page_size=None, sort=None) -> dict[str, Any]:
         """
         This API operation uses the GET method at the "/api/template-universal-content" path to retrieve template universal content data, allowing filtering and sorting with optional parameters for fields, filter, pagination, and sorting, while requiring a revision in the header.
 
@@ -9565,19 +8861,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Universal Content
         """
-        url = f"{self.base_url}/api/template-universal-content"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields[template-universal-content]", fields_template_universal_content),
-                ("filter", filter),
-                ("page[cursor]", page_cursor),
-                ("page[size]", page_size),
-                ("sort", sort),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/template-universal-content'
+        query_params = {k: v for k, v in [('fields[template-universal-content]', fields_template_universal_content), ('filter', filter), ('page[cursor]', page_cursor), ('page[size]', page_size), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9620,11 +8906,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Templates, Universal Content
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/template-universal-content"
+        url = f'{self.base_url}/api/template-universal-content'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9644,9 +8930,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/template-universal-content/{id}"
-        query_params = {k: v for k, v in [("fields[template-universal-content]", fields_template_universal_content)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/template-universal-content/{id}'
+        query_params = {k: v for k, v in [('fields[template-universal-content]', fields_template_universal_content)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9665,9 +8951,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/template-universal-content/{id}"
+        url = f'{self.base_url}/api/template-universal-content/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9714,9 +9000,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/template-universal-content/{id}"
+        url = f'{self.base_url}/api/template-universal-content/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -9737,13 +9023,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Tracking Settings
         """
-        url = f"{self.base_url}/api/tracking-settings"
-        query_params = {
-            k: v
-            for k, v in [("fields[tracking-setting]", fields_tracking_setting), ("page[cursor]", page_cursor), ("page[size]", page_size)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tracking-settings'
+        query_params = {k: v for k, v in [('fields[tracking-setting]', fields_tracking_setting), ('page[cursor]', page_cursor), ('page[size]', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9763,9 +9045,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/tracking-settings/{id}"
-        query_params = {k: v for k, v in [("fields[tracking-setting]", fields_tracking_setting)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/tracking-settings/{id}'
+        query_params = {k: v for k, v in [('fields[tracking-setting]', fields_tracking_setting)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9871,9 +9153,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/tracking-settings/{id}"
+        url = f'{self.base_url}/api/tracking-settings/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -9893,9 +9175,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Webhooks
         """
-        url = f"{self.base_url}/api/webhooks"
-        query_params = {k: v for k, v in [("fields[webhook]", fields_webhook), ("include", include)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/webhooks'
+        query_params = {k: v for k, v in [('fields[webhook]', fields_webhook), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9940,11 +9222,11 @@ class KlaviyoApp(APIApplication):
         Tags:
             Webhooks
         """
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/webhooks"
+        url = f'{self.base_url}/api/webhooks'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9965,9 +9247,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/webhooks/{id}"
-        query_params = {k: v for k, v in [("fields[webhook]", fields_webhook), ("include", include)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/webhooks/{id}'
+        query_params = {k: v for k, v in [('fields[webhook]', fields_webhook), ('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -9986,9 +9268,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/webhooks/{id}"
+        url = f'{self.base_url}/api/webhooks/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -10038,9 +9320,9 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"data": data}
+        request_body = {'data': data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/webhooks/{id}"
+        url = f'{self.base_url}/api/webhooks/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -10056,9 +9338,9 @@ class KlaviyoApp(APIApplication):
         Tags:
             Webhooks
         """
-        url = f"{self.base_url}/api/webhook-topics"
+        url = f'{self.base_url}/api/webhook-topics'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -10077,278 +9359,11 @@ class KlaviyoApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/api/webhook-topics/{id}"
+        url = f'{self.base_url}/api/webhook-topics/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.create_client_review,
-            self.get_accounts,
-            self.get_account,
-            self.get_campaigns,
-            self.create_campaign,
-            self.get_campaign,
-            self.delete_campaign,
-            self.update_campaign,
-            self.get_campaign_recipient_estimation,
-            self.create_campaign_clone,
-            self.get_tags_for_campaign,
-            self.get_tag_ids_for_campaign,
-            self.get_messages_for_campaign,
-            self.get_message_ids_for_campaign,
-            self.get_campaign_message,
-            self.update_campaign_message,
-            self.assign_template_to_campaign_message,
-            self.get_campaign_for_campaign_message,
-            self.get_campaign_id_for_campaign_message,
-            self.get_template_for_campaign_message,
-            self.get_template_id_for_campaign_message,
-            self.get_image_for_campaign_message,
-            self.get_image_id_for_campaign_message,
-            self.update_image_for_campaign_message,
-            self.get_campaign_send_job,
-            self.cancel_campaign_send,
-            self.get_campaign_recipient_estimation_job,
-            self.send_campaign,
-            self.refresh_campaign_recipient_estimation,
-            self.get_catalog_items,
-            self.create_catalog_item,
-            self.get_catalog_item,
-            self.delete_catalog_item,
-            self.update_catalog_item,
-            self.get_bulk_create_catalog_items_jobs,
-            self.bulk_create_catalog_items,
-            self.get_bulk_create_catalog_items_job,
-            self.get_bulk_update_catalog_items_jobs,
-            self.bulk_update_catalog_items,
-            self.get_bulk_update_catalog_items_job,
-            self.get_bulk_delete_catalog_items_jobs,
-            self.bulk_delete_catalog_items,
-            self.get_bulk_delete_catalog_items_job,
-            self.get_items_for_catalog_category,
-            self.get_category_ids_for_catalog_item,
-            self.add_categories_to_catalog_item,
-            self.remove_categories_from_catalog_item,
-            self.update_categories_for_catalog_item,
-            self.get_catalog_variants,
-            self.create_catalog_variant,
-            self.get_catalog_variant,
-            self.delete_catalog_variant,
-            self.update_catalog_variant,
-            self.get_create_variants_jobs,
-            self.bulk_create_catalog_variants,
-            self.get_create_variants_job,
-            self.get_update_variants_jobs,
-            self.bulk_update_catalog_variants,
-            self.get_update_variants_job,
-            self.get_delete_variants_jobs,
-            self.bulk_delete_catalog_variants,
-            self.get_delete_variants_job,
-            self.get_variants_for_catalog_item,
-            self.get_variant_ids_for_catalog_item,
-            self.get_catalog_categories,
-            self.create_catalog_category,
-            self.get_catalog_category,
-            self.delete_catalog_category,
-            self.update_catalog_category,
-            self.get_create_categories_jobs,
-            self.bulk_create_catalog_categories,
-            self.get_create_categories_job,
-            self.get_update_categories_jobs,
-            self.bulk_update_catalog_categories,
-            self.get_update_categories_job,
-            self.get_delete_categories_jobs,
-            self.bulk_delete_catalog_categories,
-            self.get_delete_categories_job,
-            self.get_item_ids_for_catalog_category,
-            self.add_items_to_catalog_category,
-            self.remove_items_from_catalog_category,
-            self.update_items_for_catalog_category,
-            self.get_categories_for_catalog_item,
-            self.create_back_in_stock_subscription,
-            self.create_client_subscription,
-            self.create_or_update_client_push_token,
-            self.unregister_client_push_token,
-            self.create_client_event,
-            self.create_or_update_client_profile,
-            self.bulk_create_client_events,
-            self.create_client_back_in_stock_subscription,
-            self.get_coupons,
-            self.create_coupon,
-            self.get_coupon,
-            self.delete_coupon,
-            self.update_coupon,
-            self.get_coupon_codes,
-            self.create_coupon_code,
-            self.get_coupon_code,
-            self.delete_coupon_code,
-            self.update_coupon_code,
-            self.get_bulk_create_coupon_code_jobs,
-            self.bulk_create_coupon_codes,
-            self.get_bulk_create_coupon_codes_job,
-            self.get_coupon_for_coupon_code,
-            self.get_coupon_id_for_coupon_code,
-            self.get_coupon_codes_for_coupon,
-            self.get_coupon_code_ids_for_coupon,
-            self.request_profile_deletion,
-            self.get_events,
-            self.create_event,
-            self.get_event,
-            self.bulk_create_events,
-            self.get_metric_for_event,
-            self.get_metric_id_for_event,
-            self.get_profile_for_event,
-            self.get_profile_id_for_event,
-            self.get_flows,
-            self.create_flow,
-            self.get_flow,
-            self.delete_flow,
-            self.update_flow_status,
-            self.get_flow_action,
-            self.get_flow_message,
-            self.get_actions_for_flow,
-            self.get_action_ids_for_flow,
-            self.get_tags_for_flow,
-            self.get_tag_ids_for_flow,
-            self.get_flow_for_flow_action,
-            self.get_flow_id_for_flow_action,
-            self.get_messages_for_flow_action,
-            self.get_message_ids_for_flow_action,
-            self.get_action_for_flow_message,
-            self.get_action_id_for_flow_message,
-            self.get_template_for_flow_message,
-            self.get_template_id_for_flow_message,
-            self.get_forms,
-            self.get_form,
-            self.get_form_version,
-            self.get_versions_for_form,
-            self.get_version_ids_for_form,
-            self.get_form_for_form_version,
-            self.get_form_id_for_form_version,
-            self.get_images,
-            self.upload_image_from_url,
-            self.get_image,
-            self.update_image,
-            self.get_lists,
-            self.create_list,
-            self.get_list,
-            self.delete_list,
-            self.update_list,
-            self.get_tags_for_list,
-            self.get_tag_ids_for_list,
-            self.get_profiles_for_list,
-            self.get_profile_ids_for_list,
-            self.add_profiles_to_list,
-            self.remove_profiles_from_list,
-            self.get_flows_triggered_by_list,
-            self.get_ids_for_flows_triggered_by_list,
-            self.get_metrics,
-            self.get_metric,
-            self.get_metric_property,
-            self.query_metric_aggregates,
-            self.get_flows_triggered_by_metric,
-            self.get_ids_for_flows_triggered_by_metric,
-            self.get_properties_for_metric,
-            self.get_property_ids_for_metric,
-            self.get_metric_for_metric_property,
-            self.get_metric_id_for_metric_property,
-            self.get_profiles,
-            self.create_profile,
-            self.get_profile,
-            self.update_profile,
-            self.get_bulk_suppress_profiles_jobs,
-            self.bulk_suppress_profiles,
-            self.get_bulk_suppress_profiles_job,
-            self.get_bulk_unsuppress_profiles_jobs,
-            self.bulk_unsuppress_profiles,
-            self.get_bulk_unsuppress_profiles_job,
-            self.create_or_update_profile,
-            self.merge_profiles,
-            self.create_or_update_push_token,
-            self.get_lists_for_profile,
-            self.get_list_ids_for_profile,
-            self.get_segments_for_profile,
-            self.get_segment_ids_for_profile,
-            self.get_bulk_import_profiles_jobs,
-            self.bulk_import_profiles,
-            self.get_bulk_import_profiles_job,
-            self.get_list_for_bulk_import_profiles_job,
-            self.get_list_ids_for_bulk_import_profiles_job,
-            self.get_profiles_for_bulk_import_profiles_job,
-            self.get_profile_ids_for_bulk_import_profiles_job,
-            self.get_errors_for_bulk_import_profiles_job,
-            self.bulk_subscribe_profiles,
-            self.bulk_unsubscribe_profiles,
-            self.query_campaign_values,
-            self.query_flow_values,
-            self.query_flow_series,
-            self.query_form_values,
-            self.query_form_series,
-            self.query_segment_values,
-            self.query_segment_series,
-            self.get_reviews,
-            self.get_review,
-            self.update_review,
-            self.get_segments,
-            self.create_segment,
-            self.get_segment,
-            self.delete_segment,
-            self.update_segment,
-            self.get_tags_for_segment,
-            self.get_tag_ids_for_segment,
-            self.get_profiles_for_segment,
-            self.get_profile_ids_for_segment,
-            self.get_flows_triggered_by_segment,
-            self.get_ids_for_flows_triggered_by_segment,
-            self.get_tags,
-            self.create_tag,
-            self.get_tag,
-            self.delete_tag,
-            self.update_tag,
-            self.get_flow_ids_for_tag,
-            self.tag_flows,
-            self.remove_tag_from_flows,
-            self.get_campaign_ids_for_tag,
-            self.tag_campaigns,
-            self.remove_tag_from_campaigns,
-            self.get_list_ids_for_tag,
-            self.tag_lists,
-            self.remove_tag_from_lists,
-            self.get_segment_ids_for_tag,
-            self.tag_segments,
-            self.remove_tag_from_segments,
-            self.get_tag_group_for_tag,
-            self.get_tag_group_id_for_tag,
-            self.get_tag_groups,
-            self.create_tag_group,
-            self.get_tag_group,
-            self.delete_tag_group,
-            self.update_tag_group,
-            self.get_tags_for_tag_group,
-            self.get_tag_ids_for_tag_group,
-            self.get_templates,
-            self.create_template,
-            self.get_template,
-            self.delete_template,
-            self.update_template,
-            self.render_template,
-            self.clone_template,
-            self.get_all_universal_content,
-            self.create_universal_content,
-            self.get_universal_content,
-            self.delete_universal_content,
-            self.update_universal_content,
-            self.get_tracking_settings,
-            self.get_tracking_setting,
-            self.update_tracking_setting,
-            self.get_webhooks,
-            self.create_webhook,
-            self.get_webhook,
-            self.delete_webhook,
-            self.update_webhook,
-            self.get_webhook_topics,
-            self.get_webhook_topic,
-        ]
+        return [self.create_client_review, self.get_accounts, self.get_account, self.get_campaigns, self.create_campaign, self.get_campaign, self.delete_campaign, self.update_campaign, self.get_campaign_recipient_estimation, self.create_campaign_clone, self.get_tags_for_campaign, self.get_tag_ids_for_campaign, self.get_messages_for_campaign, self.get_message_ids_for_campaign, self.get_campaign_message, self.update_campaign_message, self.assign_template_to_campaign_message, self.get_campaign_for_campaign_message, self.get_campaign_id_for_campaign_message, self.get_template_for_campaign_message, self.get_template_id_for_campaign_message, self.get_image_for_campaign_message, self.get_image_id_for_campaign_message, self.update_image_for_campaign_message, self.get_campaign_send_job, self.cancel_campaign_send, self.get_campaign_recipient_estimation_job, self.send_campaign, self.refresh_campaign_recipient_estimation, self.get_catalog_items, self.create_catalog_item, self.get_catalog_item, self.delete_catalog_item, self.update_catalog_item, self.get_bulk_create_catalog_items_jobs, self.bulk_create_catalog_items, self.get_bulk_create_catalog_items_job, self.get_bulk_update_catalog_items_jobs, self.bulk_update_catalog_items, self.get_bulk_update_catalog_items_job, self.get_bulk_delete_catalog_items_jobs, self.bulk_delete_catalog_items, self.get_bulk_delete_catalog_items_job, self.get_items_for_catalog_category, self.get_category_ids_for_catalog_item, self.add_categories_to_catalog_item, self.remove_categories_from_catalog_item, self.update_categories_for_catalog_item, self.get_catalog_variants, self.create_catalog_variant, self.get_catalog_variant, self.delete_catalog_variant, self.update_catalog_variant, self.get_create_variants_jobs, self.bulk_create_catalog_variants, self.get_create_variants_job, self.get_update_variants_jobs, self.bulk_update_catalog_variants, self.get_update_variants_job, self.get_delete_variants_jobs, self.bulk_delete_catalog_variants, self.get_delete_variants_job, self.get_variants_for_catalog_item, self.get_variant_ids_for_catalog_item, self.get_catalog_categories, self.create_catalog_category, self.get_catalog_category, self.delete_catalog_category, self.update_catalog_category, self.get_create_categories_jobs, self.bulk_create_catalog_categories, self.get_create_categories_job, self.get_update_categories_jobs, self.bulk_update_catalog_categories, self.get_update_categories_job, self.get_delete_categories_jobs, self.bulk_delete_catalog_categories, self.get_delete_categories_job, self.get_item_ids_for_catalog_category, self.add_items_to_catalog_category, self.remove_items_from_catalog_category, self.update_items_for_catalog_category, self.get_categories_for_catalog_item, self.create_back_in_stock_subscription, self.create_client_subscription, self.create_or_update_client_push_token, self.unregister_client_push_token, self.create_client_event, self.create_or_update_client_profile, self.bulk_create_client_events, self.create_client_back_in_stock_subscription, self.get_coupons, self.create_coupon, self.get_coupon, self.delete_coupon, self.update_coupon, self.get_coupon_codes, self.create_coupon_code, self.get_coupon_code, self.delete_coupon_code, self.update_coupon_code, self.get_bulk_create_coupon_code_jobs, self.bulk_create_coupon_codes, self.get_bulk_create_coupon_codes_job, self.get_coupon_for_coupon_code, self.get_coupon_id_for_coupon_code, self.get_coupon_codes_for_coupon, self.get_coupon_code_ids_for_coupon, self.request_profile_deletion, self.get_events, self.create_event, self.get_event, self.bulk_create_events, self.get_metric_for_event, self.get_metric_id_for_event, self.get_profile_for_event, self.get_profile_id_for_event, self.get_flows, self.create_flow, self.get_flow, self.delete_flow, self.update_flow_status, self.get_flow_action, self.get_flow_message, self.get_actions_for_flow, self.get_action_ids_for_flow, self.get_tags_for_flow, self.get_tag_ids_for_flow, self.get_flow_for_flow_action, self.get_flow_id_for_flow_action, self.get_messages_for_flow_action, self.get_message_ids_for_flow_action, self.get_action_for_flow_message, self.get_action_id_for_flow_message, self.get_template_for_flow_message, self.get_template_id_for_flow_message, self.get_forms, self.get_form, self.get_form_version, self.get_versions_for_form, self.get_version_ids_for_form, self.get_form_for_form_version, self.get_form_id_for_form_version, self.get_images, self.upload_image_from_url, self.get_image, self.update_image, self.get_lists, self.create_list, self.get_list, self.delete_list, self.update_list, self.get_tags_for_list, self.get_tag_ids_for_list, self.get_profiles_for_list, self.get_profile_ids_for_list, self.add_profiles_to_list, self.remove_profiles_from_list, self.get_flows_triggered_by_list, self.get_ids_for_flows_triggered_by_list, self.get_metrics, self.get_metric, self.get_metric_property, self.query_metric_aggregates, self.get_flows_triggered_by_metric, self.get_ids_for_flows_triggered_by_metric, self.get_properties_for_metric, self.get_property_ids_for_metric, self.get_metric_for_metric_property, self.get_metric_id_for_metric_property, self.get_profiles, self.create_profile, self.get_profile, self.update_profile, self.get_bulk_suppress_profiles_jobs, self.bulk_suppress_profiles, self.get_bulk_suppress_profiles_job, self.get_bulk_unsuppress_profiles_jobs, self.bulk_unsuppress_profiles, self.get_bulk_unsuppress_profiles_job, self.create_or_update_profile, self.merge_profiles, self.create_or_update_push_token, self.get_lists_for_profile, self.get_list_ids_for_profile, self.get_segments_for_profile, self.get_segment_ids_for_profile, self.get_bulk_import_profiles_jobs, self.bulk_import_profiles, self.get_bulk_import_profiles_job, self.get_list_for_bulk_import_profiles_job, self.get_list_ids_for_bulk_import_profiles_job, self.get_profiles_for_bulk_import_profiles_job, self.get_profile_ids_for_bulk_import_profiles_job, self.get_errors_for_bulk_import_profiles_job, self.bulk_subscribe_profiles, self.bulk_unsubscribe_profiles, self.query_campaign_values, self.query_flow_values, self.query_flow_series, self.query_form_values, self.query_form_series, self.query_segment_values, self.query_segment_series, self.get_reviews, self.get_review, self.update_review, self.get_segments, self.create_segment, self.get_segment, self.delete_segment, self.update_segment, self.get_tags_for_segment, self.get_tag_ids_for_segment, self.get_profiles_for_segment, self.get_profile_ids_for_segment, self.get_flows_triggered_by_segment, self.get_ids_for_flows_triggered_by_segment, self.get_tags, self.create_tag, self.get_tag, self.delete_tag, self.update_tag, self.get_flow_ids_for_tag, self.tag_flows, self.remove_tag_from_flows, self.get_campaign_ids_for_tag, self.tag_campaigns, self.remove_tag_from_campaigns, self.get_list_ids_for_tag, self.tag_lists, self.remove_tag_from_lists, self.get_segment_ids_for_tag, self.tag_segments, self.remove_tag_from_segments, self.get_tag_group_for_tag, self.get_tag_group_id_for_tag, self.get_tag_groups, self.create_tag_group, self.get_tag_group, self.delete_tag_group, self.update_tag_group, self.get_tags_for_tag_group, self.get_tag_ids_for_tag_group, self.get_templates, self.create_template, self.get_template, self.delete_template, self.update_template, self.render_template, self.clone_template, self.get_all_universal_content, self.create_universal_content, self.get_universal_content, self.delete_universal_content, self.update_universal_content, self.get_tracking_settings, self.get_tracking_setting, self.update_tracking_setting, self.get_webhooks, self.create_webhook, self.get_webhook, self.delete_webhook, self.update_webhook, self.get_webhook_topics, self.get_webhook_topic]

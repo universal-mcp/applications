@@ -4,7 +4,6 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class GhostContentApp(APIApplication):
     """
     Application for interacting with the Ghost Content API.
@@ -23,7 +22,7 @@ class GhostContentApp(APIApplication):
                          "https://your-ghost-site.com") and 'key' (the Content API key)
                          via `integration.get_credentials()`.
         """
-        super().__init__(name="ghost_content", integration=integration)
+        super().__init__(name='ghost_content', integration=integration)
         self._base_url = None
         self._api_key = None
         self._version = None
@@ -36,12 +35,12 @@ class GhostContentApp(APIApplication):
         """
         if not self._base_url:
             credentials = self.integration.get_credentials()
-            ghost_url = credentials.get("url") or credentials.get("admin_domain")
+            ghost_url = credentials.get('url') or credentials.get('admin_domain')
             if not ghost_url:
                 logger.error("GhostContentApp: Missing 'url' or 'admin_domain' in integration credentials.")
                 raise ValueError("Integration credentials must include 'url' or 'admin_domain' for the Ghost site.")
             self._base_url = f"{ghost_url.rstrip('/')}/api/content/"
-            logger.info(f"GhostContentApp: Constructed base URL as {self._base_url}")
+            logger.info(f'GhostContentApp: Constructed base URL as {self._base_url}')
         return self._base_url
 
     @base_url.setter
@@ -54,7 +53,7 @@ class GhostContentApp(APIApplication):
             base_url: The new base URL to set.
         """
         self._base_url = base_url
-        logger.info(f"GhostContentApp: Base URL set to {self._base_url}")
+        logger.info(f'GhostContentApp: Base URL set to {self._base_url}')
 
     @property
     def _get_api_key(self) -> str:
@@ -64,7 +63,7 @@ class GhostContentApp(APIApplication):
         """
         if not self._api_key:
             credentials = self.integration.get_credentials()
-            api_key = credentials.get("key") or credentials.get("api_key") or credentials.get("API_KEY")
+            api_key = credentials.get('key') or credentials.get('api_key') or credentials.get('API_KEY')
             if not api_key:
                 logger.error("GhostContentApp: Content API key ('key') not found in integration credentials.")
                 raise ValueError("Integration credentials must include the Ghost Content API 'key'.")
@@ -79,10 +78,10 @@ class GhostContentApp(APIApplication):
         """
         if not self._version:
             credentials = self.integration.get_credentials()
-            version = credentials.get("api_version")
+            version = credentials.get('api_version')
             if not version:
                 logger.warning("GhostContentApp: 'version' not found in integration credentials. Defaulting to 'v5.0'.")
-                version = "v5.0"
+                version = 'v5.0'
             self._version = version
         return self._version
 
@@ -92,54 +91,35 @@ class GhostContentApp(APIApplication):
         Overrides the base class method to include the `Accept-Version` header.
         """
         headers = super()._get_headers()
-        headers["Accept-Version"] = self._get_version
-        logger.debug(f"GhostContentApp: Using Accept-Version: {self._get_version} in headers.")
+        headers['Accept-Version'] = self._get_version
+        logger.debug(f'GhostContentApp: Using Accept-Version: {self._get_version} in headers.')
         return headers
 
-    def _build_common_params(
-        self,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        filter: str | None = None,
-        limit: int | None = None,
-        order: str | None = None,
-        page: int | None = None,
-        formats: list[str] | None = None,
-        visibility: str | None = None,
-    ) -> dict[str, Any]:
+    def _build_common_params(self, include: list[str] | None=None, fields: list[str] | None=None, filter: str | None=None, limit: int | None=None, order: str | None=None, page: int | None=None, formats: list[str] | None=None, visibility: str | None=None) -> dict[str, Any]:
         """
         Helper to build common query parameters for Ghost Content API requests,
         including the mandatory API key.
         """
-        params: dict[str, Any] = {"key": self._get_api_key}
+        params: dict[str, Any] = {'key': self._get_api_key}
         if include:
-            params["include"] = ",".join(include)
+            params['include'] = ','.join(include)
         if fields:
-            params["fields"] = ",".join(fields)
+            params['fields'] = ','.join(fields)
         if filter:
-            params["filter"] = filter
+            params['filter'] = filter
         if limit is not None:
-            params["limit"] = limit
+            params['limit'] = limit
         if order:
-            params["order"] = order
+            params['order'] = order
         if page is not None:
-            params["page"] = page
+            params['page'] = page
         if formats:
-            params["formats"] = ",".join(formats)
+            params['formats'] = ','.join(formats)
         if visibility:
-            params["visibility"] = visibility
+            params['visibility'] = visibility
         return params
 
-    async def browse_posts(
-        self,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        filter: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        order: str | None = None,
-        formats: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def browse_posts(self, include: list[str] | None=None, fields: list[str] | None=None, filter: str | None=None, limit: int | None=None, page: int | None=None, order: str | None=None, formats: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves and browses posts from a data source based on provided parameters.
 
@@ -161,16 +141,12 @@ class GhostContentApp(APIApplication):
         Tags:
             browse, fetch, posts, management, important
         """
-        url = f"{self.base_url}posts/"
-        params = self._build_common_params(
-            include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats
-        )
-        response = self._get(url, params=params)
+        url = f'{self.base_url}posts/'
+        params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_post_by_id(
-        self, id: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def read_post_by_id(self, id: str, include: list[str] | None=None, fields: list[str] | None=None, formats: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a post by its ID, optionally including additional data or specific fields.
 
@@ -189,14 +165,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, post, management
         """
-        url = f"{self.base_url}posts/{id}/"
+        url = f'{self.base_url}posts/{id}/'
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_post_by_slug(
-        self, slug: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def read_post_by_slug(self, slug: str, include: list[str] | None=None, fields: list[str] | None=None, formats: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a post by its slug, with optional parameters to specify included data, select specific fields, or request particular data formats.
 
@@ -215,20 +189,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, post, fetch, management
         """
-        url = f"{self.base_url}posts/slug/{slug}/"
+        url = f'{self.base_url}posts/slug/{slug}/'
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def browse_authors(
-        self,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        filter: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        order: str | None = None,
-    ) -> dict[str, Any]:
+    async def browse_authors(self, include: list[str] | None=None, fields: list[str] | None=None, filter: str | None=None, limit: int | None=None, page: int | None=None, order: str | None=None) -> dict[str, Any]:
         """
         Browse authors using various filtering and pagination options.
 
@@ -249,12 +215,12 @@ class GhostContentApp(APIApplication):
         Tags:
             list, management, important
         """
-        url = f"{self.base_url}authors/"
+        url = f'{self.base_url}authors/'
         params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_author_by_id(self, id: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
+    async def read_author_by_id(self, id: str, include: list[str] | None=None, fields: list[str] | None=None) -> dict[str, Any]:
         """
         Read an author from the database by their unique ID.
 
@@ -272,12 +238,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, author, data-access
         """
-        url = f"{self.base_url}authors/{id}/"
+        url = f'{self.base_url}authors/{id}/'
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_author_by_slug(self, slug: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
+    async def read_author_by_slug(self, slug: str, include: list[str] | None=None, fields: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieve an author's information by their slug.
 
@@ -295,20 +261,12 @@ class GhostContentApp(APIApplication):
         Tags:
             fetch, author, management
         """
-        url = f"{self.base_url}authors/slug/{slug}/"
+        url = f'{self.base_url}authors/slug/{slug}/'
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def browse_tags(
-        self,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        filter: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        order: str | None = None,
-    ) -> dict[str, Any]:
+    async def browse_tags(self, include: list[str] | None=None, fields: list[str] | None=None, filter: str | None=None, limit: int | None=None, page: int | None=None, order: str | None=None) -> dict[str, Any]:
         """
         Browse and retrieve tags based on specified parameters.
 
@@ -329,12 +287,12 @@ class GhostContentApp(APIApplication):
         Tags:
             browse, tags, management, important
         """
-        url = f"{self.base_url}tags/"
+        url = f'{self.base_url}tags/'
         params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_tag_by_id(self, id: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
+    async def read_tag_by_id(self, id: str, include: list[str] | None=None, fields: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a tag's details by its unique identifier, optionally filtering by included and field sets.
 
@@ -352,12 +310,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, tag, search, fetch, api, management
         """
-        url = f"{self.base_url}tags/{id}/"
+        url = f'{self.base_url}tags/{id}/'
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_tag_by_slug(self, slug: str, include: list[str] | None = None, fields: list[str] | None = None) -> dict[str, Any]:
+    async def read_tag_by_slug(self, slug: str, include: list[str] | None=None, fields: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieve tag information identified by a unique slug, with optional inclusion of related data and selective fields.
 
@@ -375,21 +333,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, retrieve, get
         """
-        url = f"{self.base_url}tags/slug/{slug}/"
+        url = f'{self.base_url}tags/slug/{slug}/'
         params = self._build_common_params(include=include, fields=fields)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def browse_pages(
-        self,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        filter: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        order: str | None = None,
-        formats: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def browse_pages(self, include: list[str] | None=None, fields: list[str] | None=None, filter: str | None=None, limit: int | None=None, page: int | None=None, order: str | None=None, formats: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a list of pages using optional filtering, pagination, and formatting parameters.
 
@@ -411,16 +360,12 @@ class GhostContentApp(APIApplication):
         Tags:
             browse, list, management, important
         """
-        url = f"{self.base_url}pages/"
-        params = self._build_common_params(
-            include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats
-        )
-        response = self._get(url, params=params)
+        url = f'{self.base_url}pages/'
+        params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order, formats=formats)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_page_by_id(
-        self, id: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def read_page_by_id(self, id: str, include: list[str] | None=None, fields: list[str] | None=None, formats: list[str] | None=None) -> dict[str, Any]:
         """
         Read a page by ID, allowing for optional inclusion of additional data, specific fields, and formats.
 
@@ -439,14 +384,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, page, data-retrieval
         """
-        url = f"{self.base_url}pages/{id}/"
+        url = f'{self.base_url}pages/{id}/'
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def read_page_by_slug(
-        self, slug: str, include: list[str] | None = None, fields: list[str] | None = None, formats: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def read_page_by_slug(self, slug: str, include: list[str] | None=None, fields: list[str] | None=None, formats: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieve a page's content and metadata by its slug identifier, optionally including related data, specific fields, and content formats.
 
@@ -465,20 +408,12 @@ class GhostContentApp(APIApplication):
         Tags:
             read, get, page, slug, http-request
         """
-        url = f"{self.base_url}pages/slug/{slug}/"
+        url = f'{self.base_url}pages/slug/{slug}/'
         params = self._build_common_params(include=include, fields=fields, formats=formats)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def browse_tiers(
-        self,
-        include: list[str] | None = None,
-        fields: list[str] | None = None,
-        filter: str | None = None,
-        limit: int | None = None,
-        page: int | None = None,
-        order: str | None = None,
-    ) -> dict[str, Any]:
+    async def browse_tiers(self, include: list[str] | None=None, fields: list[str] | None=None, filter: str | None=None, limit: int | None=None, page: int | None=None, order: str | None=None) -> dict[str, Any]:
         """
         Browse tiers based on optional filters and pagination.
 
@@ -499,9 +434,9 @@ class GhostContentApp(APIApplication):
         Tags:
             browse, pagination, filter, management, important
         """
-        url = f"{self.base_url}tiers/"
+        url = f'{self.base_url}tiers/'
         params = self._build_common_params(include=include, fields=fields, filter=filter, limit=limit, page=page, order=order)
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def browse_settings(self) -> dict[str, Any]:
@@ -520,26 +455,11 @@ class GhostContentApp(APIApplication):
         Tags:
             fetch, settings, management, important
         """
-        url = f"{self.base_url}settings/"
+        url = f'{self.base_url}settings/'
         params = self._build_common_params()
-        response = self._get(url, params=params)
+        response = await self._aget(url, params=params)
         return response.json()
 
     def list_tools(self) -> list[Callable]:
         """Returns a list of methods exposed as tools for the Ghost Content API."""
-        return [
-            self.browse_posts,
-            self.read_post_by_id,
-            self.read_post_by_slug,
-            self.browse_authors,
-            self.read_author_by_id,
-            self.read_author_by_slug,
-            self.browse_tags,
-            self.read_tag_by_id,
-            self.read_tag_by_slug,
-            self.browse_pages,
-            self.read_page_by_id,
-            self.read_page_by_slug,
-            self.browse_tiers,
-            self.browse_settings,
-        ]
+        return [self.browse_posts, self.read_post_by_id, self.read_post_by_slug, self.browse_authors, self.read_author_by_id, self.read_author_by_slug, self.browse_tags, self.read_tag_by_id, self.read_tag_by_slug, self.browse_pages, self.read_page_by_id, self.read_page_by_slug, self.browse_tiers, self.browse_settings]

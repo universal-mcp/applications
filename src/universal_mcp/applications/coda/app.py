@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class CodaApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="coda", integration=integration, **kwargs)
-        self.base_url = "https://coda.io/apis/v1"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='coda', integration=integration, **kwargs)
+        self.base_url = 'https://coda.io/apis/v1'
 
     async def list_categories(self) -> dict[str, Any]:
         """
@@ -24,25 +24,13 @@ class CodaApp(APIApplication):
         Tags:
             list, categories, api, important
         """
-        url = f"{self.base_url}/categories"
+        url = f'{self.base_url}/categories'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_docs(
-        self,
-        isOwner=None,
-        isPublished=None,
-        query=None,
-        sourceDoc=None,
-        isStarred=None,
-        inGallery=None,
-        workspaceId=None,
-        folderId=None,
-        limit=None,
-        pageToken=None,
-    ) -> dict[str, Any]:
+    async def list_docs(self, isOwner=None, isPublished=None, query=None, sourceDoc=None, isStarred=None, inGallery=None, workspaceId=None, folderId=None, limit=None, pageToken=None) -> dict[str, Any]:
         """
         Retrieves a list of documents based on specified filtering and pagination criteria.
 
@@ -67,24 +55,9 @@ class CodaApp(APIApplication):
         Tags:
             list, docs, filter, pagination, management, important
         """
-        url = f"{self.base_url}/docs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("isOwner", isOwner),
-                ("isPublished", isPublished),
-                ("query", query),
-                ("sourceDoc", sourceDoc),
-                ("isStarred", isStarred),
-                ("inGallery", inGallery),
-                ("workspaceId", workspaceId),
-                ("folderId", folderId),
-                ("limit", limit),
-                ("pageToken", pageToken),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs'
+        query_params = {k: v for k, v in [('isOwner', isOwner), ('isPublished', isPublished), ('query', query), ('sourceDoc', sourceDoc), ('isStarred', isStarred), ('inGallery', inGallery), ('workspaceId', workspaceId), ('folderId', folderId), ('limit', limit), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -108,11 +81,11 @@ class CodaApp(APIApplication):
         Tags:
             create, document, api, management, important
         """
-        request_body = {"title": title, "sourceDoc": sourceDoc, "timezone": timezone, "folderId": folderId, "initialPage": initialPage}
+        request_body = {'title': title, 'sourceDoc': sourceDoc, 'timezone': timezone, 'folderId': folderId, 'initialPage': initialPage}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs"
+        url = f'{self.base_url}/docs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -135,9 +108,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}"
+        url = f'{self.base_url}/docs/{docId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -160,9 +133,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}"
+        url = f'{self.base_url}/docs/{docId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -187,9 +160,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        request_body = {"title": title, "iconName": iconName}
+        request_body = {'title': title, 'iconName': iconName}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}"
+        url = f'{self.base_url}/docs/{docId}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -214,9 +187,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/acl/metadata"
+        url = f'{self.base_url}/docs/{docId}/acl/metadata'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -241,9 +214,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/acl/permissions"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/acl/permissions'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -273,11 +246,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'access'")
         if principal is None:
             raise ValueError("Missing required parameter 'principal'")
-        request_body = {"access": access, "principal": principal, "suppressEmail": suppressEmail}
+        request_body = {'access': access, 'principal': principal, 'suppressEmail': suppressEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/acl/permissions"
+        url = f'{self.base_url}/docs/{docId}/acl/permissions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -303,9 +276,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'")
-        url = f"{self.base_url}/docs/{docId}/acl/permissions/{permissionId}"
+        url = f'{self.base_url}/docs/{docId}/acl/permissions/{permissionId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -329,9 +302,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/acl/principals/search"
-        query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/acl/principals/search'
+        query_params = {k: v for k, v in [('query', query)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -354,15 +327,13 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/acl/settings"
+        url = f'{self.base_url}/docs/{docId}/acl/settings'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_acl_settings(
-        self, docId, allowEditorsToChangePermissions=None, allowCopying=None, allowViewersToRequestEditing=None
-    ) -> dict[str, Any]:
+    async def update_acl_settings(self, docId, allowEditorsToChangePermissions=None, allowCopying=None, allowViewersToRequestEditing=None) -> dict[str, Any]:
         """
         Updates access control settings for a specific document.
 
@@ -384,13 +355,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        request_body = {
-            "allowEditorsToChangePermissions": allowEditorsToChangePermissions,
-            "allowCopying": allowCopying,
-            "allowViewersToRequestEditing": allowViewersToRequestEditing,
-        }
+        request_body = {'allowEditorsToChangePermissions': allowEditorsToChangePermissions, 'allowCopying': allowCopying, 'allowViewersToRequestEditing': allowViewersToRequestEditing}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/acl/settings"
+        url = f'{self.base_url}/docs/{docId}/acl/settings'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -420,11 +387,11 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        request_body = {"slug": slug, "discoverable": discoverable, "earnCredit": earnCredit, "categoryNames": categoryNames, "mode": mode}
+        request_body = {'slug': slug, 'discoverable': discoverable, 'earnCredit': earnCredit, 'categoryNames': categoryNames, 'mode': mode}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/publish"
+        url = f'{self.base_url}/docs/{docId}/publish'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -447,9 +414,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/publish"
+        url = f'{self.base_url}/docs/{docId}/publish'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -474,15 +441,13 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/pages"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/pages'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_page(
-        self, docId, name=None, subtitle=None, iconName=None, imageUrl=None, parentPageId=None, pageContent=None
-    ) -> dict[str, Any]:
+    async def create_page(self, docId, name=None, subtitle=None, iconName=None, imageUrl=None, parentPageId=None, pageContent=None) -> dict[str, Any]:
         """
         Creates a new page within a specified document and returns the page details.
 
@@ -507,18 +472,11 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        request_body = {
-            "name": name,
-            "subtitle": subtitle,
-            "iconName": iconName,
-            "imageUrl": imageUrl,
-            "parentPageId": parentPageId,
-            "pageContent": pageContent,
-        }
+        request_body = {'name': name, 'subtitle': subtitle, 'iconName': iconName, 'imageUrl': imageUrl, 'parentPageId': parentPageId, 'pageContent': pageContent}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/pages"
+        url = f'{self.base_url}/docs/{docId}/pages'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -544,15 +502,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if pageIdOrName is None:
             raise ValueError("Missing required parameter 'pageIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/pages/{pageIdOrName}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_page(
-        self, docId, pageIdOrName, name=None, subtitle=None, iconName=None, imageUrl=None, isHidden=None, contentUpdate=None
-    ) -> dict[str, Any]:
+    async def update_page(self, docId, pageIdOrName, name=None, subtitle=None, iconName=None, imageUrl=None, isHidden=None, contentUpdate=None) -> dict[str, Any]:
         """
         Updates properties of a specific page within a document, sending changes to the server and returning the updated page data.
 
@@ -580,18 +536,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if pageIdOrName is None:
             raise ValueError("Missing required parameter 'pageIdOrName'")
-        request_body = {
-            "name": name,
-            "subtitle": subtitle,
-            "iconName": iconName,
-            "imageUrl": imageUrl,
-            "isHidden": isHidden,
-            "contentUpdate": contentUpdate,
-        }
+        request_body = {'name': name, 'subtitle': subtitle, 'iconName': iconName, 'imageUrl': imageUrl, 'isHidden': isHidden, 'contentUpdate': contentUpdate}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/pages/{pageIdOrName}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -617,9 +566,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if pageIdOrName is None:
             raise ValueError("Missing required parameter 'pageIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/pages/{pageIdOrName}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -648,11 +597,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'pageIdOrName'")
         if outputFormat is None:
             raise ValueError("Missing required parameter 'outputFormat'")
-        request_body = {"outputFormat": outputFormat}
+        request_body = {'outputFormat': outputFormat}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export"
+        url = f'{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -681,9 +630,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'pageIdOrName'")
         if requestId is None:
             raise ValueError("Missing required parameter 'requestId'")
-        url = f"{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export/{requestId}"
+        url = f'{self.base_url}/docs/{docId}/pages/{pageIdOrName}/export/{requestId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -710,11 +659,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/tables"
-        query_params = {
-            k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy), ("tableTypes", tableTypes)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('sortBy', sortBy), ('tableTypes', tableTypes)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -741,9 +688,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if tableIdOrName is None:
             raise ValueError("Missing required parameter 'tableIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}"
-        query_params = {k: v for k, v in [("useUpdatedTableLayouts", useUpdatedTableLayouts)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}'
+        query_params = {k: v for k, v in [('useUpdatedTableLayouts', useUpdatedTableLayouts)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -772,25 +719,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if tableIdOrName is None:
             raise ValueError("Missing required parameter 'tableIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/columns"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("visibleOnly", visibleOnly)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/columns'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('visibleOnly', visibleOnly)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_rows(
-        self,
-        docId,
-        tableIdOrName,
-        query=None,
-        sortBy=None,
-        useColumnNames=None,
-        valueFormat=None,
-        visibleOnly=None,
-        limit=None,
-        pageToken=None,
-        syncToken=None,
-    ) -> dict[str, Any]:
+    async def list_rows(self, docId, tableIdOrName, query=None, sortBy=None, useColumnNames=None, valueFormat=None, visibleOnly=None, limit=None, pageToken=None, syncToken=None) -> dict[str, Any]:
         """
         Retrieves a list of rows from a specified table in a document, with optional filtering, sorting, and pagination.
 
@@ -820,22 +755,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if tableIdOrName is None:
             raise ValueError("Missing required parameter 'tableIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("sortBy", sortBy),
-                ("useColumnNames", useColumnNames),
-                ("valueFormat", valueFormat),
-                ("visibleOnly", visibleOnly),
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("syncToken", syncToken),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows'
+        query_params = {k: v for k, v in [('query', query), ('sortBy', sortBy), ('useColumnNames', useColumnNames), ('valueFormat', valueFormat), ('visibleOnly', visibleOnly), ('limit', limit), ('pageToken', pageToken), ('syncToken', syncToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -866,11 +788,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         if rows is None:
             raise ValueError("Missing required parameter 'rows'")
-        request_body = {"rows": rows, "keyColumns": keyColumns}
+        request_body = {'rows': rows, 'keyColumns': keyColumns}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
-        query_params = {k: v for k, v in [("disableParsing", disableParsing)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows'
+        query_params = {k: v for k, v in [('disableParsing', disableParsing)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -899,11 +821,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         if rowIds is None:
             raise ValueError("Missing required parameter 'rowIds'")
-        request_body = {"rowIds": rowIds}
+        request_body = {'rowIds': rowIds}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows"
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -934,9 +856,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         if rowIdOrName is None:
             raise ValueError("Missing required parameter 'rowIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
-        query_params = {k: v for k, v in [("useColumnNames", useColumnNames), ("valueFormat", valueFormat)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}'
+        query_params = {k: v for k, v in [('useColumnNames', useColumnNames), ('valueFormat', valueFormat)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -968,11 +890,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'rowIdOrName'")
         if row is None:
             raise ValueError("Missing required parameter 'row'")
-        request_body = {"row": row}
+        request_body = {'row': row}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
-        query_params = {k: v for k, v in [("disableParsing", disableParsing)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}'
+        query_params = {k: v for k, v in [('disableParsing', disableParsing)] if v is not None}
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1001,9 +923,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'tableIdOrName'")
         if rowIdOrName is None:
             raise ValueError("Missing required parameter 'rowIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1035,9 +957,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'rowIdOrName'")
         if columnIdOrName is None:
             raise ValueError("Missing required parameter 'columnIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}/buttons/{columnIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/tables/{tableIdOrName}/rows/{rowIdOrName}/buttons/{columnIdOrName}'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1063,9 +985,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/formulas"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/formulas'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('sortBy', sortBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1091,9 +1013,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if formulaIdOrName is None:
             raise ValueError("Missing required parameter 'formulaIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/formulas/{formulaIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/formulas/{formulaIdOrName}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1119,9 +1041,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/{docId}/controls"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("sortBy", sortBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/docs/{docId}/controls'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('sortBy', sortBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1147,9 +1069,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if controlIdOrName is None:
             raise ValueError("Missing required parameter 'controlIdOrName'")
-        url = f"{self.base_url}/docs/{docId}/controls/{controlIdOrName}"
+        url = f'{self.base_url}/docs/{docId}/controls/{controlIdOrName}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1172,9 +1094,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/docs/${docId}/domains"
+        url = f'{self.base_url}/docs/${docId}/domains'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1200,11 +1122,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if customDocDomain is None:
             raise ValueError("Missing required parameter 'customDocDomain'")
-        request_body = {"customDocDomain": customDocDomain}
+        request_body = {'customDocDomain': customDocDomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/docs/${docId}/domains"
+        url = f'{self.base_url}/docs/${docId}/domains'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1230,9 +1152,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if customDocDomain is None:
             raise ValueError("Missing required parameter 'customDocDomain'")
-        url = f"{self.base_url}/docs/{docId}/domains/{customDocDomain}"
+        url = f'{self.base_url}/docs/{docId}/domains/{customDocDomain}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1255,9 +1177,9 @@ class CodaApp(APIApplication):
         """
         if customDocDomain is None:
             raise ValueError("Missing required parameter 'customDocDomain'")
-        url = f"{self.base_url}/domains/provider/{customDocDomain}"
+        url = f'{self.base_url}/domains/provider/{customDocDomain}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1274,9 +1196,9 @@ class CodaApp(APIApplication):
         Tags:
             whoami, user-info, fetch, api
         """
-        url = f"{self.base_url}/whoami"
+        url = f'{self.base_url}/whoami'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1300,9 +1222,9 @@ class CodaApp(APIApplication):
         """
         if url is None:
             raise ValueError("Missing required parameter 'url'")
-        url = f"{self.base_url}/resolveBrowserLink"
-        query_params = {k: v for k, v in [("url", url), ("degradeGracefully", degradeGracefully)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/resolveBrowserLink'
+        query_params = {k: v for k, v in [('url', url), ('degradeGracefully', degradeGracefully)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1325,9 +1247,9 @@ class CodaApp(APIApplication):
         """
         if requestId is None:
             raise ValueError("Missing required parameter 'requestId'")
-        url = f"{self.base_url}/mutationStatus/{requestId}"
+        url = f'{self.base_url}/mutationStatus/{requestId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1354,9 +1276,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'docId'")
         if ruleId is None:
             raise ValueError("Missing required parameter 'ruleId'")
-        url = f"{self.base_url}/docs/{docId}/hooks/automation/{ruleId}"
+        url = f'{self.base_url}/docs/{docId}/hooks/automation/{ruleId}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1383,13 +1305,9 @@ class CodaApp(APIApplication):
         """
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/analytics/docs/{docId}/pages"
-        query_params = {
-            k: v
-            for k, v in [("sinceDate", sinceDate), ("untilDate", untilDate), ("pageToken", pageToken), ("limit", limit)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/analytics/docs/{docId}/pages'
+        query_params = {k: v for k, v in [('sinceDate', sinceDate), ('untilDate', untilDate), ('pageToken', pageToken), ('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1412,30 +1330,13 @@ class CodaApp(APIApplication):
         Tags:
             list, analytics, summary, docs, api
         """
-        url = f"{self.base_url}/analytics/docs/summary"
-        query_params = {
-            k: v
-            for k, v in [("isPublished", isPublished), ("sinceDate", sinceDate), ("untilDate", untilDate), ("workspaceId", workspaceId)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/analytics/docs/summary'
+        query_params = {k: v for k, v in [('isPublished', isPublished), ('sinceDate', sinceDate), ('untilDate', untilDate), ('workspaceId', workspaceId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_pack_analytics(
-        self,
-        packIds=None,
-        workspaceId=None,
-        query=None,
-        sinceDate=None,
-        untilDate=None,
-        scale=None,
-        pageToken=None,
-        orderBy=None,
-        direction=None,
-        isPublished=None,
-        limit=None,
-    ) -> dict[str, Any]:
+    async def list_pack_analytics(self, packIds=None, workspaceId=None, query=None, sinceDate=None, untilDate=None, scale=None, pageToken=None, orderBy=None, direction=None, isPublished=None, limit=None) -> dict[str, Any]:
         """
         Retrieves analytics data for specified content packs with optional filtering and pagination.
 
@@ -1461,31 +1362,13 @@ class CodaApp(APIApplication):
         Tags:
             list, analytics, pack, filter, pagination, management
         """
-        url = f"{self.base_url}/analytics/packs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("packIds", packIds),
-                ("workspaceId", workspaceId),
-                ("query", query),
-                ("sinceDate", sinceDate),
-                ("untilDate", untilDate),
-                ("scale", scale),
-                ("pageToken", pageToken),
-                ("orderBy", orderBy),
-                ("direction", direction),
-                ("isPublished", isPublished),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/analytics/packs'
+        query_params = {k: v for k, v in [('packIds', packIds), ('workspaceId', workspaceId), ('query', query), ('sinceDate', sinceDate), ('untilDate', untilDate), ('scale', scale), ('pageToken', pageToken), ('orderBy', orderBy), ('direction', direction), ('isPublished', isPublished), ('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_pack_analytics_summary(
-        self, packIds=None, workspaceId=None, isPublished=None, sinceDate=None, untilDate=None
-    ) -> dict[str, Any]:
+    async def list_pack_analytics_summary(self, packIds=None, workspaceId=None, isPublished=None, sinceDate=None, untilDate=None) -> dict[str, Any]:
         """
         Retrieves a summary of analytics for one or more packs, optionally filtered by pack IDs, workspace, publication status, and date range.
 
@@ -1505,35 +1388,13 @@ class CodaApp(APIApplication):
         Tags:
             list, analytics, summary, pack, filter
         """
-        url = f"{self.base_url}/analytics/packs/summary"
-        query_params = {
-            k: v
-            for k, v in [
-                ("packIds", packIds),
-                ("workspaceId", workspaceId),
-                ("isPublished", isPublished),
-                ("sinceDate", sinceDate),
-                ("untilDate", untilDate),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/analytics/packs/summary'
+        query_params = {k: v for k, v in [('packIds', packIds), ('workspaceId', workspaceId), ('isPublished', isPublished), ('sinceDate', sinceDate), ('untilDate', untilDate)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_pack_formula_analytics(
-        self,
-        packId,
-        packFormulaNames=None,
-        packFormulaTypes=None,
-        sinceDate=None,
-        untilDate=None,
-        scale=None,
-        pageToken=None,
-        orderBy=None,
-        direction=None,
-        limit=None,
-    ) -> dict[str, Any]:
+    async def list_pack_formula_analytics(self, packId, packFormulaNames=None, packFormulaTypes=None, sinceDate=None, untilDate=None, scale=None, pageToken=None, orderBy=None, direction=None, limit=None) -> dict[str, Any]:
         """
         Retrieves analytics data for formulas within a specified pack, supporting various filtering and pagination options.
 
@@ -1561,23 +1422,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/analytics/packs/{packId}/formulas"
-        query_params = {
-            k: v
-            for k, v in [
-                ("packFormulaNames", packFormulaNames),
-                ("packFormulaTypes", packFormulaTypes),
-                ("sinceDate", sinceDate),
-                ("untilDate", untilDate),
-                ("scale", scale),
-                ("pageToken", pageToken),
-                ("orderBy", orderBy),
-                ("direction", direction),
-                ("limit", limit),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/analytics/packs/{packId}/formulas'
+        query_params = {k: v for k, v in [('packFormulaNames', packFormulaNames), ('packFormulaTypes', packFormulaTypes), ('sinceDate', sinceDate), ('untilDate', untilDate), ('scale', scale), ('pageToken', pageToken), ('orderBy', orderBy), ('direction', direction), ('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1597,9 +1444,9 @@ class CodaApp(APIApplication):
         Tags:
             get, analytics, status, management, http
         """
-        url = f"{self.base_url}/analytics/updated"
+        url = f'{self.base_url}/analytics/updated'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1624,9 +1471,9 @@ class CodaApp(APIApplication):
         """
         if workspaceId is None:
             raise ValueError("Missing required parameter 'workspaceId'")
-        url = f"{self.base_url}/workspaces/{workspaceId}/users"
-        query_params = {k: v for k, v in [("includedRoles", includedRoles), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/workspaces/{workspaceId}/users'
+        query_params = {k: v for k, v in [('includedRoles', includedRoles), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1655,11 +1502,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'email'")
         if newRole is None:
             raise ValueError("Missing required parameter 'newRole'")
-        request_body = {"email": email, "newRole": newRole}
+        request_body = {'email': email, 'newRole': newRole}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/workspaces/{workspaceId}/users/role"
+        url = f'{self.base_url}/workspaces/{workspaceId}/users/role'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1682,27 +1529,13 @@ class CodaApp(APIApplication):
         """
         if workspaceId is None:
             raise ValueError("Missing required parameter 'workspaceId'")
-        url = f"{self.base_url}/workspaces/{workspaceId}/roles"
+        url = f'{self.base_url}/workspaces/{workspaceId}/roles'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_packs(
-        self,
-        accessType=None,
-        accessTypes=None,
-        sortBy=None,
-        limit=None,
-        direction=None,
-        pageToken=None,
-        onlyWorkspaceId=None,
-        parentWorkspaceIds=None,
-        excludePublicPacks=None,
-        excludeIndividualAcls=None,
-        excludeWorkspaceAcls=None,
-        includeBrainOnlyPacks=None,
-    ) -> dict[str, Any]:
+    async def list_packs(self, accessType=None, accessTypes=None, sortBy=None, limit=None, direction=None, pageToken=None, onlyWorkspaceId=None, parentWorkspaceIds=None, excludePublicPacks=None, excludeIndividualAcls=None, excludeWorkspaceAcls=None, includeBrainOnlyPacks=None) -> dict[str, Any]:
         """
         Retrieves a list of packs with optional filtering, sorting, and pagination parameters.
 
@@ -1729,26 +1562,9 @@ class CodaApp(APIApplication):
         Tags:
             list, packs, filter, sort, pagination, management
         """
-        url = f"{self.base_url}/packs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("accessType", accessType),
-                ("accessTypes", accessTypes),
-                ("sortBy", sortBy),
-                ("limit", limit),
-                ("direction", direction),
-                ("pageToken", pageToken),
-                ("onlyWorkspaceId", onlyWorkspaceId),
-                ("parentWorkspaceIds", parentWorkspaceIds),
-                ("excludePublicPacks", excludePublicPacks),
-                ("excludeIndividualAcls", excludeIndividualAcls),
-                ("excludeWorkspaceAcls", excludeWorkspaceAcls),
-                ("includeBrainOnlyPacks", includeBrainOnlyPacks),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs'
+        query_params = {k: v for k, v in [('accessType', accessType), ('accessTypes', accessTypes), ('sortBy', sortBy), ('limit', limit), ('direction', direction), ('pageToken', pageToken), ('onlyWorkspaceId', onlyWorkspaceId), ('parentWorkspaceIds', parentWorkspaceIds), ('excludePublicPacks', excludePublicPacks), ('excludeIndividualAcls', excludeIndividualAcls), ('excludeWorkspaceAcls', excludeWorkspaceAcls), ('includeBrainOnlyPacks', includeBrainOnlyPacks)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1771,11 +1587,11 @@ class CodaApp(APIApplication):
         Tags:
             create, pack, management, api
         """
-        request_body = {"workspaceId": workspaceId, "name": name, "description": description, "sourcePackId": sourcePackId}
+        request_body = {'workspaceId': workspaceId, 'name': name, 'description': description, 'sourcePackId': sourcePackId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs"
+        url = f'{self.base_url}/packs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1798,28 +1614,13 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}"
+        url = f'{self.base_url}/packs/{packId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_pack(
-        self,
-        packId,
-        overallRateLimit=None,
-        perConnectionRateLimit=None,
-        logoAssetId=None,
-        coverAssetId=None,
-        exampleImages=None,
-        sourceCodeVisibility=None,
-        name=None,
-        description=None,
-        shortDescription=None,
-        supportEmail=None,
-        termsOfServiceUrl=None,
-        privacyPolicyUrl=None,
-    ) -> dict[str, Any]:
+    async def update_pack(self, packId, overallRateLimit=None, perConnectionRateLimit=None, logoAssetId=None, coverAssetId=None, exampleImages=None, sourceCodeVisibility=None, name=None, description=None, shortDescription=None, supportEmail=None, termsOfServiceUrl=None, privacyPolicyUrl=None) -> dict[str, Any]:
         """
         Updates the properties of an existing pack using the specified parameters.
 
@@ -1850,22 +1651,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        request_body = {
-            "overallRateLimit": overallRateLimit,
-            "perConnectionRateLimit": perConnectionRateLimit,
-            "logoAssetId": logoAssetId,
-            "coverAssetId": coverAssetId,
-            "exampleImages": exampleImages,
-            "sourceCodeVisibility": sourceCodeVisibility,
-            "name": name,
-            "description": description,
-            "shortDescription": shortDescription,
-            "supportEmail": supportEmail,
-            "termsOfServiceUrl": termsOfServiceUrl,
-            "privacyPolicyUrl": privacyPolicyUrl,
-        }
+        request_body = {'overallRateLimit': overallRateLimit, 'perConnectionRateLimit': perConnectionRateLimit, 'logoAssetId': logoAssetId, 'coverAssetId': coverAssetId, 'exampleImages': exampleImages, 'sourceCodeVisibility': sourceCodeVisibility, 'name': name, 'description': description, 'shortDescription': shortDescription, 'supportEmail': supportEmail, 'termsOfServiceUrl': termsOfServiceUrl, 'privacyPolicyUrl': privacyPolicyUrl}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}"
+        url = f'{self.base_url}/packs/{packId}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1890,9 +1678,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}"
+        url = f'{self.base_url}/packs/{packId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1915,9 +1703,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/configurations/schema"
+        url = f'{self.base_url}/packs/{packId}/configurations/schema'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1942,9 +1730,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/versions"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/versions'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1971,11 +1759,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if proposedMetadata is None:
             raise ValueError("Missing required parameter 'proposedMetadata'")
-        request_body = {"proposedMetadata": proposedMetadata, "sdkVersion": sdkVersion}
+        request_body = {'proposedMetadata': proposedMetadata, 'sdkVersion': sdkVersion}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/nextVersion"
+        url = f'{self.base_url}/packs/{packId}/nextVersion'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2004,9 +1792,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'basePackVersion'")
         if targetPackVersion is None:
             raise ValueError("Missing required parameter 'targetPackVersion'")
-        url = f"{self.base_url}/packs/{packId}/versions/{basePackVersion}/diff/{targetPackVersion}"
+        url = f'{self.base_url}/packs/{packId}/versions/{basePackVersion}/diff/{targetPackVersion}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2035,11 +1823,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packVersion'")
         if bundleHash is None:
             raise ValueError("Missing required parameter 'bundleHash'")
-        request_body = {"bundleHash": bundleHash}
+        request_body = {'bundleHash': bundleHash}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/register"
+        url = f'{self.base_url}/packs/{packId}/versions/{packVersion}/register'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2068,11 +1856,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packVersion is None:
             raise ValueError("Missing required parameter 'packVersion'")
-        request_body = {"notes": notes, "source": source, "allowOlderSdkVersion": allowOlderSdkVersion}
+        request_body = {'notes': notes, 'source': source, 'allowOlderSdkVersion': allowOlderSdkVersion}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/uploadComplete"
+        url = f'{self.base_url}/packs/{packId}/versions/{packVersion}/uploadComplete'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2099,11 +1887,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packVersion is None:
             raise ValueError("Missing required parameter 'packVersion'")
-        request_body = {"packVersion": packVersion, "releaseNotes": releaseNotes}
+        request_body = {'packVersion': packVersion, 'releaseNotes': releaseNotes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/releases"
+        url = f'{self.base_url}/packs/{packId}/releases'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2128,9 +1916,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/releases"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/releases'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2157,11 +1945,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packReleaseId is None:
             raise ValueError("Missing required parameter 'packReleaseId'")
-        request_body = {"releaseNotes": releaseNotes}
+        request_body = {'releaseNotes': releaseNotes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/releases/{packReleaseId}"
+        url = f'{self.base_url}/packs/{packId}/releases/{packReleaseId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2187,11 +1975,11 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        request_body = {"clientId": clientId, "clientSecret": clientSecret, "redirectUri": redirectUri}
+        request_body = {'clientId': clientId, 'clientSecret': clientSecret, 'redirectUri': redirectUri}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/oauthConfig"
+        url = f'{self.base_url}/packs/{packId}/oauthConfig'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2214,9 +2002,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/oauthConfig"
+        url = f'{self.base_url}/packs/{packId}/oauthConfig'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2242,11 +2030,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if credentials is None:
             raise ValueError("Missing required parameter 'credentials'")
-        request_body = {"credentials": credentials}
+        request_body = {'credentials': credentials}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/systemConnection"
+        url = f'{self.base_url}/packs/{packId}/systemConnection'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2269,9 +2057,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/systemConnection"
+        url = f'{self.base_url}/packs/{packId}/systemConnection'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2294,9 +2082,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/permissions"
+        url = f'{self.base_url}/packs/{packId}/permissions'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2325,11 +2113,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'principal'")
         if access is None:
             raise ValueError("Missing required parameter 'access'")
-        request_body = {"principal": principal, "access": access}
+        request_body = {'principal': principal, 'access': access}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/permissions"
+        url = f'{self.base_url}/packs/{packId}/permissions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2355,9 +2143,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'")
-        url = f"{self.base_url}/packs/{packId}/permissions/{permissionId}"
+        url = f'{self.base_url}/packs/{packId}/permissions/{permissionId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2380,9 +2168,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/makers"
+        url = f'{self.base_url}/packs/{packId}/makers'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2408,11 +2196,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if loginId is None:
             raise ValueError("Missing required parameter 'loginId'")
-        request_body = {"loginId": loginId}
+        request_body = {'loginId': loginId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/maker"
+        url = f'{self.base_url}/packs/{packId}/maker'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2438,9 +2226,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if loginId is None:
             raise ValueError("Missing required parameter 'loginId'")
-        url = f"{self.base_url}/packs/{packId}/maker/{loginId}"
+        url = f'{self.base_url}/packs/{packId}/maker/{loginId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2463,9 +2251,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/categories"
+        url = f'{self.base_url}/packs/{packId}/categories'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2491,11 +2279,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if categoryName is None:
             raise ValueError("Missing required parameter 'categoryName'")
-        request_body = {"categoryName": categoryName}
+        request_body = {'categoryName': categoryName}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/category"
+        url = f'{self.base_url}/packs/{packId}/category'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2521,9 +2309,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if categoryName is None:
             raise ValueError("Missing required parameter 'categoryName'")
-        url = f"{self.base_url}/packs/{packId}/category/{categoryName}"
+        url = f'{self.base_url}/packs/{packId}/category/{categoryName}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2558,11 +2346,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'mimeType'")
         if filename is None:
             raise ValueError("Missing required parameter 'filename'")
-        request_body = {"packAssetType": packAssetType, "imageHash": imageHash, "mimeType": mimeType, "filename": filename}
+        request_body = {'packAssetType': packAssetType, 'imageHash': imageHash, 'mimeType': mimeType, 'filename': filename}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/uploadAsset"
+        url = f'{self.base_url}/packs/{packId}/uploadAsset'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2592,11 +2380,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'payloadHash'")
         if filename is None:
             raise ValueError("Missing required parameter 'filename'")
-        request_body = {"payloadHash": payloadHash, "filename": filename, "packVersion": packVersion}
+        request_body = {'payloadHash': payloadHash, 'filename': filename, 'packVersion': packVersion}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/uploadSourceCode"
+        url = f'{self.base_url}/packs/{packId}/uploadSourceCode'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2625,9 +2413,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packAssetId'")
         if packAssetType is None:
             raise ValueError("Missing required parameter 'packAssetType'")
-        url = f"{self.base_url}/packs/{packId}/assets/{packAssetId}/assetType/{packAssetType}/uploadComplete"
+        url = f'{self.base_url}/packs/{packId}/assets/{packAssetId}/assetType/{packAssetType}/uploadComplete'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2659,11 +2447,11 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'filename'")
         if codeHash is None:
             raise ValueError("Missing required parameter 'codeHash'")
-        request_body = {"filename": filename, "codeHash": codeHash}
+        request_body = {'filename': filename, 'codeHash': codeHash}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode/uploadComplete"
+        url = f'{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode/uploadComplete'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2689,29 +2477,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if packVersion is None:
             raise ValueError("Missing required parameter 'packVersion'")
-        url = f"{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode"
+        url = f'{self.base_url}/packs/{packId}/versions/{packVersion}/sourceCode'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_pack_listings(
-        self,
-        packAccessTypes=None,
-        packIds=None,
-        onlyWorkspaceId=None,
-        parentWorkspaceIds=None,
-        excludePublicPacks=None,
-        excludeWorkspaceAcls=None,
-        excludeIndividualAcls=None,
-        includeBrainOnlyPacks=None,
-        sortBy=None,
-        orderBy=None,
-        direction=None,
-        limit=None,
-        pageToken=None,
-        installContext=None,
-    ) -> dict[str, Any]:
+    async def list_pack_listings(self, packAccessTypes=None, packIds=None, onlyWorkspaceId=None, parentWorkspaceIds=None, excludePublicPacks=None, excludeWorkspaceAcls=None, excludeIndividualAcls=None, includeBrainOnlyPacks=None, sortBy=None, orderBy=None, direction=None, limit=None, pageToken=None, installContext=None) -> dict[str, Any]:
         """
         Retrieves a list of available pack listings based on specified filtering, sorting, and access control criteria.
 
@@ -2740,28 +2512,9 @@ class CodaApp(APIApplication):
         Tags:
             list, packs, filter, search, api, management
         """
-        url = f"{self.base_url}/packs/listings"
-        query_params = {
-            k: v
-            for k, v in [
-                ("packAccessTypes", packAccessTypes),
-                ("packIds", packIds),
-                ("onlyWorkspaceId", onlyWorkspaceId),
-                ("parentWorkspaceIds", parentWorkspaceIds),
-                ("excludePublicPacks", excludePublicPacks),
-                ("excludeWorkspaceAcls", excludeWorkspaceAcls),
-                ("excludeIndividualAcls", excludeIndividualAcls),
-                ("includeBrainOnlyPacks", includeBrainOnlyPacks),
-                ("sortBy", sortBy),
-                ("orderBy", orderBy),
-                ("direction", direction),
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("installContext", installContext),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/listings'
+        query_params = {k: v for k, v in [('packAccessTypes', packAccessTypes), ('packIds', packIds), ('onlyWorkspaceId', onlyWorkspaceId), ('parentWorkspaceIds', parentWorkspaceIds), ('excludePublicPacks', excludePublicPacks), ('excludeWorkspaceAcls', excludeWorkspaceAcls), ('excludeIndividualAcls', excludeIndividualAcls), ('includeBrainOnlyPacks', includeBrainOnlyPacks), ('sortBy', sortBy), ('orderBy', orderBy), ('direction', direction), ('limit', limit), ('pageToken', pageToken), ('installContext', installContext)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2788,34 +2541,13 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/listing"
-        query_params = {
-            k: v
-            for k, v in [
-                ("workspaceId", workspaceId),
-                ("docId", docId),
-                ("installContext", installContext),
-                ("releaseChannel", releaseChannel),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/listing'
+        query_params = {k: v for k, v in [('workspaceId', workspaceId), ('docId', docId), ('installContext', installContext), ('releaseChannel', releaseChannel)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_pack_logs(
-        self,
-        packId,
-        docId,
-        limit=None,
-        pageToken=None,
-        logTypes=None,
-        beforeTimestamp=None,
-        afterTimestamp=None,
-        order=None,
-        q=None,
-        requestIds=None,
-    ) -> dict[str, Any]:
+    async def list_pack_logs(self, packId, docId, limit=None, pageToken=None, logTypes=None, beforeTimestamp=None, afterTimestamp=None, order=None, q=None, requestIds=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of logs for a specified document in a pack, with advanced filtering and sorting options.
 
@@ -2845,40 +2577,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/packs/{packId}/docs/{docId}/logs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("logTypes", logTypes),
-                ("beforeTimestamp", beforeTimestamp),
-                ("afterTimestamp", afterTimestamp),
-                ("order", order),
-                ("q", q),
-                ("requestIds", requestIds),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/docs/{docId}/logs'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('logTypes', logTypes), ('beforeTimestamp', beforeTimestamp), ('afterTimestamp', afterTimestamp), ('order', order), ('q', q), ('requestIds', requestIds)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_ingestion_logs(
-        self,
-        packId,
-        organizationId,
-        rootIngestionId,
-        limit=None,
-        pageToken=None,
-        logTypes=None,
-        ingestionExecutionId=None,
-        beforeTimestamp=None,
-        afterTimestamp=None,
-        order=None,
-        q=None,
-        requestIds=None,
-    ) -> dict[str, Any]:
+    async def list_ingestion_logs(self, packId, organizationId, rootIngestionId, limit=None, pageToken=None, logTypes=None, ingestionExecutionId=None, beforeTimestamp=None, afterTimestamp=None, order=None, q=None, requestIds=None) -> dict[str, Any]:
         """
         Retrieves a list of ingestion logs for a specified pack, organization, and root ingestion, with support for filtering and pagination.
 
@@ -2912,29 +2617,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'organizationId'")
         if rootIngestionId is None:
             raise ValueError("Missing required parameter 'rootIngestionId'")
-        url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/logs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("logTypes", logTypes),
-                ("ingestionExecutionId", ingestionExecutionId),
-                ("beforeTimestamp", beforeTimestamp),
-                ("afterTimestamp", afterTimestamp),
-                ("order", order),
-                ("q", q),
-                ("requestIds", requestIds),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/logs'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('logTypes', logTypes), ('ingestionExecutionId', ingestionExecutionId), ('beforeTimestamp', beforeTimestamp), ('afterTimestamp', afterTimestamp), ('order', order), ('q', q), ('requestIds', requestIds)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_grouped_pack_logs(
-        self, packId, docId, limit=None, pageToken=None, beforeTimestamp=None, afterTimestamp=None, order=None, q=None
-    ) -> dict[str, Any]:
+    async def list_grouped_pack_logs(self, packId, docId, limit=None, pageToken=None, beforeTimestamp=None, afterTimestamp=None, order=None, q=None) -> dict[str, Any]:
         """
         Retrieves a paginated and filtered list of grouped logs for a specific pack and document.
 
@@ -2962,36 +2651,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if docId is None:
             raise ValueError("Missing required parameter 'docId'")
-        url = f"{self.base_url}/packs/{packId}/docs/{docId}/groupedLogs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("beforeTimestamp", beforeTimestamp),
-                ("afterTimestamp", afterTimestamp),
-                ("order", order),
-                ("q", q),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/docs/{docId}/groupedLogs'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('beforeTimestamp', beforeTimestamp), ('afterTimestamp', afterTimestamp), ('order', order), ('q', q)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_grouped_ingestion_logs(
-        self,
-        packId,
-        organizationId,
-        rootIngestionId,
-        limit=None,
-        pageToken=None,
-        ingestionExecutionId=None,
-        beforeTimestamp=None,
-        afterTimestamp=None,
-        order=None,
-        q=None,
-    ) -> dict[str, Any]:
+    async def list_grouped_ingestion_logs(self, packId, organizationId, rootIngestionId, limit=None, pageToken=None, ingestionExecutionId=None, beforeTimestamp=None, afterTimestamp=None, order=None, q=None) -> dict[str, Any]:
         """
         Retrieves grouped ingestion log entries for a specified pack, organization, and root ingestion, supporting filtering and pagination options.
 
@@ -3023,41 +2689,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'organizationId'")
         if rootIngestionId is None:
             raise ValueError("Missing required parameter 'rootIngestionId'")
-        url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/groupedLogs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("ingestionExecutionId", ingestionExecutionId),
-                ("beforeTimestamp", beforeTimestamp),
-                ("afterTimestamp", afterTimestamp),
-                ("order", order),
-                ("q", q),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/groupedLogs'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('ingestionExecutionId', ingestionExecutionId), ('beforeTimestamp', beforeTimestamp), ('afterTimestamp', afterTimestamp), ('order', order), ('q', q)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_ingestion_executions(
-        self,
-        packId,
-        organizationId,
-        rootIngestionId,
-        limit=None,
-        pageToken=None,
-        beforeTimestamp=None,
-        afterTimestamp=None,
-        order=None,
-        ingestionStatus=None,
-        datasource=None,
-        executionType=None,
-        includeDeletedIngestions=None,
-        csbIngestionId=None,
-        csbIngestionExecutionId=None,
-    ) -> dict[str, Any]:
+    async def list_ingestion_executions(self, packId, organizationId, rootIngestionId, limit=None, pageToken=None, beforeTimestamp=None, afterTimestamp=None, order=None, ingestionStatus=None, datasource=None, executionType=None, includeDeletedIngestions=None, csbIngestionId=None, csbIngestionExecutionId=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of ingestion execution records for a specified pack, organization, and root ingestion, with optional filtering and sorting parameters.
 
@@ -3093,31 +2731,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'organizationId'")
         if rootIngestionId is None:
             raise ValueError("Missing required parameter 'rootIngestionId'")
-        url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/ingestionExecutions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("pageToken", pageToken),
-                ("beforeTimestamp", beforeTimestamp),
-                ("afterTimestamp", afterTimestamp),
-                ("order", order),
-                ("ingestionStatus", ingestionStatus),
-                ("datasource", datasource),
-                ("executionType", executionType),
-                ("includeDeletedIngestions", includeDeletedIngestions),
-                ("csbIngestionId", csbIngestionId),
-                ("csbIngestionExecutionId", csbIngestionExecutionId),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/ingestionExecutions'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('beforeTimestamp', beforeTimestamp), ('afterTimestamp', afterTimestamp), ('order', order), ('ingestionStatus', ingestionStatus), ('datasource', datasource), ('executionType', executionType), ('includeDeletedIngestions', includeDeletedIngestions), ('csbIngestionId', csbIngestionId), ('csbIngestionExecutionId', csbIngestionExecutionId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_ingestion_execution_attempts(
-        self, packId, organizationId, rootIngestionId, ingestionExecutionId, limit=None, pageToken=None, order=None
-    ) -> dict[str, Any]:
+    async def list_ingestion_execution_attempts(self, packId, organizationId, rootIngestionId, ingestionExecutionId, limit=None, pageToken=None, order=None) -> dict[str, Any]:
         """
         Lists execution attempts for a specific ingestion execution within a pack and organization.
 
@@ -3148,9 +2768,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'rootIngestionId'")
         if ingestionExecutionId is None:
             raise ValueError("Missing required parameter 'ingestionExecutionId'")
-        url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/ingestionExecutionId/{ingestionExecutionId}/attempts"
-        query_params = {k: v for k, v in [("limit", limit), ("pageToken", pageToken), ("order", order)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/ingestionExecutionId/{ingestionExecutionId}/attempts'
+        query_params = {k: v for k, v in [('limit', limit), ('pageToken', pageToken), ('order', order)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3185,9 +2805,9 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'logId'")
         if detailsKey is None:
             raise ValueError("Missing required parameter 'detailsKey'")
-        url = f"{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/logs/{logId}"
-        query_params = {k: v for k, v in [("detailsKey", detailsKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/packs/{packId}/organizationId/{organizationId}/rootIngestionId/{rootIngestionId}/logs/{logId}'
+        query_params = {k: v for k, v in [('detailsKey', detailsKey)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3209,9 +2829,9 @@ class CodaApp(APIApplication):
         """
         if packId is None:
             raise ValueError("Missing required parameter 'packId'")
-        url = f"{self.base_url}/packs/{packId}/featuredDocs"
+        url = f'{self.base_url}/packs/{packId}/featuredDocs'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3237,17 +2857,15 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'packId'")
         if items is None:
             raise ValueError("Missing required parameter 'items'")
-        request_body = {"items": items}
+        request_body = {'items': items}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/packs/{packId}/featuredDocs"
+        url = f'{self.base_url}/packs/{packId}/featuredDocs'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def add_go_link(
-        self, organizationId, name, destinationUrl, description=None, urlPattern=None, creatorEmail=None
-    ) -> dict[str, Any]:
+    async def add_go_link(self, organizationId, name, destinationUrl, description=None, urlPattern=None, creatorEmail=None) -> dict[str, Any]:
         """
         Creates a new Go Link resource for the specified organization.
 
@@ -3275,117 +2893,13 @@ class CodaApp(APIApplication):
             raise ValueError("Missing required parameter 'name'")
         if destinationUrl is None:
             raise ValueError("Missing required parameter 'destinationUrl'")
-        request_body = {
-            "name": name,
-            "destinationUrl": destinationUrl,
-            "description": description,
-            "urlPattern": urlPattern,
-            "creatorEmail": creatorEmail,
-        }
+        request_body = {'name': name, 'destinationUrl': destinationUrl, 'description': description, 'urlPattern': urlPattern, 'creatorEmail': creatorEmail}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/organizations/{organizationId}/goLinks"
+        url = f'{self.base_url}/organizations/{organizationId}/goLinks'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.list_categories,
-            self.list_docs,
-            self.create_doc,
-            self.get_doc,
-            self.delete_doc,
-            self.update_doc,
-            self.get_sharing_metadata,
-            self.get_permissions,
-            self.add_permission,
-            self.delete_permission,
-            self.search_principals,
-            self.get_acl_settings,
-            self.update_acl_settings,
-            self.publish_doc,
-            self.unpublish_doc,
-            self.list_pages,
-            self.create_page,
-            self.get_page,
-            self.update_page,
-            self.delete_page,
-            self.begin_page_content_export,
-            self.get_page_content_export_status,
-            self.list_tables,
-            self.get_table,
-            self.list_columns,
-            self.list_rows,
-            self.upsert_rows,
-            self.delete_rows,
-            self.get_row,
-            self.update_row,
-            self.delete_row,
-            self.push_button,
-            self.list_formulas,
-            self.get_formula,
-            self.list_controls,
-            self.get_control,
-            self.list_custom_doc_domains,
-            self.add_custom_doc_domain,
-            self.delete_custom_doc_domain,
-            self.get_custom_doc_domain_provider,
-            self.whoami,
-            self.resolve_browser_link,
-            self.get_mutation_status,
-            self.trigger_webhook_automation,
-            self.list_page_analytics,
-            self.list_doc_analytics_summary,
-            self.list_pack_analytics,
-            self.list_pack_analytics_summary,
-            self.list_pack_formula_analytics,
-            self.get_analytics_last_updated,
-            self.list_workspace_members,
-            self.change_user_role,
-            self.list_workspace_role_activity,
-            self.list_packs,
-            self.create_pack,
-            self.get_pack,
-            self.update_pack,
-            self.delete_pack,
-            self.get_pack_configuration_schema,
-            self.list_pack_versions,
-            self.get_next_pack_version,
-            self.get_pack_version_diffs,
-            self.register_pack_version,
-            self.pack_version_upload_complete,
-            self.create_pack_release,
-            self.list_pack_releases,
-            self.update_pack_release,
-            self.set_pack_oauth_config,
-            self.get_pack_oauth_config,
-            self.set_pack_system_connection,
-            self.get_pack_system_connection,
-            self.get_pack_permissions,
-            self.add_pack_permission,
-            self.delete_pack_permission,
-            self.list_pack_makers,
-            self.add_pack_maker,
-            self.delete_pack_maker,
-            self.list_pack_categories,
-            self.add_pack_category,
-            self.delete_pack_category,
-            self.upload_pack_asset,
-            self.upload_pack_source_code,
-            self.pack_asset_upload_complete,
-            self.pack_source_code_upload_complete,
-            self.get_pack_source_code,
-            self.list_pack_listings,
-            self.get_pack_listing,
-            self.list_pack_logs,
-            self.list_ingestion_logs,
-            self.list_grouped_pack_logs,
-            self.list_grouped_ingestion_logs,
-            self.list_ingestion_executions,
-            self.list_ingestion_execution_attempts,
-            self.get_pack_log_details,
-            self.list_pack_featured_docs,
-            self.update_pack_featured_docs,
-            self.add_go_link,
-        ]
+        return [self.list_categories, self.list_docs, self.create_doc, self.get_doc, self.delete_doc, self.update_doc, self.get_sharing_metadata, self.get_permissions, self.add_permission, self.delete_permission, self.search_principals, self.get_acl_settings, self.update_acl_settings, self.publish_doc, self.unpublish_doc, self.list_pages, self.create_page, self.get_page, self.update_page, self.delete_page, self.begin_page_content_export, self.get_page_content_export_status, self.list_tables, self.get_table, self.list_columns, self.list_rows, self.upsert_rows, self.delete_rows, self.get_row, self.update_row, self.delete_row, self.push_button, self.list_formulas, self.get_formula, self.list_controls, self.get_control, self.list_custom_doc_domains, self.add_custom_doc_domain, self.delete_custom_doc_domain, self.get_custom_doc_domain_provider, self.whoami, self.resolve_browser_link, self.get_mutation_status, self.trigger_webhook_automation, self.list_page_analytics, self.list_doc_analytics_summary, self.list_pack_analytics, self.list_pack_analytics_summary, self.list_pack_formula_analytics, self.get_analytics_last_updated, self.list_workspace_members, self.change_user_role, self.list_workspace_role_activity, self.list_packs, self.create_pack, self.get_pack, self.update_pack, self.delete_pack, self.get_pack_configuration_schema, self.list_pack_versions, self.get_next_pack_version, self.get_pack_version_diffs, self.register_pack_version, self.pack_version_upload_complete, self.create_pack_release, self.list_pack_releases, self.update_pack_release, self.set_pack_oauth_config, self.get_pack_oauth_config, self.set_pack_system_connection, self.get_pack_system_connection, self.get_pack_permissions, self.add_pack_permission, self.delete_pack_permission, self.list_pack_makers, self.add_pack_maker, self.delete_pack_maker, self.list_pack_categories, self.add_pack_category, self.delete_pack_category, self.upload_pack_asset, self.upload_pack_source_code, self.pack_asset_upload_complete, self.pack_source_code_upload_complete, self.get_pack_source_code, self.list_pack_listings, self.get_pack_listing, self.list_pack_logs, self.list_ingestion_logs, self.list_grouped_pack_logs, self.list_grouped_ingestion_logs, self.list_ingestion_executions, self.list_ingestion_execution_attempts, self.get_pack_log_details, self.list_pack_featured_docs, self.update_pack_featured_docs, self.add_go_link]

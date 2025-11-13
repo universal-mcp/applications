@@ -6,13 +6,12 @@ from botocore.exceptions import ClientError
 from universal_mcp.applications.application import BaseApplication
 from universal_mcp.integrations import Integration
 
-
 class AwsS3App(BaseApplication):
     """
     A class to interact with Amazon S3.
     """
 
-    def __init__(self, integration: Integration | None = None, client=None, **kwargs):
+    def __init__(self, integration: Integration | None=None, client=None, **kwargs):
         """
         Initializes the AmazonS3App.
 
@@ -21,7 +20,7 @@ class AwsS3App(BaseApplication):
             aws_secret_access_key (str, optional): AWS secret access key.
             region_name (str, optional): AWS region name.
         """
-        super().__init__(name="aws_s3", integration=integration, **kwargs)
+        super().__init__(name='aws_s3', integration=integration, **kwargs)
         self._client = client
         self.integration = integration
 
@@ -31,15 +30,11 @@ class AwsS3App(BaseApplication):
         Lazily initializes and returns a cached Boto3 S3 client instance. It retrieves authentication credentials from the associated `integration` object. This property is the core mechanism used by all other methods in the class to interact with AWS S3, raising an error if the integration is not set.
         """
         if not self.integration:
-            raise ValueError("Integration not initialized")
+            raise ValueError('Integration not initialized')
         if not self._client:
             credentials = self.integration.get_credentials()
-            credentials = {
-                "aws_access_key_id": credentials.get("access_key_id") or credentials.get("username"),
-                "aws_secret_access_key": credentials.get("secret_access_key") or credentials.get("password"),
-                "region_name": credentials.get("region"),
-            }
-            self._client = boto3.client("s3", **credentials)
+            credentials = {'aws_access_key_id': credentials.get('access_key_id') or credentials.get('username'), 'aws_secret_access_key': credentials.get('secret_access_key') or credentials.get('password'), 'region_name': credentials.get('region')}
+            self._client = boto3.client('s3', **credentials)
         return self._client
 
     def list_buckets(self) -> list[str]:
@@ -50,9 +45,9 @@ class AwsS3App(BaseApplication):
             List[str]: A list of bucket names.
         """
         response = self.client.list_buckets()
-        return [bucket["Name"] for bucket in response["Buckets"]]
+        return [bucket['Name'] for bucket in response['Buckets']]
 
-    async def create_bucket(self, bucket_name: str, region: str | None = None) -> bool:
+    async def create_bucket(self, bucket_name: str, region: str | None=None) -> bool:
         """
         Creates a new Amazon S3 bucket with a specified name and optional region. Returns `True` upon successful creation, or `False` if an AWS client error, such as a naming conflict or permission issue, occurs.
 
@@ -67,7 +62,7 @@ class AwsS3App(BaseApplication):
         """
         try:
             if region:
-                self.client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={"LocationConstraint": region})
+                self.client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={'LocationConstraint': region})
             else:
                 self.client.create_bucket(Bucket=bucket_name)
             return True
@@ -106,9 +101,9 @@ class AwsS3App(BaseApplication):
         """
         try:
             response = self.client.get_bucket_policy(Bucket=bucket_name)
-            return json.loads(response["Policy"])
+            return json.loads(response['Policy'])
         except ClientError as e:
-            return {"error": str(e)}
+            return {'error': str(e)}
 
     async def set_bucket_policy(self, bucket_name: str, policy: dict[str, Any]) -> bool:
         """
@@ -129,7 +124,7 @@ class AwsS3App(BaseApplication):
         except ClientError:
             return False
 
-    async def list_subdirectories(self, bucket_name: str, prefix: str | None = None) -> list[str]:
+    async def list_subdirectories(self, bucket_name: str, prefix: str | None=None) -> list[str]:
         """
         Lists immediate subdirectories (common prefixes) within an S3 bucket. If a prefix is provided, it returns subdirectories under that path; otherwise, it lists top-level directories. This function specifically lists folders, distinguishing it from `list_objects`, which lists files.
 
@@ -142,20 +137,20 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        paginator = self.client.get_paginator("list_objects_v2")
-        operation_parameters = {"Bucket": bucket_name}
+        paginator = self.client.get_paginator('list_objects_v2')
+        operation_parameters = {'Bucket': bucket_name}
         if prefix:
-            operation_parameters["Prefix"] = prefix
-            operation_parameters["Delimiter"] = "/"
+            operation_parameters['Prefix'] = prefix
+            operation_parameters['Delimiter'] = '/'
         else:
-            operation_parameters["Delimiter"] = "/"
+            operation_parameters['Delimiter'] = '/'
         prefixes = []
         for page in paginator.paginate(**operation_parameters):
-            for cp in page.get("CommonPrefixes", []):
-                prefixes.append(cp.get("Prefix"))
+            for cp in page.get('CommonPrefixes', []):
+                prefixes.append(cp.get('Prefix'))
         return prefixes
 
-    async def create_prefix(self, bucket_name: str, prefix_name: str, parent_prefix: str | None = None) -> bool:
+    async def create_prefix(self, bucket_name: str, prefix_name: str, parent_prefix: str | None=None) -> bool:
         """
         Creates a prefix (folder) in an S3 bucket, optionally nested under a parent prefix. It simulates a directory by creating a zero-byte object with a key ending in a slash ('/'), distinguishing it from put_object, which uploads content.
 
@@ -172,7 +167,7 @@ class AwsS3App(BaseApplication):
         if parent_prefix:
             key = f"{parent_prefix.rstrip('/')}/{prefix_name}/"
         else:
-            key = f"{prefix_name}/"
+            key = f'{prefix_name}/'
         self.client.put_object(Bucket=bucket_name, Key=key)
         return True
 
@@ -189,22 +184,13 @@ class AwsS3App(BaseApplication):
         Tags:
             important
         """
-        paginator = self.client.get_paginator("list_objects_v2")
-        operation_parameters = {"Bucket": bucket_name, "Prefix": prefix}
+        paginator = self.client.get_paginator('list_objects_v2')
+        operation_parameters = {'Bucket': bucket_name, 'Prefix': prefix}
         objects = []
         for page in paginator.paginate(**operation_parameters):
-            for obj in page.get("Contents", []):
-                if not obj["Key"].endswith("/"):
-                    objects.append(
-                        {
-                            "key": obj["Key"],
-                            "name": obj["Key"].split("/")[-1],
-                            "size": obj["Size"],
-                            "last_modified": obj["LastModified"].isoformat()
-                            if hasattr(obj["LastModified"], "isoformat")
-                            else str(obj["LastModified"]),
-                        }
-                    )
+            for obj in page.get('Contents', []):
+                if not obj['Key'].endswith('/'):
+                    objects.append({'key': obj['Key'], 'name': obj['Key'].split('/')[-1], 'size': obj['Size'], 'last_modified': obj['LastModified'].isoformat() if hasattr(obj['LastModified'], 'isoformat') else str(obj['LastModified'])})
         return objects
 
     async def put_text_object(self, bucket_name: str, prefix: str, object_name: str, content: str) -> bool:
@@ -223,7 +209,7 @@ class AwsS3App(BaseApplication):
             important
         """
         key = f"{prefix.rstrip('/')}/{object_name}" if prefix else object_name
-        self.client.put_object(Bucket=bucket_name, Key=key, Body=content.encode("utf-8"))
+        self.client.put_object(Bucket=bucket_name, Key=key, Body=content.encode('utf-8'))
         return True
 
     async def put_object_from_base64(self, bucket_name: str, prefix: str, object_name: str, base64_content: str) -> bool:
@@ -264,14 +250,12 @@ class AwsS3App(BaseApplication):
         """
         try:
             obj = self.client.get_object(Bucket=bucket_name, Key=key)
-            content = obj["Body"].read()
-            is_text_file = key.lower().endswith((".txt", ".csv", ".json", ".xml", ".html", ".md", ".js", ".css", ".py"))
-            content_dict = (
-                {"content": content.decode("utf-8")} if is_text_file else {"content_base64": base64.b64encode(content).decode("ascii")}
-            )
-            return {"name": key.split("/")[-1], "content_type": "text" if is_text_file else "binary", **content_dict, "size": len(content)}
+            content = obj['Body'].read()
+            is_text_file = key.lower().endswith(('.txt', '.csv', '.json', '.xml', '.html', '.md', '.js', '.css', '.py'))
+            content_dict = {'content': content.decode('utf-8')} if is_text_file else {'content_base64': base64.b64encode(content).decode('ascii')}
+            return {'name': key.split('/')[-1], 'content_type': 'text' if is_text_file else 'binary', **content_dict, 'size': len(content)}
         except ClientError as e:
-            return {"error": str(e)}
+            return {'error': str(e)}
 
     async def get_object_metadata(self, bucket_name: str, key: str) -> dict[str, Any]:
         """
@@ -288,17 +272,9 @@ class AwsS3App(BaseApplication):
         """
         try:
             response = self.client.head_object(Bucket=bucket_name, Key=key)
-            return {
-                "key": key,
-                "name": key.split("/")[-1],
-                "size": response.get("ContentLength", 0),
-                "last_modified": response.get("LastModified", "").isoformat() if response.get("LastModified") else "",
-                "content_type": response.get("ContentType", ""),
-                "etag": response.get("ETag", ""),
-                "metadata": response.get("Metadata", {}),
-            }
+            return {'key': key, 'name': key.split('/')[-1], 'size': response.get('ContentLength', 0), 'last_modified': response.get('LastModified', '').isoformat() if response.get('LastModified') else '', 'content_type': response.get('ContentType', ''), 'etag': response.get('ETag', ''), 'metadata': response.get('Metadata', {})}
         except ClientError as e:
-            return {"error": str(e)}
+            return {'error': str(e)}
 
     async def copy_object(self, source_bucket: str, source_key: str, dest_bucket: str, dest_key: str) -> bool:
         """
@@ -316,7 +292,7 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            copy_source = {"Bucket": source_bucket, "Key": source_key}
+            copy_source = {'Bucket': source_bucket, 'Key': source_key}
             self.client.copy_object(CopySource=copy_source, Bucket=dest_bucket, Key=dest_key)
             return True
         except ClientError:
@@ -374,16 +350,13 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            delete_dict = {"Objects": [{"Key": key} for key in keys]}
+            delete_dict = {'Objects': [{'Key': key} for key in keys]}
             response = self.client.delete_objects(Bucket=bucket_name, Delete=delete_dict)
-            return {
-                "deleted": [obj.get("Key") for obj in response.get("Deleted", [])],
-                "errors": [obj for obj in response.get("Errors", [])],
-            }
+            return {'deleted': [obj.get('Key') for obj in response.get('Deleted', [])], 'errors': [obj for obj in response.get('Errors', [])]}
         except ClientError as e:
-            return {"error": str(e)}
+            return {'error': str(e)}
 
-    async def generate_presigned_url(self, bucket_name: str, key: str, expiration: int = 3600, http_method: str = "GET") -> str:
+    async def generate_presigned_url(self, bucket_name: str, key: str, expiration: int=3600, http_method: str='GET') -> str:
         """
         Generates a temporary, secure URL for a specific S3 object. This URL grants time-limited permissions for actions like GET, PUT, or DELETE, expiring after a defined period. It allows object access without sharing permanent AWS credentials.
 
@@ -399,17 +372,13 @@ class AwsS3App(BaseApplication):
             important
         """
         try:
-            method_map = {"GET": "get_object", "PUT": "put_object", "DELETE": "delete_object"}
-            response = self.client.generate_presigned_url(
-                method_map.get(http_method.upper(), "get_object"), Params={"Bucket": bucket_name, "Key": key}, ExpiresIn=expiration
-            )
+            method_map = {'GET': 'get_object', 'PUT': 'put_object', 'DELETE': 'delete_object'}
+            response = self.client.generate_presigned_url(method_map.get(http_method.upper(), 'get_object'), Params={'Bucket': bucket_name, 'Key': key}, ExpiresIn=expiration)
             return response
         except ClientError as e:
-            return f"Error: {str(e)}"
+            return f'Error: {str(e)}'
 
-    async def search_objects(
-        self, bucket_name: str, prefix: str = "", name_pattern: str = "", min_size: int | None = None, max_size: int | None = None
-    ) -> list[dict[str, Any]]:
+    async def search_objects(self, bucket_name: str, prefix: str='', name_pattern: str='', min_size: int | None=None, max_size: int | None=None) -> list[dict[str, Any]]:
         """
         Filters objects within an S3 bucket and prefix based on a name pattern and size range. It retrieves all objects via `list_objects` and then applies the specified criteria client-side, returning a refined list of matching objects and their metadata.
 
@@ -428,16 +397,16 @@ class AwsS3App(BaseApplication):
         all_objects = await self.list_objects(bucket_name, prefix)
         filtered_objects = []
         for obj in all_objects:
-            if name_pattern and name_pattern.lower() not in obj["name"].lower():
+            if name_pattern and name_pattern.lower() not in obj['name'].lower():
                 continue
-            if min_size and obj["size"] < min_size:
+            if min_size and obj['size'] < min_size:
                 continue
-            if max_size and obj["size"] > max_size:
+            if max_size and obj['size'] > max_size:
                 continue
             filtered_objects.append(obj)
         return filtered_objects
 
-    async def get_storage_summary(self, bucket_name: str, prefix: str = "") -> dict[str, Any]:
+    async def get_storage_summary(self, bucket_name: str, prefix: str='') -> dict[str, Any]:
         """
         Calculates and returns statistics for an S3 bucket or prefix. The result includes the total number of objects, their combined size in bytes, and a human-readable string representation of the size (e.g., '15.2 MB').
 
@@ -451,35 +420,16 @@ class AwsS3App(BaseApplication):
             important
         """
         objects = await self.list_objects(bucket_name, prefix)
-        total_size = sum((obj["size"] for obj in objects))
+        total_size = sum((obj['size'] for obj in objects))
         object_count = len(objects)
-        for unit in ["B", "KB", "MB", "GB", "TB"]:
+        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
             if total_size < 1024.0:
-                human_size = f"{total_size:.2f} {unit}"
+                human_size = f'{total_size:.2f} {unit}'
                 break
             total_size /= 1024.0
         else:
-            human_size = f"{total_size:.2f} PB"
-        return {"total_size_bytes": sum((obj["size"] for obj in objects)), "human_readable_size": human_size, "object_count": object_count}
+            human_size = f'{total_size:.2f} PB'
+        return {'total_size_bytes': sum((obj['size'] for obj in objects)), 'human_readable_size': human_size, 'object_count': object_count}
 
     def list_tools(self):
-        return [
-            self.create_bucket,
-            self.delete_bucket,
-            self.get_bucket_policy,
-            self.set_bucket_policy,
-            self.list_subdirectories,
-            self.create_prefix,
-            self.list_objects,
-            self.put_text_object,
-            self.put_object_from_base64,
-            self.get_object_with_content,
-            self.get_object_metadata,
-            self.copy_object,
-            self.move_object,
-            self.delete_single_object,
-            self.delete_objects,
-            self.generate_presigned_url,
-            self.search_objects,
-            self.get_storage_summary,
-        ]
+        return [self.create_bucket, self.delete_bucket, self.get_bucket_policy, self.set_bucket_policy, self.list_subdirectories, self.create_prefix, self.list_objects, self.put_text_object, self.put_object_from_base64, self.get_object_with_content, self.get_object_metadata, self.copy_object, self.move_object, self.delete_single_object, self.delete_objects, self.generate_presigned_url, self.search_objects, self.get_storage_summary]

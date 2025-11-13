@@ -2,15 +2,15 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class ShortcutApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="shortcut", integration=integration, **kwargs)
-        self.base_url = "https://api.app.shortcut.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='shortcut', integration=integration, **kwargs)
+        self.base_url = 'https://api.app.shortcut.com'
 
     def _get_headers(self) -> dict[str, Any]:
-        api_key = self.integration.get_credentials().get("api_key")
-        return {"Shortcut-Token": f"{api_key}", "Content-Type": "application/json"}
+        api_key = self.integration.get_credentials().get('api_key')
+        return {'Shortcut-Token': f'{api_key}', 'Content-Type': 'application/json'}
 
     async def list_categories(self) -> list[Any]:
         """
@@ -28,9 +28,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, categories, api, get, important
         """
-        url = f"{self.base_url}/api/v3/categories"
+        url = f'{self.base_url}/api/v3/categories'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -56,11 +56,11 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {"name": name, "color": color, "external_id": external_id, "type": type}
+        request_body = {'name': name, 'color': color, 'external_id': external_id, 'type': type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/categories"
+        url = f'{self.base_url}/api/v3/categories'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -82,9 +82,9 @@ class ShortcutApp(APIApplication):
         """
         if category_public_id is None:
             raise ValueError("Missing required parameter 'category-public-id'")
-        url = f"{self.base_url}/api/v3/categories/{category_public_id}"
+        url = f'{self.base_url}/api/v3/categories/{category_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -110,11 +110,11 @@ class ShortcutApp(APIApplication):
         """
         if category_public_id is None:
             raise ValueError("Missing required parameter 'category-public-id'")
-        request_body = {"name": name, "color": color, "archived": archived}
+        request_body = {'name': name, 'color': color, 'archived': archived}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/categories/{category_public_id}"
+        url = f'{self.base_url}/api/v3/categories/{category_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -137,9 +137,9 @@ class ShortcutApp(APIApplication):
         """
         if category_public_id is None:
             raise ValueError("Missing required parameter 'category-public-id'")
-        url = f"{self.base_url}/api/v3/categories/{category_public_id}"
+        url = f'{self.base_url}/api/v3/categories/{category_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -162,9 +162,9 @@ class ShortcutApp(APIApplication):
         """
         if category_public_id is None:
             raise ValueError("Missing required parameter 'category-public-id'")
-        url = f"{self.base_url}/api/v3/categories/{category_public_id}/milestones"
+        url = f'{self.base_url}/api/v3/categories/{category_public_id}/milestones'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -186,9 +186,9 @@ class ShortcutApp(APIApplication):
         """
         if category_public_id is None:
             raise ValueError("Missing required parameter 'category-public-id'")
-        url = f"{self.base_url}/api/v3/categories/{category_public_id}/objectives"
+        url = f'{self.base_url}/api/v3/categories/{category_public_id}/objectives'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -208,9 +208,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, custom-fields, api,
         """
-        url = f"{self.base_url}/api/v3/custom-fields"
+        url = f'{self.base_url}/api/v3/custom-fields'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -233,23 +233,13 @@ class ShortcutApp(APIApplication):
         """
         if custom_field_public_id is None:
             raise ValueError("Missing required parameter 'custom-field-public-id'")
-        url = f"{self.base_url}/api/v3/custom-fields/{custom_field_public_id}"
+        url = f'{self.base_url}/api/v3/custom-fields/{custom_field_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_custom_field(
-        self,
-        custom_field_public_id,
-        enabled=None,
-        name=None,
-        values=None,
-        icon_set_identifier=None,
-        description=None,
-        before_id=None,
-        after_id=None,
-    ) -> dict[str, Any]:
+    async def update_custom_field(self, custom_field_public_id, enabled=None, name=None, values=None, icon_set_identifier=None, description=None, before_id=None, after_id=None) -> dict[str, Any]:
         """
         Updates an existing custom field's attributes with the provided values.
 
@@ -275,19 +265,11 @@ class ShortcutApp(APIApplication):
         """
         if custom_field_public_id is None:
             raise ValueError("Missing required parameter 'custom-field-public-id'")
-        request_body = {
-            "enabled": enabled,
-            "name": name,
-            "values": values,
-            "icon_set_identifier": icon_set_identifier,
-            "description": description,
-            "before_id": before_id,
-            "after_id": after_id,
-        }
+        request_body = {'enabled': enabled, 'name': name, 'values': values, 'icon_set_identifier': icon_set_identifier, 'description': description, 'before_id': before_id, 'after_id': after_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/custom-fields/{custom_field_public_id}"
+        url = f'{self.base_url}/api/v3/custom-fields/{custom_field_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -310,9 +292,9 @@ class ShortcutApp(APIApplication):
         """
         if custom_field_public_id is None:
             raise ValueError("Missing required parameter 'custom-field-public-id'")
-        url = f"{self.base_url}/api/v3/custom-fields/{custom_field_public_id}"
+        url = f'{self.base_url}/api/v3/custom-fields/{custom_field_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -332,9 +314,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, entity-templates, api-call, management,
         """
-        url = f"{self.base_url}/api/v3/entity-templates"
+        url = f'{self.base_url}/api/v3/entity-templates'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -361,11 +343,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'name'")
         if story_contents is None:
             raise ValueError("Missing required parameter 'story_contents'")
-        request_body = {"name": name, "author_id": author_id, "story_contents": story_contents}
+        request_body = {'name': name, 'author_id': author_id, 'story_contents': story_contents}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/entity-templates"
+        url = f'{self.base_url}/api/v3/entity-templates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -385,9 +367,9 @@ class ShortcutApp(APIApplication):
         Tags:
             disable, story-templates, api, management,
         """
-        url = f"{self.base_url}/api/v3/entity-templates/disable"
+        url = f'{self.base_url}/api/v3/entity-templates/disable'
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -407,9 +389,9 @@ class ShortcutApp(APIApplication):
         Tags:
             enable, templates, management, http-put,
         """
-        url = f"{self.base_url}/api/v3/entity-templates/enable"
+        url = f'{self.base_url}/api/v3/entity-templates/enable'
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -432,9 +414,9 @@ class ShortcutApp(APIApplication):
         """
         if entity_template_public_id is None:
             raise ValueError("Missing required parameter 'entity-template-public-id'")
-        url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
+        url = f'{self.base_url}/api/v3/entity-templates/{entity_template_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -458,11 +440,11 @@ class ShortcutApp(APIApplication):
         """
         if entity_template_public_id is None:
             raise ValueError("Missing required parameter 'entity-template-public-id'")
-        request_body = {"name": name, "story_contents": story_contents}
+        request_body = {'name': name, 'story_contents': story_contents}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
+        url = f'{self.base_url}/api/v3/entity-templates/{entity_template_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -484,9 +466,9 @@ class ShortcutApp(APIApplication):
         """
         if entity_template_public_id is None:
             raise ValueError("Missing required parameter 'entity-template-public-id'")
-        url = f"{self.base_url}/api/v3/entity-templates/{entity_template_public_id}"
+        url = f'{self.base_url}/api/v3/entity-templates/{entity_template_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -506,9 +488,9 @@ class ShortcutApp(APIApplication):
         Tags:
             get, retrieve, api, workflow, epic, configuration,
         """
-        url = f"{self.base_url}/api/v3/epic-workflow"
+        url = f'{self.base_url}/api/v3/epic-workflow'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -528,34 +510,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, epics, async-job, management, important
         """
-        url = f"{self.base_url}/api/v3/epics"
-        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/epics'
+        query_params = {k: v for k, v in [('includes_description', includes_description)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_epic(
-        self,
-        name,
-        description=None,
-        labels=None,
-        completed_at_override=None,
-        objective_ids=None,
-        planned_start_date=None,
-        state=None,
-        milestone_id=None,
-        requested_by_id=None,
-        epic_state_id=None,
-        started_at_override=None,
-        group_id=None,
-        updated_at=None,
-        follower_ids=None,
-        group_ids=None,
-        owner_ids=None,
-        external_id=None,
-        deadline=None,
-        created_at=None,
-    ) -> dict[str, Any]:
+    async def create_epic(self, name, description=None, labels=None, completed_at_override=None, objective_ids=None, planned_start_date=None, state=None, milestone_id=None, requested_by_id=None, epic_state_id=None, started_at_override=None, group_id=None, updated_at=None, follower_ids=None, group_ids=None, owner_ids=None, external_id=None, deadline=None, created_at=None) -> dict[str, Any]:
         """
         Creates a new epic in the project management system with the specified properties.
 
@@ -592,31 +553,11 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "description": description,
-            "labels": labels,
-            "completed_at_override": completed_at_override,
-            "objective_ids": objective_ids,
-            "name": name,
-            "planned_start_date": planned_start_date,
-            "state": state,
-            "milestone_id": milestone_id,
-            "requested_by_id": requested_by_id,
-            "epic_state_id": epic_state_id,
-            "started_at_override": started_at_override,
-            "group_id": group_id,
-            "updated_at": updated_at,
-            "follower_ids": follower_ids,
-            "group_ids": group_ids,
-            "owner_ids": owner_ids,
-            "external_id": external_id,
-            "deadline": deadline,
-            "created_at": created_at,
-        }
+        request_body = {'description': description, 'labels': labels, 'completed_at_override': completed_at_override, 'objective_ids': objective_ids, 'name': name, 'planned_start_date': planned_start_date, 'state': state, 'milestone_id': milestone_id, 'requested_by_id': requested_by_id, 'epic_state_id': epic_state_id, 'started_at_override': started_at_override, 'group_id': group_id, 'updated_at': updated_at, 'follower_ids': follower_ids, 'group_ids': group_ids, 'owner_ids': owner_ids, 'external_id': external_id, 'deadline': deadline, 'created_at': created_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/epics"
+        url = f'{self.base_url}/api/v3/epics'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -638,36 +579,13 @@ class ShortcutApp(APIApplication):
         """
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_epic(
-        self,
-        epic_public_id,
-        description=None,
-        archived=None,
-        labels=None,
-        completed_at_override=None,
-        objective_ids=None,
-        name=None,
-        planned_start_date=None,
-        state=None,
-        milestone_id=None,
-        requested_by_id=None,
-        epic_state_id=None,
-        started_at_override=None,
-        group_id=None,
-        follower_ids=None,
-        group_ids=None,
-        owner_ids=None,
-        external_id=None,
-        before_id=None,
-        after_id=None,
-        deadline=None,
-    ) -> dict[str, Any]:
+    async def update_epic(self, epic_public_id, description=None, archived=None, labels=None, completed_at_override=None, objective_ids=None, name=None, planned_start_date=None, state=None, milestone_id=None, requested_by_id=None, epic_state_id=None, started_at_override=None, group_id=None, follower_ids=None, group_ids=None, owner_ids=None, external_id=None, before_id=None, after_id=None, deadline=None) -> dict[str, Any]:
         """
         Updates an epic with the provided details.
 
@@ -706,32 +624,11 @@ class ShortcutApp(APIApplication):
         """
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "labels": labels,
-            "completed_at_override": completed_at_override,
-            "objective_ids": objective_ids,
-            "name": name,
-            "planned_start_date": planned_start_date,
-            "state": state,
-            "milestone_id": milestone_id,
-            "requested_by_id": requested_by_id,
-            "epic_state_id": epic_state_id,
-            "started_at_override": started_at_override,
-            "group_id": group_id,
-            "follower_ids": follower_ids,
-            "group_ids": group_ids,
-            "owner_ids": owner_ids,
-            "external_id": external_id,
-            "before_id": before_id,
-            "after_id": after_id,
-            "deadline": deadline,
-        }
+        request_body = {'description': description, 'archived': archived, 'labels': labels, 'completed_at_override': completed_at_override, 'objective_ids': objective_ids, 'name': name, 'planned_start_date': planned_start_date, 'state': state, 'milestone_id': milestone_id, 'requested_by_id': requested_by_id, 'epic_state_id': epic_state_id, 'started_at_override': started_at_override, 'group_id': group_id, 'follower_ids': follower_ids, 'group_ids': group_ids, 'owner_ids': owner_ids, 'external_id': external_id, 'before_id': before_id, 'after_id': after_id, 'deadline': deadline}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -754,9 +651,9 @@ class ShortcutApp(APIApplication):
         """
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -779,15 +676,13 @@ class ShortcutApp(APIApplication):
         """
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/comments'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_epic_comment(
-        self, epic_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None
-    ) -> dict[str, Any]:
+    async def create_epic_comment(self, epic_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None) -> dict[str, Any]:
         """
         Creates a comment on an epic with the specified details.
 
@@ -812,17 +707,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {
-            "text": text,
-            "author_id": author_id,
-            "created_at": created_at,
-            "updated_at": updated_at,
-            "external_id": external_id,
-        }
+        request_body = {'text': text, 'author_id': author_id, 'created_at': created_at, 'updated_at': updated_at, 'external_id': external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/comments'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -848,9 +737,9 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         if comment_public_id is None:
             raise ValueError("Missing required parameter 'comment-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -879,17 +768,15 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {"text": text}
+        request_body = {'text': text}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_epic_comment_comment(
-        self, epic_public_id, comment_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None
-    ) -> dict[str, Any]:
+    async def create_epic_comment_comment(self, epic_public_id, comment_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None) -> dict[str, Any]:
         """
         Creates a reply to an existing comment on a specified epic, sending the reply to the backend API and returning the created comment data.
 
@@ -918,17 +805,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {
-            "text": text,
-            "author_id": author_id,
-            "created_at": created_at,
-            "updated_at": updated_at,
-            "external_id": external_id,
-        }
+        request_body = {'text': text, 'author_id': author_id, 'created_at': created_at, 'updated_at': updated_at, 'external_id': external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -954,9 +835,9 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'epic-public-id'")
         if comment_public_id is None:
             raise ValueError("Missing required parameter 'comment-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -980,9 +861,9 @@ class ShortcutApp(APIApplication):
         """
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/stories"
-        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/stories'
+        query_params = {k: v for k, v in [('includes_description', includes_description)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1005,9 +886,9 @@ class ShortcutApp(APIApplication):
         """
         if epic_public_id is None:
             raise ValueError("Missing required parameter 'epic-public-id'")
-        url = f"{self.base_url}/api/v3/epics/{epic_public_id}/unlink-productboard"
+        url = f'{self.base_url}/api/v3/epics/{epic_public_id}/unlink-productboard'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1030,9 +911,9 @@ class ShortcutApp(APIApplication):
         """
         if external_link is None:
             raise ValueError("Missing required parameter 'external_link'")
-        url = f"{self.base_url}/api/v3/external-link/stories"
-        query_params = {k: v for k, v in [("external_link", external_link)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/external-link/stories'
+        query_params = {k: v for k, v in [('external_link', external_link)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1052,9 +933,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, files, api,
         """
-        url = f"{self.base_url}/api/v3/files"
+        url = f'{self.base_url}/api/v3/files'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1076,15 +957,13 @@ class ShortcutApp(APIApplication):
         """
         if file_public_id is None:
             raise ValueError("Missing required parameter 'file-public-id'")
-        url = f"{self.base_url}/api/v3/files/{file_public_id}"
+        url = f'{self.base_url}/api/v3/files/{file_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_file(
-        self, file_public_id, description=None, created_at=None, updated_at=None, name=None, uploader_id=None, external_id=None
-    ) -> dict[str, Any]:
+    async def update_file(self, file_public_id, description=None, created_at=None, updated_at=None, name=None, uploader_id=None, external_id=None) -> dict[str, Any]:
         """
         Updates metadata for a file identified by its public ID.
 
@@ -1109,18 +988,11 @@ class ShortcutApp(APIApplication):
         """
         if file_public_id is None:
             raise ValueError("Missing required parameter 'file-public-id'")
-        request_body = {
-            "description": description,
-            "created_at": created_at,
-            "updated_at": updated_at,
-            "name": name,
-            "uploader_id": uploader_id,
-            "external_id": external_id,
-        }
+        request_body = {'description': description, 'created_at': created_at, 'updated_at': updated_at, 'name': name, 'uploader_id': uploader_id, 'external_id': external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/files/{file_public_id}"
+        url = f'{self.base_url}/api/v3/files/{file_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1143,9 +1015,9 @@ class ShortcutApp(APIApplication):
         """
         if file_public_id is None:
             raise ValueError("Missing required parameter 'file-public-id'")
-        url = f"{self.base_url}/api/v3/files/{file_public_id}"
+        url = f'{self.base_url}/api/v3/files/{file_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1165,15 +1037,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, groups, api, get,
         """
-        url = f"{self.base_url}/api/v3/groups"
+        url = f'{self.base_url}/api/v3/groups'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_group(
-        self, name, mention_name, description=None, member_ids=None, workflow_ids=None, color=None, color_key=None, display_icon_id=None
-    ) -> dict[str, Any]:
+    async def create_group(self, name, mention_name, description=None, member_ids=None, workflow_ids=None, color=None, color_key=None, display_icon_id=None) -> dict[str, Any]:
         """
         Creates a new group with the specified configuration and returns the group's details.
 
@@ -1201,20 +1071,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'name'")
         if mention_name is None:
             raise ValueError("Missing required parameter 'mention_name'")
-        request_body = {
-            "description": description,
-            "member_ids": member_ids,
-            "workflow_ids": workflow_ids,
-            "name": name,
-            "mention_name": mention_name,
-            "color": color,
-            "color_key": color_key,
-            "display_icon_id": display_icon_id,
-        }
+        request_body = {'description': description, 'member_ids': member_ids, 'workflow_ids': workflow_ids, 'name': name, 'mention_name': mention_name, 'color': color, 'color_key': color_key, 'display_icon_id': display_icon_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/groups"
+        url = f'{self.base_url}/api/v3/groups'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1237,25 +1098,13 @@ class ShortcutApp(APIApplication):
         """
         if group_public_id is None:
             raise ValueError("Missing required parameter 'group-public-id'")
-        url = f"{self.base_url}/api/v3/groups/{group_public_id}"
+        url = f'{self.base_url}/api/v3/groups/{group_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_group(
-        self,
-        group_public_id,
-        description=None,
-        archived=None,
-        color=None,
-        display_icon_id=None,
-        mention_name=None,
-        name=None,
-        color_key=None,
-        member_ids=None,
-        workflow_ids=None,
-    ) -> dict[str, Any]:
+    async def update_group(self, group_public_id, description=None, archived=None, color=None, display_icon_id=None, mention_name=None, name=None, color_key=None, member_ids=None, workflow_ids=None) -> dict[str, Any]:
         """
         Updates the properties of an existing group by its public ID.
 
@@ -1283,21 +1132,11 @@ class ShortcutApp(APIApplication):
         """
         if group_public_id is None:
             raise ValueError("Missing required parameter 'group-public-id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "color": color,
-            "display_icon_id": display_icon_id,
-            "mention_name": mention_name,
-            "name": name,
-            "color_key": color_key,
-            "member_ids": member_ids,
-            "workflow_ids": workflow_ids,
-        }
+        request_body = {'description': description, 'archived': archived, 'color': color, 'display_icon_id': display_icon_id, 'mention_name': mention_name, 'name': name, 'color_key': color_key, 'member_ids': member_ids, 'workflow_ids': workflow_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/groups/{group_public_id}"
+        url = f'{self.base_url}/api/v3/groups/{group_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1322,9 +1161,9 @@ class ShortcutApp(APIApplication):
         """
         if group_public_id is None:
             raise ValueError("Missing required parameter 'group-public-id'")
-        url = f"{self.base_url}/api/v3/groups/{group_public_id}/stories"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/groups/{group_public_id}/stories'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1344,15 +1183,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, iterations, api, retrieve,
         """
-        url = f"{self.base_url}/api/v3/iterations"
+        url = f'{self.base_url}/api/v3/iterations'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_iteration(
-        self, name, start_date, end_date, follower_ids=None, group_ids=None, labels=None, description=None
-    ) -> dict[str, Any]:
+    async def create_iteration(self, name, start_date, end_date, follower_ids=None, group_ids=None, labels=None, description=None) -> dict[str, Any]:
         """
         Creates a new iteration with the specified details and returns the server's response as a dictionary.
 
@@ -1381,19 +1218,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'start_date'")
         if end_date is None:
             raise ValueError("Missing required parameter 'end_date'")
-        request_body = {
-            "follower_ids": follower_ids,
-            "group_ids": group_ids,
-            "labels": labels,
-            "description": description,
-            "name": name,
-            "start_date": start_date,
-            "end_date": end_date,
-        }
+        request_body = {'follower_ids': follower_ids, 'group_ids': group_ids, 'labels': labels, 'description': description, 'name': name, 'start_date': start_date, 'end_date': end_date}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/iterations"
+        url = f'{self.base_url}/api/v3/iterations'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1413,9 +1242,9 @@ class ShortcutApp(APIApplication):
         Tags:
             disable, iterations, api, management,
         """
-        url = f"{self.base_url}/api/v3/iterations/disable"
+        url = f'{self.base_url}/api/v3/iterations/disable'
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1435,9 +1264,9 @@ class ShortcutApp(APIApplication):
         Tags:
             enable, iterations, api, management,
         """
-        url = f"{self.base_url}/api/v3/iterations/enable"
+        url = f'{self.base_url}/api/v3/iterations/enable'
         query_params = {}
-        response = self._put(url, data={}, params=query_params)
+        response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1460,23 +1289,13 @@ class ShortcutApp(APIApplication):
         """
         if iteration_public_id is None:
             raise ValueError("Missing required parameter 'iteration-public-id'")
-        url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}"
+        url = f'{self.base_url}/api/v3/iterations/{iteration_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_iteration(
-        self,
-        iteration_public_id,
-        follower_ids=None,
-        group_ids=None,
-        labels=None,
-        description=None,
-        name=None,
-        start_date=None,
-        end_date=None,
-    ) -> dict[str, Any]:
+    async def update_iteration(self, iteration_public_id, follower_ids=None, group_ids=None, labels=None, description=None, name=None, start_date=None, end_date=None) -> dict[str, Any]:
         """
         Updates an existing iteration with the provided attributes.
 
@@ -1502,19 +1321,11 @@ class ShortcutApp(APIApplication):
         """
         if iteration_public_id is None:
             raise ValueError("Missing required parameter 'iteration-public-id'")
-        request_body = {
-            "follower_ids": follower_ids,
-            "group_ids": group_ids,
-            "labels": labels,
-            "description": description,
-            "name": name,
-            "start_date": start_date,
-            "end_date": end_date,
-        }
+        request_body = {'follower_ids': follower_ids, 'group_ids': group_ids, 'labels': labels, 'description': description, 'name': name, 'start_date': start_date, 'end_date': end_date}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}"
+        url = f'{self.base_url}/api/v3/iterations/{iteration_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1537,9 +1348,9 @@ class ShortcutApp(APIApplication):
         """
         if iteration_public_id is None:
             raise ValueError("Missing required parameter 'iteration-public-id'")
-        url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}"
+        url = f'{self.base_url}/api/v3/iterations/{iteration_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1563,9 +1374,9 @@ class ShortcutApp(APIApplication):
         """
         if iteration_public_id is None:
             raise ValueError("Missing required parameter 'iteration-public-id'")
-        url = f"{self.base_url}/api/v3/iterations/{iteration_public_id}/stories"
-        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/iterations/{iteration_public_id}/stories'
+        query_params = {k: v for k, v in [('includes_description', includes_description)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1588,15 +1399,13 @@ class ShortcutApp(APIApplication):
         """
         if key_result_public_id is None:
             raise ValueError("Missing required parameter 'key-result-public-id'")
-        url = f"{self.base_url}/api/v3/key-results/{key_result_public_id}"
+        url = f'{self.base_url}/api/v3/key-results/{key_result_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_key_result(
-        self, key_result_public_id, name=None, initial_observed_value=None, observed_value=None, target_value=None
-    ) -> dict[str, Any]:
+    async def update_key_result(self, key_result_public_id, name=None, initial_observed_value=None, observed_value=None, target_value=None) -> dict[str, Any]:
         """
         Updates a key result with the provided details.
 
@@ -1618,16 +1427,11 @@ class ShortcutApp(APIApplication):
         """
         if key_result_public_id is None:
             raise ValueError("Missing required parameter 'key-result-public-id'")
-        request_body = {
-            "name": name,
-            "initial_observed_value": initial_observed_value,
-            "observed_value": observed_value,
-            "target_value": target_value,
-        }
+        request_body = {'name': name, 'initial_observed_value': initial_observed_value, 'observed_value': observed_value, 'target_value': target_value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/key-results/{key_result_public_id}"
+        url = f'{self.base_url}/api/v3/key-results/{key_result_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1647,9 +1451,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, fetch, labels, api, data-retrieval,
         """
-        url = f"{self.base_url}/api/v3/labels"
-        query_params = {k: v for k, v in [("slim", slim)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/labels'
+        query_params = {k: v for k, v in [('slim', slim)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1675,11 +1479,11 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {"name": name, "description": description, "color": color, "external_id": external_id}
+        request_body = {'name': name, 'description': description, 'color': color, 'external_id': external_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/labels"
+        url = f'{self.base_url}/api/v3/labels'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1702,9 +1506,9 @@ class ShortcutApp(APIApplication):
         """
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
-        url = f"{self.base_url}/api/v3/labels/{label_public_id}"
+        url = f'{self.base_url}/api/v3/labels/{label_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1731,11 +1535,11 @@ class ShortcutApp(APIApplication):
         """
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
-        request_body = {"name": name, "description": description, "color": color, "archived": archived}
+        request_body = {'name': name, 'description': description, 'color': color, 'archived': archived}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/labels/{label_public_id}"
+        url = f'{self.base_url}/api/v3/labels/{label_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1758,9 +1562,9 @@ class ShortcutApp(APIApplication):
         """
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
-        url = f"{self.base_url}/api/v3/labels/{label_public_id}"
+        url = f'{self.base_url}/api/v3/labels/{label_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1783,9 +1587,9 @@ class ShortcutApp(APIApplication):
         """
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
-        url = f"{self.base_url}/api/v3/labels/{label_public_id}/epics"
+        url = f'{self.base_url}/api/v3/labels/{label_public_id}/epics'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1809,9 +1613,9 @@ class ShortcutApp(APIApplication):
         """
         if label_public_id is None:
             raise ValueError("Missing required parameter 'label-public-id'")
-        url = f"{self.base_url}/api/v3/labels/{label_public_id}/stories"
-        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/labels/{label_public_id}/stories'
+        query_params = {k: v for k, v in [('includes_description', includes_description)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1831,15 +1635,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, linked-files, api, get,
         """
-        url = f"{self.base_url}/api/v3/linked-files"
+        url = f'{self.base_url}/api/v3/linked-files'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_linked_file(
-        self, name, type, url, description=None, story_id=None, thumbnail_url=None, size=None, uploader_id=None, content_type=None
-    ) -> dict[str, Any]:
+    async def create_linked_file(self, name, type, url, description=None, story_id=None, thumbnail_url=None, size=None, uploader_id=None, content_type=None) -> dict[str, Any]:
         """
         Creates a linked file with the specified attributes.
 
@@ -1870,21 +1672,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'type'")
         if url is None:
             raise ValueError("Missing required parameter 'url'")
-        request_body = {
-            "description": description,
-            "story_id": story_id,
-            "name": name,
-            "thumbnail_url": thumbnail_url,
-            "type": type,
-            "size": size,
-            "uploader_id": uploader_id,
-            "content_type": content_type,
-            "url": url,
-        }
+        request_body = {'description': description, 'story_id': story_id, 'name': name, 'thumbnail_url': thumbnail_url, 'type': type, 'size': size, 'uploader_id': uploader_id, 'content_type': content_type, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/linked-files"
+        url = f'{self.base_url}/api/v3/linked-files'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1907,24 +1699,13 @@ class ShortcutApp(APIApplication):
         """
         if linked_file_public_id is None:
             raise ValueError("Missing required parameter 'linked-file-public-id'")
-        url = f"{self.base_url}/api/v3/linked-files/{linked_file_public_id}"
+        url = f'{self.base_url}/api/v3/linked-files/{linked_file_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_linked_file(
-        self,
-        linked_file_public_id,
-        description=None,
-        story_id=None,
-        name=None,
-        thumbnail_url=None,
-        type=None,
-        size=None,
-        uploader_id=None,
-        url=None,
-    ) -> dict[str, Any]:
+    async def update_linked_file(self, linked_file_public_id, description=None, story_id=None, name=None, thumbnail_url=None, type=None, size=None, uploader_id=None, url=None) -> dict[str, Any]:
         """
         Updates a linked file with the specified parameters.
 
@@ -1951,20 +1732,11 @@ class ShortcutApp(APIApplication):
         """
         if linked_file_public_id is None:
             raise ValueError("Missing required parameter 'linked-file-public-id'")
-        request_body = {
-            "description": description,
-            "story_id": story_id,
-            "name": name,
-            "thumbnail_url": thumbnail_url,
-            "type": type,
-            "size": size,
-            "uploader_id": uploader_id,
-            "url": url,
-        }
+        request_body = {'description': description, 'story_id': story_id, 'name': name, 'thumbnail_url': thumbnail_url, 'type': type, 'size': size, 'uploader_id': uploader_id, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/linked-files/{linked_file_public_id}"
+        url = f'{self.base_url}/api/v3/linked-files/{linked_file_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1987,9 +1759,9 @@ class ShortcutApp(APIApplication):
         """
         if linked_file_public_id is None:
             raise ValueError("Missing required parameter 'linked-file-public-id'")
-        url = f"{self.base_url}/api/v3/linked-files/{linked_file_public_id}"
+        url = f'{self.base_url}/api/v3/linked-files/{linked_file_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2009,9 +1781,9 @@ class ShortcutApp(APIApplication):
         Tags:
             get, retrieve, member, information, api,
         """
-        url = f"{self.base_url}/api/v3/member"
+        url = f'{self.base_url}/api/v3/member'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2031,15 +1803,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, api,
         """
-        url = f"{self.base_url}/api/v3/milestones"
+        url = f'{self.base_url}/api/v3/milestones'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_milestone(
-        self, name, description=None, state=None, started_at_override=None, completed_at_override=None, categories=None
-    ) -> dict[str, Any]:
+    async def create_milestone(self, name, description=None, state=None, started_at_override=None, completed_at_override=None, categories=None) -> dict[str, Any]:
         """
         Creates a new milestone with the specified parameters.
 
@@ -2063,18 +1833,11 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-            "description": description,
-            "state": state,
-            "started_at_override": started_at_override,
-            "completed_at_override": completed_at_override,
-            "categories": categories,
-        }
+        request_body = {'name': name, 'description': description, 'state': state, 'started_at_override': started_at_override, 'completed_at_override': completed_at_override, 'categories': categories}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/milestones"
+        url = f'{self.base_url}/api/v3/milestones'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2097,25 +1860,13 @@ class ShortcutApp(APIApplication):
         """
         if milestone_public_id is None:
             raise ValueError("Missing required parameter 'milestone-public-id'")
-        url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}"
+        url = f'{self.base_url}/api/v3/milestones/{milestone_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_milestone(
-        self,
-        milestone_public_id,
-        description=None,
-        archived=None,
-        completed_at_override=None,
-        name=None,
-        state=None,
-        started_at_override=None,
-        categories=None,
-        before_id=None,
-        after_id=None,
-    ) -> dict[str, Any]:
+    async def update_milestone(self, milestone_public_id, description=None, archived=None, completed_at_override=None, name=None, state=None, started_at_override=None, categories=None, before_id=None, after_id=None) -> dict[str, Any]:
         """
         Updates the properties of an existing milestone with the given parameters.
 
@@ -2143,21 +1894,11 @@ class ShortcutApp(APIApplication):
         """
         if milestone_public_id is None:
             raise ValueError("Missing required parameter 'milestone-public-id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "completed_at_override": completed_at_override,
-            "name": name,
-            "state": state,
-            "started_at_override": started_at_override,
-            "categories": categories,
-            "before_id": before_id,
-            "after_id": after_id,
-        }
+        request_body = {'description': description, 'archived': archived, 'completed_at_override': completed_at_override, 'name': name, 'state': state, 'started_at_override': started_at_override, 'categories': categories, 'before_id': before_id, 'after_id': after_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}"
+        url = f'{self.base_url}/api/v3/milestones/{milestone_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2180,9 +1921,9 @@ class ShortcutApp(APIApplication):
         """
         if milestone_public_id is None:
             raise ValueError("Missing required parameter 'milestone-public-id'")
-        url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}"
+        url = f'{self.base_url}/api/v3/milestones/{milestone_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2205,9 +1946,9 @@ class ShortcutApp(APIApplication):
         """
         if milestone_public_id is None:
             raise ValueError("Missing required parameter 'milestone-public-id'")
-        url = f"{self.base_url}/api/v3/milestones/{milestone_public_id}/epics"
+        url = f'{self.base_url}/api/v3/milestones/{milestone_public_id}/epics'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2227,15 +1968,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, objectives, api, management,
         """
-        url = f"{self.base_url}/api/v3/objectives"
+        url = f'{self.base_url}/api/v3/objectives'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_objective(
-        self, name, description=None, state=None, started_at_override=None, completed_at_override=None, categories=None
-    ) -> dict[str, Any]:
+    async def create_objective(self, name, description=None, state=None, started_at_override=None, completed_at_override=None, categories=None) -> dict[str, Any]:
         """
         Creates a new objective resource with the specified attributes and returns the created objective's data.
 
@@ -2259,18 +1998,11 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "name": name,
-            "description": description,
-            "state": state,
-            "started_at_override": started_at_override,
-            "completed_at_override": completed_at_override,
-            "categories": categories,
-        }
+        request_body = {'name': name, 'description': description, 'state': state, 'started_at_override': started_at_override, 'completed_at_override': completed_at_override, 'categories': categories}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/objectives"
+        url = f'{self.base_url}/api/v3/objectives'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2293,25 +2025,13 @@ class ShortcutApp(APIApplication):
         """
         if objective_public_id is None:
             raise ValueError("Missing required parameter 'objective-public-id'")
-        url = f"{self.base_url}/api/v3/objectives/{objective_public_id}"
+        url = f'{self.base_url}/api/v3/objectives/{objective_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_objective(
-        self,
-        objective_public_id,
-        description=None,
-        archived=None,
-        completed_at_override=None,
-        name=None,
-        state=None,
-        started_at_override=None,
-        categories=None,
-        before_id=None,
-        after_id=None,
-    ) -> dict[str, Any]:
+    async def update_objective(self, objective_public_id, description=None, archived=None, completed_at_override=None, name=None, state=None, started_at_override=None, categories=None, before_id=None, after_id=None) -> dict[str, Any]:
         """
         Updates an objective by its public ID with new values for fields such as description, archived status, completion and start timestamps, name, state, categories, and relative ordering.
 
@@ -2339,21 +2059,11 @@ class ShortcutApp(APIApplication):
         """
         if objective_public_id is None:
             raise ValueError("Missing required parameter 'objective-public-id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "completed_at_override": completed_at_override,
-            "name": name,
-            "state": state,
-            "started_at_override": started_at_override,
-            "categories": categories,
-            "before_id": before_id,
-            "after_id": after_id,
-        }
+        request_body = {'description': description, 'archived': archived, 'completed_at_override': completed_at_override, 'name': name, 'state': state, 'started_at_override': started_at_override, 'categories': categories, 'before_id': before_id, 'after_id': after_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/objectives/{objective_public_id}"
+        url = f'{self.base_url}/api/v3/objectives/{objective_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2376,9 +2086,9 @@ class ShortcutApp(APIApplication):
         """
         if objective_public_id is None:
             raise ValueError("Missing required parameter 'objective-public-id'")
-        url = f"{self.base_url}/api/v3/objectives/{objective_public_id}"
+        url = f'{self.base_url}/api/v3/objectives/{objective_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2401,9 +2111,9 @@ class ShortcutApp(APIApplication):
         """
         if objective_public_id is None:
             raise ValueError("Missing required parameter 'objective-public-id'")
-        url = f"{self.base_url}/api/v3/objectives/{objective_public_id}/epics"
+        url = f'{self.base_url}/api/v3/objectives/{objective_public_id}/epics'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2423,26 +2133,13 @@ class ShortcutApp(APIApplication):
         Tags:
             list, projects, , api-call
         """
-        url = f"{self.base_url}/api/v3/projects"
+        url = f'{self.base_url}/api/v3/projects'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_project(
-        self,
-        name,
-        team_id,
-        description=None,
-        color=None,
-        start_time=None,
-        updated_at=None,
-        follower_ids=None,
-        external_id=None,
-        iteration_length=None,
-        abbreviation=None,
-        created_at=None,
-    ) -> dict[str, Any]:
+    async def create_project(self, name, team_id, description=None, color=None, start_time=None, updated_at=None, follower_ids=None, external_id=None, iteration_length=None, abbreviation=None, created_at=None) -> dict[str, Any]:
         """
         Creates a new project with the specified parameters.
 
@@ -2472,23 +2169,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'name'")
         if team_id is None:
             raise ValueError("Missing required parameter 'team_id'")
-        request_body = {
-            "description": description,
-            "color": color,
-            "name": name,
-            "start_time": start_time,
-            "updated_at": updated_at,
-            "follower_ids": follower_ids,
-            "external_id": external_id,
-            "team_id": team_id,
-            "iteration_length": iteration_length,
-            "abbreviation": abbreviation,
-            "created_at": created_at,
-        }
+        request_body = {'description': description, 'color': color, 'name': name, 'start_time': start_time, 'updated_at': updated_at, 'follower_ids': follower_ids, 'external_id': external_id, 'team_id': team_id, 'iteration_length': iteration_length, 'abbreviation': abbreviation, 'created_at': created_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/projects"
+        url = f'{self.base_url}/api/v3/projects'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2511,25 +2196,13 @@ class ShortcutApp(APIApplication):
         """
         if project_public_id is None:
             raise ValueError("Missing required parameter 'project-public-id'")
-        url = f"{self.base_url}/api/v3/projects/{project_public_id}"
+        url = f'{self.base_url}/api/v3/projects/{project_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_project(
-        self,
-        project_public_id,
-        description=None,
-        archived=None,
-        days_to_thermometer=None,
-        color=None,
-        name=None,
-        follower_ids=None,
-        show_thermometer=None,
-        team_id=None,
-        abbreviation=None,
-    ) -> dict[str, Any]:
+    async def update_project(self, project_public_id, description=None, archived=None, days_to_thermometer=None, color=None, name=None, follower_ids=None, show_thermometer=None, team_id=None, abbreviation=None) -> dict[str, Any]:
         """
         Updates a project with the provided parameters.
 
@@ -2557,21 +2230,11 @@ class ShortcutApp(APIApplication):
         """
         if project_public_id is None:
             raise ValueError("Missing required parameter 'project-public-id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "days_to_thermometer": days_to_thermometer,
-            "color": color,
-            "name": name,
-            "follower_ids": follower_ids,
-            "show_thermometer": show_thermometer,
-            "team_id": team_id,
-            "abbreviation": abbreviation,
-        }
+        request_body = {'description': description, 'archived': archived, 'days_to_thermometer': days_to_thermometer, 'color': color, 'name': name, 'follower_ids': follower_ids, 'show_thermometer': show_thermometer, 'team_id': team_id, 'abbreviation': abbreviation}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/projects/{project_public_id}"
+        url = f'{self.base_url}/api/v3/projects/{project_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2594,9 +2257,9 @@ class ShortcutApp(APIApplication):
         """
         if project_public_id is None:
             raise ValueError("Missing required parameter 'project-public-id'")
-        url = f"{self.base_url}/api/v3/projects/{project_public_id}"
+        url = f'{self.base_url}/api/v3/projects/{project_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2620,9 +2283,9 @@ class ShortcutApp(APIApplication):
         """
         if project_public_id is None:
             raise ValueError("Missing required parameter 'project-public-id'")
-        url = f"{self.base_url}/api/v3/projects/{project_public_id}/stories"
-        query_params = {k: v for k, v in [("includes_description", includes_description)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/projects/{project_public_id}/stories'
+        query_params = {k: v for k, v in [('includes_description', includes_description)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2642,9 +2305,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, repositories, api, get,
         """
-        url = f"{self.base_url}/api/v3/repositories"
+        url = f'{self.base_url}/api/v3/repositories'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2667,9 +2330,9 @@ class ShortcutApp(APIApplication):
         """
         if repo_public_id is None:
             raise ValueError("Missing required parameter 'repo-public-id'")
-        url = f"{self.base_url}/api/v3/repositories/{repo_public_id}"
+        url = f'{self.base_url}/api/v3/repositories/{repo_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2695,13 +2358,9 @@ class ShortcutApp(APIApplication):
         """
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        url = f"{self.base_url}/api/v3/search"
-        query_params = {
-            k: v
-            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/search'
+        query_params = {k: v for k, v in [('query', query), ('page_size', page_size), ('detail', detail), ('next', next), ('entity_types', entity_types)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2728,13 +2387,9 @@ class ShortcutApp(APIApplication):
         """
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        url = f"{self.base_url}/api/v3/search/epics"
-        query_params = {
-            k: v
-            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/search/epics'
+        query_params = {k: v for k, v in [('query', query), ('page_size', page_size), ('detail', detail), ('next', next), ('entity_types', entity_types)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2761,13 +2416,9 @@ class ShortcutApp(APIApplication):
         """
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        url = f"{self.base_url}/api/v3/search/iterations"
-        query_params = {
-            k: v
-            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/search/iterations'
+        query_params = {k: v for k, v in [('query', query), ('page_size', page_size), ('detail', detail), ('next', next), ('entity_types', entity_types)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2794,13 +2445,9 @@ class ShortcutApp(APIApplication):
         """
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        url = f"{self.base_url}/api/v3/search/milestones"
-        query_params = {
-            k: v
-            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/search/milestones'
+        query_params = {k: v for k, v in [('query', query), ('page_size', page_size), ('detail', detail), ('next', next), ('entity_types', entity_types)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2827,13 +2474,9 @@ class ShortcutApp(APIApplication):
         """
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        url = f"{self.base_url}/api/v3/search/objectives"
-        query_params = {
-            k: v
-            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/search/objectives'
+        query_params = {k: v for k, v in [('query', query), ('page_size', page_size), ('detail', detail), ('next', next), ('entity_types', entity_types)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2860,50 +2503,13 @@ class ShortcutApp(APIApplication):
         """
         if query is None:
             raise ValueError("Missing required parameter 'query'")
-        url = f"{self.base_url}/api/v3/search/stories"
-        query_params = {
-            k: v
-            for k, v in [("query", query), ("page_size", page_size), ("detail", detail), ("next", next), ("entity_types", entity_types)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/api/v3/search/stories'
+        query_params = {k: v for k, v in [('query', query), ('page_size', page_size), ('detail', detail), ('next', next), ('entity_types', entity_types)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_story(
-        self,
-        name,
-        description=None,
-        archived=None,
-        story_links=None,
-        labels=None,
-        story_type=None,
-        custom_fields=None,
-        move_to=None,
-        file_ids=None,
-        source_task_id=None,
-        completed_at_override=None,
-        comments=None,
-        epic_id=None,
-        story_template_id=None,
-        external_links=None,
-        sub_tasks=None,
-        requested_by_id=None,
-        iteration_id=None,
-        tasks=None,
-        started_at_override=None,
-        group_id=None,
-        workflow_state_id=None,
-        updated_at=None,
-        follower_ids=None,
-        owner_ids=None,
-        external_id=None,
-        estimate=None,
-        project_id=None,
-        linked_file_ids=None,
-        deadline=None,
-        created_at=None,
-    ) -> dict[str, Any]:
+    async def create_story(self, name, description=None, archived=None, story_links=None, labels=None, story_type=None, custom_fields=None, move_to=None, file_ids=None, source_task_id=None, completed_at_override=None, comments=None, epic_id=None, story_template_id=None, external_links=None, sub_tasks=None, requested_by_id=None, iteration_id=None, tasks=None, started_at_override=None, group_id=None, workflow_state_id=None, updated_at=None, follower_ids=None, owner_ids=None, external_id=None, estimate=None, project_id=None, linked_file_ids=None, deadline=None, created_at=None) -> dict[str, Any]:
         """
         Creates a new story with the specified attributes and returns the created story's data.
 
@@ -2952,72 +2558,15 @@ class ShortcutApp(APIApplication):
         """
         if name is None:
             raise ValueError("Missing required parameter 'name'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "story_links": story_links,
-            "labels": labels,
-            "story_type": story_type,
-            "custom_fields": custom_fields,
-            "move_to": move_to,
-            "file_ids": file_ids,
-            "source_task_id": source_task_id,
-            "completed_at_override": completed_at_override,
-            "name": name,
-            "comments": comments,
-            "epic_id": epic_id,
-            "story_template_id": story_template_id,
-            "external_links": external_links,
-            "sub_tasks": sub_tasks,
-            "requested_by_id": requested_by_id,
-            "iteration_id": iteration_id,
-            "tasks": tasks,
-            "started_at_override": started_at_override,
-            "group_id": group_id,
-            "workflow_state_id": workflow_state_id,
-            "updated_at": updated_at,
-            "follower_ids": follower_ids,
-            "owner_ids": owner_ids,
-            "external_id": external_id,
-            "estimate": estimate,
-            "project_id": project_id,
-            "linked_file_ids": linked_file_ids,
-            "deadline": deadline,
-            "created_at": created_at,
-        }
+        request_body = {'description': description, 'archived': archived, 'story_links': story_links, 'labels': labels, 'story_type': story_type, 'custom_fields': custom_fields, 'move_to': move_to, 'file_ids': file_ids, 'source_task_id': source_task_id, 'completed_at_override': completed_at_override, 'name': name, 'comments': comments, 'epic_id': epic_id, 'story_template_id': story_template_id, 'external_links': external_links, 'sub_tasks': sub_tasks, 'requested_by_id': requested_by_id, 'iteration_id': iteration_id, 'tasks': tasks, 'started_at_override': started_at_override, 'group_id': group_id, 'workflow_state_id': workflow_state_id, 'updated_at': updated_at, 'follower_ids': follower_ids, 'owner_ids': owner_ids, 'external_id': external_id, 'estimate': estimate, 'project_id': project_id, 'linked_file_ids': linked_file_ids, 'deadline': deadline, 'created_at': created_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories"
+        url = f'{self.base_url}/api/v3/stories'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_multiple_stories(
-        self,
-        story_ids,
-        archived=None,
-        story_type=None,
-        move_to=None,
-        follower_ids_add=None,
-        epic_id=None,
-        external_links=None,
-        follower_ids_remove=None,
-        requested_by_id=None,
-        iteration_id=None,
-        custom_fields_remove=None,
-        labels_add=None,
-        group_id=None,
-        workflow_state_id=None,
-        before_id=None,
-        estimate=None,
-        after_id=None,
-        owner_ids_remove=None,
-        custom_fields_add=None,
-        project_id=None,
-        labels_remove=None,
-        deadline=None,
-        owner_ids_add=None,
-    ) -> list[Any]:
+    async def update_multiple_stories(self, story_ids, archived=None, story_type=None, move_to=None, follower_ids_add=None, epic_id=None, external_links=None, follower_ids_remove=None, requested_by_id=None, iteration_id=None, custom_fields_remove=None, labels_add=None, group_id=None, workflow_state_id=None, before_id=None, estimate=None, after_id=None, owner_ids_remove=None, custom_fields_add=None, project_id=None, labels_remove=None, deadline=None, owner_ids_add=None) -> list[Any]:
         """
         Updates multiple stories in bulk with various fields and configuration changes.
 
@@ -3058,35 +2607,11 @@ class ShortcutApp(APIApplication):
         """
         if story_ids is None:
             raise ValueError("Missing required parameter 'story_ids'")
-        request_body = {
-            "archived": archived,
-            "story_ids": story_ids,
-            "story_type": story_type,
-            "move_to": move_to,
-            "follower_ids_add": follower_ids_add,
-            "epic_id": epic_id,
-            "external_links": external_links,
-            "follower_ids_remove": follower_ids_remove,
-            "requested_by_id": requested_by_id,
-            "iteration_id": iteration_id,
-            "custom_fields_remove": custom_fields_remove,
-            "labels_add": labels_add,
-            "group_id": group_id,
-            "workflow_state_id": workflow_state_id,
-            "before_id": before_id,
-            "estimate": estimate,
-            "after_id": after_id,
-            "owner_ids_remove": owner_ids_remove,
-            "custom_fields_add": custom_fields_add,
-            "project_id": project_id,
-            "labels_remove": labels_remove,
-            "deadline": deadline,
-            "owner_ids_add": owner_ids_add,
-        }
+        request_body = {'archived': archived, 'story_ids': story_ids, 'story_type': story_type, 'move_to': move_to, 'follower_ids_add': follower_ids_add, 'epic_id': epic_id, 'external_links': external_links, 'follower_ids_remove': follower_ids_remove, 'requested_by_id': requested_by_id, 'iteration_id': iteration_id, 'custom_fields_remove': custom_fields_remove, 'labels_add': labels_add, 'group_id': group_id, 'workflow_state_id': workflow_state_id, 'before_id': before_id, 'estimate': estimate, 'after_id': after_id, 'owner_ids_remove': owner_ids_remove, 'custom_fields_add': custom_fields_add, 'project_id': project_id, 'labels_remove': labels_remove, 'deadline': deadline, 'owner_ids_add': owner_ids_add}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/bulk"
+        url = f'{self.base_url}/api/v3/stories/bulk'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3109,62 +2634,15 @@ class ShortcutApp(APIApplication):
         """
         if stories is None:
             raise ValueError("Missing required parameter 'stories'")
-        request_body = {"stories": stories}
+        request_body = {'stories': stories}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/bulk"
+        url = f'{self.base_url}/api/v3/stories/bulk'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_story_from_template(
-        self,
-        story_template_id,
-        description=None,
-        archived=None,
-        story_links=None,
-        labels=None,
-        external_links_add=None,
-        story_type=None,
-        custom_fields=None,
-        move_to=None,
-        file_ids=None,
-        source_task_id=None,
-        completed_at_override=None,
-        name=None,
-        file_ids_add=None,
-        file_ids_remove=None,
-        comments=None,
-        follower_ids_add=None,
-        epic_id=None,
-        external_links=None,
-        follower_ids_remove=None,
-        sub_tasks=None,
-        linked_file_ids_remove=None,
-        requested_by_id=None,
-        iteration_id=None,
-        custom_fields_remove=None,
-        tasks=None,
-        started_at_override=None,
-        labels_add=None,
-        group_id=None,
-        workflow_state_id=None,
-        updated_at=None,
-        follower_ids=None,
-        owner_ids=None,
-        external_id=None,
-        estimate=None,
-        owner_ids_remove=None,
-        custom_fields_add=None,
-        project_id=None,
-        linked_file_ids_add=None,
-        linked_file_ids=None,
-        labels_remove=None,
-        deadline=None,
-        owner_ids_add=None,
-        created_at=None,
-        external_links_remove=None,
-    ) -> dict[str, Any]:
+    async def create_story_from_template(self, story_template_id, description=None, archived=None, story_links=None, labels=None, external_links_add=None, story_type=None, custom_fields=None, move_to=None, file_ids=None, source_task_id=None, completed_at_override=None, name=None, file_ids_add=None, file_ids_remove=None, comments=None, follower_ids_add=None, epic_id=None, external_links=None, follower_ids_remove=None, sub_tasks=None, linked_file_ids_remove=None, requested_by_id=None, iteration_id=None, custom_fields_remove=None, tasks=None, started_at_override=None, labels_add=None, group_id=None, workflow_state_id=None, updated_at=None, follower_ids=None, owner_ids=None, external_id=None, estimate=None, owner_ids_remove=None, custom_fields_add=None, project_id=None, linked_file_ids_add=None, linked_file_ids=None, labels_remove=None, deadline=None, owner_ids_add=None, created_at=None, external_links_remove=None) -> dict[str, Any]:
         """
         Creates a new story from an existing story template.
 
@@ -3226,91 +2704,15 @@ class ShortcutApp(APIApplication):
         """
         if story_template_id is None:
             raise ValueError("Missing required parameter 'story_template_id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "story_links": story_links,
-            "labels": labels,
-            "external_links_add": external_links_add,
-            "story_type": story_type,
-            "custom_fields": custom_fields,
-            "move_to": move_to,
-            "file_ids": file_ids,
-            "source_task_id": source_task_id,
-            "completed_at_override": completed_at_override,
-            "name": name,
-            "file_ids_add": file_ids_add,
-            "file_ids_remove": file_ids_remove,
-            "comments": comments,
-            "follower_ids_add": follower_ids_add,
-            "epic_id": epic_id,
-            "story_template_id": story_template_id,
-            "external_links": external_links,
-            "follower_ids_remove": follower_ids_remove,
-            "sub_tasks": sub_tasks,
-            "linked_file_ids_remove": linked_file_ids_remove,
-            "requested_by_id": requested_by_id,
-            "iteration_id": iteration_id,
-            "custom_fields_remove": custom_fields_remove,
-            "tasks": tasks,
-            "started_at_override": started_at_override,
-            "labels_add": labels_add,
-            "group_id": group_id,
-            "workflow_state_id": workflow_state_id,
-            "updated_at": updated_at,
-            "follower_ids": follower_ids,
-            "owner_ids": owner_ids,
-            "external_id": external_id,
-            "estimate": estimate,
-            "owner_ids_remove": owner_ids_remove,
-            "custom_fields_add": custom_fields_add,
-            "project_id": project_id,
-            "linked_file_ids_add": linked_file_ids_add,
-            "linked_file_ids": linked_file_ids,
-            "labels_remove": labels_remove,
-            "deadline": deadline,
-            "owner_ids_add": owner_ids_add,
-            "created_at": created_at,
-            "external_links_remove": external_links_remove,
-        }
+        request_body = {'description': description, 'archived': archived, 'story_links': story_links, 'labels': labels, 'external_links_add': external_links_add, 'story_type': story_type, 'custom_fields': custom_fields, 'move_to': move_to, 'file_ids': file_ids, 'source_task_id': source_task_id, 'completed_at_override': completed_at_override, 'name': name, 'file_ids_add': file_ids_add, 'file_ids_remove': file_ids_remove, 'comments': comments, 'follower_ids_add': follower_ids_add, 'epic_id': epic_id, 'story_template_id': story_template_id, 'external_links': external_links, 'follower_ids_remove': follower_ids_remove, 'sub_tasks': sub_tasks, 'linked_file_ids_remove': linked_file_ids_remove, 'requested_by_id': requested_by_id, 'iteration_id': iteration_id, 'custom_fields_remove': custom_fields_remove, 'tasks': tasks, 'started_at_override': started_at_override, 'labels_add': labels_add, 'group_id': group_id, 'workflow_state_id': workflow_state_id, 'updated_at': updated_at, 'follower_ids': follower_ids, 'owner_ids': owner_ids, 'external_id': external_id, 'estimate': estimate, 'owner_ids_remove': owner_ids_remove, 'custom_fields_add': custom_fields_add, 'project_id': project_id, 'linked_file_ids_add': linked_file_ids_add, 'linked_file_ids': linked_file_ids, 'labels_remove': labels_remove, 'deadline': deadline, 'owner_ids_add': owner_ids_add, 'created_at': created_at, 'external_links_remove': external_links_remove}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/from-template"
+        url = f'{self.base_url}/api/v3/stories/from-template'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def search_stories_old(
-        self,
-        archived=None,
-        owner_id=None,
-        story_type=None,
-        epic_ids=None,
-        project_ids=None,
-        updated_at_end=None,
-        completed_at_end=None,
-        workflow_state_types=None,
-        deadline_end=None,
-        created_at_start=None,
-        epic_id=None,
-        label_name=None,
-        requested_by_id=None,
-        iteration_id=None,
-        label_ids=None,
-        group_id=None,
-        workflow_state_id=None,
-        iteration_ids=None,
-        created_at_end=None,
-        deadline_start=None,
-        group_ids=None,
-        owner_ids=None,
-        external_id=None,
-        includes_description=None,
-        estimate=None,
-        project_id=None,
-        completed_at_start=None,
-        updated_at_start=None,
-    ) -> list[Any]:
+    async def search_stories_old(self, archived=None, owner_id=None, story_type=None, epic_ids=None, project_ids=None, updated_at_end=None, completed_at_end=None, workflow_state_types=None, deadline_end=None, created_at_start=None, epic_id=None, label_name=None, requested_by_id=None, iteration_id=None, label_ids=None, group_id=None, workflow_state_id=None, iteration_ids=None, created_at_end=None, deadline_start=None, group_ids=None, owner_ids=None, external_id=None, includes_description=None, estimate=None, project_id=None, completed_at_start=None, updated_at_start=None) -> list[Any]:
         """
         Searches for stories based on various filter criteria.
 
@@ -3353,40 +2755,11 @@ class ShortcutApp(APIApplication):
         Tags:
             search, story, management,
         """
-        request_body = {
-            "archived": archived,
-            "owner_id": owner_id,
-            "story_type": story_type,
-            "epic_ids": epic_ids,
-            "project_ids": project_ids,
-            "updated_at_end": updated_at_end,
-            "completed_at_end": completed_at_end,
-            "workflow_state_types": workflow_state_types,
-            "deadline_end": deadline_end,
-            "created_at_start": created_at_start,
-            "epic_id": epic_id,
-            "label_name": label_name,
-            "requested_by_id": requested_by_id,
-            "iteration_id": iteration_id,
-            "label_ids": label_ids,
-            "group_id": group_id,
-            "workflow_state_id": workflow_state_id,
-            "iteration_ids": iteration_ids,
-            "created_at_end": created_at_end,
-            "deadline_start": deadline_start,
-            "group_ids": group_ids,
-            "owner_ids": owner_ids,
-            "external_id": external_id,
-            "includes_description": includes_description,
-            "estimate": estimate,
-            "project_id": project_id,
-            "completed_at_start": completed_at_start,
-            "updated_at_start": updated_at_start,
-        }
+        request_body = {'archived': archived, 'owner_id': owner_id, 'story_type': story_type, 'epic_ids': epic_ids, 'project_ids': project_ids, 'updated_at_end': updated_at_end, 'completed_at_end': completed_at_end, 'workflow_state_types': workflow_state_types, 'deadline_end': deadline_end, 'created_at_start': created_at_start, 'epic_id': epic_id, 'label_name': label_name, 'requested_by_id': requested_by_id, 'iteration_id': iteration_id, 'label_ids': label_ids, 'group_id': group_id, 'workflow_state_id': workflow_state_id, 'iteration_ids': iteration_ids, 'created_at_end': created_at_end, 'deadline_start': deadline_start, 'group_ids': group_ids, 'owner_ids': owner_ids, 'external_id': external_id, 'includes_description': includes_description, 'estimate': estimate, 'project_id': project_id, 'completed_at_start': completed_at_start, 'updated_at_start': updated_at_start}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/search"
+        url = f'{self.base_url}/api/v3/stories/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3408,43 +2781,13 @@ class ShortcutApp(APIApplication):
         """
         if story_public_id is None:
             raise ValueError("Missing required parameter 'story-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_story(
-        self,
-        story_public_id,
-        description=None,
-        archived=None,
-        labels=None,
-        pull_request_ids=None,
-        story_type=None,
-        custom_fields=None,
-        move_to=None,
-        file_ids=None,
-        completed_at_override=None,
-        name=None,
-        epic_id=None,
-        external_links=None,
-        branch_ids=None,
-        commit_ids=None,
-        requested_by_id=None,
-        iteration_id=None,
-        started_at_override=None,
-        group_id=None,
-        workflow_state_id=None,
-        follower_ids=None,
-        owner_ids=None,
-        before_id=None,
-        estimate=None,
-        after_id=None,
-        project_id=None,
-        linked_file_ids=None,
-        deadline=None,
-    ) -> dict[str, Any]:
+    async def update_story(self, story_public_id, description=None, archived=None, labels=None, pull_request_ids=None, story_type=None, custom_fields=None, move_to=None, file_ids=None, completed_at_override=None, name=None, epic_id=None, external_links=None, branch_ids=None, commit_ids=None, requested_by_id=None, iteration_id=None, started_at_override=None, group_id=None, workflow_state_id=None, follower_ids=None, owner_ids=None, before_id=None, estimate=None, after_id=None, project_id=None, linked_file_ids=None, deadline=None) -> dict[str, Any]:
         """
         Updates a story in the project management system with the specified attributes.
 
@@ -3490,39 +2833,11 @@ class ShortcutApp(APIApplication):
         """
         if story_public_id is None:
             raise ValueError("Missing required parameter 'story-public-id'")
-        request_body = {
-            "description": description,
-            "archived": archived,
-            "labels": labels,
-            "pull_request_ids": pull_request_ids,
-            "story_type": story_type,
-            "custom_fields": custom_fields,
-            "move_to": move_to,
-            "file_ids": file_ids,
-            "completed_at_override": completed_at_override,
-            "name": name,
-            "epic_id": epic_id,
-            "external_links": external_links,
-            "branch_ids": branch_ids,
-            "commit_ids": commit_ids,
-            "requested_by_id": requested_by_id,
-            "iteration_id": iteration_id,
-            "started_at_override": started_at_override,
-            "group_id": group_id,
-            "workflow_state_id": workflow_state_id,
-            "follower_ids": follower_ids,
-            "owner_ids": owner_ids,
-            "before_id": before_id,
-            "estimate": estimate,
-            "after_id": after_id,
-            "project_id": project_id,
-            "linked_file_ids": linked_file_ids,
-            "deadline": deadline,
-        }
+        request_body = {'description': description, 'archived': archived, 'labels': labels, 'pull_request_ids': pull_request_ids, 'story_type': story_type, 'custom_fields': custom_fields, 'move_to': move_to, 'file_ids': file_ids, 'completed_at_override': completed_at_override, 'name': name, 'epic_id': epic_id, 'external_links': external_links, 'branch_ids': branch_ids, 'commit_ids': commit_ids, 'requested_by_id': requested_by_id, 'iteration_id': iteration_id, 'started_at_override': started_at_override, 'group_id': group_id, 'workflow_state_id': workflow_state_id, 'follower_ids': follower_ids, 'owner_ids': owner_ids, 'before_id': before_id, 'estimate': estimate, 'after_id': after_id, 'project_id': project_id, 'linked_file_ids': linked_file_ids, 'deadline': deadline}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3545,9 +2860,9 @@ class ShortcutApp(APIApplication):
         """
         if story_public_id is None:
             raise ValueError("Missing required parameter 'story-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3570,15 +2885,13 @@ class ShortcutApp(APIApplication):
         """
         if story_public_id is None:
             raise ValueError("Missing required parameter 'story-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_story_comment(
-        self, story_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None, parent_id=None
-    ) -> dict[str, Any]:
+    async def create_story_comment(self, story_public_id, text, author_id=None, created_at=None, updated_at=None, external_id=None, parent_id=None) -> dict[str, Any]:
         """
         Creates a new comment on a story by sending a POST request with the comment details to the specified API endpoint.
 
@@ -3604,18 +2917,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {
-            "text": text,
-            "author_id": author_id,
-            "created_at": created_at,
-            "updated_at": updated_at,
-            "external_id": external_id,
-            "parent_id": parent_id,
-        }
+        request_body = {'text': text, 'author_id': author_id, 'created_at': created_at, 'updated_at': updated_at, 'external_id': external_id, 'parent_id': parent_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3641,9 +2947,9 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if comment_public_id is None:
             raise ValueError("Missing required parameter 'comment-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3671,11 +2977,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if text is None:
             raise ValueError("Missing required parameter 'text'")
-        request_body = {"text": text}
+        request_body = {'text': text}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3701,9 +3007,9 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if comment_public_id is None:
             raise ValueError("Missing required parameter 'comment-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3731,11 +3037,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'comment-public-id'")
         if emoji is None:
             raise ValueError("Missing required parameter 'emoji'")
-        request_body = {"emoji": emoji}
+        request_body = {'emoji': emoji}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/reactions"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/reactions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3761,9 +3067,9 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if comment_public_id is None:
             raise ValueError("Missing required parameter 'comment-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/unlink-from-slack"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/comments/{comment_public_id}/unlink-from-slack'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3786,15 +3092,13 @@ class ShortcutApp(APIApplication):
         """
         if story_public_id is None:
             raise ValueError("Missing required parameter 'story-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/history"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/history'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_task(
-        self, story_public_id, description, complete=None, owner_ids=None, external_id=None, created_at=None, updated_at=None
-    ) -> dict[str, Any]:
+    async def create_task(self, story_public_id, description, complete=None, owner_ids=None, external_id=None, created_at=None, updated_at=None) -> dict[str, Any]:
         """
         Creates a task within a specified story.
 
@@ -3821,18 +3125,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if description is None:
             raise ValueError("Missing required parameter 'description'")
-        request_body = {
-            "description": description,
-            "complete": complete,
-            "owner_ids": owner_ids,
-            "external_id": external_id,
-            "created_at": created_at,
-            "updated_at": updated_at,
-        }
+        request_body = {'description': description, 'complete': complete, 'owner_ids': owner_ids, 'external_id': external_id, 'created_at': created_at, 'updated_at': updated_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/tasks'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3858,15 +3155,13 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if task_public_id is None:
             raise ValueError("Missing required parameter 'task-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_task(
-        self, story_public_id, task_public_id, description=None, owner_ids=None, complete=None, before_id=None, after_id=None
-    ) -> dict[str, Any]:
+    async def update_task(self, story_public_id, task_public_id, description=None, owner_ids=None, complete=None, before_id=None, after_id=None) -> dict[str, Any]:
         """
         Updates the specified task within a story, modifying fields such as description, owners, completion status, and position.
 
@@ -3893,17 +3188,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if task_public_id is None:
             raise ValueError("Missing required parameter 'task-public-id'")
-        request_body = {
-            "description": description,
-            "owner_ids": owner_ids,
-            "complete": complete,
-            "before_id": before_id,
-            "after_id": after_id,
-        }
+        request_body = {'description': description, 'owner_ids': owner_ids, 'complete': complete, 'before_id': before_id, 'after_id': after_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3928,9 +3217,9 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'story-public-id'")
         if task_public_id is None:
             raise ValueError("Missing required parameter 'task-public-id'")
-        url = f"{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}"
+        url = f'{self.base_url}/api/v3/stories/{story_public_id}/tasks/{task_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3959,11 +3248,11 @@ class ShortcutApp(APIApplication):
             raise ValueError("Missing required parameter 'subject_id'")
         if object_id is None:
             raise ValueError("Missing required parameter 'object_id'")
-        request_body = {"verb": verb, "subject_id": subject_id, "object_id": object_id}
+        request_body = {'verb': verb, 'subject_id': subject_id, 'object_id': object_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/story-links"
+        url = f'{self.base_url}/api/v3/story-links'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3986,9 +3275,9 @@ class ShortcutApp(APIApplication):
         """
         if story_link_public_id is None:
             raise ValueError("Missing required parameter 'story-link-public-id'")
-        url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
+        url = f'{self.base_url}/api/v3/story-links/{story_link_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4014,11 +3303,11 @@ class ShortcutApp(APIApplication):
         """
         if story_link_public_id is None:
             raise ValueError("Missing required parameter 'story-link-public-id'")
-        request_body = {"verb": verb, "subject_id": subject_id, "object_id": object_id}
+        request_body = {'verb': verb, 'subject_id': subject_id, 'object_id': object_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
+        url = f'{self.base_url}/api/v3/story-links/{story_link_public_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4041,9 +3330,9 @@ class ShortcutApp(APIApplication):
         """
         if story_link_public_id is None:
             raise ValueError("Missing required parameter 'story-link-public-id'")
-        url = f"{self.base_url}/api/v3/story-links/{story_link_public_id}"
+        url = f'{self.base_url}/api/v3/story-links/{story_link_public_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4063,9 +3352,9 @@ class ShortcutApp(APIApplication):
         Tags:
             list, workflows, api, management,
         """
-        url = f"{self.base_url}/api/v3/workflows"
+        url = f'{self.base_url}/api/v3/workflows'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4088,129 +3377,11 @@ class ShortcutApp(APIApplication):
         """
         if workflow_public_id is None:
             raise ValueError("Missing required parameter 'workflow-public-id'")
-        url = f"{self.base_url}/api/v3/workflows/{workflow_public_id}"
+        url = f'{self.base_url}/api/v3/workflows/{workflow_public_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.list_categories,
-            self.create_category,
-            self.get_category,
-            self.update_category,
-            self.delete_category,
-            self.list_category_milestones,
-            self.list_category_objectives,
-            self.list_custom_fields,
-            self.get_custom_field,
-            self.update_custom_field,
-            self.delete_custom_field,
-            self.list_entity_templates,
-            self.create_entity_template,
-            self.disable_story_templates,
-            self.enable_story_templates,
-            self.get_entity_template,
-            self.update_entity_template,
-            self.delete_entity_template,
-            self.get_epic_workflow,
-            self.list_epics,
-            self.create_epic,
-            self.get_epic,
-            self.update_epic,
-            self.delete_epic,
-            self.list_epic_comments,
-            self.create_epic_comment,
-            self.get_epic_comment,
-            self.update_epic_comment,
-            self.create_epic_comment_comment,
-            self.delete_epic_comment,
-            self.list_epic_stories,
-            self.unlink_productboard_from_epic,
-            self.get_external_link_stories,
-            self.list_files,
-            self.get_file,
-            self.update_file,
-            self.delete_file,
-            self.list_groups,
-            self.create_group,
-            self.get_group,
-            self.update_group,
-            self.list_group_stories,
-            self.list_iterations,
-            self.create_iteration,
-            self.disable_iterations,
-            self.enable_iterations,
-            self.get_iteration,
-            self.update_iteration,
-            self.delete_iteration,
-            self.list_iteration_stories,
-            self.get_key_result,
-            self.update_key_result,
-            self.list_labels,
-            self.create_label,
-            self.get_label,
-            self.update_label,
-            self.delete_label,
-            self.list_label_epics,
-            self.list_label_stories,
-            self.list_linked_files,
-            self.create_linked_file,
-            self.get_linked_file,
-            self.update_linked_file,
-            self.delete_linked_file,
-            self.get_current_member_info,
-            self.list_milestones,
-            self.create_milestone,
-            self.get_milestone,
-            self.update_milestone,
-            self.delete_milestone,
-            self.list_milestone_epics,
-            self.list_objectives,
-            self.create_objective,
-            self.get_objective,
-            self.update_objective,
-            self.delete_objective,
-            self.list_objective_epics,
-            self.list_projects,
-            self.create_project,
-            self.get_project,
-            self.update_project,
-            self.delete_project,
-            self.list_stories,
-            self.list_repositories,
-            self.get_repository,
-            self.search,
-            self.search_epics,
-            self.search_iterations,
-            self.search_milestones,
-            self.search_objectives,
-            self.search_stories,
-            self.create_story,
-            self.update_multiple_stories,
-            self.create_multiple_stories,
-            self.create_story_from_template,
-            self.search_stories_old,
-            self.get_story,
-            self.update_story,
-            self.delete_story,
-            self.list_story_comment,
-            self.create_story_comment,
-            self.get_story_comment,
-            self.update_story_comment,
-            self.delete_story_comment,
-            self.create_story_reaction,
-            self.unlink_comment_thread_from_slack,
-            self.story_history,
-            self.create_task,
-            self.get_task,
-            self.update_task,
-            self.delete_task,
-            self.create_story_link,
-            self.get_story_link,
-            self.update_story_link,
-            self.delete_story_link,
-            self.list_workflows,
-            self.get_workflow,
-        ]
+        return [self.list_categories, self.create_category, self.get_category, self.update_category, self.delete_category, self.list_category_milestones, self.list_category_objectives, self.list_custom_fields, self.get_custom_field, self.update_custom_field, self.delete_custom_field, self.list_entity_templates, self.create_entity_template, self.disable_story_templates, self.enable_story_templates, self.get_entity_template, self.update_entity_template, self.delete_entity_template, self.get_epic_workflow, self.list_epics, self.create_epic, self.get_epic, self.update_epic, self.delete_epic, self.list_epic_comments, self.create_epic_comment, self.get_epic_comment, self.update_epic_comment, self.create_epic_comment_comment, self.delete_epic_comment, self.list_epic_stories, self.unlink_productboard_from_epic, self.get_external_link_stories, self.list_files, self.get_file, self.update_file, self.delete_file, self.list_groups, self.create_group, self.get_group, self.update_group, self.list_group_stories, self.list_iterations, self.create_iteration, self.disable_iterations, self.enable_iterations, self.get_iteration, self.update_iteration, self.delete_iteration, self.list_iteration_stories, self.get_key_result, self.update_key_result, self.list_labels, self.create_label, self.get_label, self.update_label, self.delete_label, self.list_label_epics, self.list_label_stories, self.list_linked_files, self.create_linked_file, self.get_linked_file, self.update_linked_file, self.delete_linked_file, self.get_current_member_info, self.list_milestones, self.create_milestone, self.get_milestone, self.update_milestone, self.delete_milestone, self.list_milestone_epics, self.list_objectives, self.create_objective, self.get_objective, self.update_objective, self.delete_objective, self.list_objective_epics, self.list_projects, self.create_project, self.get_project, self.update_project, self.delete_project, self.list_stories, self.list_repositories, self.get_repository, self.search, self.search_epics, self.search_iterations, self.search_milestones, self.search_objectives, self.search_stories, self.create_story, self.update_multiple_stories, self.create_multiple_stories, self.create_story_from_template, self.search_stories_old, self.get_story, self.update_story, self.delete_story, self.list_story_comment, self.create_story_comment, self.get_story_comment, self.update_story_comment, self.delete_story_comment, self.create_story_reaction, self.unlink_comment_thread_from_slack, self.story_history, self.create_task, self.get_task, self.update_task, self.delete_task, self.create_story_link, self.get_story_link, self.update_story_link, self.delete_story_link, self.list_workflows, self.get_workflow]

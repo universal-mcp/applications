@@ -1,12 +1,10 @@
 import os
 from dotenv import load_dotenv
-
 load_dotenv()
 from typing import Any, Literal
 from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
-
 
 class ScraperApp(APIApplication):
     """
@@ -15,28 +13,28 @@ class ScraperApp(APIApplication):
     """
 
     def __init__(self, integration: Integration, **kwargs: Any) -> None:
-        super().__init__(name="scraper", integration=integration, **kwargs)
+        super().__init__(name='scraper', integration=integration, **kwargs)
         if self.integration:
             credentials = self.integration.get_credentials()
-            self.account_id = credentials.get("account_id")
+            self.account_id = credentials.get('account_id')
         else:
-            logger.warning("Integration not found")
+            logger.warning('Integration not found')
             self.account_id = None
 
     @property
     def base_url(self) -> str:
         if not self._base_url:
-            unipile_dsn = os.getenv("UNIPILE_DSN")
+            unipile_dsn = os.getenv('UNIPILE_DSN')
             if not unipile_dsn:
-                logger.error("UnipileApp: UNIPILE_DSN environment variable is not set.")
-                raise ValueError("UnipileApp: UNIPILE_DSN environment variable is required.")
-            self._base_url = f"https://{unipile_dsn}"
+                logger.error('UnipileApp: UNIPILE_DSN environment variable is not set.')
+                raise ValueError('UnipileApp: UNIPILE_DSN environment variable is required.')
+            self._base_url = f'https://{unipile_dsn}'
         return self._base_url
 
     @base_url.setter
     def base_url(self, base_url: str) -> None:
         self._base_url = base_url
-        logger.info(f"UnipileApp: Base URL set to {self._base_url}")
+        logger.info(f'UnipileApp: Base URL set to {self._base_url}')
 
     def _get_headers(self) -> dict[str, str]:
         """
@@ -44,14 +42,14 @@ class ScraperApp(APIApplication):
         Overrides the base class method to use X-Api-Key.
         """
         if not self.integration:
-            logger.warning("UnipileApp: No integration configured, returning empty headers.")
+            logger.warning('UnipileApp: No integration configured, returning empty headers.')
             return {}
-        api_key = os.getenv("UNIPILE_API_KEY")
+        api_key = os.getenv('UNIPILE_API_KEY')
         if not api_key:
-            logger.error("UnipileApp: API key not found in integration credentials for Unipile.")
-            return {"Content-Type": "application/json", "Cache-Control": "no-cache"}
-        logger.debug("UnipileApp: Using X-Api-Key for authentication.")
-        return {"x-api-key": api_key, "Content-Type": "application/json", "Cache-Control": "no-cache"}
+            logger.error('UnipileApp: API key not found in integration credentials for Unipile.')
+            return {'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
+        logger.debug('UnipileApp: Using X-Api-Key for authentication.')
+        return {'x-api-key': api_key, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
 
     def _get_search_parameter_id(self, param_type: str, keywords: str) -> str:
         """
@@ -68,18 +66,16 @@ class ScraperApp(APIApplication):
             ValueError: If no exact match for the keywords is found.
             httpx.HTTPError: If the API request fails.
         """
-        url = f"{self.base_url}/api/v1/linkedin/search/parameters"
-        params = {"account_id": self.account_id, "keywords": keywords, "type": param_type}
+        url = f'{self.base_url}/api/v1/linkedin/search/parameters'
+        params = {'account_id': self.account_id, 'keywords': keywords, 'type': param_type}
         response = self._get(url, params=params)
         results = self._handle_response(response)
-        items = results.get("items", [])
+        items = results.get('items', [])
         if items:
-            return items[0]["id"]
+            return items[0]['id']
         raise ValueError(f'Could not find a matching ID for {param_type}: "{keywords}"')
 
-    async def linkedin_list_profile_posts(
-        self, identifier: str, cursor: str | None = None, limit: int | None = None, is_company: bool | None = None
-    ) -> dict[str, Any]:
+    async def linkedin_list_profile_posts(self, identifier: str, cursor: str | None=None, limit: int | None=None, is_company: bool | None=None) -> dict[str, Any]:
         """
         Fetches a paginated list of posts from a specific user or company profile using its provider ID. The `is_company` flag must specify the entity type. Unlike `linkedin_search_posts`, this function directly retrieves content from a known profile's feed instead of performing a global keyword search.
 
@@ -98,15 +94,15 @@ class ScraperApp(APIApplication):
         Tags:
             linkedin, post, list, user_posts, company_posts, content, api, important
         """
-        url = f"{self.base_url}/api/v1/users/{identifier}/posts"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        url = f'{self.base_url}/api/v1/users/{identifier}/posts'
+        params: dict[str, Any] = {'account_id': self.account_id}
         if cursor:
-            params["cursor"] = cursor
+            params['cursor'] = cursor
         if limit:
-            params["limit"] = limit
+            params['limit'] = limit
         if is_company is not None:
-            params["is_company"] = is_company
-        response = self._get(url, params=params)
+            params['is_company'] = is_company
+        response = await self._aget(url, params=params)
         return response.json()
 
     async def linkedin_retrieve_profile(self, identifier: str) -> dict[str, Any]:
@@ -125,14 +121,12 @@ class ScraperApp(APIApplication):
         Tags:
             linkedin, user, profile, retrieve, get, api, important
         """
-        url = f"{self.base_url}/api/v1/users/{identifier}"
-        params: dict[str, Any] = {"account_id": self.account_id}
-        response = self._get(url, params=params)
+        url = f'{self.base_url}/api/v1/users/{identifier}'
+        params: dict[str, Any] = {'account_id': self.account_id}
+        response = await self._aget(url, params=params)
         return self._handle_response(response)
 
-    async def linkedin_list_post_comments(
-        self, post_id: str, comment_id: str | None = None, cursor: str | None = None, limit: int | None = None
-    ) -> dict[str, Any]:
+    async def linkedin_list_post_comments(self, post_id: str, comment_id: str | None=None, cursor: str | None=None, limit: int | None=None) -> dict[str, Any]:
         """
         Fetches a paginated list of comments for a specified LinkedIn post. It can retrieve either top-level comments or threaded replies if an optional `comment_id` is provided. This is a read-only operation, distinct from functions that search for posts or list user-specific content.
 
@@ -151,26 +145,18 @@ class ScraperApp(APIApplication):
         Tags:
             linkedin, post, comment, list, content, api, important
         """
-        url = f"{self.base_url}/api/v1/posts/{post_id}/comments"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        url = f'{self.base_url}/api/v1/posts/{post_id}/comments'
+        params: dict[str, Any] = {'account_id': self.account_id}
         if cursor:
-            params["cursor"] = cursor
+            params['cursor'] = cursor
         if limit is not None:
-            params["limit"] = str(limit)
+            params['limit'] = str(limit)
         if comment_id:
-            params["comment_id"] = comment_id
-        response = self._get(url, params=params)
+            params['comment_id'] = comment_id
+        response = await self._aget(url, params=params)
         return response.json()
 
-    async def linkedin_search_people(
-        self,
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        location: str | None = None,
-        industry: str | None = None,
-        company: str | None = None,
-    ) -> dict[str, Any]:
+    async def linkedin_search_people(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, location: str | None=None, industry: str | None=None, company: str | None=None) -> dict[str, Any]:
         """
         Performs a paginated search for people on LinkedIn, distinct from searches for companies or jobs. It filters results using keywords, location, industry, and company, internally converting filter names like 'United States' into their required API IDs before making the request.
 
@@ -188,35 +174,28 @@ class ScraperApp(APIApplication):
         Raises:
             httpx.HTTPError: If the API request fails.
         """
-        url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        url = f'{self.base_url}/api/v1/linkedin/search'
+        params: dict[str, Any] = {'account_id': self.account_id}
         if cursor:
-            params["cursor"] = cursor
+            params['cursor'] = cursor
         if limit is not None:
-            params["limit"] = limit
-        payload: dict[str, Any] = {"api": "classic", "category": "people"}
+            params['limit'] = limit
+        payload: dict[str, Any] = {'api': 'classic', 'category': 'people'}
         if keywords:
-            payload["keywords"] = keywords
+            payload['keywords'] = keywords
         if location:
-            location_id = self._get_search_parameter_id("LOCATION", location)
-            payload["location"] = [location_id]
+            location_id = self._get_search_parameter_id('LOCATION', location)
+            payload['location'] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
-            payload["industry"] = [industry_id]
+            industry_id = self._get_search_parameter_id('INDUSTRY', industry)
+            payload['industry'] = [industry_id]
         if company:
-            company_id = self._get_search_parameter_id("COMPANY", company)
-            payload["company"] = [company_id]
-        response = self._post(url, params=params, data=payload)
+            company_id = self._get_search_parameter_id('COMPANY', company)
+            payload['company'] = [company_id]
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def linkedin_search_companies(
-        self,
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        location: str | None = None,
-        industry: str | None = None,
-    ) -> dict[str, Any]:
+    async def linkedin_search_companies(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, location: str | None=None, industry: str | None=None) -> dict[str, Any]:
         """
         Executes a paginated LinkedIn search for companies, filtering by optional keywords, location, and industry. Unlike `linkedin_search_people` or `linkedin_search_jobs`, this function specifically sets the API search category to 'companies' to ensure that only company profiles are returned in the search results.
 
@@ -233,32 +212,25 @@ class ScraperApp(APIApplication):
         Raises:
             httpx.HTTPError: If the API request fails.
         """
-        url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        url = f'{self.base_url}/api/v1/linkedin/search'
+        params: dict[str, Any] = {'account_id': self.account_id}
         if cursor:
-            params["cursor"] = cursor
+            params['cursor'] = cursor
         if limit is not None:
-            params["limit"] = limit
-        payload: dict[str, Any] = {"api": "classic", "category": "companies"}
+            params['limit'] = limit
+        payload: dict[str, Any] = {'api': 'classic', 'category': 'companies'}
         if keywords:
-            payload["keywords"] = keywords
+            payload['keywords'] = keywords
         if location:
-            location_id = self._get_search_parameter_id("LOCATION", location)
-            payload["location"] = [location_id]
+            location_id = self._get_search_parameter_id('LOCATION', location)
+            payload['location'] = [location_id]
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
-            payload["industry"] = [industry_id]
-        response = self._post(url, params=params, data=payload)
+            industry_id = self._get_search_parameter_id('INDUSTRY', industry)
+            payload['industry'] = [industry_id]
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def linkedin_search_posts(
-        self,
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        date_posted: Literal["past_day", "past_week", "past_month"] | None = None,
-        sort_by: Literal["relevance", "date"] = "relevance",
-    ) -> dict[str, Any]:
+    async def linkedin_search_posts(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, date_posted: Literal['past_day', 'past_week', 'past_month'] | None=None, sort_by: Literal['relevance', 'date']='relevance') -> dict[str, Any]:
         """
         Performs a keyword-based search for LinkedIn posts, allowing results to be filtered by date and sorted by relevance. This function specifically queries the 'posts' category, distinguishing it from other search methods in the class that target people, companies, or jobs, and returns relevant content.
 
@@ -275,32 +247,23 @@ class ScraperApp(APIApplication):
         Raises:
             httpx.HTTPError: If the API request fails.
         """
-        url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        url = f'{self.base_url}/api/v1/linkedin/search'
+        params: dict[str, Any] = {'account_id': self.account_id}
         if cursor:
-            params["cursor"] = cursor
+            params['cursor'] = cursor
         if limit is not None:
-            params["limit"] = limit
-        payload: dict[str, Any] = {"api": "classic", "category": "posts"}
+            params['limit'] = limit
+        payload: dict[str, Any] = {'api': 'classic', 'category': 'posts'}
         if keywords:
-            payload["keywords"] = keywords
+            payload['keywords'] = keywords
         if date_posted:
-            payload["date_posted"] = date_posted
+            payload['date_posted'] = date_posted
         if sort_by:
-            payload["sort_by"] = sort_by
-        response = self._post(url, params=params, data=payload)
+            payload['sort_by'] = sort_by
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
-    async def linkedin_search_jobs(
-        self,
-        cursor: str | None = None,
-        limit: int | None = None,
-        keywords: str | None = None,
-        region: str | None = None,
-        sort_by: Literal["relevance", "date"] = "relevance",
-        minimum_salary_value: int = 40,
-        industry: str | None = None,
-    ) -> dict[str, Any]:
+    async def linkedin_search_jobs(self, cursor: str | None=None, limit: int | None=None, keywords: str | None=None, region: str | None=None, sort_by: Literal['relevance', 'date']='relevance', minimum_salary_value: int=40, industry: str | None=None) -> dict[str, Any]:
         """
         Executes a LinkedIn search specifically for job listings using keywords and filters like region, industry, and minimum salary. Unlike other search functions targeting people or companies, this is specialized for job listings and converts friendly filter names (e.g., "United States") into their required API IDs.
 
@@ -320,28 +283,24 @@ class ScraperApp(APIApplication):
             httpx.HTTPError: If the API request fails.
             ValueError: If the specified location is not found.
         """
-        url = f"{self.base_url}/api/v1/linkedin/search"
-        params: dict[str, Any] = {"account_id": self.account_id}
+        url = f'{self.base_url}/api/v1/linkedin/search'
+        params: dict[str, Any] = {'account_id': self.account_id}
         if cursor:
-            params["cursor"] = cursor
+            params['cursor'] = cursor
         if limit is not None:
-            params["limit"] = limit
-        payload: dict[str, Any] = {
-            "api": "classic",
-            "category": "jobs",
-            "minimum_salary": {"currency": "USD", "value": minimum_salary_value},
-        }
+            params['limit'] = limit
+        payload: dict[str, Any] = {'api': 'classic', 'category': 'jobs', 'minimum_salary': {'currency': 'USD', 'value': minimum_salary_value}}
         if keywords:
-            payload["keywords"] = keywords
+            payload['keywords'] = keywords
         if sort_by:
-            payload["sort_by"] = sort_by
+            payload['sort_by'] = sort_by
         if region:
-            location_id = self._get_search_parameter_id("LOCATION", region)
-            payload["region"] = location_id
+            location_id = self._get_search_parameter_id('LOCATION', region)
+            payload['region'] = location_id
         if industry:
-            industry_id = self._get_search_parameter_id("INDUSTRY", industry)
-            payload["industry"] = [industry_id]
-        response = self._post(url, params=params, data=payload)
+            industry_id = self._get_search_parameter_id('INDUSTRY', industry)
+            payload['industry'] = [industry_id]
+        response = await self._apost(url, params=params, data=payload)
         return self._handle_response(response)
 
     def list_tools(self):
@@ -351,12 +310,4 @@ class ScraperApp(APIApplication):
         Returns:
             A list of functions that can be used as tools.
         """
-        return [
-            self.linkedin_list_profile_posts,
-            self.linkedin_retrieve_profile,
-            self.linkedin_list_post_comments,
-            self.linkedin_search_people,
-            self.linkedin_search_companies,
-            self.linkedin_search_posts,
-            self.linkedin_search_jobs,
-        ]
+        return [self.linkedin_list_profile_posts, self.linkedin_retrieve_profile, self.linkedin_list_post_comments, self.linkedin_search_people, self.linkedin_search_companies, self.linkedin_search_posts, self.linkedin_search_jobs]

@@ -17,14 +17,13 @@ from universal_mcp.applications.whatsapp.whatsapp import send_audio_message as w
 from universal_mcp.applications.whatsapp.whatsapp import send_file as whatsapp_send_file
 from universal_mcp.applications.whatsapp.whatsapp import send_message as whatsapp_send_message
 
-
 class WhatsappApp(BaseApplication):
     """
     Base class for Universal MCP Applications.
     """
 
-    def __init__(self, integration: AgentrIntegration | None = None, **kwargs) -> None:
-        super().__init__(name="whatsapp", integration=integration, **kwargs)
+    def __init__(self, integration: AgentrIntegration | None=None, **kwargs) -> None:
+        super().__init__(name='whatsapp', integration=integration, **kwargs)
         self.base_url = WHATSAPP_API_BASE_URL
         self.integration = integration
         self._api_key: str | None = None
@@ -34,16 +33,16 @@ class WhatsappApp(BaseApplication):
         Extracts the 'X-API-KEY' from the AgentR integration client's headers to authenticate WhatsApp API requests. A ValueError is raised if the integration is missing or the key cannot be found, ensuring all operations are properly authorized before execution.
         """
         if not self.integration:
-            raise ValueError("No integration available to get API key from")
+            raise ValueError('No integration available to get API key from')
         try:
             headers = self.integration.client.client.headers
-            api_key = headers.get("X-API-KEY")
+            api_key = headers.get('X-API-KEY')
             if api_key:
                 return api_key
             else:
-                raise ValueError("X-API-KEY not found in AgentR client headers")
+                raise ValueError('X-API-KEY not found in AgentR client headers')
         except AttributeError as e:
-            raise ValueError(f"Could not access AgentR client headers: {e}") from e
+            raise ValueError(f'Could not access AgentR client headers: {e}') from e
 
     @property
     def api_key(self) -> str:
@@ -66,7 +65,7 @@ class WhatsappApp(BaseApplication):
         elif isinstance(auth_result[1], str):
             raise NotAuthorizedError(auth_result[1])
         else:
-            raise NotAuthorizedError("WhatsApp authentication failed. Please check your configuration.")
+            raise NotAuthorizedError('WhatsApp authentication failed. Please check your configuration.')
 
     def _authenticate_whatsapp(self) -> tuple[bool, str]:
         """
@@ -76,35 +75,26 @@ class WhatsappApp(BaseApplication):
         try:
             user_id = self.api_key
             if not user_id:
-                raise ValueError("No API key available from integration")
-            auth_url = f"{self.base_url}/api/auth"
-            response = requests.post(auth_url, headers={"Content-Type": "application/json"}, json={"user_id": user_id}, timeout=60)
+                raise ValueError('No API key available from integration')
+            auth_url = f'{self.base_url}/api/auth'
+            response = requests.post(auth_url, headers={'Content-Type': 'application/json'}, json={'user_id': user_id}, timeout=60)
             if response.status_code == 200:
                 result = response.json()
-                if result.get("status") == "qr_required":
-                    qr_url = f"{self.base_url}/api/qr?user_id={user_id}"
-                    return (
-                        False,
-                        f"Please ask the user to visit the following url to authorize WhatsApp: {qr_url}. Render the url in proper markdown format with a clickable link.",
-                    )
-                elif result.get("status") == "connected":
-                    return (True, "User already authenticated")
+                if result.get('status') == 'qr_required':
+                    qr_url = f'{self.base_url}/api/qr?user_id={user_id}'
+                    return (False, f'Please ask the user to visit the following url to authorize WhatsApp: {qr_url}. Render the url in proper markdown format with a clickable link.')
+                elif result.get('status') == 'connected':
+                    return (True, 'User already authenticated')
             else:
-                qr_url = f"{self.base_url}/api/qr?user_id={user_id}"
-                return (
-                    False,
-                    f"Please ask the user to visit the following url to authorize WhatsApp: {qr_url}. Render the url in proper markdown format with a clickable link.",
-                )
+                qr_url = f'{self.base_url}/api/qr?user_id={user_id}'
+                return (False, f'Please ask the user to visit the following url to authorize WhatsApp: {qr_url}. Render the url in proper markdown format with a clickable link.')
         except Exception:
             user_id = self.api_key
             if user_id:
-                qr_url = f"{self.base_url}/api/qr?user_id={user_id}"
-                return (
-                    False,
-                    f"Please ask the user to visit the following url to authorize WhatsApp: {qr_url}. Render the url in proper markdown format with a clickable link.",
-                )
+                qr_url = f'{self.base_url}/api/qr?user_id={user_id}'
+                return (False, f'Please ask the user to visit the following url to authorize WhatsApp: {qr_url}. Render the url in proper markdown format with a clickable link.')
             else:
-                return (False, "No API key available from integration")
+                return (False, 'No API key available from integration')
 
     async def search_contacts(self, query: str) -> list[dict[str, Any]]:
         """
@@ -129,19 +119,7 @@ class WhatsappApp(BaseApplication):
         contacts = whatsapp_search_contacts(query, user_id)
         return contacts
 
-    async def search_messages(
-        self,
-        after: str | None = None,
-        before: str | None = None,
-        sender_phone_number: str | None = None,
-        chat_jid: str | None = None,
-        query: str | None = None,
-        limit: int = 20,
-        page: int = 0,
-        include_context: bool = True,
-        context_before: int = 1,
-        context_after: int = 1,
-    ) -> list[dict[str, Any]]:
+    async def search_messages(self, after: str | None=None, before: str | None=None, sender_phone_number: str | None=None, chat_jid: str | None=None, query: str | None=None, limit: int=20, page: int=0, include_context: bool=True, context_before: int=1, context_after: int=1) -> list[dict[str, Any]]:
         """
         Searches for and retrieves a paginated list of WhatsApp messages using various filters like date, sender, chat, or content query. It can optionally include surrounding contextual messages for each result, unlike `get_message_context` which targets a single message ID.
 
@@ -168,24 +146,10 @@ class WhatsappApp(BaseApplication):
         """
         self._authenticator()
         user_id = self.api_key
-        messages = whatsapp_list_messages(
-            after=after,
-            before=before,
-            sender_phone_number=sender_phone_number,
-            chat_jid=chat_jid,
-            query=query,
-            limit=limit,
-            page=page,
-            include_context=include_context,
-            context_before=context_before,
-            context_after=context_after,
-            user_id=user_id,
-        )
+        messages = whatsapp_list_messages(after=after, before=before, sender_phone_number=sender_phone_number, chat_jid=chat_jid, query=query, limit=limit, page=page, include_context=include_context, context_before=context_before, context_after=context_after, user_id=user_id)
         return messages
 
-    async def search_chats(
-        self, query: str | None = None, limit: int = 20, page: int = 0, include_last_message: bool = True, sort_by: str = "last_active"
-    ) -> list[dict[str, Any]]:
+    async def search_chats(self, query: str | None=None, limit: int=20, page: int=0, include_last_message: bool=True, sort_by: str='last_active') -> list[dict[str, Any]]:
         """
         Retrieves a paginated list of WhatsApp chats, allowing filtering by a search query and sorting by activity or name. Unlike `get_chat`, which fetches a single known chat, this function provides broad search and discovery capabilities across multiple user conversations.
 
@@ -207,12 +171,10 @@ class WhatsappApp(BaseApplication):
         """
         self._authenticator()
         user_id = self.api_key
-        chats = whatsapp_list_chats(
-            query=query, limit=limit, page=page, include_last_message=include_last_message, sort_by=sort_by, user_id=user_id
-        )
+        chats = whatsapp_list_chats(query=query, limit=limit, page=page, include_last_message=include_last_message, sort_by=sort_by, user_id=user_id)
         return chats
 
-    async def get_chat_by_jid(self, chat_jid: str, include_last_message: bool = True) -> dict[str, Any]:
+    async def get_chat_by_jid(self, chat_jid: str, include_last_message: bool=True) -> dict[str, Any]:
         """
         Retrieves metadata for a specific WhatsApp chat (direct or group) using its unique JID. It can optionally include the most recent message. This precise JID-based lookup distinguishes it from `get_direct_chat_by_contact`, which uses a phone number, and `list_chats`, which performs a broader search.
 
@@ -259,7 +221,7 @@ class WhatsappApp(BaseApplication):
         chat = whatsapp_get_direct_chat_by_contact(sender_phone_number, user_id)
         return chat
 
-    async def list_chats_by_contact_jid(self, jid: str, limit: int = 20, page: int = 0) -> list[dict[str, Any]]:
+    async def list_chats_by_contact_jid(self, jid: str, limit: int=20, page: int=0) -> list[dict[str, Any]]:
         """
         Retrieves a paginated list of all WhatsApp chats, including direct messages and groups, that a specific contact participates in. The contact is identified by their unique JID. This differs from `get_direct_chat_by_contact` which only finds one-on-one chats.
 
@@ -307,7 +269,7 @@ class WhatsappApp(BaseApplication):
         message = whatsapp_get_last_interaction(jid, user_id)
         return message
 
-    async def get_message_context(self, message_id: str, before: int = 5, after: int = 5) -> dict[str, Any]:
+    async def get_message_context(self, message_id: str, before: int=5, after: int=5) -> dict[str, Any]:
         """
         Fetches the conversational context surrounding a specific WhatsApp message ID. It retrieves a configurable number of messages immediately preceding and following the target message. This provides a focused view of a dialogue, unlike `list_messages` which performs broader, filter-based searches.
 
@@ -357,7 +319,7 @@ class WhatsappApp(BaseApplication):
         self._authenticator()
         user_id = self.api_key
         success, status_message = whatsapp_send_message(recipient, message, user_id)
-        return {"success": success, "message": status_message}
+        return {'success': success, 'message': status_message}
 
     async def send_attachment(self, recipient: str, media_path: str) -> dict[str, Any]:
         """
@@ -384,7 +346,7 @@ class WhatsappApp(BaseApplication):
         self._authenticator()
         user_id = self.api_key
         success, status_message = whatsapp_send_file(recipient, media_path, user_id)
-        return {"success": success, "message": status_message}
+        return {'success': success, 'message': status_message}
 
     async def send_voice_message(self, recipient: str, media_path: str) -> dict[str, Any]:
         """
@@ -411,7 +373,7 @@ class WhatsappApp(BaseApplication):
         self._authenticator()
         user_id = self.api_key
         success, status_message = whatsapp_audio_voice_message(recipient, media_path, user_id)
-        return {"success": success, "message": status_message}
+        return {'success': success, 'message': status_message}
 
     async def download_media_from_message(self, message_id: str, chat_jid: str) -> dict[str, Any]:
         """
@@ -438,25 +400,12 @@ class WhatsappApp(BaseApplication):
         user_id = self.api_key
         file_path = whatsapp_download_media(message_id, chat_jid, user_id)
         if file_path:
-            return {"success": True, "message": "Media downloaded successfully", "file_path": file_path}
+            return {'success': True, 'message': 'Media downloaded successfully', 'file_path': file_path}
         else:
-            return {"success": False, "message": "Failed to download media"}
+            return {'success': False, 'message': 'Failed to download media'}
 
     def list_tools(self):
         """
         Lists the available tools (methods) for this application.
         """
-        return [
-            self.search_contacts,
-            self.search_messages,
-            self.search_chats,
-            self.get_chat_by_jid,
-            self.get_direct_chat_by_phone_number,
-            self.list_chats_by_contact_jid,
-            self.get_last_message_by_jid,
-            self.get_message_context,
-            self.send_text_message,
-            self.send_attachment,
-            self.send_voice_message,
-            self.download_media_from_message,
-        ]
+        return [self.search_contacts, self.search_messages, self.search_chats, self.get_chat_by_jid, self.get_direct_chat_by_phone_number, self.list_chats_by_contact_jid, self.get_last_message_by_jid, self.get_message_context, self.send_text_message, self.send_attachment, self.send_voice_message, self.download_media_from_message]

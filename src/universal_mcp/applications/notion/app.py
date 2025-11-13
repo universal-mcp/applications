@@ -2,19 +2,19 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class NotionApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="notion", integration=integration, **kwargs)
-        self.base_url = "https://api.notion.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='notion', integration=integration, **kwargs)
+        self.base_url = 'https://api.notion.com'
 
     def _get_headers(self):
         if not self.integration:
-            raise ValueError("Integration not configured for NotionApp")
+            raise ValueError('Integration not configured for NotionApp')
         credentials = self.integration.get_credentials()
-        if "headers" in credentials:
-            return credentials["headers"]
-        return {"Authorization": f"Bearer {credentials['access_token']}", "Accept": "application/json", "Notion-Version": "2022-06-28"}
+        if 'headers' in credentials:
+            return credentials['headers']
+        return {'Authorization': f"Bearer {credentials['access_token']}", 'Accept': 'application/json', 'Notion-Version': '2022-06-28'}
 
     async def retrieve_a_user(self, id, request_body=None) -> dict[str, Any]:
         """
@@ -36,9 +36,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/users/{id}"
+        url = f'{self.base_url}/v1/users/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -59,9 +59,9 @@ class NotionApp(APIApplication):
         Tags:
             list, users, api, fetch, management
         """
-        url = f"{self.base_url}/v1/users"
+        url = f'{self.base_url}/v1/users'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -79,9 +79,9 @@ class NotionApp(APIApplication):
         Tags:
             retrieve, authentication, token, user, api
         """
-        url = f"{self.base_url}/v1/users/me"
+        url = f'{self.base_url}/v1/users/me'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -104,9 +104,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/databases/{id}"
+        url = f'{self.base_url}/v1/databases/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -130,7 +130,7 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/databases/{id}"
+        url = f'{self.base_url}/v1/databases/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -156,9 +156,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/databases/{id}/query"
+        url = f'{self.base_url}/v1/databases/{id}/query'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -180,9 +180,9 @@ class NotionApp(APIApplication):
         Tags:
             create, database, api, management
         """
-        url = f"{self.base_url}/v1/databases/"
+        url = f'{self.base_url}/v1/databases/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -203,9 +203,9 @@ class NotionApp(APIApplication):
         Tags:
             create, page, api, http, post
         """
-        url = f"{self.base_url}/v1/pages/"
+        url = f'{self.base_url}/v1/pages/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -228,9 +228,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/pages/{id}"
+        url = f'{self.base_url}/v1/pages/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -255,7 +255,7 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/pages/{id}"
+        url = f'{self.base_url}/v1/pages/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -283,9 +283,9 @@ class NotionApp(APIApplication):
             raise ValueError("Missing required parameter 'page_id'")
         if property_id is None:
             raise ValueError("Missing required parameter 'property_id'")
-        url = f"{self.base_url}/v1/pages/{page_id}/properties/{property_id}"
+        url = f'{self.base_url}/v1/pages/{page_id}/properties/{property_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -309,9 +309,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/blocks/{id}/children"
-        query_params = {k: v for k, v in [("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v1/blocks/{id}/children'
+        query_params = {k: v for k, v in [('page_size', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -335,7 +335,7 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/blocks/{id}/children"
+        url = f'{self.base_url}/v1/blocks/{id}/children'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -360,9 +360,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/blocks/{id}"
+        url = f'{self.base_url}/v1/blocks/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -385,9 +385,9 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/blocks/{id}"
+        url = f'{self.base_url}/v1/blocks/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -411,7 +411,7 @@ class NotionApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v1/blocks/{id}"
+        url = f'{self.base_url}/v1/blocks/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -434,9 +434,9 @@ class NotionApp(APIApplication):
         Tags:
             search, http, query, api-request, json, important
         """
-        url = f"{self.base_url}/v1/search"
+        url = f'{self.base_url}/v1/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -459,9 +459,9 @@ class NotionApp(APIApplication):
         Tags:
             retrieve, fetch, comments, api, pagination, http
         """
-        url = f"{self.base_url}/v1/comments"
-        query_params = {k: v for k, v in [("block_id", block_id), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v1/comments'
+        query_params = {k: v for k, v in [('block_id', block_id), ('page_size', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -482,31 +482,11 @@ class NotionApp(APIApplication):
         Tags:
             add, create, comment, post, api, content-management
         """
-        url = f"{self.base_url}/v1/comments"
+        url = f'{self.base_url}/v1/comments'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.retrieve_a_user,
-            self.list_all_users,
-            self.retrieve_your_token_sbot_user,
-            self.retrieve_a_database,
-            self.update_a_database,
-            self.query_a_database,
-            self.create_a_database,
-            self.create_a_page,
-            self.retrieve_a_page,
-            self.update_page_properties,
-            self.retrieve_a_page_property_item,
-            self.retrieve_block_children,
-            self.append_block_children,
-            self.retrieve_a_block,
-            self.delete_a_block,
-            self.update_a_block,
-            self.search,
-            self.retrieve_comments,
-            self.add_comment_to_page,
-        ]
+        return [self.retrieve_a_user, self.list_all_users, self.retrieve_your_token_sbot_user, self.retrieve_a_database, self.update_a_database, self.query_a_database, self.create_a_database, self.create_a_page, self.retrieve_a_page, self.update_page_properties, self.retrieve_a_page_property_item, self.retrieve_block_children, self.append_block_children, self.retrieve_a_block, self.delete_a_block, self.update_a_block, self.search, self.retrieve_comments, self.add_comment_to_page]

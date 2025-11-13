@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class GoogleDocsApp(APIApplication):
+
     def __init__(self, integration: Integration) -> None:
-        super().__init__(name="google_docs", integration=integration)
-        self.base_api_url = "https://docs.googleapis.com/v1/documents"
+        super().__init__(name='google_docs', integration=integration)
+        self.base_api_url = 'https://docs.googleapis.com/v1/documents'
 
     async def create_document(self, title: str) -> dict[str, Any]:
         """
@@ -26,11 +26,11 @@ class GoogleDocsApp(APIApplication):
             create, document, api, important, google-docs, http
         """
         url = self.base_api_url
-        document_data = {"title": title}
-        response = self._post(url, data=document_data)
+        document_data = {'title': title}
+        response = await self._apost(url, data=document_data)
         response.raise_for_status()
         payload = response.json()
-        payload["Note"] = "You must load and call other google docs content functions (like google_docs__insert_text)"
+        payload['Note'] = 'You must load and call other google docs content functions (like google_docs__insert_text)'
         return payload
 
     def get_document(self, document_id: str) -> dict[str, Any]:
@@ -50,7 +50,7 @@ class GoogleDocsApp(APIApplication):
         Tags:
             retrieve, read, api, document, google-docs, important
         """
-        url = f"{self.base_api_url}/{document_id}"
+        url = f'{self.base_api_url}/{document_id}'
         response = self._get(url)
         return response.json()
 
@@ -84,13 +84,12 @@ class GoogleDocsApp(APIApplication):
             google-docs, markdown, document-parsing, text-extraction, conversion, structured-data
         """
         import re
-
         response = self.get_document(document_id)
-        title = response.get("title", "")
-        body_content = response.get("body", {}).get("content", [])
-        inline_objects = response.get("inlineObjects", {})
-        lists = response.get("lists", {})
-        footnotes_data = response.get("footnotes", {})
+        title = response.get('title', '')
+        body_content = response.get('body', {}).get('content', [])
+        inline_objects = response.get('inlineObjects', {})
+        lists = response.get('lists', {})
+        footnotes_data = response.get('footnotes', {})
         text_chunks: list[str] = []
         footnotes: dict[str, str] = {}
         footnote_index: dict[str, int] = {}
@@ -98,82 +97,81 @@ class GoogleDocsApp(APIApplication):
 
         def extract_text_from_paragraph(paragraph: dict) -> str:
             """Extracts paragraph text with inline formatting."""
-            text = ""
-            for elem in paragraph.get("elements", []):
-                if "textRun" in elem:
-                    content = elem["textRun"].get("content", "")
+            text = ''
+            for elem in paragraph.get('elements', []):
+                if 'textRun' in elem:
+                    content = elem['textRun'].get('content', '')
                     text += content
-                elif "inlineObjectElement" in elem:
-                    obj_id = elem["inlineObjectElement"]["inlineObjectId"]
+                elif 'inlineObjectElement' in elem:
+                    obj_id = elem['inlineObjectElement']['inlineObjectId']
                     obj = inline_objects.get(obj_id, {})
-                    embed = obj.get("inlineObjectProperties", {}).get("embeddedObject", {})
-                    image_source = embed.get("imageProperties", {}).get("contentUri", "")
+                    embed = obj.get('inlineObjectProperties', {}).get('embeddedObject', {})
+                    image_source = embed.get('imageProperties', {}).get('contentUri', '')
                     if image_source:
-                        text += f"\n\n![]({image_source})\n\n"
+                        text += f'\n\n![]({image_source})\n\n'
             return text
 
         def extract_table(table: dict) -> str:
             rows = []
-            for i, row in enumerate(table.get("tableRows", [])):
+            for i, row in enumerate(table.get('tableRows', [])):
                 cells = []
-                for cell in row.get("tableCells", []):
-                    cell_text = ""
-                    for content in cell.get("content", []):
-                        if "paragraph" in content:
-                            cell_text += extract_text_from_paragraph(content["paragraph"]).strip()
+                for cell in row.get('tableCells', []):
+                    cell_text = ''
+                    for content in cell.get('content', []):
+                        if 'paragraph' in content:
+                            cell_text += extract_text_from_paragraph(content['paragraph']).strip()
                     cells.append(cell_text)
-                row_line = "| " + " | ".join(cells) + " |"
+                row_line = '| ' + ' | '.join(cells) + ' |'
                 rows.append(row_line)
                 if i == 0:
-                    rows.insert(1, "| " + " | ".join(["---"] * len(cells)) + " |")
-            return "\n".join(rows)
+                    rows.insert(1, '| ' + ' | '.join(['---'] * len(cells)) + ' |')
+            return '\n'.join(rows)
 
         def extract_heading_style(paragraph: dict) -> str:
             """Returns appropriate Markdown heading level."""
-            style = paragraph.get("paragraphStyle", {})
-            heading = style.get("namedStyleType", "")
-            match = re.match("HEADING_(\\d)", heading)
+            style = paragraph.get('paragraphStyle', {})
+            heading = style.get('namedStyleType', '')
+            match = re.match('HEADING_(\\d)', heading)
             if match:
                 level = int(match.group(1))
-                return "#" * level
-            return ""
+                return '#' * level
+            return ''
 
         def extract_list_prefix(paragraph: dict) -> str:
             """Generates proper list prefix (numbered or bullet)."""
-            list_id = paragraph.get("bullet", {}).get("listId")
+            list_id = paragraph.get('bullet', {}).get('listId')
             if not list_id:
-                return ""
-            glyph = paragraph["bullet"].get("glyph", None)
-            nesting = paragraph["bullet"].get("nestingLevel", 0)
+                return ''
+            glyph = paragraph['bullet'].get('glyph', None)
+            nesting = paragraph['bullet'].get('nestingLevel', 0)
             list_info = lists.get(list_id, {})
-            list_type = list_info.get("listProperties", {}).get("nestingLevels", [{}])[nesting].get("glyphType")
-            indent = "  " * nesting
-            if list_type and "DECIMAL" in list_type:
+            list_type = list_info.get('listProperties', {}).get('nestingLevels', [{}])[nesting].get('glyphType')
+            indent = '  ' * nesting
+            if list_type and 'DECIMAL' in list_type:
                 current_list_counters[list_id] = current_list_counters.get(list_id, 1)
-                prefix = f"{current_list_counters[list_id]}. "
+                prefix = f'{current_list_counters[list_id]}. '
                 current_list_counters[list_id] += 1
             else:
-                prefix = "- "
+                prefix = '- '
             return indent + prefix
 
         def extract_equation(paragraph: dict) -> str:
-            return "\n\n$" + paragraph.get("equation", {}).get("equation", "") + "$\n\n"
+            return '\n\n$' + paragraph.get('equation', {}).get('equation', '') + '$\n\n'
 
         def extract_footnote_ref(footnote_id: str) -> str:
             if footnote_id not in footnote_index:
                 footnote_index[footnote_id] = len(footnotes) + 1
-                fn_content = footnotes_data.get(footnote_id, {}).get("content", [])
-                fn_text = ""
+                fn_content = footnotes_data.get(footnote_id, {}).get('content', [])
+                fn_text = ''
                 for item in fn_content:
-                    if "paragraph" in item:
-                        fn_text += extract_text_from_paragraph(item["paragraph"]).strip()
+                    if 'paragraph' in item:
+                        fn_text += extract_text_from_paragraph(item['paragraph']).strip()
                 footnotes[footnote_id] = fn_text
-            return f"[^{footnote_index[footnote_id]}]"
-
+            return f'[^{footnote_index[footnote_id]}]'
         for element in body_content:
-            if "paragraph" in element:
-                para = element["paragraph"]
-                if "equation" in para:
+            if 'paragraph' in element:
+                para = element['paragraph']
+                if 'equation' in para:
                     text_chunks.append(extract_equation(para))
                     continue
                 heading_md = extract_heading_style(para)
@@ -181,30 +179,30 @@ class GoogleDocsApp(APIApplication):
                 para_text = extract_text_from_paragraph(para).strip()
                 if para_text:
                     if heading_md:
-                        text_chunks.append(f"{heading_md} {para_text}")
+                        text_chunks.append(f'{heading_md} {para_text}')
                     elif list_prefix:
-                        text_chunks.append(f"{list_prefix}{para_text}")
+                        text_chunks.append(f'{list_prefix}{para_text}')
                     else:
                         text_chunks.append(para_text)
-            elif "table" in element:
-                table_md = extract_table(element["table"])
+            elif 'table' in element:
+                table_md = extract_table(element['table'])
                 text_chunks.append(table_md)
-            elif "horizontalRule" in element:
-                text_chunks.append("\n---\n")
-            elif "tableOfContents" in element:
-                text_chunks.append("<!-- Table of Contents -->")
-            elif "footnoteReference" in element:
-                footnote_id = element["footnoteReference"]["footnoteId"]
+            elif 'horizontalRule' in element:
+                text_chunks.append('\n---\n')
+            elif 'tableOfContents' in element:
+                text_chunks.append('<!-- Table of Contents -->')
+            elif 'footnoteReference' in element:
+                footnote_id = element['footnoteReference']['footnoteId']
                 ref = extract_footnote_ref(footnote_id)
                 text_chunks.append(ref)
         if footnotes:
-            text_chunks.append("\n## Footnotes\n")
+            text_chunks.append('\n## Footnotes\n')
             for fid, index in sorted(footnote_index.items(), key=lambda x: x[1]):
-                text_chunks.append(f"[^{index}]: {footnotes[fid]}")
-        content = "\n\n".join((chunk.strip() for chunk in text_chunks if chunk.strip()))
-        return {"title": title, "content": content}
+                text_chunks.append(f'[^{index}]: {footnotes[fid]}')
+        content = '\n\n'.join((chunk.strip() for chunk in text_chunks if chunk.strip()))
+        return {'title': title, 'content': content}
 
-    async def insert_text(self, document_id: str, content: str, index: int = 1) -> dict[str, Any]:
+    async def insert_text(self, document_id: str, content: str, index: int=1) -> dict[str, Any]:
         """
         Inserts a text string at a specified index within a Google Document using the batchUpdate API. Unlike functions that format existing text or delete content ranges, this method specifically adds new textual content to the document body.
 
@@ -223,25 +221,13 @@ class GoogleDocsApp(APIApplication):
         Tags:
             update, insert, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        batch_update_data = {"requests": [{"insertText": {"location": {"index": index}, "text": content}}]}
-        response = self._post(url, data=batch_update_data)
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        batch_update_data = {'requests': [{'insertText': {'location': {'index': index}, 'text': content}}]}
+        response = await self._apost(url, data=batch_update_data)
         response.raise_for_status()
         return response.json()
 
-    async def apply_text_style(
-        self,
-        document_id: str,
-        start_index: int,
-        end_index: int,
-        bold: bool = False,
-        italic: bool = False,
-        underline: bool = False,
-        font_size: float | None = None,
-        link_url: str | None = None,
-        foreground_color: dict[str, float] | None = None,
-        background_color: dict[str, float] | None = None,
-    ) -> dict[str, Any]:
+    async def apply_text_style(self, document_id: str, start_index: int, end_index: int, bold: bool=False, italic: bool=False, underline: bool=False, font_size: float | None=None, link_url: str | None=None, foreground_color: dict[str, float] | None=None, background_color: dict[str, float] | None=None) -> dict[str, Any]:
         """
         Applies character-level formatting (e.g., bold, italic, color, links) to a specified text range. This function modifies text attributes directly, distinguishing it from `update_paragraph_style` which handles block-level properties like alignment.
 
@@ -267,74 +253,37 @@ class GoogleDocsApp(APIApplication):
         Tags:
             style, format, text, document, api, google-docs, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
         text_style = {}
         fields_to_update = []
         if bold:
-            text_style["bold"] = True
-            fields_to_update.append("bold")
+            text_style['bold'] = True
+            fields_to_update.append('bold')
         if italic:
-            text_style["italic"] = True
-            fields_to_update.append("italic")
+            text_style['italic'] = True
+            fields_to_update.append('italic')
         if underline:
-            text_style["underline"] = True
-            fields_to_update.append("underline")
+            text_style['underline'] = True
+            fields_to_update.append('underline')
         if font_size is not None:
-            text_style["fontSize"] = {"magnitude": font_size, "unit": "PT"}
-            fields_to_update.append("fontSize")
+            text_style['fontSize'] = {'magnitude': font_size, 'unit': 'PT'}
+            fields_to_update.append('fontSize')
         if link_url is not None:
-            text_style["link"] = {"url": link_url}
-            fields_to_update.append("link")
+            text_style['link'] = {'url': link_url}
+            fields_to_update.append('link')
         if foreground_color is not None:
-            text_style["foregroundColor"] = {
-                "color": {
-                    "rgbColor": {
-                        "red": foreground_color.get("red", 0.0),
-                        "green": foreground_color.get("green", 0.0),
-                        "blue": foreground_color.get("blue", 0.0),
-                    }
-                }
-            }
-            fields_to_update.append("foregroundColor")
+            text_style['foregroundColor'] = {'color': {'rgbColor': {'red': foreground_color.get('red', 0.0), 'green': foreground_color.get('green', 0.0), 'blue': foreground_color.get('blue', 0.0)}}}
+            fields_to_update.append('foregroundColor')
         if background_color is not None:
-            text_style["backgroundColor"] = {
-                "color": {
-                    "rgbColor": {
-                        "red": background_color.get("red", 0.0),
-                        "green": background_color.get("green", 0.0),
-                        "blue": background_color.get("blue", 0.0),
-                    }
-                }
-            }
-            fields_to_update.append("backgroundColor")
+            text_style['backgroundColor'] = {'color': {'rgbColor': {'red': background_color.get('red', 0.0), 'green': background_color.get('green', 0.0), 'blue': background_color.get('blue', 0.0)}}}
+            fields_to_update.append('backgroundColor')
         if not text_style:
-            return {"message": "No styling applied"}
-        batch_update_data = {
-            "requests": [
-                {
-                    "updateTextStyle": {
-                        "range": {"startIndex": start_index, "endIndex": end_index},
-                        "textStyle": text_style,
-                        "fields": ",".join(fields_to_update),
-                    }
-                }
-            ]
-        }
-        response = self._post(url, data=batch_update_data)
+            return {'message': 'No styling applied'}
+        batch_update_data = {'requests': [{'updateTextStyle': {'range': {'startIndex': start_index, 'endIndex': end_index}, 'textStyle': text_style, 'fields': ','.join(fields_to_update)}}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def update_paragraph_style(
-        self,
-        document_id: str,
-        start_index: int,
-        end_index: int,
-        named_style_type: str | None = None,
-        alignment: str | None = None,
-        direction: str | None = None,
-        spacing_mode: str | None = None,
-        segment_id: str | None = None,
-        tab_id: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_paragraph_style(self, document_id: str, start_index: int, end_index: int, named_style_type: str | None=None, alignment: str | None=None, direction: str | None=None, spacing_mode: str | None=None, segment_id: str | None=None, tab_id: str | None=None) -> dict[str, Any]:
         """
         Applies paragraph-level formatting like alignment, named styles (e.g., 'HEADING_1'), and text direction to a text range in a Google Doc. Distinct from `apply_text_style`, which handles character formatting, this method modifies properties for entire paragraphs using the batchUpdate API.
 
@@ -359,39 +308,33 @@ class GoogleDocsApp(APIApplication):
         Tags:
             style, format, paragraph, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
         paragraph_style = {}
         fields_to_update = []
         if named_style_type is not None:
-            paragraph_style["namedStyleType"] = named_style_type
-            fields_to_update.append("namedStyleType")
+            paragraph_style['namedStyleType'] = named_style_type
+            fields_to_update.append('namedStyleType')
         if alignment is not None:
-            paragraph_style["alignment"] = alignment
-            fields_to_update.append("alignment")
+            paragraph_style['alignment'] = alignment
+            fields_to_update.append('alignment')
         if direction is not None:
-            paragraph_style["direction"] = direction
-            fields_to_update.append("direction")
+            paragraph_style['direction'] = direction
+            fields_to_update.append('direction')
         if spacing_mode is not None:
-            paragraph_style["spacingMode"] = spacing_mode
-            fields_to_update.append("spacingMode")
+            paragraph_style['spacingMode'] = spacing_mode
+            fields_to_update.append('spacingMode')
         if not paragraph_style:
-            return {"message": "No paragraph styling applied"}
-        range_obj: dict[str, Any] = {"startIndex": start_index, "endIndex": end_index}
+            return {'message': 'No paragraph styling applied'}
+        range_obj: dict[str, Any] = {'startIndex': start_index, 'endIndex': end_index}
         if segment_id is not None:
-            range_obj["segmentId"] = segment_id
+            range_obj['segmentId'] = segment_id
         if tab_id is not None:
-            range_obj["tabId"] = tab_id
-        batch_update_data = {
-            "requests": [
-                {"updateParagraphStyle": {"range": range_obj, "paragraphStyle": paragraph_style, "fields": ",".join(fields_to_update)}}
-            ]
-        }
-        response = self._post(url, data=batch_update_data)
+            range_obj['tabId'] = tab_id
+        batch_update_data = {'requests': [{'updateParagraphStyle': {'range': range_obj, 'paragraphStyle': paragraph_style, 'fields': ','.join(fields_to_update)}}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def delete_content_range(
-        self, document_id: str, start_index: int, end_index: int, segment_id: str | None = None, tab_id: str | None = None
-    ) -> dict[str, Any]:
+    async def delete_content_range(self, document_id: str, start_index: int, end_index: int, segment_id: str | None=None, tab_id: str | None=None) -> dict[str, Any]:
         """
         Removes content from a specified index range in a Google Document via the batchUpdate API. Unlike functions that delete entire elements (e.g., `delete_header`), this provides granular control by targeting content based on its precise start and end location, optionally within a specific segment or tab.
 
@@ -412,19 +355,17 @@ class GoogleDocsApp(APIApplication):
         Tags:
             delete, remove, content, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        delete_request: dict[str, Any] = {"range": {"startIndex": start_index, "endIndex": end_index}}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        delete_request: dict[str, Any] = {'range': {'startIndex': start_index, 'endIndex': end_index}}
         if segment_id is not None:
-            delete_request["range"]["segmentId"] = segment_id
+            delete_request['range']['segmentId'] = segment_id
         if tab_id is not None:
-            delete_request["tabId"] = tab_id
-        batch_update_data = {"requests": [{"deleteContentRange": delete_request}]}
-        response = self._post(url, data=batch_update_data)
+            delete_request['tabId'] = tab_id
+        batch_update_data = {'requests': [{'deleteContentRange': delete_request}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def insert_table(
-        self, document_id: str, location_index: int, rows: int, columns: int, segment_id: str = None, tab_id: str = None
-    ) -> dict[str, Any]:
+    async def insert_table(self, document_id: str, location_index: int, rows: int, columns: int, segment_id: str=None, tab_id: str=None) -> dict[str, Any]:
         """
         Inserts a table with specified rows and columns at a given index in a Google Document using the batchUpdate API. It can optionally place the table within specific document segments, such as headers or footers, handling structural additions rather than text or style modifications.
 
@@ -446,24 +387,17 @@ class GoogleDocsApp(APIApplication):
         Tags:
             table, insert, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        location = {"index": location_index}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        location = {'index': location_index}
         if segment_id is not None:
-            location["segmentId"] = segment_id
+            location['segmentId'] = segment_id
         if tab_id is not None:
-            location["tabId"] = tab_id
-        batch_update_data = {"requests": [{"insertTable": {"location": location, "rows": rows, "columns": columns}}]}
-        response = self._post(url, data=batch_update_data)
+            location['tabId'] = tab_id
+        batch_update_data = {'requests': [{'insertTable': {'location': location, 'rows': rows, 'columns': columns}}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def create_footer(
-        self,
-        document_id: str,
-        footer_type: str = "DEFAULT",
-        section_break_location_index: int = None,
-        section_break_segment_id: str = None,
-        section_break_tab_id: str = None,
-    ) -> dict[str, Any]:
+    async def create_footer(self, document_id: str, footer_type: str='DEFAULT', section_break_location_index: int=None, section_break_segment_id: str=None, section_break_tab_id: str=None) -> dict[str, Any]:
         """
         Creates a footer of a specified type in a Google Document using the batch update API. This function, distinct from `create_header`, can optionally associate the new footer with a specific section break, enabling section-specific footers within the document.
 
@@ -484,29 +418,20 @@ class GoogleDocsApp(APIApplication):
         Tags:
             footer, create, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        create_footer_request = {"type": footer_type}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        create_footer_request = {'type': footer_type}
         if section_break_location_index is not None:
-            section_break_location = {"index": section_break_location_index}
+            section_break_location = {'index': section_break_location_index}
             if section_break_segment_id is not None:
-                section_break_location["segmentId"] = section_break_segment_id
+                section_break_location['segmentId'] = section_break_segment_id
             if section_break_tab_id is not None:
-                section_break_location["tabId"] = section_break_tab_id
-            create_footer_request["sectionBreakLocation"] = section_break_location
-        batch_update_data = {"requests": [{"createFooter": create_footer_request}]}
-        response = self._post(url, data=batch_update_data)
+                section_break_location['tabId'] = section_break_tab_id
+            create_footer_request['sectionBreakLocation'] = section_break_location
+        batch_update_data = {'requests': [{'createFooter': create_footer_request}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def create_footnote(
-        self,
-        document_id: str,
-        location_index: int = None,
-        location_segment_id: str = None,
-        location_tab_id: str = None,
-        end_of_segment_location: bool = False,
-        end_of_segment_segment_id: str = None,
-        end_of_segment_tab_id: str = None,
-    ) -> dict[str, Any]:
+    async def create_footnote(self, document_id: str, location_index: int=None, location_segment_id: str=None, location_tab_id: str=None, end_of_segment_location: bool=False, end_of_segment_segment_id: str=None, end_of_segment_tab_id: str=None) -> dict[str, Any]:
         """
         Inserts a numbered footnote reference into a Google Document using the batchUpdate API. The footnote can be placed at a precise index or at the end of a document segment, distinct from the `create_footer` function which adds standard page footers.
 
@@ -529,27 +454,27 @@ class GoogleDocsApp(APIApplication):
         Tags:
             footnote, create, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
         create_footnote_request = {}
         if end_of_segment_location:
             end_of_segment_location_obj = {}
             if end_of_segment_segment_id is not None:
-                end_of_segment_location_obj["segmentId"] = end_of_segment_segment_id
+                end_of_segment_location_obj['segmentId'] = end_of_segment_segment_id
             if end_of_segment_tab_id is not None:
-                end_of_segment_location_obj["tabId"] = end_of_segment_tab_id
-            create_footnote_request["endOfSegmentLocation"] = end_of_segment_location_obj
+                end_of_segment_location_obj['tabId'] = end_of_segment_tab_id
+            create_footnote_request['endOfSegmentLocation'] = end_of_segment_location_obj
         else:
-            location = {"index": location_index}
+            location = {'index': location_index}
             if location_segment_id is not None:
-                location["segmentId"] = location_segment_id
+                location['segmentId'] = location_segment_id
             if location_tab_id is not None:
-                location["tabId"] = location_tab_id
-            create_footnote_request["location"] = location
-        batch_update_data = {"requests": [{"createFootnote": create_footnote_request}]}
-        response = self._post(url, data=batch_update_data)
+                location['tabId'] = location_tab_id
+            create_footnote_request['location'] = location
+        batch_update_data = {'requests': [{'createFootnote': create_footnote_request}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def delete_footer(self, document_id: str, footer_id: str, tab_id: str = None) -> dict[str, Any]:
+    async def delete_footer(self, document_id: str, footer_id: str, tab_id: str=None) -> dict[str, Any]:
         """
         Deletes a specific footer from a Google Document using its unique ID via a batchUpdate API request. This operation removes the entire footer object, optionally within a specific tab, distinguishing it from functions that delete headers (`delete_header`) or general content (`delete_content_range`).
 
@@ -568,22 +493,15 @@ class GoogleDocsApp(APIApplication):
         Tags:
             footer, delete, remove, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        delete_footer_request = {"footerId": footer_id}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        delete_footer_request = {'footerId': footer_id}
         if tab_id is not None:
-            delete_footer_request["tabId"] = tab_id
-        batch_update_data = {"requests": [{"deleteFooter": delete_footer_request}]}
-        response = self._post(url, data=batch_update_data)
+            delete_footer_request['tabId'] = tab_id
+        batch_update_data = {'requests': [{'deleteFooter': delete_footer_request}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def create_header(
-        self,
-        document_id: str,
-        header_type: str = "DEFAULT",
-        section_break_location_index: int = None,
-        section_break_segment_id: str = None,
-        section_break_tab_id: str = None,
-    ) -> dict[str, Any]:
+    async def create_header(self, document_id: str, header_type: str='DEFAULT', section_break_location_index: int=None, section_break_segment_id: str=None, section_break_tab_id: str=None) -> dict[str, Any]:
         """
         Creates a header of a specified type in a Google Document using the batchUpdate API. This function can optionally associate the new header with a specific section break, distinguishing it from the `create_footer` method, which performs the equivalent action for footers.
 
@@ -604,20 +522,20 @@ class GoogleDocsApp(APIApplication):
         Tags:
             header, create, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        create_header_request = {"type": header_type}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        create_header_request = {'type': header_type}
         if section_break_location_index is not None:
-            section_break_location = {"index": section_break_location_index}
+            section_break_location = {'index': section_break_location_index}
             if section_break_segment_id is not None:
-                section_break_location["segmentId"] = section_break_segment_id
+                section_break_location['segmentId'] = section_break_segment_id
             if section_break_tab_id is not None:
-                section_break_location["tabId"] = section_break_tab_id
-            create_header_request["sectionBreakLocation"] = section_break_location
-        batch_update_data = {"requests": [{"createHeader": create_header_request}]}
-        response = self._post(url, data=batch_update_data)
+                section_break_location['tabId'] = section_break_tab_id
+            create_header_request['sectionBreakLocation'] = section_break_location
+        batch_update_data = {'requests': [{'createHeader': create_header_request}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def delete_header(self, document_id: str, header_id: str, tab_id: str = None) -> dict[str, Any]:
+    async def delete_header(self, document_id: str, header_id: str, tab_id: str=None) -> dict[str, Any]:
         """
         Deletes a specific header from a Google Document using its unique ID via a batchUpdate API request. This function, the counterpart to `create_header`, removes headers and can optionally target a header within a specific tab. It requires both the document and header IDs for the operation.
 
@@ -636,17 +554,15 @@ class GoogleDocsApp(APIApplication):
         Tags:
             header, delete, remove, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        delete_header_request = {"headerId": header_id}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        delete_header_request = {'headerId': header_id}
         if tab_id is not None:
-            delete_header_request["tabId"] = tab_id
-        batch_update_data = {"requests": [{"deleteHeader": delete_header_request}]}
-        response = self._post(url, data=batch_update_data)
+            delete_header_request['tabId'] = tab_id
+        batch_update_data = {'requests': [{'deleteHeader': delete_header_request}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def apply_list_style(
-        self, document_id: str, start_index: int, end_index: int, bullet_preset: str, segment_id: str = None, tab_id: str = None
-    ) -> dict[str, Any]:
+    async def apply_list_style(self, document_id: str, start_index: int, end_index: int, bullet_preset: str, segment_id: str=None, tab_id: str=None) -> dict[str, Any]:
         """
         Applies a predefined list style (bulleted or numbered) to paragraphs within a specified range using a chosen preset. Unlike `delete_paragraph_bullets`, which removes list formatting, this function creates it, distinguishing it from other text and paragraph styling methods in the class.
 
@@ -668,19 +584,17 @@ class GoogleDocsApp(APIApplication):
         Tags:
             bullets, list, paragraph, document, api, google-docs, batch, content-management, important
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        range_obj = {"startIndex": start_index, "endIndex": end_index}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        range_obj = {'startIndex': start_index, 'endIndex': end_index}
         if segment_id is not None:
-            range_obj["segmentId"] = segment_id
+            range_obj['segmentId'] = segment_id
         if tab_id is not None:
-            range_obj["tabId"] = tab_id
-        batch_update_data = {"requests": [{"createParagraphBullets": {"range": range_obj, "bulletPreset": bullet_preset}}]}
-        response = self._post(url, data=batch_update_data)
+            range_obj['tabId'] = tab_id
+        batch_update_data = {'requests': [{'createParagraphBullets': {'range': range_obj, 'bulletPreset': bullet_preset}}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
-    async def delete_paragraph_bullets(
-        self, document_id: str, start_index: int, end_index: int, segment_id: str = None, tab_id: str = None
-    ) -> dict[str, Any]:
+    async def delete_paragraph_bullets(self, document_id: str, start_index: int, end_index: int, segment_id: str=None, tab_id: str=None) -> dict[str, Any]:
         """
         Removes bullet points or numbering from paragraphs within a specified index range in a Google Document. This reverts list formatting to normal text while preserving content, acting as the inverse operation to the `apply_list_style` function.
 
@@ -701,30 +615,15 @@ class GoogleDocsApp(APIApplication):
         Tags:
             bullets, delete, remove, list, paragraph, document, api, google-docs, batch, content-management
         """
-        url = f"{self.base_api_url}/{document_id}:batchUpdate"
-        range_obj = {"startIndex": start_index, "endIndex": end_index}
+        url = f'{self.base_api_url}/{document_id}:batchUpdate'
+        range_obj = {'startIndex': start_index, 'endIndex': end_index}
         if segment_id is not None:
-            range_obj["segmentId"] = segment_id
+            range_obj['segmentId'] = segment_id
         if tab_id is not None:
-            range_obj["tabId"] = tab_id
-        batch_update_data = {"requests": [{"deleteParagraphBullets": {"range": range_obj}}]}
-        response = self._post(url, data=batch_update_data)
+            range_obj['tabId'] = tab_id
+        batch_update_data = {'requests': [{'deleteParagraphBullets': {'range': range_obj}}]}
+        response = await self._apost(url, data=batch_update_data)
         return self._handle_response(response)
 
     def list_tools(self):
-        return [
-            self.create_document,
-            self.get_document_content,
-            self.insert_text,
-            self.apply_text_style,
-            self.delete_content_range,
-            self.insert_table,
-            self.create_footer,
-            self.create_footnote,
-            self.delete_footer,
-            self.create_header,
-            self.delete_header,
-            self.apply_list_style,
-            self.delete_paragraph_bullets,
-            self.update_paragraph_style,
-        ]
+        return [self.create_document, self.get_document_content, self.insert_text, self.apply_text_style, self.delete_content_range, self.insert_table, self.create_footer, self.create_footnote, self.delete_footer, self.create_header, self.delete_header, self.apply_list_style, self.delete_paragraph_bullets, self.update_paragraph_style]

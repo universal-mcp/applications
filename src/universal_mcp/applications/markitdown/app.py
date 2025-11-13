@@ -2,10 +2,10 @@ import re
 from universal_mcp.applications.application import BaseApplication
 from markitdown import MarkItDown
 
-
 class MarkitdownApp(BaseApplication):
+
     def __init__(self, **kwargs):
-        super().__init__(name="markitdown")
+        super().__init__(name='markitdown')
         self.markitdown = MarkItDown(enable_plugins=True)
 
     async def convert_to_markdown(self, uri: str) -> str:
@@ -35,15 +35,15 @@ class MarkitdownApp(BaseApplication):
             convert, markdown, async, uri, transform, document, important
         """
         if not uri:
-            raise ValueError("URI cannot be empty")
-        known_schemes = ["http://", "https://", "file://", "data:"]
+            raise ValueError('URI cannot be empty')
+        known_schemes = ['http://', 'https://', 'file://', 'data:']
         has_scheme = any((uri.lower().startswith(scheme) for scheme in known_schemes))
-        if not has_scheme and (not re.match("^[a-zA-Z]+:", uri)):
-            if re.match("^[a-zA-Z]:[\\\\/]", uri):
-                normalized_path = uri.replace("\\", "/")
-                processed_uri = f"file:///{normalized_path}"
+        if not has_scheme and (not re.match('^[a-zA-Z]+:', uri)):
+            if re.match('^[a-zA-Z]:[\\\\/]', uri):
+                normalized_path = uri.replace('\\', '/')
+                processed_uri = f'file:///{normalized_path}'
             else:
-                processed_uri = f"file://{uri}" if uri.startswith("/") else f"file:///{uri}"
+                processed_uri = f'file://{uri}' if uri.startswith('/') else f'file:///{uri}'
             uri_to_process = processed_uri
         else:
             uri_to_process = uri
@@ -52,13 +52,9 @@ class MarkitdownApp(BaseApplication):
     def list_tools(self):
         return [self.convert_to_markdown]
 
-
 async def main():
     app = MarkitdownApp()
-    await app.convert_to_markdown("https://www.youtube.com/watch?v=Cr9B6yyLZSk")
-
-
-if __name__ == "__main__":
+    await app.convert_to_markdown('https://www.youtube.com/watch?v=Cr9B6yyLZSk')
+if __name__ == '__main__':
     import asyncio
-
     asyncio.run(main())

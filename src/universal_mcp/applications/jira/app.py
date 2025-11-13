@@ -3,25 +3,25 @@ import httpx
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class JiraApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="jira", integration=integration, **kwargs)
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='jira', integration=integration, **kwargs)
         self._base_url: str | None = None
 
     def get_base_url(self):
         headers = self._get_headers()
-        url = "https://api.atlassian.com/oauth/token/accessible-resources"
+        url = 'https://api.atlassian.com/oauth/token/accessible-resources'
         response = httpx.get(url, headers=headers)
         response.raise_for_status()
         resources = response.json()
         if not resources:
-            raise ValueError("No accessible Jira resources found for the provided credentials.")
+            raise ValueError('No accessible Jira resources found for the provided credentials.')
         first_resource = resources[0]
-        resource_id = first_resource.get("id")
+        resource_id = first_resource.get('id')
         if not resource_id:
-            raise ValueError("Could not determine the resource ID from the first accessible resource.")
-        return f"https://api.atlassian.com/ex/jira/{resource_id}"
+            raise ValueError('Could not determine the resource ID from the first accessible resource.')
+        return f'https://api.atlassian.com/ex/jira/{resource_id}'
 
     @property
     def base_url(self):
@@ -54,9 +54,9 @@ class JiraApp(APIApplication):
         Tags:
             Announcement banner, important
         """
-        url = f"{self.base_url}/rest/api/3/announcementBanner"
+        url = f'{self.base_url}/rest/api/3/announcementBanner'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -65,9 +65,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_banner(
-        self, isDismissible: bool | None = None, isEnabled: bool | None = None, message: str | None = None, visibility: str | None = None
-    ) -> Any:
+    async def set_banner(self, isDismissible: bool | None=None, isEnabled: bool | None=None, message: str | None=None, visibility: str | None=None) -> Any:
         """
         Updates the announcement banner configuration in Jira Cloud, including message, visibility, and dismissal settings.
 
@@ -88,11 +86,11 @@ class JiraApp(APIApplication):
             Announcement banner, important
         """
         request_body_data = None
-        request_body_data = {"isDismissible": isDismissible, "isEnabled": isEnabled, "message": message, "visibility": visibility}
+        request_body_data = {'isDismissible': isDismissible, 'isEnabled': isEnabled, 'message': message, 'visibility': visibility}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/announcementBanner"
+        url = f'{self.base_url}/rest/api/3/announcementBanner'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -101,17 +99,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_custom_fields_configurations(
-        self,
-        fieldIdsOrKeys: list[str],
-        id: list[int] | None = None,
-        fieldContextId: list[int] | None = None,
-        issueId: int | None = None,
-        projectKeyOrId: str | None = None,
-        issueTypeId: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_custom_fields_configurations(self, fieldIdsOrKeys: list[str], id: list[int] | None=None, fieldContextId: list[int] | None=None, issueId: int | None=None, projectKeyOrId: str | None=None, issueTypeId: str | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves and filters a list of custom field context configurations in Jira based on specified criteria like field ID, project, or issue type, returning paginated results.
 
@@ -136,23 +124,11 @@ class JiraApp(APIApplication):
             Issue custom field configuration (apps)
         """
         request_body_data = None
-        request_body_data = {"fieldIdsOrKeys": fieldIdsOrKeys}
+        request_body_data = {'fieldIdsOrKeys': fieldIdsOrKeys}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/app/field/context/configuration/list"
-        query_params = {
-            k: v
-            for k, v in [
-                ("id", id),
-                ("fieldContextId", fieldContextId),
-                ("issueId", issueId),
-                ("projectKeyOrId", projectKeyOrId),
-                ("issueTypeId", issueTypeId),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/app/field/context/configuration/list'
+        query_params = {k: v for k, v in [('id', id), ('fieldContextId', fieldContextId), ('issueId', issueId), ('projectKeyOrId', projectKeyOrId), ('issueTypeId', issueTypeId), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -161,7 +137,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_field_value(self, generateChangelog: bool | None = None, updates: list[dict[str, Any]] | None = None) -> Any:
+    async def set_field_value(self, generateChangelog: bool | None=None, updates: list[dict[str, Any]] | None=None) -> Any:
         """
         Updates the value of a custom field added by a Forge app on one or more Jira issues.
 
@@ -180,11 +156,11 @@ class JiraApp(APIApplication):
             Issue custom field values (apps)
         """
         request_body_data = None
-        request_body_data = {"updates": updates}
+        request_body_data = {'updates': updates}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/app/field/value"
-        query_params = {k: v for k, v in [("generateChangelog", generateChangelog)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/app/field/value'
+        query_params = {k: v for k, v in [('generateChangelog', generateChangelog)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -193,17 +169,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_custom_field_configuration(
-        self,
-        fieldIdOrKey: str,
-        id: list[int] | None = None,
-        fieldContextId: list[int] | None = None,
-        issueId: int | None = None,
-        projectKeyOrId: str | None = None,
-        issueTypeId: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_custom_field_configuration(self, fieldIdOrKey: str, id: list[int] | None=None, fieldContextId: list[int] | None=None, issueId: int | None=None, projectKeyOrId: str | None=None, issueTypeId: str | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves the configuration of a custom field context in Jira using the provided field ID or key, optionally filtered by specific IDs, field context IDs, issue IDs, project keys or IDs, or issue types, and returns a paginated list of configurations.
 
@@ -229,21 +195,9 @@ class JiraApp(APIApplication):
         """
         if fieldIdOrKey is None:
             raise ValueError("Missing required parameter 'fieldIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/context/configuration"
-        query_params = {
-            k: v
-            for k, v in [
-                ("id", id),
-                ("fieldContextId", fieldContextId),
-                ("issueId", issueId),
-                ("projectKeyOrId", projectKeyOrId),
-                ("issueTypeId", issueTypeId),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/context/configuration'
+        query_params = {k: v for k, v in [('id', id), ('fieldContextId', fieldContextId), ('issueId', issueId), ('projectKeyOrId', projectKeyOrId), ('issueTypeId', issueTypeId), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -273,11 +227,11 @@ class JiraApp(APIApplication):
         if fieldIdOrKey is None:
             raise ValueError("Missing required parameter 'fieldIdOrKey'.")
         request_body_data = None
-        request_body_data = {"configurations": configurations}
+        request_body_data = {'configurations': configurations}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/context/configuration"
+        url = f'{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/context/configuration'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -286,9 +240,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_custom_field_value(
-        self, fieldIdOrKey: str, generateChangelog: bool | None = None, updates: list[dict[str, Any]] | None = None
-    ) -> Any:
+    async def update_custom_field_value(self, fieldIdOrKey: str, generateChangelog: bool | None=None, updates: list[dict[str, Any]] | None=None) -> Any:
         """
         Updates the value of a custom field for an issue using the Jira API, but this endpoint is limited to working with fields provided by Forge apps.
 
@@ -310,11 +262,11 @@ class JiraApp(APIApplication):
         if fieldIdOrKey is None:
             raise ValueError("Missing required parameter 'fieldIdOrKey'.")
         request_body_data = None
-        request_body_data = {"updates": updates}
+        request_body_data = {'updates': updates}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/value"
-        query_params = {k: v for k, v in [("generateChangelog", generateChangelog)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/app/field/{fieldIdOrKey}/value'
+        query_params = {k: v for k, v in [('generateChangelog', generateChangelog)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -323,9 +275,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_application_property(
-        self, key: str | None = None, permissionLevel: str | None = None, keyFilter: str | None = None
-    ) -> list[Any]:
+    async def get_application_property(self, key: str | None=None, permissionLevel: str | None=None, keyFilter: str | None=None) -> list[Any]:
         """
         Retrieves application properties with optional filtering by key, permission level, or key filter.
 
@@ -344,9 +294,9 @@ class JiraApp(APIApplication):
         Tags:
             Jira settings
         """
-        url = f"{self.base_url}/rest/api/3/application-properties"
-        query_params = {k: v for k, v in [("key", key), ("permissionLevel", permissionLevel), ("keyFilter", keyFilter)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/application-properties'
+        query_params = {k: v for k, v in [('key', key), ('permissionLevel', permissionLevel), ('keyFilter', keyFilter)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -369,9 +319,9 @@ class JiraApp(APIApplication):
         Tags:
             Jira settings
         """
-        url = f"{self.base_url}/rest/api/3/application-properties/advanced-settings"
+        url = f'{self.base_url}/rest/api/3/application-properties/advanced-settings'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -380,7 +330,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_application_property(self, id: str, id_body: str | None = None, value: str | None = None) -> dict[str, Any]:
+    async def set_application_property(self, id: str, id_body: str | None=None, value: str | None=None) -> dict[str, Any]:
         """
         Updates a specific Jira application property identified by its ID using a PUT request.
 
@@ -402,11 +352,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"id": id_body, "value": value}
+        request_body_data = {'id': id_body, 'value': value}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/application-properties/{id}"
+        url = f'{self.base_url}/rest/api/3/application-properties/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -429,9 +379,9 @@ class JiraApp(APIApplication):
         Tags:
             Application roles
         """
-        url = f"{self.base_url}/rest/api/3/applicationrole"
+        url = f'{self.base_url}/rest/api/3/applicationrole'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -459,9 +409,9 @@ class JiraApp(APIApplication):
         """
         if key is None:
             raise ValueError("Missing required parameter 'key'.")
-        url = f"{self.base_url}/rest/api/3/applicationrole/{key}"
+        url = f'{self.base_url}/rest/api/3/applicationrole/{key}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -470,7 +420,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_attachment_content(self, id: str, redirect: bool | None = None) -> list[Any]:
+    async def get_attachment_content(self, id: str, redirect: bool | None=None) -> list[Any]:
         """
         Retrieves the contents of a Jira Cloud attachment by ID and returns the binary file data or a redirect URL.
 
@@ -490,9 +440,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/attachment/content/{id}"
-        query_params = {k: v for k, v in [("redirect", redirect)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/attachment/content/{id}'
+        query_params = {k: v for k, v in [('redirect', redirect)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -515,9 +465,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue attachments
         """
-        url = f"{self.base_url}/rest/api/3/attachment/meta"
+        url = f'{self.base_url}/rest/api/3/attachment/meta'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -526,14 +476,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_attachment_thumbnail(
-        self,
-        id: str,
-        redirect: bool | None = None,
-        fallbackToDefault: bool | None = None,
-        width: int | None = None,
-        height: int | None = None,
-    ) -> list[Any]:
+    async def get_attachment_thumbnail(self, id: str, redirect: bool | None=None, fallbackToDefault: bool | None=None, width: int | None=None, height: int | None=None) -> list[Any]:
         """
         Retrieves a thumbnail image for a specified attachment ID in Jira, supporting optional parameters for dimensions and redirect behavior.
 
@@ -556,13 +499,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/attachment/thumbnail/{id}"
-        query_params = {
-            k: v
-            for k, v in [("redirect", redirect), ("fallbackToDefault", fallbackToDefault), ("width", width), ("height", height)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/attachment/thumbnail/{id}'
+        query_params = {k: v for k, v in [('redirect', redirect), ('fallbackToDefault', fallbackToDefault), ('width', width), ('height', height)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -590,9 +529,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/attachment/{id}"
+        url = f'{self.base_url}/rest/api/3/attachment/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -620,9 +559,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/attachment/{id}"
+        url = f'{self.base_url}/rest/api/3/attachment/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -650,9 +589,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/attachment/{id}/expand/human"
+        url = f'{self.base_url}/rest/api/3/attachment/{id}/expand/human'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -680,9 +619,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/attachment/{id}/expand/raw"
+        url = f'{self.base_url}/rest/api/3/attachment/{id}/expand/raw'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -691,14 +630,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_audit_records(
-        self,
-        offset: int | None = None,
-        limit: int | None = None,
-        filter: str | None = None,
-        from_: str | None = None,
-        to: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_audit_records(self, offset: int | None=None, limit: int | None=None, filter: str | None=None, from_: str | None=None, to: str | None=None) -> dict[str, Any]:
         """
         Retrieves Jira audit records with filtering by parameters like date range, text, and category, returning activity logs of administrative actions and changes.
 
@@ -719,11 +651,9 @@ class JiraApp(APIApplication):
         Tags:
             Audit records
         """
-        url = f"{self.base_url}/rest/api/3/auditing/record"
-        query_params = {
-            k: v for k, v in [("offset", offset), ("limit", limit), ("filter", filter), ("from", from_), ("to", to)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/auditing/record'
+        query_params = {k: v for k, v in [('offset', offset), ('limit', limit), ('filter', filter), ('from', from_), ('to', to)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -751,9 +681,9 @@ class JiraApp(APIApplication):
         """
         if type is None:
             raise ValueError("Missing required parameter 'type'.")
-        url = f"{self.base_url}/rest/api/3/avatar/{type}/system"
+        url = f'{self.base_url}/rest/api/3/avatar/{type}/system'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -762,7 +692,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def submit_bulk_delete(self, selectedIssueIdsOrKeys: list[str], sendBulkNotification: bool | None = None) -> dict[str, Any]:
+    async def submit_bulk_delete(self, selectedIssueIdsOrKeys: list[str], sendBulkNotification: bool | None=None) -> dict[str, Any]:
         """
         Deletes multiple Jira issues in a single request using the Bulk Delete API.
 
@@ -783,11 +713,11 @@ class JiraApp(APIApplication):
             Issue bulk operations
         """
         request_body_data = None
-        request_body_data = {"selectedIssueIdsOrKeys": selectedIssueIdsOrKeys, "sendBulkNotification": sendBulkNotification}
+        request_body_data = {'selectedIssueIdsOrKeys': selectedIssueIdsOrKeys, 'sendBulkNotification': sendBulkNotification}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/bulk/issues/delete"
+        url = f'{self.base_url}/rest/api/3/bulk/issues/delete'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -796,9 +726,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_bulk_editable_fields(
-        self, issueIdsOrKeys: str, searchText: str | None = None, endingBefore: str | None = None, startingAfter: str | None = None
-    ) -> dict[str, Any]:
+    async def get_bulk_editable_fields(self, issueIdsOrKeys: str, searchText: str | None=None, endingBefore: str | None=None, startingAfter: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of fields that can be edited in bulk for specified Jira issues, allowing for the identification of editable fields for bulk operations using query parameters such as issue IDs or keys, search text, and pagination options.
 
@@ -818,18 +746,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue bulk operations
         """
-        url = f"{self.base_url}/rest/api/3/bulk/issues/fields"
-        query_params = {
-            k: v
-            for k, v in [
-                ("issueIdsOrKeys", issueIdsOrKeys),
-                ("searchText", searchText),
-                ("endingBefore", endingBefore),
-                ("startingAfter", startingAfter),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/bulk/issues/fields'
+        query_params = {k: v for k, v in [('issueIdsOrKeys', issueIdsOrKeys), ('searchText', searchText), ('endingBefore', endingBefore), ('startingAfter', startingAfter)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -838,13 +757,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def submit_bulk_edit(
-        self,
-        editedFieldsInput: Any,
-        selectedActions: list[str],
-        selectedIssueIdsOrKeys: list[str],
-        sendBulkNotification: bool | None = None,
-    ) -> dict[str, Any]:
+    async def submit_bulk_edit(self, editedFieldsInput: Any, selectedActions: list[str], selectedIssueIdsOrKeys: list[str], sendBulkNotification: bool | None=None) -> dict[str, Any]:
         """
         Edits multiple Jira issues in bulk by updating fields using the Jira Cloud API.
 
@@ -867,16 +780,11 @@ class JiraApp(APIApplication):
             Issue bulk operations
         """
         request_body_data = None
-        request_body_data = {
-            "editedFieldsInput": editedFieldsInput,
-            "selectedActions": selectedActions,
-            "selectedIssueIdsOrKeys": selectedIssueIdsOrKeys,
-            "sendBulkNotification": sendBulkNotification,
-        }
+        request_body_data = {'editedFieldsInput': editedFieldsInput, 'selectedActions': selectedActions, 'selectedIssueIdsOrKeys': selectedIssueIdsOrKeys, 'sendBulkNotification': sendBulkNotification}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/bulk/issues/fields"
+        url = f'{self.base_url}/rest/api/3/bulk/issues/fields'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -885,9 +793,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def submit_bulk_move(
-        self, sendBulkNotification: bool | None = None, targetToSourcesMapping: dict[str, dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def submit_bulk_move(self, sendBulkNotification: bool | None=None, targetToSourcesMapping: dict[str, dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Moves multiple issues from one Jira project to another using the POST method.
 
@@ -914,11 +820,11 @@ class JiraApp(APIApplication):
             Issue bulk operations
         """
         request_body_data = None
-        request_body_data = {"sendBulkNotification": sendBulkNotification, "targetToSourcesMapping": targetToSourcesMapping}
+        request_body_data = {'sendBulkNotification': sendBulkNotification, 'targetToSourcesMapping': targetToSourcesMapping}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/bulk/issues/move"
+        url = f'{self.base_url}/rest/api/3/bulk/issues/move'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -927,9 +833,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_available_transitions(
-        self, issueIdsOrKeys: str, endingBefore: str | None = None, startingAfter: str | None = None
-    ) -> dict[str, Any]:
+    async def get_available_transitions(self, issueIdsOrKeys: str, endingBefore: str | None=None, startingAfter: str | None=None) -> dict[str, Any]:
         """
         Retrieves valid workflow transitions for multiple Jira issues based on provided issue IDs or keys.
 
@@ -948,13 +852,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue bulk operations
         """
-        url = f"{self.base_url}/rest/api/3/bulk/issues/transition"
-        query_params = {
-            k: v
-            for k, v in [("issueIdsOrKeys", issueIdsOrKeys), ("endingBefore", endingBefore), ("startingAfter", startingAfter)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/bulk/issues/transition'
+        query_params = {k: v for k, v in [('issueIdsOrKeys', issueIdsOrKeys), ('endingBefore', endingBefore), ('startingAfter', startingAfter)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -963,9 +863,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def submit_bulk_transition(
-        self, bulkTransitionInputs: list[dict[str, Any]], sendBulkNotification: bool | None = None
-    ) -> dict[str, Any]:
+    async def submit_bulk_transition(self, bulkTransitionInputs: list[dict[str, Any]], sendBulkNotification: bool | None=None) -> dict[str, Any]:
         """
         Transitions multiple Jira issues to a specified status in bulk using the Jira REST API, allowing for streamlined workflow management and automation of repetitive tasks.
 
@@ -989,11 +887,11 @@ class JiraApp(APIApplication):
             Issue bulk operations
         """
         request_body_data = None
-        request_body_data = {"bulkTransitionInputs": bulkTransitionInputs, "sendBulkNotification": sendBulkNotification}
+        request_body_data = {'bulkTransitionInputs': bulkTransitionInputs, 'sendBulkNotification': sendBulkNotification}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/bulk/issues/transition"
+        url = f'{self.base_url}/rest/api/3/bulk/issues/transition'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1020,11 +918,11 @@ class JiraApp(APIApplication):
             Issue bulk operations
         """
         request_body_data = None
-        request_body_data = {"selectedIssueIdsOrKeys": selectedIssueIdsOrKeys}
+        request_body_data = {'selectedIssueIdsOrKeys': selectedIssueIdsOrKeys}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/bulk/issues/unwatch"
+        url = f'{self.base_url}/rest/api/3/bulk/issues/unwatch'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1051,11 +949,11 @@ class JiraApp(APIApplication):
             Issue bulk operations
         """
         request_body_data = None
-        request_body_data = {"selectedIssueIdsOrKeys": selectedIssueIdsOrKeys}
+        request_body_data = {'selectedIssueIdsOrKeys': selectedIssueIdsOrKeys}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/bulk/issues/watch"
+        url = f'{self.base_url}/rest/api/3/bulk/issues/watch'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1083,9 +981,9 @@ class JiraApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
-        url = f"{self.base_url}/rest/api/3/bulk/queue/{taskId}"
+        url = f'{self.base_url}/rest/api/3/bulk/queue/{taskId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1094,9 +992,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_bulk_changelogs(
-        self, issueIdsOrKeys: list[str], fieldIds: list[str] | None = None, maxResults: int | None = None, nextPageToken: str | None = None
-    ) -> dict[str, Any]:
+    async def get_bulk_changelogs(self, issueIdsOrKeys: list[str], fieldIds: list[str] | None=None, maxResults: int | None=None, nextPageToken: str | None=None) -> dict[str, Any]:
         """
         Retrieves changelog data for multiple Jira issues in a single request, eliminating the need for individual API calls per issue.
 
@@ -1117,16 +1013,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {
-            "fieldIds": fieldIds,
-            "issueIdsOrKeys": issueIdsOrKeys,
-            "maxResults": maxResults,
-            "nextPageToken": nextPageToken,
-        }
+        request_body_data = {'fieldIds': fieldIds, 'issueIdsOrKeys': issueIdsOrKeys, 'maxResults': maxResults, 'nextPageToken': nextPageToken}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/changelog/bulkfetch"
+        url = f'{self.base_url}/rest/api/3/changelog/bulkfetch'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1135,7 +1026,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_classification_levels(self, status: list[str] | None = None, orderBy: str | None = None) -> dict[str, Any]:
+    async def list_classification_levels(self, status: list[str] | None=None, orderBy: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of all classification levels in Jira Cloud, supporting optional filtering by status and ordering using the "orderBy" parameter.
 
@@ -1153,9 +1044,9 @@ class JiraApp(APIApplication):
         Tags:
             Classification levels
         """
-        url = f"{self.base_url}/rest/api/3/classification-levels"
-        query_params = {k: v for k, v in [("status", status), ("orderBy", orderBy)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/classification-levels'
+        query_params = {k: v for k, v in [('status', status), ('orderBy', orderBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1164,7 +1055,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_comments_by_ids(self, ids: list[int], expand: str | None = None) -> dict[str, Any]:
+    async def get_comments_by_ids(self, ids: list[int], expand: str | None=None) -> dict[str, Any]:
         """
         Fetches a paginated list of Jira comments by their IDs using a POST request.
 
@@ -1183,11 +1074,11 @@ class JiraApp(APIApplication):
             Issue comments
         """
         request_body_data = None
-        request_body_data = {"ids": ids}
+        request_body_data = {'ids': ids}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/comment/list"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/comment/list'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1215,9 +1106,9 @@ class JiraApp(APIApplication):
         """
         if commentId is None:
             raise ValueError("Missing required parameter 'commentId'.")
-        url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties"
+        url = f'{self.base_url}/rest/api/3/comment/{commentId}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1248,9 +1139,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1281,9 +1172,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'commentId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1315,9 +1206,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/comment/{commentId}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1326,14 +1217,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_components_for_projects(
-        self,
-        projectIdsOrKeys: list[str] | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        orderBy: str | None = None,
-        query: str | None = None,
-    ) -> dict[str, Any]:
+    async def find_components_for_projects(self, projectIdsOrKeys: list[str] | None=None, startAt: int | None=None, maxResults: int | None=None, orderBy: str | None=None, query: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of Jira components using the GET method at the "/rest/api/3/component" path, allowing filtering by project IDs, pagination, and sorting, and returns the results in a paginated format.
 
@@ -1354,19 +1238,9 @@ class JiraApp(APIApplication):
         Tags:
             Project components
         """
-        url = f"{self.base_url}/rest/api/3/component"
-        query_params = {
-            k: v
-            for k, v in [
-                ("projectIdsOrKeys", projectIdsOrKeys),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("orderBy", orderBy),
-                ("query", query),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/component'
+        query_params = {k: v for k, v in [('projectIdsOrKeys', projectIdsOrKeys), ('startAt', startAt), ('maxResults', maxResults), ('orderBy', orderBy), ('query', query)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1375,25 +1249,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_component(
-        self,
-        ari: str | None = None,
-        assignee: Any | None = None,
-        assigneeType: str | None = None,
-        description: str | None = None,
-        id: str | None = None,
-        isAssigneeTypeValid: bool | None = None,
-        lead: Any | None = None,
-        leadAccountId: str | None = None,
-        leadUserName: str | None = None,
-        metadata: dict[str, str] | None = None,
-        name: str | None = None,
-        project: str | None = None,
-        projectId: int | None = None,
-        realAssignee: Any | None = None,
-        realAssigneeType: str | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_component(self, ari: str | None=None, assignee: Any | None=None, assigneeType: str | None=None, description: str | None=None, id: str | None=None, isAssigneeTypeValid: bool | None=None, lead: Any | None=None, leadAccountId: str | None=None, leadUserName: str | None=None, metadata: dict[str, str] | None=None, name: str | None=None, project: str | None=None, projectId: int | None=None, realAssignee: Any | None=None, realAssigneeType: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Creates a new component in Jira, providing a container for issues within a project, using the POST method on the "/rest/api/3/component" endpoint.
 
@@ -1439,28 +1295,11 @@ class JiraApp(APIApplication):
             Project components
         """
         request_body_data = None
-        request_body_data = {
-            "ari": ari,
-            "assignee": assignee,
-            "assigneeType": assigneeType,
-            "description": description,
-            "id": id,
-            "isAssigneeTypeValid": isAssigneeTypeValid,
-            "lead": lead,
-            "leadAccountId": leadAccountId,
-            "leadUserName": leadUserName,
-            "metadata": metadata,
-            "name": name,
-            "project": project,
-            "projectId": projectId,
-            "realAssignee": realAssignee,
-            "realAssigneeType": realAssigneeType,
-            "self": self_arg_body,
-        }
+        request_body_data = {'ari': ari, 'assignee': assignee, 'assigneeType': assigneeType, 'description': description, 'id': id, 'isAssigneeTypeValid': isAssigneeTypeValid, 'lead': lead, 'leadAccountId': leadAccountId, 'leadUserName': leadUserName, 'metadata': metadata, 'name': name, 'project': project, 'projectId': projectId, 'realAssignee': realAssignee, 'realAssigneeType': realAssigneeType, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/component"
+        url = f'{self.base_url}/rest/api/3/component'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1469,7 +1308,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_component(self, id: str, moveIssuesTo: str | None = None) -> Any:
+    async def delete_component(self, id: str, moveIssuesTo: str | None=None) -> Any:
         """
         Deletes a specific component in Jira by ID, optionally reassigning its issues to another component.
 
@@ -1489,9 +1328,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/component/{id}"
-        query_params = {k: v for k, v in [("moveIssuesTo", moveIssuesTo)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/component/{id}'
+        query_params = {k: v for k, v in [('moveIssuesTo', moveIssuesTo)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1519,9 +1358,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/component/{id}"
+        url = f'{self.base_url}/rest/api/3/component/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1530,26 +1369,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_component(
-        self,
-        id: str,
-        ari: str | None = None,
-        assignee: Any | None = None,
-        assigneeType: str | None = None,
-        description: str | None = None,
-        id_body: str | None = None,
-        isAssigneeTypeValid: bool | None = None,
-        lead: Any | None = None,
-        leadAccountId: str | None = None,
-        leadUserName: str | None = None,
-        metadata: dict[str, str] | None = None,
-        name: str | None = None,
-        project: str | None = None,
-        projectId: int | None = None,
-        realAssignee: Any | None = None,
-        realAssigneeType: str | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_component(self, id: str, ari: str | None=None, assignee: Any | None=None, assigneeType: str | None=None, description: str | None=None, id_body: str | None=None, isAssigneeTypeValid: bool | None=None, lead: Any | None=None, leadAccountId: str | None=None, leadUserName: str | None=None, metadata: dict[str, str] | None=None, name: str | None=None, project: str | None=None, projectId: int | None=None, realAssignee: Any | None=None, realAssigneeType: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Updates the specified component's details using the provided ID.
 
@@ -1598,28 +1418,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "ari": ari,
-            "assignee": assignee,
-            "assigneeType": assigneeType,
-            "description": description,
-            "id": id_body,
-            "isAssigneeTypeValid": isAssigneeTypeValid,
-            "lead": lead,
-            "leadAccountId": leadAccountId,
-            "leadUserName": leadUserName,
-            "metadata": metadata,
-            "name": name,
-            "project": project,
-            "projectId": projectId,
-            "realAssignee": realAssignee,
-            "realAssigneeType": realAssigneeType,
-            "self": self_arg_body,
-        }
+        request_body_data = {'ari': ari, 'assignee': assignee, 'assigneeType': assigneeType, 'description': description, 'id': id_body, 'isAssigneeTypeValid': isAssigneeTypeValid, 'lead': lead, 'leadAccountId': leadAccountId, 'leadUserName': leadUserName, 'metadata': metadata, 'name': name, 'project': project, 'projectId': projectId, 'realAssignee': realAssignee, 'realAssigneeType': realAssigneeType, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/component/{id}"
+        url = f'{self.base_url}/rest/api/3/component/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1647,9 +1450,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/component/{id}/relatedIssueCounts"
+        url = f'{self.base_url}/rest/api/3/component/{id}/relatedIssueCounts'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1672,9 +1475,9 @@ class JiraApp(APIApplication):
         Tags:
             Jira settings
         """
-        url = f"{self.base_url}/rest/api/3/configuration"
+        url = f'{self.base_url}/rest/api/3/configuration'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1697,9 +1500,9 @@ class JiraApp(APIApplication):
         Tags:
             Time tracking
         """
-        url = f"{self.base_url}/rest/api/3/configuration/timetracking"
+        url = f'{self.base_url}/rest/api/3/configuration/timetracking'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1708,7 +1511,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_time_tracking_config(self, key: str, name: str | None = None, url: str | None = None) -> Any:
+    async def update_time_tracking_config(self, key: str, name: str | None=None, url: str | None=None) -> Any:
         """
         Updates time tracking settings in Jira using the Jira Cloud platform REST API at "/rest/api/3/configuration/timetracking" with a "PUT" method, allowing configurations such as time format and default time unit.
 
@@ -1728,11 +1531,11 @@ class JiraApp(APIApplication):
             Time tracking
         """
         request_body_data = None
-        request_body_data = {"key": key, "name": name, "url": url}
+        request_body_data = {'key': key, 'name': name, 'url': url}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/configuration/timetracking"
+        url = f'{self.base_url}/rest/api/3/configuration/timetracking'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1755,9 +1558,9 @@ class JiraApp(APIApplication):
         Tags:
             Time tracking
         """
-        url = f"{self.base_url}/rest/api/3/configuration/timetracking/list"
+        url = f'{self.base_url}/rest/api/3/configuration/timetracking/list'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1780,9 +1583,9 @@ class JiraApp(APIApplication):
         Tags:
             Time tracking
         """
-        url = f"{self.base_url}/rest/api/3/configuration/timetracking/options"
+        url = f'{self.base_url}/rest/api/3/configuration/timetracking/options'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1791,9 +1594,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_time_tracking_options(
-        self, defaultUnit: str, timeFormat: str, workingDaysPerWeek: float, workingHoursPerDay: float
-    ) -> dict[str, Any]:
+    async def update_time_tracking_options(self, defaultUnit: str, timeFormat: str, workingDaysPerWeek: float, workingHoursPerDay: float) -> dict[str, Any]:
         """
         Updates Jira time tracking configuration settings including time format, working hours, and default time unit.
 
@@ -1814,16 +1615,11 @@ class JiraApp(APIApplication):
             Time tracking
         """
         request_body_data = None
-        request_body_data = {
-            "defaultUnit": defaultUnit,
-            "timeFormat": timeFormat,
-            "workingDaysPerWeek": workingDaysPerWeek,
-            "workingHoursPerDay": workingHoursPerDay,
-        }
+        request_body_data = {'defaultUnit': defaultUnit, 'timeFormat': timeFormat, 'workingDaysPerWeek': workingDaysPerWeek, 'workingHoursPerDay': workingHoursPerDay}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/configuration/timetracking/options"
+        url = f'{self.base_url}/rest/api/3/configuration/timetracking/options'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1851,9 +1647,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/customFieldOption/{id}"
+        url = f'{self.base_url}/rest/api/3/customFieldOption/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1862,9 +1658,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_dashboards(
-        self, filter: str | None = None, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_all_dashboards(self, filter: str | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of Jira dashboards using the GET method, allowing for optional filtering, pagination with start and max results parameters.
 
@@ -1883,9 +1677,9 @@ class JiraApp(APIApplication):
         Tags:
             Dashboards
         """
-        url = f"{self.base_url}/rest/api/3/dashboard"
-        query_params = {k: v for k, v in [("filter", filter), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/dashboard'
+        query_params = {k: v for k, v in [('filter', filter), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1894,14 +1688,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_dashboard(
-        self,
-        editPermissions: list[dict[str, Any]],
-        name: str,
-        sharePermissions: list[dict[str, Any]],
-        extendAdminPermissions: bool | None = None,
-        description: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_dashboard(self, editPermissions: list[dict[str, Any]], name: str, sharePermissions: list[dict[str, Any]], extendAdminPermissions: bool | None=None, description: str | None=None) -> dict[str, Any]:
         """
         Creates a new dashboard in Jira Cloud using the REST API and returns a response indicating the success or failure of the operation.
 
@@ -1923,16 +1710,11 @@ class JiraApp(APIApplication):
             Dashboards
         """
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "editPermissions": editPermissions,
-            "name": name,
-            "sharePermissions": sharePermissions,
-        }
+        request_body_data = {'description': description, 'editPermissions': editPermissions, 'name': name, 'sharePermissions': sharePermissions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/dashboard"
-        query_params = {k: v for k, v in [("extendAdminPermissions", extendAdminPermissions)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/dashboard'
+        query_params = {k: v for k, v in [('extendAdminPermissions', extendAdminPermissions)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1941,14 +1723,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_edit_dashboards(
-        self,
-        action: str,
-        entityIds: list[int],
-        changeOwnerDetails: Any | None = None,
-        extendAdminPermissions: bool | None = None,
-        permissionDetails: Any | None = None,
-    ) -> dict[str, Any]:
+    async def bulk_edit_dashboards(self, action: str, entityIds: list[int], changeOwnerDetails: Any | None=None, extendAdminPermissions: bool | None=None, permissionDetails: Any | None=None) -> dict[str, Any]:
         """
         Bulk updates permissions and settings for multiple Jira dashboards in a single operation.
 
@@ -1970,17 +1745,11 @@ class JiraApp(APIApplication):
             Dashboards
         """
         request_body_data = None
-        request_body_data = {
-            "action": action,
-            "changeOwnerDetails": changeOwnerDetails,
-            "entityIds": entityIds,
-            "extendAdminPermissions": extendAdminPermissions,
-            "permissionDetails": permissionDetails,
-        }
+        request_body_data = {'action': action, 'changeOwnerDetails': changeOwnerDetails, 'entityIds': entityIds, 'extendAdminPermissions': extendAdminPermissions, 'permissionDetails': permissionDetails}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/dashboard/bulk/edit"
+        url = f'{self.base_url}/rest/api/3/dashboard/bulk/edit'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2003,9 +1772,9 @@ class JiraApp(APIApplication):
         Tags:
             Dashboards
         """
-        url = f"{self.base_url}/rest/api/3/dashboard/gadgets"
+        url = f'{self.base_url}/rest/api/3/dashboard/gadgets'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2014,20 +1783,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_dashboards_paginated(
-        self,
-        dashboardName: str | None = None,
-        accountId: str | None = None,
-        owner: str | None = None,
-        groupname: str | None = None,
-        groupId: str | None = None,
-        projectId: int | None = None,
-        orderBy: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        status: str | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_dashboards_paginated(self, dashboardName: str | None=None, accountId: str | None=None, owner: str | None=None, groupname: str | None=None, groupId: str | None=None, projectId: int | None=None, orderBy: str | None=None, startAt: int | None=None, maxResults: int | None=None, status: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Searches for Jira dashboards using specified criteria, such as dashboard name, account ID, owner, group name, group ID, project ID, and other parameters, and returns a list of matching dashboards.
 
@@ -2054,25 +1810,9 @@ class JiraApp(APIApplication):
         Tags:
             Dashboards
         """
-        url = f"{self.base_url}/rest/api/3/dashboard/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("dashboardName", dashboardName),
-                ("accountId", accountId),
-                ("owner", owner),
-                ("groupname", groupname),
-                ("groupId", groupId),
-                ("projectId", projectId),
-                ("orderBy", orderBy),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("status", status),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/dashboard/search'
+        query_params = {k: v for k, v in [('dashboardName', dashboardName), ('accountId', accountId), ('owner', owner), ('groupname', groupname), ('groupId', groupId), ('projectId', projectId), ('orderBy', orderBy), ('startAt', startAt), ('maxResults', maxResults), ('status', status), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2081,9 +1821,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_gadgets(
-        self, dashboardId: str, moduleKey: list[str] | None = None, uri: list[str] | None = None, gadgetId: list[int] | None = None
-    ) -> dict[str, Any]:
+    async def get_all_gadgets(self, dashboardId: str, moduleKey: list[str] | None=None, uri: list[str] | None=None, gadgetId: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves a specific gadget or all gadgets from a Jira dashboard.
 
@@ -2105,9 +1843,9 @@ class JiraApp(APIApplication):
         """
         if dashboardId is None:
             raise ValueError("Missing required parameter 'dashboardId'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget"
-        query_params = {k: v for k, v in [("moduleKey", moduleKey), ("uri", uri), ("gadgetId", gadgetId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget'
+        query_params = {k: v for k, v in [('moduleKey', moduleKey), ('uri', uri), ('gadgetId', gadgetId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2116,16 +1854,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_gadget(
-        self,
-        dashboardId: str,
-        color: str | None = None,
-        ignoreUriAndModuleKeyValidation: bool | None = None,
-        moduleKey: str | None = None,
-        position: Any | None = None,
-        title: str | None = None,
-        uri: str | None = None,
-    ) -> dict[str, Any]:
+    async def add_gadget(self, dashboardId: str, color: str | None=None, ignoreUriAndModuleKeyValidation: bool | None=None, moduleKey: str | None=None, position: Any | None=None, title: str | None=None, uri: str | None=None) -> dict[str, Any]:
         """
         Adds a gadget to a specified Jira dashboard using the provided configuration and returns the created gadget details upon success.
 
@@ -2151,18 +1880,11 @@ class JiraApp(APIApplication):
         if dashboardId is None:
             raise ValueError("Missing required parameter 'dashboardId'.")
         request_body_data = None
-        request_body_data = {
-            "color": color,
-            "ignoreUriAndModuleKeyValidation": ignoreUriAndModuleKeyValidation,
-            "moduleKey": moduleKey,
-            "position": position,
-            "title": title,
-            "uri": uri,
-        }
+        request_body_data = {'color': color, 'ignoreUriAndModuleKeyValidation': ignoreUriAndModuleKeyValidation, 'moduleKey': moduleKey, 'position': position, 'title': title, 'uri': uri}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2193,9 +1915,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'dashboardId'.")
         if gadgetId is None:
             raise ValueError("Missing required parameter 'gadgetId'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget/{gadgetId}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget/{gadgetId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2204,9 +1926,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_gadget(
-        self, dashboardId: str, gadgetId: str, color: str | None = None, position: Any | None = None, title: str | None = None
-    ) -> Any:
+    async def update_gadget(self, dashboardId: str, gadgetId: str, color: str | None=None, position: Any | None=None, title: str | None=None) -> Any:
         """
         Updates a gadget's configuration (e.g., color, position, title) on a specified Jira dashboard.
 
@@ -2232,11 +1952,11 @@ class JiraApp(APIApplication):
         if gadgetId is None:
             raise ValueError("Missing required parameter 'gadgetId'.")
         request_body_data = None
-        request_body_data = {"color": color, "position": position, "title": title}
+        request_body_data = {'color': color, 'position': position, 'title': title}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget/{gadgetId}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/gadget/{gadgetId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2267,9 +1987,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'dashboardId'.")
         if itemId is None:
             raise ValueError("Missing required parameter 'itemId'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2303,9 +2023,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'itemId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2339,9 +2059,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'itemId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2376,9 +2096,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{dashboardId}/items/{itemId}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2406,9 +2126,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{id}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2436,9 +2156,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/dashboard/{id}"
+        url = f'{self.base_url}/rest/api/3/dashboard/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2447,15 +2167,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_dashboard(
-        self,
-        id: str,
-        editPermissions: list[dict[str, Any]],
-        name: str,
-        sharePermissions: list[dict[str, Any]],
-        extendAdminPermissions: bool | None = None,
-        description: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_dashboard(self, id: str, editPermissions: list[dict[str, Any]], name: str, sharePermissions: list[dict[str, Any]], extendAdminPermissions: bool | None=None, description: str | None=None) -> dict[str, Any]:
         """
         Updates a dashboard with the specified ID using the PUT method, optionally extending admin permissions, and returns a status message if successful.
 
@@ -2480,16 +2192,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "editPermissions": editPermissions,
-            "name": name,
-            "sharePermissions": sharePermissions,
-        }
+        request_body_data = {'description': description, 'editPermissions': editPermissions, 'name': name, 'sharePermissions': sharePermissions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/dashboard/{id}"
-        query_params = {k: v for k, v in [("extendAdminPermissions", extendAdminPermissions)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/dashboard/{id}'
+        query_params = {k: v for k, v in [('extendAdminPermissions', extendAdminPermissions)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2498,15 +2205,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def copy_dashboard(
-        self,
-        id: str,
-        editPermissions: list[dict[str, Any]],
-        name: str,
-        sharePermissions: list[dict[str, Any]],
-        extendAdminPermissions: bool | None = None,
-        description: str | None = None,
-    ) -> dict[str, Any]:
+    async def copy_dashboard(self, id: str, editPermissions: list[dict[str, Any]], name: str, sharePermissions: list[dict[str, Any]], extendAdminPermissions: bool | None=None, description: str | None=None) -> dict[str, Any]:
         """
         Copies a dashboard and replaces specified parameters in the copied dashboard, returning the new dashboard details.
 
@@ -2531,16 +2230,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "editPermissions": editPermissions,
-            "name": name,
-            "sharePermissions": sharePermissions,
-        }
+        request_body_data = {'description': description, 'editPermissions': editPermissions, 'name': name, 'sharePermissions': sharePermissions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/dashboard/{id}/copy"
-        query_params = {k: v for k, v in [("extendAdminPermissions", extendAdminPermissions)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/dashboard/{id}/copy'
+        query_params = {k: v for k, v in [('extendAdminPermissions', extendAdminPermissions)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2563,9 +2257,9 @@ class JiraApp(APIApplication):
         Tags:
             App data policies
         """
-        url = f"{self.base_url}/rest/api/3/data-policy"
+        url = f'{self.base_url}/rest/api/3/data-policy'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2574,7 +2268,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_policies(self, ids: str | None = None) -> dict[str, Any]:
+    async def get_policies(self, ids: str | None=None) -> dict[str, Any]:
         """
         Retrieves data policies affecting specific projects in Jira using the "/rest/api/3/data-policy/project" endpoint, returning details about which projects are impacted by data security policies.
 
@@ -2591,9 +2285,9 @@ class JiraApp(APIApplication):
         Tags:
             App data policies
         """
-        url = f"{self.base_url}/rest/api/3/data-policy/project"
-        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/data-policy/project'
+        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2616,9 +2310,9 @@ class JiraApp(APIApplication):
         Tags:
             Issues
         """
-        url = f"{self.base_url}/rest/api/3/events"
+        url = f'{self.base_url}/rest/api/3/events'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2627,9 +2321,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def analyse_expression(
-        self, expressions: list[str], check: str | None = None, contextVariables: dict[str, str] | None = None
-    ) -> dict[str, Any]:
+    async def analyse_expression(self, expressions: list[str], check: str | None=None, contextVariables: dict[str, str] | None=None) -> dict[str, Any]:
         """
         Analyzes a Jira expression to statically check its characteristics, such as complexity, without evaluating it, using a POST method at "/rest/api/3/expression/analyse" with the option to specify what to check via a query parameter.
 
@@ -2649,11 +2341,11 @@ class JiraApp(APIApplication):
             Jira expressions
         """
         request_body_data = None
-        request_body_data = {"contextVariables": contextVariables, "expressions": expressions}
+        request_body_data = {'contextVariables': contextVariables, 'expressions': expressions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/expression/analyse"
-        query_params = {k: v for k, v in [("check", check)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/expression/analyse'
+        query_params = {k: v for k, v in [('check', check)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2662,7 +2354,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def evaluate_jira_expression(self, expression: str, expand: str | None = None, context: Any | None = None) -> dict[str, Any]:
+    async def evaluate_jira_expression(self, expression: str, expand: str | None=None, context: Any | None=None) -> dict[str, Any]:
         """
         Evaluates Jira expressions using an enhanced search API for scalable processing of JQL queries and returns primitive values, lists, or objects.
 
@@ -2682,11 +2374,11 @@ class JiraApp(APIApplication):
             Jira expressions
         """
         request_body_data = None
-        request_body_data = {"context": context, "expression": expression}
+        request_body_data = {'context': context, 'expression': expression}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/expression/eval"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/expression/eval'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2695,7 +2387,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def evaluate_jsisjira_expression(self, expression: str, expand: str | None = None, context: Any | None = None) -> dict[str, Any]:
+    async def evaluate_jsisjira_expression(self, expression: str, expand: str | None=None, context: Any | None=None) -> dict[str, Any]:
         """
         Evaluates Jira expressions using the enhanced search API with support for pagination and eventually consistent JQL queries, returning primitive values, lists, or objects.
 
@@ -2715,11 +2407,11 @@ class JiraApp(APIApplication):
             Jira expressions
         """
         request_body_data = None
-        request_body_data = {"context": context, "expression": expression}
+        request_body_data = {'context': context, 'expression': expression}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/expression/evaluate"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/expression/evaluate'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2742,9 +2434,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue fields
         """
-        url = f"{self.base_url}/rest/api/3/field"
+        url = f'{self.base_url}/rest/api/3/field'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2753,9 +2445,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_custom_field(
-        self, name: str, type: str, description: str | None = None, searcherKey: str | None = None
-    ) -> dict[str, Any]:
+    async def create_custom_field(self, name: str, type: str, description: str | None=None, searcherKey: str | None=None) -> dict[str, Any]:
         """
         Creates a custom field using a definition and returns a successful creation message when the operation is completed successfully.
 
@@ -2825,11 +2515,11 @@ class JiraApp(APIApplication):
             Issue fields
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name, "searcherKey": searcherKey, "type": type}
+        request_body_data = {'description': description, 'name': name, 'searcherKey': searcherKey, 'type': type}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field"
+        url = f'{self.base_url}/rest/api/3/field'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2856,11 +2546,11 @@ class JiraApp(APIApplication):
         Tags:
             Issue custom field associations
         """
-        request_body_data = {"associationContexts": associationContexts, "fields": fields}
+        request_body_data = {'associationContexts': associationContexts, 'fields': fields}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/association"
+        url = f'{self.base_url}/rest/api/3/field/association'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2888,11 +2578,11 @@ class JiraApp(APIApplication):
             Issue custom field associations
         """
         request_body_data = None
-        request_body_data = {"associationContexts": associationContexts, "fields": fields}
+        request_body_data = {'associationContexts': associationContexts, 'fields': fields}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/association"
+        url = f'{self.base_url}/rest/api/3/field/association'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2901,17 +2591,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_fields_paginated(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        type: list[str] | None = None,
-        id: list[str] | None = None,
-        query: str | None = None,
-        orderBy: str | None = None,
-        expand: str | None = None,
-        projectIds: list[int] | None = None,
-    ) -> dict[str, Any]:
+    async def get_fields_paginated(self, startAt: int | None=None, maxResults: int | None=None, type: list[str] | None=None, id: list[str] | None=None, query: str | None=None, orderBy: str | None=None, expand: str | None=None, projectIds: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves and filters Jira fields by criteria such as ID, type, or name, supporting pagination and field expansion.
 
@@ -2935,22 +2615,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue fields
         """
-        url = f"{self.base_url}/rest/api/3/field/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("type", type),
-                ("id", id),
-                ("query", query),
-                ("orderBy", orderBy),
-                ("expand", expand),
-                ("projectIds", projectIds),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('type', type), ('id', id), ('query', query), ('orderBy', orderBy), ('expand', expand), ('projectIds', projectIds)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2959,15 +2626,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_trashed_fields_paginated(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        id: list[str] | None = None,
-        query: str | None = None,
-        expand: str | None = None,
-        orderBy: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_trashed_fields_paginated(self, startAt: int | None=None, maxResults: int | None=None, id: list[str] | None=None, query: str | None=None, expand: str | None=None, orderBy: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of custom fields that have been trashed in Jira, allowing filtering by field ID, name, or description.
 
@@ -2989,20 +2648,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue fields
         """
-        url = f"{self.base_url}/rest/api/3/field/search/trashed"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("query", query),
-                ("expand", expand),
-                ("orderBy", orderBy),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/search/trashed'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('query', query), ('expand', expand), ('orderBy', orderBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3011,9 +2659,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_custom_field(
-        self, fieldId: str, description: str | None = None, name: str | None = None, searcherKey: str | None = None
-    ) -> Any:
+    async def update_custom_field(self, fieldId: str, description: str | None=None, name: str | None=None, searcherKey: str | None=None) -> Any:
         """
         Updates a Jira custom field using the `PUT` method, specifying the field ID in the path, and returns a status response upon successful modification.
 
@@ -3058,11 +2704,11 @@ class JiraApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name, "searcherKey": searcherKey}
+        request_body_data = {'description': description, 'name': name, 'searcherKey': searcherKey}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3071,15 +2717,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_contexts_for_field(
-        self,
-        fieldId: str,
-        isAnyIssueType: bool | None = None,
-        isGlobalContext: bool | None = None,
-        contextId: list[int] | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_contexts_for_field(self, fieldId: str, isAnyIssueType: bool | None=None, isGlobalContext: bool | None=None, contextId: list[int] | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of custom field contexts for a specified field in Jira using the path "/rest/api/3/field/{fieldId}/context" with optional filters for issue type and global context.
 
@@ -3103,19 +2741,9 @@ class JiraApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context"
-        query_params = {
-            k: v
-            for k, v in [
-                ("isAnyIssueType", isAnyIssueType),
-                ("isGlobalContext", isGlobalContext),
-                ("contextId", contextId),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context'
+        query_params = {k: v for k, v in [('isAnyIssueType', isAnyIssueType), ('isGlobalContext', isGlobalContext), ('contextId', contextId), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3124,15 +2752,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_custom_field_context(
-        self,
-        fieldId: str,
-        name: str,
-        description: str | None = None,
-        id: str | None = None,
-        issueTypeIds: list[str] | None = None,
-        projectIds: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def create_custom_field_context(self, fieldId: str, name: str, description: str | None=None, id: str | None=None, issueTypeIds: list[str] | None=None, projectIds: list[str] | None=None) -> dict[str, Any]:
         """
         Creates a new custom field context for the specified field ID, defining its project and issue type associations.
 
@@ -3157,11 +2777,11 @@ class JiraApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"description": description, "id": id, "issueTypeIds": issueTypeIds, "name": name, "projectIds": projectIds}
+        request_body_data = {'description': description, 'id': id, 'issueTypeIds': issueTypeIds, 'name': name, 'projectIds': projectIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3170,9 +2790,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_default_values(
-        self, fieldId: str, contextId: list[int] | None = None, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_default_values(self, fieldId: str, contextId: list[int] | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves the default values for contexts of a specified custom field in Jira, including optional pagination parameters for larger datasets.
 
@@ -3194,9 +2812,9 @@ class JiraApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/defaultValue"
-        query_params = {k: v for k, v in [("contextId", contextId), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/defaultValue'
+        query_params = {k: v for k, v in [('contextId', contextId), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3205,7 +2823,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_default_values(self, fieldId: str, defaultValues: list[dict[str, Any]] | None = None) -> Any:
+    async def set_default_values(self, fieldId: str, defaultValues: list[dict[str, Any]] | None=None) -> Any:
         """
         Sets the default value for a specified custom field context via the Jira REST API.
 
@@ -3226,11 +2844,11 @@ class JiraApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"defaultValues": defaultValues}
+        request_body_data = {'defaultValues': defaultValues}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/defaultValue"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/defaultValue'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3239,9 +2857,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_field_issue_type_mappings(
-        self, fieldId: str, contextId: list[int] | None = None, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_field_issue_type_mappings(self, fieldId: str, contextId: list[int] | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of context to issue type mappings for a specified custom field using the Jira Cloud API, allowing for filters by context ID, start index, and maximum results.
 
@@ -3263,9 +2879,9 @@ class JiraApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/issuetypemapping"
-        query_params = {k: v for k, v in [("contextId", contextId), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/issuetypemapping'
+        query_params = {k: v for k, v in [('contextId', contextId), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3274,9 +2890,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def post_field_context_mapping(
-        self, fieldId: str, mappings: list[dict[str, Any]], startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def post_field_context_mapping(self, fieldId: str, mappings: list[dict[str, Any]], startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves and maps custom field contexts to specific projects and issue types for a given custom field ID.
 
@@ -3299,11 +2913,11 @@ class JiraApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"mappings": mappings}
+        request_body_data = {'mappings': mappings}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/mapping"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/mapping'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3312,9 +2926,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_context_mapping(
-        self, fieldId: str, contextId: list[int] | None = None, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_project_context_mapping(self, fieldId: str, contextId: list[int] | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves paginated mappings between projects and custom field contexts, optionally filtered by context ID.
 
@@ -3336,9 +2948,9 @@ class JiraApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/projectmapping"
-        query_params = {k: v for k, v in [("contextId", contextId), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/projectmapping'
+        query_params = {k: v for k, v in [('contextId', contextId), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3369,9 +2981,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3380,9 +2992,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_custom_field_context(
-        self, fieldId: str, contextId: str, description: str | None = None, name: str | None = None
-    ) -> Any:
+    async def update_custom_field_context(self, fieldId: str, contextId: str, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates a custom field context's configuration in Jira, including associated projects and issue types.
 
@@ -3407,11 +3017,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3444,11 +3054,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"issueTypeIds": issueTypeIds}
+        request_body_data = {'issueTypeIds': issueTypeIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/issuetype"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/issuetype'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3481,11 +3091,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"issueTypeIds": issueTypeIds}
+        request_body_data = {'issueTypeIds': issueTypeIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/issuetype/remove"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/issuetype/remove'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3494,15 +3104,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_options_for_context(
-        self,
-        fieldId: str,
-        contextId: str,
-        optionId: int | None = None,
-        onlyOptions: bool | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_options_for_context(self, fieldId: str, contextId: str, optionId: int | None=None, onlyOptions: bool | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves and paginates custom field options (single/multiple choice values) for a specific field and context in Jira, including filtering by option ID.
 
@@ -3528,13 +3130,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldId'.")
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option"
-        query_params = {
-            k: v
-            for k, v in [("optionId", optionId), ("onlyOptions", onlyOptions), ("startAt", startAt), ("maxResults", maxResults)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option'
+        query_params = {k: v for k, v in [('optionId', optionId), ('onlyOptions', onlyOptions), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3543,7 +3141,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_custom_field_option(self, fieldId: str, contextId: str, options: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def create_custom_field_option(self, fieldId: str, contextId: str, options: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Creates new custom field options for a specific context in Jira using the POST method, allowing for the addition of options to select lists or similar fields.
 
@@ -3567,11 +3165,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"options": options}
+        request_body_data = {'options': options}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3580,7 +3178,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_custom_field_option(self, fieldId: str, contextId: str, options: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def update_custom_field_option(self, fieldId: str, contextId: str, options: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Updates options for a custom field context in Jira using the provided field and context IDs, but this endpoint is not explicitly documented for a PUT method; typically, such endpoints involve updating or adding options to a select field within a specific context.
 
@@ -3604,11 +3202,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"options": options}
+        request_body_data = {'options': options}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3617,9 +3215,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def reorder_custom_field_options(
-        self, fieldId: str, contextId: str, customFieldOptionIds: list[str], after: str | None = None, position: str | None = None
-    ) -> Any:
+    async def reorder_custom_field_options(self, fieldId: str, contextId: str, customFieldOptionIds: list[str], after: str | None=None, position: str | None=None) -> Any:
         """
         Reorders custom field options or cascading options within a specified context using the provided IDs and position parameters.
 
@@ -3645,11 +3241,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"after": after, "customFieldOptionIds": customFieldOptionIds, "position": position}
+        request_body_data = {'after': after, 'customFieldOptionIds': customFieldOptionIds, 'position': position}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/move"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/move'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3683,9 +3279,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'contextId'.")
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3694,9 +3290,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def replace_custom_field_option(
-        self, fieldId: str, contextId: str, optionId: str, replaceWith: int | None = None, jql: str | None = None
-    ) -> Any:
+    async def replace_custom_field_option(self, fieldId: str, contextId: str, optionId: str, replaceWith: int | None=None, jql: str | None=None) -> Any:
         """
         Deletes a specific custom field option within a context for a Jira field, allowing optional replacement via query parameters.
 
@@ -3723,9 +3317,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'contextId'.")
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}/issue"
-        query_params = {k: v for k, v in [("replaceWith", replaceWith), ("jql", jql)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/option/{optionId}/issue'
+        query_params = {k: v for k, v in [('replaceWith', replaceWith), ('jql', jql)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3758,11 +3352,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"projectIds": projectIds}
+        request_body_data = {'projectIds': projectIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/project"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/project'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3795,11 +3389,11 @@ class JiraApp(APIApplication):
         if contextId is None:
             raise ValueError("Missing required parameter 'contextId'.")
         request_body_data = None
-        request_body_data = {"projectIds": projectIds}
+        request_body_data = {'projectIds': projectIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/project/remove"
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/context/{contextId}/project/remove'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3808,9 +3402,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_contexts_for_field_deprecated(
-        self, fieldId: str, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_contexts_for_field_deprecated(self, fieldId: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of contexts for a specified custom field in Jira, allowing filtering by start index and maximum number of results.
 
@@ -3831,9 +3423,9 @@ class JiraApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/contexts"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/contexts'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3842,9 +3434,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_screens_for_field(
-        self, fieldId: str, startAt: int | None = None, maxResults: int | None = None, expand: str | None = None
-    ) -> dict[str, Any]:
+    async def get_screens_for_field(self, fieldId: str, startAt: int | None=None, maxResults: int | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of screens that include a specified field, identified by the `fieldId` parameter, allowing for pagination and expansion of results.
 
@@ -3866,9 +3456,9 @@ class JiraApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldId}/screens"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldId}/screens'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3877,7 +3467,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_issue_field_options(self, fieldKey: str, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_all_issue_field_options(self, fieldKey: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all custom field options for a specified field, supporting pagination via startAt and maxResults parameters.
 
@@ -3898,9 +3488,9 @@ class JiraApp(APIApplication):
         """
         if fieldKey is None:
             raise ValueError("Missing required parameter 'fieldKey'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3909,9 +3499,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_field_option(
-        self, fieldKey: str, value: str, config: dict[str, Any] | None = None, properties: dict[str, Any] | None = None
-    ) -> dict[str, Any]:
+    async def create_issue_field_option(self, fieldKey: str, value: str, config: dict[str, Any] | None=None, properties: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Adds a new option to a specified custom field in Jira using the POST method, requiring the field's key as a path parameter.
 
@@ -3934,11 +3522,11 @@ class JiraApp(APIApplication):
         if fieldKey is None:
             raise ValueError("Missing required parameter 'fieldKey'.")
         request_body_data = None
-        request_body_data = {"config": config, "properties": properties, "value": value}
+        request_body_data = {'config': config, 'properties': properties, 'value': value}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option"
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3947,9 +3535,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_selectable_issue_field_options(
-        self, fieldKey: str, startAt: int | None = None, maxResults: int | None = None, projectId: int | None = None
-    ) -> dict[str, Any]:
+    async def get_selectable_issue_field_options(self, fieldKey: str, startAt: int | None=None, maxResults: int | None=None, projectId: int | None=None) -> dict[str, Any]:
         """
         Retrieves paginated suggestions for editable options of a specific custom field, filtered by project ID if provided, in Jira Cloud.
 
@@ -3971,9 +3557,9 @@ class JiraApp(APIApplication):
         """
         if fieldKey is None:
             raise ValueError("Missing required parameter 'fieldKey'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/suggestions/edit"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option/suggestions/edit'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3982,9 +3568,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_visible_issue_field_options(
-        self, fieldKey: str, startAt: int | None = None, maxResults: int | None = None, projectId: int | None = None
-    ) -> dict[str, Any]:
+    async def get_visible_issue_field_options(self, fieldKey: str, startAt: int | None=None, maxResults: int | None=None, projectId: int | None=None) -> dict[str, Any]:
         """
         Searches for and returns a list of option suggestions for a specific custom field in Jira, based on the provided field key, allowing for pagination using query parameters like `startAt` and `maxResults`.
 
@@ -4006,9 +3590,9 @@ class JiraApp(APIApplication):
         """
         if fieldKey is None:
             raise ValueError("Missing required parameter 'fieldKey'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/suggestions/search"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option/suggestions/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4039,9 +3623,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldKey'.")
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4072,9 +3656,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldKey'.")
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4083,15 +3667,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_issue_field_option(
-        self,
-        fieldKey: str,
-        optionId: str,
-        id: int,
-        value: str,
-        config: dict[str, Any] | None = None,
-        properties: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def update_issue_field_option(self, fieldKey: str, optionId: str, id: int, value: str, config: dict[str, Any] | None=None, properties: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Updates a custom field option identified by its ID in Jira using the PUT method, allowing for modification of existing option details such as value or status.
 
@@ -4118,11 +3694,11 @@ class JiraApp(APIApplication):
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
         request_body_data = None
-        request_body_data = {"config": config, "id": id, "properties": properties, "value": value}
+        request_body_data = {'config': config, 'id': id, 'properties': properties, 'value': value}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}"
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4131,15 +3707,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def replace_issue_field_option(
-        self,
-        fieldKey: str,
-        optionId: str,
-        replaceWith: int | None = None,
-        jql: str | None = None,
-        overrideScreenSecurity: bool | None = None,
-        overrideEditableFlag: bool | None = None,
-    ) -> Any:
+    async def replace_issue_field_option(self, fieldKey: str, optionId: str, replaceWith: int | None=None, jql: str | None=None, overrideScreenSecurity: bool | None=None, overrideEditableFlag: bool | None=None) -> Any:
         """
         Deletes a custom field option from specific issues using the Jira API, allowing for parameters such as replacing the option, filtering by JQL, and overriding screen security and editable flags.
 
@@ -4165,18 +3733,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'fieldKey'.")
         if optionId is None:
             raise ValueError("Missing required parameter 'optionId'.")
-        url = f"{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}/issue"
-        query_params = {
-            k: v
-            for k, v in [
-                ("replaceWith", replaceWith),
-                ("jql", jql),
-                ("overrideScreenSecurity", overrideScreenSecurity),
-                ("overrideEditableFlag", overrideEditableFlag),
-            ]
-            if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/field/{fieldKey}/option/{optionId}/issue'
+        query_params = {k: v for k, v in [('replaceWith', replaceWith), ('jql', jql), ('overrideScreenSecurity', overrideScreenSecurity), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4204,9 +3763,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/field/{id}"
+        url = f'{self.base_url}/rest/api/3/field/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4235,9 +3794,9 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/field/{id}/restore"
+        url = f'{self.base_url}/rest/api/3/field/{id}/restore'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4266,9 +3825,9 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/field/{id}/trash"
+        url = f'{self.base_url}/rest/api/3/field/{id}/trash'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4277,14 +3836,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_field_configurations(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        id: list[int] | None = None,
-        isDefault: bool | None = None,
-        query: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_field_configurations(self, startAt: int | None=None, maxResults: int | None=None, id: list[int] | None=None, isDefault: bool | None=None, query: str | None=None) -> dict[str, Any]:
         """
         Retrieves field configurations from Jira using the GET method at the "/rest/api/3/fieldconfiguration" path, allowing filtering by parameters such as startAt, maxResults, id, isDefault, and query.
 
@@ -4305,13 +3857,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue field configurations
         """
-        url = f"{self.base_url}/rest/api/3/fieldconfiguration"
-        query_params = {
-            k: v
-            for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("isDefault", isDefault), ("query", query)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/fieldconfiguration'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('isDefault', isDefault), ('query', query)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4320,7 +3868,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_field_configuration(self, name: str, description: str | None = None) -> dict[str, Any]:
+    async def create_field_configuration(self, name: str, description: str | None=None) -> dict[str, Any]:
         """
         Creates a new field configuration in Jira to manage field visibility and behavior, returning the configuration details upon success.
 
@@ -4339,11 +3887,11 @@ class JiraApp(APIApplication):
             Issue field configurations
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfiguration"
+        url = f'{self.base_url}/rest/api/3/fieldconfiguration'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4371,9 +3919,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}"
+        url = f'{self.base_url}/rest/api/3/fieldconfiguration/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4382,7 +3930,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_field_configuration(self, id: str, name: str, description: str | None = None) -> Any:
+    async def update_field_configuration(self, id: str, name: str, description: str | None=None) -> Any:
         """
         Updates a field configuration (name and description) in company-managed Jira projects, requiring Administer Jira permissions.
 
@@ -4404,11 +3952,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}"
+        url = f'{self.base_url}/rest/api/3/fieldconfiguration/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4417,7 +3965,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_field_configuration_items(self, id: str, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_field_configuration_items(self, id: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of fields associated with a field configuration specified by its ID, allowing pagination via optional startAt and maxResults parameters.
 
@@ -4438,9 +3986,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}/fields"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/fieldconfiguration/{id}/fields'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4470,11 +4018,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"fieldConfigurationItems": fieldConfigurationItems}
+        request_body_data = {'fieldConfigurationItems': fieldConfigurationItems}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfiguration/{id}/fields"
+        url = f'{self.base_url}/rest/api/3/fieldconfiguration/{id}/fields'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4483,9 +4031,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_field_configs(
-        self, startAt: int | None = None, maxResults: int | None = None, id: list[int] | None = None
-    ) -> dict[str, Any]:
+    async def list_field_configs(self, startAt: int | None=None, maxResults: int | None=None, id: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves field configuration schemes in Jira with support for pagination and optional ID filtering.
 
@@ -4504,9 +4050,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue field configurations
         """
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4515,7 +4061,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_field_configuration_scheme(self, name: str, description: str | None = None) -> dict[str, Any]:
+    async def create_field_configuration_scheme(self, name: str, description: str | None=None) -> dict[str, Any]:
         """
         Creates a field configuration scheme using the Jira Cloud platform REST API.
 
@@ -4534,11 +4080,11 @@ class JiraApp(APIApplication):
             Issue field configurations
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme"
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4547,9 +4093,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_field_mapping(
-        self, startAt: int | None = None, maxResults: int | None = None, fieldConfigurationSchemeId: list[int] | None = None
-    ) -> dict[str, Any]:
+    async def get_field_mapping(self, startAt: int | None=None, maxResults: int | None=None, fieldConfigurationSchemeId: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves mappings for a specified field configuration scheme using the Jira API, providing details of how fields are configured across projects.
 
@@ -4568,13 +4112,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue field configurations
         """
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/mapping"
-        query_params = {
-            k: v
-            for k, v in [("startAt", startAt), ("maxResults", maxResults), ("fieldConfigurationSchemeId", fieldConfigurationSchemeId)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/mapping'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('fieldConfigurationSchemeId', fieldConfigurationSchemeId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4583,9 +4123,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_field_configs_for_project(
-        self, projectId: list[int], startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_field_configs_for_project(self, projectId: list[int], startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of field configuration schemes for a specified project, including the projects that use each scheme, using the `GET` method at the `/rest/api/3/fieldconfigurationscheme/project` path.
 
@@ -4604,9 +4142,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue field configurations
         """
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/project"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/project'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4615,7 +4153,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_field_config_scheme_project(self, projectId: str, fieldConfigurationSchemeId: str | None = None) -> Any:
+    async def update_field_config_scheme_project(self, projectId: str, fieldConfigurationSchemeId: str | None=None) -> Any:
         """
         Updates a field configuration scheme associated with a project using the Jira Cloud API, specifically for company-managed (classic) projects.
 
@@ -4634,11 +4172,11 @@ class JiraApp(APIApplication):
             Issue field configurations
         """
         request_body_data = None
-        request_body_data = {"fieldConfigurationSchemeId": fieldConfigurationSchemeId, "projectId": projectId}
+        request_body_data = {'fieldConfigurationSchemeId': fieldConfigurationSchemeId, 'projectId': projectId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/project"
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/project'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4666,9 +4204,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}"
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4677,7 +4215,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_field_configuration_scheme(self, id: str, name: str, description: str | None = None) -> Any:
+    async def update_field_configuration_scheme(self, id: str, name: str, description: str | None=None) -> Any:
         """
         Updates a field configuration scheme using its ID, applicable only to company-managed projects, requiring the *Administer Jira* global permission.
 
@@ -4699,11 +4237,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}"
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4733,11 +4271,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"mappings": mappings}
+        request_body_data = {'mappings': mappings}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}/mapping"
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}/mapping'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4767,11 +4305,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"issueTypeIds": issueTypeIds}
+        request_body_data = {'issueTypeIds': issueTypeIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete"
+        url = f'{self.base_url}/rest/api/3/fieldconfigurationscheme/{id}/mapping/delete'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4780,26 +4318,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_filter(
-        self,
-        name: str,
-        expand: str | None = None,
-        overrideSharePermissions: bool | None = None,
-        approximateLastUsed: str | None = None,
-        description: str | None = None,
-        editPermissions: list[dict[str, Any]] | None = None,
-        favourite: bool | None = None,
-        favouritedCount: int | None = None,
-        id: str | None = None,
-        jql: str | None = None,
-        owner: Any | None = None,
-        searchUrl: str | None = None,
-        self_arg_body: str | None = None,
-        sharePermissions: list[dict[str, Any]] | None = None,
-        sharedUsers: Any | None = None,
-        subscriptions: Any | None = None,
-        viewUrl: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_filter(self, name: str, expand: str | None=None, overrideSharePermissions: bool | None=None, approximateLastUsed: str | None=None, description: str | None=None, editPermissions: list[dict[str, Any]] | None=None, favourite: bool | None=None, favouritedCount: int | None=None, id: str | None=None, jql: str | None=None, owner: Any | None=None, searchUrl: str | None=None, self_arg_body: str | None=None, sharePermissions: list[dict[str, Any]] | None=None, sharedUsers: Any | None=None, subscriptions: Any | None=None, viewUrl: str | None=None) -> dict[str, Any]:
         """
         Creates a Jira filter with specified parameters such as name, JQL query, and visibility, returning the newly created filter details.
 
@@ -4833,27 +4352,11 @@ class JiraApp(APIApplication):
             Filters
         """
         request_body_data = None
-        request_body_data = {
-            "approximateLastUsed": approximateLastUsed,
-            "description": description,
-            "editPermissions": editPermissions,
-            "favourite": favourite,
-            "favouritedCount": favouritedCount,
-            "id": id,
-            "jql": jql,
-            "name": name,
-            "owner": owner,
-            "searchUrl": searchUrl,
-            "self": self_arg_body,
-            "sharePermissions": sharePermissions,
-            "sharedUsers": sharedUsers,
-            "subscriptions": subscriptions,
-            "viewUrl": viewUrl,
-        }
+        request_body_data = {'approximateLastUsed': approximateLastUsed, 'description': description, 'editPermissions': editPermissions, 'favourite': favourite, 'favouritedCount': favouritedCount, 'id': id, 'jql': jql, 'name': name, 'owner': owner, 'searchUrl': searchUrl, 'self': self_arg_body, 'sharePermissions': sharePermissions, 'sharedUsers': sharedUsers, 'subscriptions': subscriptions, 'viewUrl': viewUrl}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/filter"
-        query_params = {k: v for k, v in [("expand", expand), ("overrideSharePermissions", overrideSharePermissions)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/filter'
+        query_params = {k: v for k, v in [('expand', expand), ('overrideSharePermissions', overrideSharePermissions)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4876,9 +4379,9 @@ class JiraApp(APIApplication):
         Tags:
             Filter sharing
         """
-        url = f"{self.base_url}/rest/api/3/filter/defaultShareScope"
+        url = f'{self.base_url}/rest/api/3/filter/defaultShareScope'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4909,11 +4412,11 @@ class JiraApp(APIApplication):
             Filter sharing
         """
         request_body_data = None
-        request_body_data = {"scope": scope}
+        request_body_data = {'scope': scope}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/filter/defaultShareScope"
+        url = f'{self.base_url}/rest/api/3/filter/defaultShareScope'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4922,7 +4425,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_favourite_filters(self, expand: str | None = None) -> list[Any]:
+    async def get_favourite_filters(self, expand: str | None=None) -> list[Any]:
         """
         Retrieves the user's visible favorite filters with optional expansion details.
 
@@ -4939,9 +4442,9 @@ class JiraApp(APIApplication):
         Tags:
             Filters
         """
-        url = f"{self.base_url}/rest/api/3/filter/favourite"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/filter/favourite'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4950,7 +4453,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_my_filters(self, expand: str | None = None, includeFavourites: bool | None = None) -> list[Any]:
+    async def get_my_filters(self, expand: str | None=None, includeFavourites: bool | None=None) -> list[Any]:
         """
         Retrieves a list of filters accessible by the user, with options to expand and include favorite filters, using the Jira REST API.
 
@@ -4968,9 +4471,9 @@ class JiraApp(APIApplication):
         Tags:
             Filters
         """
-        url = f"{self.base_url}/rest/api/3/filter/my"
-        query_params = {k: v for k, v in [("expand", expand), ("includeFavourites", includeFavourites)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/filter/my'
+        query_params = {k: v for k, v in [('expand', expand), ('includeFavourites', includeFavourites)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -4979,22 +4482,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_filters_paginated(
-        self,
-        filterName: str | None = None,
-        accountId: str | None = None,
-        owner: str | None = None,
-        groupname: str | None = None,
-        groupId: str | None = None,
-        projectId: int | None = None,
-        id: list[int] | None = None,
-        orderBy: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        expand: str | None = None,
-        overrideSharePermissions: bool | None = None,
-        isSubstringMatch: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_filters_paginated(self, filterName: str | None=None, accountId: str | None=None, owner: str | None=None, groupname: str | None=None, groupId: str | None=None, projectId: int | None=None, id: list[int] | None=None, orderBy: str | None=None, startAt: int | None=None, maxResults: int | None=None, expand: str | None=None, overrideSharePermissions: bool | None=None, isSubstringMatch: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a list of filters accessible to the user based on parameters like name, owner, project, or group, supporting pagination and substring matching.
 
@@ -5023,27 +4511,9 @@ class JiraApp(APIApplication):
         Tags:
             Filters
         """
-        url = f"{self.base_url}/rest/api/3/filter/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("filterName", filterName),
-                ("accountId", accountId),
-                ("owner", owner),
-                ("groupname", groupname),
-                ("groupId", groupId),
-                ("projectId", projectId),
-                ("id", id),
-                ("orderBy", orderBy),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("expand", expand),
-                ("overrideSharePermissions", overrideSharePermissions),
-                ("isSubstringMatch", isSubstringMatch),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/filter/search'
+        query_params = {k: v for k, v in [('filterName', filterName), ('accountId', accountId), ('owner', owner), ('groupname', groupname), ('groupId', groupId), ('projectId', projectId), ('id', id), ('orderBy', orderBy), ('startAt', startAt), ('maxResults', maxResults), ('expand', expand), ('overrideSharePermissions', overrideSharePermissions), ('isSubstringMatch', isSubstringMatch)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5071,9 +4541,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}"
+        url = f'{self.base_url}/rest/api/3/filter/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5082,7 +4552,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_filter(self, id: str, expand: str | None = None, overrideSharePermissions: bool | None = None) -> dict[str, Any]:
+    async def get_filter(self, id: str, expand: str | None=None, overrideSharePermissions: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a specific filter's details by ID from Jira, optionally expanding fields or overriding share permissions.
 
@@ -5103,9 +4573,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}"
-        query_params = {k: v for k, v in [("expand", expand), ("overrideSharePermissions", overrideSharePermissions)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/filter/{id}'
+        query_params = {k: v for k, v in [('expand', expand), ('overrideSharePermissions', overrideSharePermissions)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5114,27 +4584,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_filter(
-        self,
-        id: str,
-        name: str,
-        expand: str | None = None,
-        overrideSharePermissions: bool | None = None,
-        approximateLastUsed: str | None = None,
-        description: str | None = None,
-        editPermissions: list[dict[str, Any]] | None = None,
-        favourite: bool | None = None,
-        favouritedCount: int | None = None,
-        id_body: str | None = None,
-        jql: str | None = None,
-        owner: Any | None = None,
-        searchUrl: str | None = None,
-        self_arg_body: str | None = None,
-        sharePermissions: list[dict[str, Any]] | None = None,
-        sharedUsers: Any | None = None,
-        subscriptions: Any | None = None,
-        viewUrl: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_filter(self, id: str, name: str, expand: str | None=None, overrideSharePermissions: bool | None=None, approximateLastUsed: str | None=None, description: str | None=None, editPermissions: list[dict[str, Any]] | None=None, favourite: bool | None=None, favouritedCount: int | None=None, id_body: str | None=None, jql: str | None=None, owner: Any | None=None, searchUrl: str | None=None, self_arg_body: str | None=None, sharePermissions: list[dict[str, Any]] | None=None, sharedUsers: Any | None=None, subscriptions: Any | None=None, viewUrl: str | None=None) -> dict[str, Any]:
         """
         Updates an existing Jira filter (including permissions if overrideSharePermissions is specified) and returns the modified filter.
 
@@ -5171,27 +4621,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "approximateLastUsed": approximateLastUsed,
-            "description": description,
-            "editPermissions": editPermissions,
-            "favourite": favourite,
-            "favouritedCount": favouritedCount,
-            "id": id_body,
-            "jql": jql,
-            "name": name,
-            "owner": owner,
-            "searchUrl": searchUrl,
-            "self": self_arg_body,
-            "sharePermissions": sharePermissions,
-            "sharedUsers": sharedUsers,
-            "subscriptions": subscriptions,
-            "viewUrl": viewUrl,
-        }
+        request_body_data = {'approximateLastUsed': approximateLastUsed, 'description': description, 'editPermissions': editPermissions, 'favourite': favourite, 'favouritedCount': favouritedCount, 'id': id_body, 'jql': jql, 'name': name, 'owner': owner, 'searchUrl': searchUrl, 'self': self_arg_body, 'sharePermissions': sharePermissions, 'sharedUsers': sharedUsers, 'subscriptions': subscriptions, 'viewUrl': viewUrl}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/filter/{id}"
-        query_params = {k: v for k, v in [("expand", expand), ("overrideSharePermissions", overrideSharePermissions)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/filter/{id}'
+        query_params = {k: v for k, v in [('expand', expand), ('overrideSharePermissions', overrideSharePermissions)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5219,9 +4653,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}/columns"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/columns'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5249,9 +4683,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}/columns"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/columns'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5260,7 +4694,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_columns(self, id: str, columns: list[str] | None = None) -> Any:
+    async def set_columns(self, id: str, columns: list[str] | None=None) -> Any:
         """
         Updates the columns of a specific filter in Jira using the REST API and returns a response indicating the status of the update operation.
 
@@ -5285,13 +4719,13 @@ class JiraApp(APIApplication):
         request_body_data = {}
         files_data = {}
         if columns is not None:
-            request_body_data["columns"] = columns
+            request_body_data['columns'] = columns
         files_data = {k: v for k, v in files_data.items() if v is not None}
         if not files_data:
             files_data = None
-        url = f"{self.base_url}/rest/api/3/filter/{id}/columns"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/columns'
         query_params = {}
-        response = self._put(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._aput(url, data=request_body_data, files=files_data, params=query_params, content_type='multipart/form-data')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5300,7 +4734,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_favourite_for_filter(self, id: str, expand: str | None = None) -> dict[str, Any]:
+    async def delete_favourite_for_filter(self, id: str, expand: str | None=None) -> dict[str, Any]:
         """
         Removes a filter with the specified ID from the user's favorites list using the Jira Cloud API.
 
@@ -5320,9 +4754,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}/favourite"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/filter/{id}/favourite'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5331,7 +4765,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_favourite_for_filter(self, id: str, expand: str | None = None) -> dict[str, Any]:
+    async def set_favourite_for_filter(self, id: str, expand: str | None=None) -> dict[str, Any]:
         """
         Adds a filter to the user's favorites list in Jira and returns the updated filter details.
 
@@ -5352,9 +4786,9 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/filter/{id}/favourite"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/filter/{id}/favourite'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5384,11 +4818,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"accountId": accountId}
+        request_body_data = {'accountId': accountId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/filter/{id}/owner"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/owner'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5416,9 +4850,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}/permission"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/permission'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5427,17 +4861,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_share_permission(
-        self,
-        id: str,
-        type: str,
-        accountId: str | None = None,
-        groupId: str | None = None,
-        groupname: str | None = None,
-        projectId: str | None = None,
-        projectRoleId: str | None = None,
-        rights: int | None = None,
-    ) -> list[Any]:
+    async def add_share_permission(self, id: str, type: str, accountId: str | None=None, groupId: str | None=None, groupname: str | None=None, projectId: str | None=None, projectRoleId: str | None=None, rights: int | None=None) -> list[Any]:
         """
         Adds permissions to an existing filter using the filter ID, allowing control over who can access or modify the filter via the API.
 
@@ -5471,19 +4895,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "accountId": accountId,
-            "groupId": groupId,
-            "groupname": groupname,
-            "projectId": projectId,
-            "projectRoleId": projectRoleId,
-            "rights": rights,
-            "type": type,
-        }
+        request_body_data = {'accountId': accountId, 'groupId': groupId, 'groupname': groupname, 'projectId': projectId, 'projectRoleId': projectRoleId, 'rights': rights, 'type': type}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/filter/{id}/permission"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/permission'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5514,9 +4930,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}/permission/{permissionId}"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/permission/{permissionId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5547,9 +4963,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
-        url = f"{self.base_url}/rest/api/3/filter/{id}/permission/{permissionId}"
+        url = f'{self.base_url}/rest/api/3/filter/{id}/permission/{permissionId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5558,9 +4974,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_group(
-        self, groupname: str | None = None, groupId: str | None = None, swapGroup: str | None = None, swapGroupId: str | None = None
-    ) -> Any:
+    async def remove_group(self, groupname: str | None=None, groupId: str | None=None, swapGroup: str | None=None, swapGroupId: str | None=None) -> Any:
         """
         Deletes a group from the organization's directory using the `DELETE` method, allowing for optional group swapping, and returns a status message based on the operation's success or failure.
 
@@ -5580,13 +4994,9 @@ class JiraApp(APIApplication):
         Tags:
             Groups
         """
-        url = f"{self.base_url}/rest/api/3/group"
-        query_params = {
-            k: v
-            for k, v in [("groupname", groupname), ("groupId", groupId), ("swapGroup", swapGroup), ("swapGroupId", swapGroupId)]
-            if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/group'
+        query_params = {k: v for k, v in [('groupname', groupname), ('groupId', groupId), ('swapGroup', swapGroup), ('swapGroupId', swapGroupId)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5595,7 +5005,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_group(self, groupname: str | None = None, groupId: str | None = None, expand: str | None = None) -> dict[str, Any]:
+    async def get_group(self, groupname: str | None=None, groupId: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves group information from Jira by group name or ID, optionally expanding the response with additional details.
 
@@ -5614,9 +5024,9 @@ class JiraApp(APIApplication):
         Tags:
             Groups
         """
-        url = f"{self.base_url}/rest/api/3/group"
-        query_params = {k: v for k, v in [("groupname", groupname), ("groupId", groupId), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/group'
+        query_params = {k: v for k, v in [('groupname', groupname), ('groupId', groupId), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5643,11 +5053,11 @@ class JiraApp(APIApplication):
             Groups
         """
         request_body_data = None
-        request_body_data = {"name": name}
+        request_body_data = {'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/group"
+        url = f'{self.base_url}/rest/api/3/group'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5656,15 +5066,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_get_groups(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        groupId: list[str] | None = None,
-        groupName: list[str] | None = None,
-        accessType: str | None = None,
-        applicationKey: str | None = None,
-    ) -> dict[str, Any]:
+    async def bulk_get_groups(self, startAt: int | None=None, maxResults: int | None=None, groupId: list[str] | None=None, groupName: list[str] | None=None, accessType: str | None=None, applicationKey: str | None=None) -> dict[str, Any]:
         """
         Retrieves multiple groups in bulk from Jira Cloud based on query parameters such as group IDs, names, and access types.
 
@@ -5686,20 +5088,9 @@ class JiraApp(APIApplication):
         Tags:
             Groups
         """
-        url = f"{self.base_url}/rest/api/3/group/bulk"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("groupId", groupId),
-                ("groupName", groupName),
-                ("accessType", accessType),
-                ("applicationKey", applicationKey),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/group/bulk'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('groupId', groupId), ('groupName', groupName), ('accessType', accessType), ('applicationKey', applicationKey)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5708,14 +5099,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_users_from_group(
-        self,
-        groupname: str | None = None,
-        groupId: str | None = None,
-        includeInactiveUsers: bool | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_users_from_group(self, groupname: str | None=None, groupId: str | None=None, includeInactiveUsers: bool | None=None, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves paginated members of a Jira group with optional filtering for inactive users, supporting group identification via name or ID.
 
@@ -5736,19 +5120,9 @@ class JiraApp(APIApplication):
         Tags:
             Groups
         """
-        url = f"{self.base_url}/rest/api/3/group/member"
-        query_params = {
-            k: v
-            for k, v in [
-                ("groupname", groupname),
-                ("groupId", groupId),
-                ("includeInactiveUsers", includeInactiveUsers),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/group/member'
+        query_params = {k: v for k, v in [('groupname', groupname), ('groupId', groupId), ('includeInactiveUsers', includeInactiveUsers), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5757,9 +5131,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_user_from_group(
-        self, accountId: str, groupname: str | None = None, groupId: str | None = None, username: str | None = None
-    ) -> Any:
+    async def remove_user_from_group(self, accountId: str, groupname: str | None=None, groupId: str | None=None, username: str | None=None) -> Any:
         """
         Removes a specified user from a group in Jira Cloud using account ID, username, groupname, or groupId as parameters.
 
@@ -5779,13 +5151,9 @@ class JiraApp(APIApplication):
         Tags:
             Groups
         """
-        url = f"{self.base_url}/rest/api/3/group/user"
-        query_params = {
-            k: v
-            for k, v in [("groupname", groupname), ("groupId", groupId), ("username", username), ("accountId", accountId)]
-            if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/group/user'
+        query_params = {k: v for k, v in [('groupname', groupname), ('groupId', groupId), ('username', username), ('accountId', accountId)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5794,9 +5162,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_user_to_group(
-        self, groupname: str | None = None, groupId: str | None = None, accountId: str | None = None, name: str | None = None
-    ) -> dict[str, Any]:
+    async def add_user_to_group(self, groupname: str | None=None, groupId: str | None=None, accountId: str | None=None, name: str | None=None) -> dict[str, Any]:
         """
         Adds a user to a specified Jira group using the "POST" method at the "/rest/api/3/group/user" endpoint, requiring a group ID or name to identify the target group.
 
@@ -5817,11 +5183,11 @@ class JiraApp(APIApplication):
             Groups
         """
         request_body_data = None
-        request_body_data = {"accountId": accountId, "name": name}
+        request_body_data = {'accountId': accountId, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/group/user"
-        query_params = {k: v for k, v in [("groupname", groupname), ("groupId", groupId)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/group/user'
+        query_params = {k: v for k, v in [('groupname', groupname), ('groupId', groupId)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5830,16 +5196,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_groups(
-        self,
-        accountId: str | None = None,
-        query: str | None = None,
-        exclude: list[str] | None = None,
-        excludeId: list[str] | None = None,
-        maxResults: int | None = None,
-        caseInsensitive: bool | None = None,
-        userName: str | None = None,
-    ) -> dict[str, Any]:
+    async def find_groups(self, accountId: str | None=None, query: str | None=None, exclude: list[str] | None=None, excludeId: list[str] | None=None, maxResults: int | None=None, caseInsensitive: bool | None=None, userName: str | None=None) -> dict[str, Any]:
         """
         Searches for groups matching query parameters and returns results with highlighted matches and a picker-friendly header indicating the number of matching groups.
 
@@ -5862,21 +5219,9 @@ class JiraApp(APIApplication):
         Tags:
             Groups
         """
-        url = f"{self.base_url}/rest/api/3/groups/picker"
-        query_params = {
-            k: v
-            for k, v in [
-                ("accountId", accountId),
-                ("query", query),
-                ("exclude", exclude),
-                ("excludeId", excludeId),
-                ("maxResults", maxResults),
-                ("caseInsensitive", caseInsensitive),
-                ("userName", userName),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/groups/picker'
+        query_params = {k: v for k, v in [('accountId', accountId), ('query', query), ('exclude', exclude), ('excludeId', excludeId), ('maxResults', maxResults), ('caseInsensitive', caseInsensitive), ('userName', userName)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5885,18 +5230,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_users_and_groups(
-        self,
-        query: str,
-        maxResults: int | None = None,
-        showAvatar: bool | None = None,
-        fieldId: str | None = None,
-        projectId: list[str] | None = None,
-        issueTypeId: list[str] | None = None,
-        avatarSize: str | None = None,
-        caseInsensitive: bool | None = None,
-        excludeConnectAddons: bool | None = None,
-    ) -> dict[str, Any]:
+    async def find_users_and_groups(self, query: str, maxResults: int | None=None, showAvatar: bool | None=None, fieldId: str | None=None, projectId: list[str] | None=None, issueTypeId: list[str] | None=None, avatarSize: str | None=None, caseInsensitive: bool | None=None, excludeConnectAddons: bool | None=None) -> dict[str, Any]:
         """
         Searches for users and groups matching a query string in Jira Cloud and returns results with HTML highlighting for picker fields.
 
@@ -5921,23 +5255,9 @@ class JiraApp(APIApplication):
         Tags:
             Group and user picker
         """
-        url = f"{self.base_url}/rest/api/3/groupuserpicker"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("maxResults", maxResults),
-                ("showAvatar", showAvatar),
-                ("fieldId", fieldId),
-                ("projectId", projectId),
-                ("issueTypeId", issueTypeId),
-                ("avatarSize", avatarSize),
-                ("caseInsensitive", caseInsensitive),
-                ("excludeConnectAddons", excludeConnectAddons),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/groupuserpicker'
+        query_params = {k: v for k, v in [('query', query), ('maxResults', maxResults), ('showAvatar', showAvatar), ('fieldId', fieldId), ('projectId', projectId), ('issueTypeId', issueTypeId), ('avatarSize', avatarSize), ('caseInsensitive', caseInsensitive), ('excludeConnectAddons', excludeConnectAddons)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5960,9 +5280,9 @@ class JiraApp(APIApplication):
         Tags:
             License metrics
         """
-        url = f"{self.base_url}/rest/api/3/instance/license"
+        url = f'{self.base_url}/rest/api/3/instance/license'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -5971,15 +5291,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue(
-        self,
-        updateHistory: bool | None = None,
-        fields: dict[str, Any] | None = None,
-        historyMetadata: Any | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        transition: Any | None = None,
-        update: dict[str, list[dict[str, Any]]] | None = None,
-    ) -> dict[str, Any]:
+    async def create_issue(self, updateHistory: bool | None=None, fields: dict[str, Any] | None=None, historyMetadata: Any | None=None, properties: list[dict[str, Any]] | None=None, transition: Any | None=None, update: dict[str, list[dict[str, Any]]] | None=None) -> dict[str, Any]:
         """
         Creates a new Jira issue using the specified project and issue type, returning a successful creation response if valid.
 
@@ -6002,17 +5314,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {
-            "fields": fields,
-            "historyMetadata": historyMetadata,
-            "properties": properties,
-            "transition": transition,
-            "update": update,
-        }
+        request_body_data = {'fields': fields, 'historyMetadata': historyMetadata, 'properties': properties, 'transition': transition, 'update': update}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue"
-        query_params = {k: v for k, v in [("updateHistory", updateHistory)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue'
+        query_params = {k: v for k, v in [('updateHistory', updateHistory)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6021,7 +5327,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def archive_issues_async(self, jql: str | None = None) -> Any:
+    async def archive_issues_async(self, jql: str | None=None) -> Any:
         """
         Archives Jira issues via ID/key using a POST request, returning async status codes for success/failure.
 
@@ -6039,11 +5345,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {"jql": jql}
+        request_body_data = {'jql': jql}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/archive"
+        url = f'{self.base_url}/rest/api/3/issue/archive'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6052,7 +5358,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def archive_issues(self, issueIdsOrKeys: list[str] | None = None) -> dict[str, Any]:
+    async def archive_issues(self, issueIdsOrKeys: list[str] | None=None) -> dict[str, Any]:
         """
         Archives Jira issues via the specified issue IDs/keys using the PUT method, handling bulk operations and returning status/error details.
 
@@ -6070,11 +5376,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {"issueIdsOrKeys": issueIdsOrKeys}
+        request_body_data = {'issueIdsOrKeys': issueIdsOrKeys}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/archive"
+        url = f'{self.base_url}/rest/api/3/issue/archive'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6083,7 +5389,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issues(self, issueUpdates: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def create_issues(self, issueUpdates: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Performs bulk operations on Jira issues, such as moving or editing multiple issues at once, using the POST method at the "/rest/api/3/issue/bulk" endpoint.
 
@@ -6109,11 +5415,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {"issueUpdates": issueUpdates}
+        request_body_data = {'issueUpdates': issueUpdates}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/bulk"
+        url = f'{self.base_url}/rest/api/3/issue/bulk'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6122,14 +5428,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_fetch_issues(
-        self,
-        issueIdsOrKeys: list[str],
-        expand: list[str] | None = None,
-        fields: list[str] | None = None,
-        fieldsByKeys: bool | None = None,
-        properties: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def bulk_fetch_issues(self, issueIdsOrKeys: list[str], expand: list[str] | None=None, fields: list[str] | None=None, fieldsByKeys: bool | None=None, properties: list[str] | None=None) -> dict[str, Any]:
         """
         Fetches multiple issues in bulk from Jira using the POST method at "/rest/api/3/issue/bulkfetch", returning the specified issues based on provided issue IDs or keys.
 
@@ -6176,17 +5475,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {
-            "expand": expand,
-            "fields": fields,
-            "fieldsByKeys": fieldsByKeys,
-            "issueIdsOrKeys": issueIdsOrKeys,
-            "properties": properties,
-        }
+        request_body_data = {'expand': expand, 'fields': fields, 'fieldsByKeys': fieldsByKeys, 'issueIdsOrKeys': issueIdsOrKeys, 'properties': properties}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/bulkfetch"
+        url = f'{self.base_url}/rest/api/3/issue/bulkfetch'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6195,14 +5488,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_create_issue_meta(
-        self,
-        projectIds: list[str] | None = None,
-        projectKeys: list[str] | None = None,
-        issuetypeIds: list[str] | None = None,
-        issuetypeNames: list[str] | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_create_issue_meta(self, projectIds: list[str] | None=None, projectKeys: list[str] | None=None, issuetypeIds: list[str] | None=None, issuetypeNames: list[str] | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves metadata including required fields, default values, and allowed configurations for creating Jira issues based on specified projects and issue types.
 
@@ -6223,19 +5509,9 @@ class JiraApp(APIApplication):
         Tags:
             Issues
         """
-        url = f"{self.base_url}/rest/api/3/issue/createmeta"
-        query_params = {
-            k: v
-            for k, v in [
-                ("projectIds", projectIds),
-                ("projectKeys", projectKeys),
-                ("issuetypeIds", issuetypeIds),
-                ("issuetypeNames", issuetypeNames),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/createmeta'
+        query_params = {k: v for k, v in [('projectIds', projectIds), ('projectKeys', projectKeys), ('issuetypeIds', issuetypeIds), ('issuetypeNames', issuetypeNames), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6244,9 +5520,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_create_issue_meta_issue_types(
-        self, projectIdOrKey: str, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_create_issue_meta_issue_types(self, projectIdOrKey: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves metadata for creating issues in Jira for a specific project's issue types, including available fields and mandatory requirements.
 
@@ -6267,9 +5541,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6278,9 +5552,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_create_issue_meta_issue_type_id(
-        self, projectIdOrKey: str, issueTypeId: str, startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_create_issue_meta_issue_type_id(self, projectIdOrKey: str, issueTypeId: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves metadata for specific issue types within a project in Jira using the "GET" method, returning details such as available fields and their schemas based on the project and issue type identifiers.
 
@@ -6304,9 +5576,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         if issueTypeId is None:
             raise ValueError("Missing required parameter 'issueTypeId'.")
-        url = f"{self.base_url}/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes/{issueTypeId}"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes/{issueTypeId}'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6315,7 +5587,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_limit_report(self, isReturningKeys: bool | None = None) -> dict[str, Any]:
+    async def get_issue_limit_report(self, isReturningKeys: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a report of issues approaching their worklog limit thresholds using the specified parameters.
 
@@ -6332,9 +5604,9 @@ class JiraApp(APIApplication):
         Tags:
             Issues
         """
-        url = f"{self.base_url}/rest/api/3/issue/limit/report"
-        query_params = {k: v for k, v in [("isReturningKeys", isReturningKeys)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/limit/report'
+        query_params = {k: v for k, v in [('isReturningKeys', isReturningKeys)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6343,15 +5615,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_picker_resource(
-        self,
-        query: str | None = None,
-        currentJQL: str | None = None,
-        currentIssueKey: str | None = None,
-        currentProjectId: str | None = None,
-        showSubTasks: bool | None = None,
-        showSubTaskParent: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_issue_picker_resource(self, query: str | None=None, currentJQL: str | None=None, currentIssueKey: str | None=None, currentProjectId: str | None=None, showSubTasks: bool | None=None, showSubTaskParent: bool | None=None) -> dict[str, Any]:
         """
         Provides auto-completion suggestions for Jira issues based on search queries and JQL filters, returning matching issues from user history and current searches.
 
@@ -6373,20 +5637,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue search
         """
-        url = f"{self.base_url}/rest/api/3/issue/picker"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("currentJQL", currentJQL),
-                ("currentIssueKey", currentIssueKey),
-                ("currentProjectId", currentProjectId),
-                ("showSubTasks", showSubTasks),
-                ("showSubTaskParent", showSubTaskParent),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/picker'
+        query_params = {k: v for k, v in [('query', query), ('currentJQL', currentJQL), ('currentIssueKey', currentIssueKey), ('currentProjectId', currentProjectId), ('showSubTasks', showSubTasks), ('showSubTaskParent', showSubTaskParent)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6395,9 +5648,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_set_issues_properties_list(
-        self, entitiesIds: list[int] | None = None, properties: dict[str, dict[str, Any]] | None = None
-    ) -> Any:
+    async def bulk_set_issues_properties_list(self, entitiesIds: list[int] | None=None, properties: dict[str, dict[str, Any]] | None=None) -> Any:
         """
         Sets or updates multiple issue properties for specified issues using JIRA's REST API, supporting bulk operations on custom data storage.
 
@@ -6416,11 +5667,11 @@ class JiraApp(APIApplication):
             Issue properties
         """
         request_body_data = None
-        request_body_data = {"entitiesIds": entitiesIds, "properties": properties}
+        request_body_data = {'entitiesIds': entitiesIds, 'properties': properties}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/properties"
+        url = f'{self.base_url}/rest/api/3/issue/properties'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6429,7 +5680,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_set_issue_properties_by_issue(self, issues: list[dict[str, Any]] | None = None) -> Any:
+    async def bulk_set_issue_properties_by_issue(self, issues: list[dict[str, Any]] | None=None) -> Any:
         """
         Sets or updates custom properties on multiple Jira issues in a single request and returns the task status for asynchronous processing.
 
@@ -6447,11 +5698,11 @@ class JiraApp(APIApplication):
             Issue properties
         """
         request_body_data = None
-        request_body_data = {"issues": issues}
+        request_body_data = {'issues': issues}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/properties/multi"
+        url = f'{self.base_url}/rest/api/3/issue/properties/multi'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6460,9 +5711,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_delete_issue_property(
-        self, propertyKey: str, currentValue: Any | None = None, entityIds: list[int] | None = None
-    ) -> Any:
+    async def bulk_delete_issue_property(self, propertyKey: str, currentValue: Any | None=None, entityIds: list[int] | None=None) -> Any:
         """
         Deletes a specified issue property from multiple Jira issues using filter criteria including entity IDs or property values.
 
@@ -6483,11 +5732,11 @@ class JiraApp(APIApplication):
         """
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        request_body_data = {"currentValue": currentValue, "entityIds": entityIds}
+        request_body_data = {'currentValue': currentValue, 'entityIds': entityIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6496,9 +5745,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_set_issue_property(
-        self, propertyKey: str, expression: str | None = None, filter: Any | None = None, value: Any | None = None
-    ) -> Any:
+    async def bulk_set_issue_property(self, propertyKey: str, expression: str | None=None, filter: Any | None=None, value: Any | None=None) -> Any:
         """
         Updates or sets a custom property value for a Jira issue identified by the property key, returning a status reference for asynchronous processing.
 
@@ -6521,11 +5768,11 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        request_body_data = {"expression": expression, "filter": filter, "value": value}
+        request_body_data = {'expression': expression, 'filter': filter, 'value': value}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6534,7 +5781,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def unarchive_issues(self, issueIdsOrKeys: list[str] | None = None) -> dict[str, Any]:
+    async def unarchive_issues(self, issueIdsOrKeys: list[str] | None=None) -> dict[str, Any]:
         """
         Unarchives up to 1000 Jira issues in a single request using their IDs or keys, returning the count of unarchived issues and any errors encountered.
 
@@ -6552,11 +5799,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {"issueIdsOrKeys": issueIdsOrKeys}
+        request_body_data = {'issueIdsOrKeys': issueIdsOrKeys}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/unarchive"
+        url = f'{self.base_url}/rest/api/3/issue/unarchive'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6583,11 +5830,11 @@ class JiraApp(APIApplication):
             Issue watchers
         """
         request_body_data = None
-        request_body_data = {"issueIds": issueIds}
+        request_body_data = {'issueIds': issueIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/watching"
+        url = f'{self.base_url}/rest/api/3/issue/watching'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6596,7 +5843,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_issue(self, issueIdOrKey: str, deleteSubtasks: str | None = None) -> Any:
+    async def delete_issue(self, issueIdOrKey: str, deleteSubtasks: str | None=None) -> Any:
         """
         Deletes a Jira issue identified by its ID or key, optionally deleting associated subtasks if the `deleteSubtasks` query parameter is set to `true`.
 
@@ -6616,9 +5863,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}"
-        query_params = {k: v for k, v in [("deleteSubtasks", deleteSubtasks)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}'
+        query_params = {k: v for k, v in [('deleteSubtasks', deleteSubtasks)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6627,16 +5874,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue(
-        self,
-        issueIdOrKey: str,
-        fields: list[str] | None = None,
-        fieldsByKeys: bool | None = None,
-        expand: str | None = None,
-        properties: list[str] | None = None,
-        updateHistory: bool | None = None,
-        failFast: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_issue(self, issueIdOrKey: str, fields: list[str] | None=None, fieldsByKeys: bool | None=None, expand: str | None=None, properties: list[str] | None=None, updateHistory: bool | None=None, failFast: bool | None=None) -> dict[str, Any]:
         """
         Retrieves detailed information about a Jira issue using its ID or key, allowing optional parameters to specify fields, expansions, and additional data.
 
@@ -6661,20 +5899,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fields", fields),
-                ("fieldsByKeys", fieldsByKeys),
-                ("expand", expand),
-                ("properties", properties),
-                ("updateHistory", updateHistory),
-                ("failFast", failFast),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}'
+        query_params = {k: v for k, v in [('fields', fields), ('fieldsByKeys', fieldsByKeys), ('expand', expand), ('properties', properties), ('updateHistory', updateHistory), ('failFast', failFast)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6683,20 +5910,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def edit_issue(
-        self,
-        issueIdOrKey: str,
-        notifyUsers: bool | None = None,
-        overrideScreenSecurity: bool | None = None,
-        overrideEditableFlag: bool | None = None,
-        returnIssue: bool | None = None,
-        expand: str | None = None,
-        fields: dict[str, Any] | None = None,
-        historyMetadata: Any | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        transition: Any | None = None,
-        update: dict[str, list[dict[str, Any]]] | None = None,
-    ) -> Any:
+    async def edit_issue(self, issueIdOrKey: str, notifyUsers: bool | None=None, overrideScreenSecurity: bool | None=None, overrideEditableFlag: bool | None=None, returnIssue: bool | None=None, expand: str | None=None, fields: dict[str, Any] | None=None, historyMetadata: Any | None=None, properties: list[dict[str, Any]] | None=None, transition: Any | None=None, update: dict[str, list[dict[str, Any]]] | None=None) -> Any:
         """
         Updates an issue in Jira using the specified issue ID or key, allowing modification of issue fields, with optional parameters to control notification, screen security, editable flags, and response details.
 
@@ -6726,27 +5940,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "fields": fields,
-            "historyMetadata": historyMetadata,
-            "properties": properties,
-            "transition": transition,
-            "update": update,
-        }
+        request_body_data = {'fields': fields, 'historyMetadata': historyMetadata, 'properties': properties, 'transition': transition, 'update': update}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("notifyUsers", notifyUsers),
-                ("overrideScreenSecurity", overrideScreenSecurity),
-                ("overrideEditableFlag", overrideEditableFlag),
-                ("returnIssue", returnIssue),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}'
+        query_params = {k: v for k, v in [('notifyUsers', notifyUsers), ('overrideScreenSecurity', overrideScreenSecurity), ('overrideEditableFlag', overrideEditableFlag), ('returnIssue', returnIssue), ('expand', expand)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6755,24 +5953,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def assign_issue(
-        self,
-        issueIdOrKey: str,
-        accountId: str | None = None,
-        accountType: str | None = None,
-        active: bool | None = None,
-        applicationRoles: Any | None = None,
-        avatarUrls: Any | None = None,
-        displayName: str | None = None,
-        emailAddress: str | None = None,
-        expand: str | None = None,
-        groups: Any | None = None,
-        key: str | None = None,
-        locale: str | None = None,
-        name: str | None = None,
-        self_arg_body: str | None = None,
-        timeZone: str | None = None,
-    ) -> Any:
+    async def assign_issue(self, issueIdOrKey: str, accountId: str | None=None, accountType: str | None=None, active: bool | None=None, applicationRoles: Any | None=None, avatarUrls: Any | None=None, displayName: str | None=None, emailAddress: str | None=None, expand: str | None=None, groups: Any | None=None, key: str | None=None, locale: str | None=None, name: str | None=None, self_arg_body: str | None=None, timeZone: str | None=None) -> Any:
         """
         Assigns or unassigns a Jira issue to a specific user, sets it to unassigned, or assigns it to the project's default assignee using the provided account ID or null value.
 
@@ -6810,26 +5991,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "accountId": accountId,
-            "accountType": accountType,
-            "active": active,
-            "applicationRoles": applicationRoles,
-            "avatarUrls": avatarUrls,
-            "displayName": displayName,
-            "emailAddress": emailAddress,
-            "expand": expand,
-            "groups": groups,
-            "key": key,
-            "locale": locale,
-            "name": name,
-            "self": self_arg_body,
-            "timeZone": timeZone,
-        }
+        request_body_data = {'accountId': accountId, 'accountType': accountType, 'active': active, 'applicationRoles': applicationRoles, 'avatarUrls': avatarUrls, 'displayName': displayName, 'emailAddress': emailAddress, 'expand': expand, 'groups': groups, 'key': key, 'locale': locale, 'name': name, 'self': self_arg_body, 'timeZone': timeZone}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/assignee"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/assignee'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6860,9 +6026,9 @@ class JiraApp(APIApplication):
         request_body_data = None
         files_data = None
         request_body_data = items
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/attachments"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/attachments'
         query_params = {}
-        response = self._post(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._apost(url, data=request_body_data, files=files_data, params=query_params, content_type='multipart/form-data')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6871,7 +6037,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_change_logs(self, issueIdOrKey: str, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_change_logs(self, issueIdOrKey: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves paginated changelog history for a specified Jira issue, including parameters for result pagination.
 
@@ -6892,9 +6058,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/changelog"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/changelog'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6924,11 +6090,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {"changelogIds": changelogIds}
+        request_body_data = {'changelogIds': changelogIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/changelog/list"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/changelog/list'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6937,14 +6103,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_comments(
-        self,
-        issueIdOrKey: str,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        orderBy: str | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_comments(self, issueIdOrKey: str, startAt: int | None=None, maxResults: int | None=None, orderBy: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves all comments for a specified Jira issue using pagination parameters.
 
@@ -6967,11 +6126,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment"
-        query_params = {
-            k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("orderBy", orderBy), ("expand", expand)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('orderBy', orderBy), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -6980,23 +6137,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_comment(
-        self,
-        issueIdOrKey: str,
-        expand: str | None = None,
-        author: Any | None = None,
-        body: Any | None = None,
-        created: str | None = None,
-        id: str | None = None,
-        jsdAuthorCanSeeRequest: bool | None = None,
-        jsdPublic: bool | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        renderedBody: str | None = None,
-        self_arg_body: str | None = None,
-        updateAuthor: Any | None = None,
-        updated: str | None = None,
-        visibility: Any | None = None,
-    ) -> dict[str, Any]:
+    async def add_comment(self, issueIdOrKey: str, expand: str | None=None, author: Any | None=None, body: Any | None=None, created: str | None=None, id: str | None=None, jsdAuthorCanSeeRequest: bool | None=None, jsdPublic: bool | None=None, properties: list[dict[str, Any]] | None=None, renderedBody: str | None=None, self_arg_body: str | None=None, updateAuthor: Any | None=None, updated: str | None=None, visibility: Any | None=None) -> dict[str, Any]:
         """
         Adds a comment to a Jira issue with support for visibility settings and returns the created comment.
 
@@ -7029,24 +6170,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "author": author,
-            "body": body,
-            "created": created,
-            "id": id,
-            "jsdAuthorCanSeeRequest": jsdAuthorCanSeeRequest,
-            "jsdPublic": jsdPublic,
-            "properties": properties,
-            "renderedBody": renderedBody,
-            "self": self_arg_body,
-            "updateAuthor": updateAuthor,
-            "updated": updated,
-            "visibility": visibility,
-        }
+        request_body_data = {'author': author, 'body': body, 'created': created, 'id': id, 'jsdAuthorCanSeeRequest': jsdAuthorCanSeeRequest, 'jsdPublic': jsdPublic, 'properties': properties, 'renderedBody': renderedBody, 'self': self_arg_body, 'updateAuthor': updateAuthor, 'updated': updated, 'visibility': visibility}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7077,9 +6205,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7088,7 +6216,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_comment(self, issueIdOrKey: str, id: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_comment(self, issueIdOrKey: str, id: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific comment from a Jira issue using its ID and returns the comment details.
 
@@ -7111,9 +6239,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7122,26 +6250,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_comment(
-        self,
-        issueIdOrKey: str,
-        id: str,
-        notifyUsers: bool | None = None,
-        overrideEditableFlag: bool | None = None,
-        expand: str | None = None,
-        author: Any | None = None,
-        body: Any | None = None,
-        created: str | None = None,
-        id_body: str | None = None,
-        jsdAuthorCanSeeRequest: bool | None = None,
-        jsdPublic: bool | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        renderedBody: str | None = None,
-        self_arg_body: str | None = None,
-        updateAuthor: Any | None = None,
-        updated: str | None = None,
-        visibility: Any | None = None,
-    ) -> dict[str, Any]:
+    async def update_comment(self, issueIdOrKey: str, id: str, notifyUsers: bool | None=None, overrideEditableFlag: bool | None=None, expand: str | None=None, author: Any | None=None, body: Any | None=None, created: str | None=None, id_body: str | None=None, jsdAuthorCanSeeRequest: bool | None=None, jsdPublic: bool | None=None, properties: list[dict[str, Any]] | None=None, renderedBody: str | None=None, self_arg_body: str | None=None, updateAuthor: Any | None=None, updated: str | None=None, visibility: Any | None=None) -> dict[str, Any]:
         """
         Updates an existing comment on a Jira issue and returns the modified comment details.
 
@@ -7179,28 +6288,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "author": author,
-            "body": body,
-            "created": created,
-            "id": id_body,
-            "jsdAuthorCanSeeRequest": jsdAuthorCanSeeRequest,
-            "jsdPublic": jsdPublic,
-            "properties": properties,
-            "renderedBody": renderedBody,
-            "self": self_arg_body,
-            "updateAuthor": updateAuthor,
-            "updated": updated,
-            "visibility": visibility,
-        }
+        request_body_data = {'author': author, 'body': body, 'created': created, 'id': id_body, 'jsdAuthorCanSeeRequest': jsdAuthorCanSeeRequest, 'jsdPublic': jsdPublic, 'properties': properties, 'renderedBody': renderedBody, 'self': self_arg_body, 'updateAuthor': updateAuthor, 'updated': updated, 'visibility': visibility}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}"
-        query_params = {
-            k: v
-            for k, v in [("notifyUsers", notifyUsers), ("overrideEditableFlag", overrideEditableFlag), ("expand", expand)]
-            if v is not None
-        }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/comment/{id}'
+        query_params = {k: v for k, v in [('notifyUsers', notifyUsers), ('overrideEditableFlag', overrideEditableFlag), ('expand', expand)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7209,9 +6301,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_edit_issue_meta(
-        self, issueIdOrKey: str, overrideScreenSecurity: bool | None = None, overrideEditableFlag: bool | None = None
-    ) -> dict[str, Any]:
+    async def get_edit_issue_meta(self, issueIdOrKey: str, overrideScreenSecurity: bool | None=None, overrideEditableFlag: bool | None=None) -> dict[str, Any]:
         """
         Retrieves editable field metadata and supported operations for a specific Jira issue to guide modifications via the API.
 
@@ -7232,13 +6322,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/editmeta"
-        query_params = {
-            k: v
-            for k, v in [("overrideScreenSecurity", overrideScreenSecurity), ("overrideEditableFlag", overrideEditableFlag)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/editmeta'
+        query_params = {k: v for k, v in [('overrideScreenSecurity', overrideScreenSecurity), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7247,15 +6333,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def notify(
-        self,
-        issueIdOrKey: str,
-        htmlBody: str | None = None,
-        restrict: Any | None = None,
-        subject: str | None = None,
-        textBody: str | None = None,
-        to: Any | None = None,
-    ) -> Any:
+    async def notify(self, issueIdOrKey: str, htmlBody: str | None=None, restrict: Any | None=None, subject: str | None=None, textBody: str | None=None, to: Any | None=None) -> Any:
         """
         Sends notifications related to a specific Jira issue, identified by its ID or key, allowing customization of the notification content and recipients.
 
@@ -7280,11 +6358,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {"htmlBody": htmlBody, "restrict": restrict, "subject": subject, "textBody": textBody, "to": to}
+        request_body_data = {'htmlBody': htmlBody, 'restrict': restrict, 'subject': subject, 'textBody': textBody, 'to': to}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/notify"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/notify'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7312,9 +6390,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7345,9 +6423,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7378,9 +6456,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7412,9 +6490,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7443,9 +6521,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink"
-        query_params = {k: v for k, v in [("globalId", globalId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink'
+        query_params = {k: v for k, v in [('globalId', globalId)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7454,7 +6532,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_remote_issue_links(self, issueIdOrKey: str, globalId: str | None = None) -> dict[str, Any]:
+    async def get_remote_issue_links(self, issueIdOrKey: str, globalId: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of remote links associated with a specified Jira issue, identified by its ID or key, using the GET method at the "/rest/api/3/issue/{issueIdOrKey}/remotelink" path, allowing for optional filtering by global ID.
 
@@ -7474,9 +6552,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink"
-        query_params = {k: v for k, v in [("globalId", globalId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink'
+        query_params = {k: v for k, v in [('globalId', globalId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7485,9 +6563,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_or_update_remote_issue_link(
-        self, issueIdOrKey: str, object: Any, application: Any | None = None, globalId: str | None = None, relationship: str | None = None
-    ) -> dict[str, Any]:
+    async def create_or_update_remote_issue_link(self, issueIdOrKey: str, object: Any, application: Any | None=None, globalId: str | None=None, relationship: str | None=None) -> dict[str, Any]:
         """
         Creates a remote link to an external object for a specified Jira issue, allowing users to associate external resources with issue tracking in Jira.
 
@@ -7515,11 +6591,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {"application": application, "globalId": globalId, "object": object, "relationship": relationship}
+        request_body_data = {'application': application, 'globalId': globalId, 'object': object, 'relationship': relationship}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7550,9 +6626,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if linkId is None:
             raise ValueError("Missing required parameter 'linkId'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7583,9 +6659,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if linkId is None:
             raise ValueError("Missing required parameter 'linkId'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7594,15 +6670,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_remote_issue_link(
-        self,
-        issueIdOrKey: str,
-        linkId: str,
-        object: Any,
-        application: Any | None = None,
-        globalId: str | None = None,
-        relationship: str | None = None,
-    ) -> Any:
+    async def update_remote_issue_link(self, issueIdOrKey: str, linkId: str, object: Any, application: Any | None=None, globalId: str | None=None, relationship: str | None=None) -> Any:
         """
         Updates a specific remote issue link by ID using a PUT request for the specified Jira issue.
 
@@ -7633,11 +6701,11 @@ class JiraApp(APIApplication):
         if linkId is None:
             raise ValueError("Missing required parameter 'linkId'.")
         request_body_data = None
-        request_body_data = {"application": application, "globalId": globalId, "object": object, "relationship": relationship}
+        request_body_data = {'application': application, 'globalId': globalId, 'object': object, 'relationship': relationship}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/remotelink/{linkId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7646,15 +6714,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_transitions(
-        self,
-        issueIdOrKey: str,
-        expand: str | None = None,
-        transitionId: str | None = None,
-        skipRemoteOnlyCondition: bool | None = None,
-        includeUnavailableTransitions: bool | None = None,
-        sortByOpsBarAndStatus: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_transitions(self, issueIdOrKey: str, expand: str | None=None, transitionId: str | None=None, skipRemoteOnlyCondition: bool | None=None, includeUnavailableTransitions: bool | None=None, sortByOpsBarAndStatus: bool | None=None) -> dict[str, Any]:
         """
         Retrieves all available transitions for a Jira issue in its current status, including optional details like required fields and validation rules.
 
@@ -7678,19 +6738,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/transitions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("expand", expand),
-                ("transitionId", transitionId),
-                ("skipRemoteOnlyCondition", skipRemoteOnlyCondition),
-                ("includeUnavailableTransitions", includeUnavailableTransitions),
-                ("sortByOpsBarAndStatus", sortByOpsBarAndStatus),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/transitions'
+        query_params = {k: v for k, v in [('expand', expand), ('transitionId', transitionId), ('skipRemoteOnlyCondition', skipRemoteOnlyCondition), ('includeUnavailableTransitions', includeUnavailableTransitions), ('sortByOpsBarAndStatus', sortByOpsBarAndStatus)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7699,15 +6749,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def do_transition(
-        self,
-        issueIdOrKey: str,
-        fields: dict[str, Any] | None = None,
-        historyMetadata: Any | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        transition: Any | None = None,
-        update: dict[str, list[dict[str, Any]]] | None = None,
-    ) -> Any:
+    async def do_transition(self, issueIdOrKey: str, fields: dict[str, Any] | None=None, historyMetadata: Any | None=None, properties: list[dict[str, Any]] | None=None, transition: Any | None=None, update: dict[str, list[dict[str, Any]]] | None=None) -> Any:
         """
         Transitions a Jira issue to a new workflow status using the specified transition ID.
 
@@ -7732,17 +6774,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "fields": fields,
-            "historyMetadata": historyMetadata,
-            "properties": properties,
-            "transition": transition,
-            "update": update,
-        }
+        request_body_data = {'fields': fields, 'historyMetadata': historyMetadata, 'properties': properties, 'transition': transition, 'update': update}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/transitions"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/transitions'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7770,9 +6806,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7800,9 +6836,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7831,9 +6867,9 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/votes'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7842,7 +6878,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_watcher(self, issueIdOrKey: str, username: str | None = None, accountId: str | None = None) -> Any:
+    async def remove_watcher(self, issueIdOrKey: str, username: str | None=None, accountId: str | None=None) -> Any:
         """
         Removes a specified user as a watcher from a Jira issue via their username or account ID and returns a success status upon completion.
 
@@ -7863,9 +6899,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers"
-        query_params = {k: v for k, v in [("username", username), ("accountId", accountId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers'
+        query_params = {k: v for k, v in [('username', username), ('accountId', accountId)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7893,9 +6929,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7924,9 +6960,9 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/watchers'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7935,9 +6971,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_delete_worklogs(
-        self, issueIdOrKey: str, ids: list[int], adjustEstimate: str | None = None, overrideEditableFlag: bool | None = None
-    ) -> Any:
+    async def bulk_delete_worklogs(self, issueIdOrKey: str, ids: list[int], adjustEstimate: str | None=None, overrideEditableFlag: bool | None=None) -> Any:
         """
         Deletes a worklog from a specific issue in Jira using the provided issue ID or key, allowing for optional adjustments to the estimate and overriding of editable flags.
 
@@ -7959,13 +6993,11 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        request_body_data = {"ids": ids}
+        request_body_data = {'ids': ids}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog"
-        query_params = {
-            k: v for k, v in [("adjustEstimate", adjustEstimate), ("overrideEditableFlag", overrideEditableFlag)] if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog'
+        query_params = {k: v for k, v in [('adjustEstimate', adjustEstimate), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -7974,15 +7006,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_worklog(
-        self,
-        issueIdOrKey: str,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        startedAfter: int | None = None,
-        startedBefore: int | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_issue_worklog(self, issueIdOrKey: str, startAt: int | None=None, maxResults: int | None=None, startedAfter: int | None=None, startedBefore: int | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of worklogs for a specific Jira issue using the "GET" method, allowing filtering by start date and other parameters.
 
@@ -8006,19 +7030,9 @@ class JiraApp(APIApplication):
         """
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("startedAfter", startedAfter),
-                ("startedBefore", startedBefore),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('startedAfter', startedAfter), ('startedBefore', startedBefore), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8027,29 +7041,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_worklog(
-        self,
-        issueIdOrKey: str,
-        notifyUsers: bool | None = None,
-        adjustEstimate: str | None = None,
-        newEstimate: str | None = None,
-        reduceBy: str | None = None,
-        expand: str | None = None,
-        overrideEditableFlag: bool | None = None,
-        author: Any | None = None,
-        comment: Any | None = None,
-        created: str | None = None,
-        id: str | None = None,
-        issueId: str | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        self_arg_body: str | None = None,
-        started: str | None = None,
-        timeSpent: str | None = None,
-        timeSpentSeconds: int | None = None,
-        updateAuthor: Any | None = None,
-        updated: str | None = None,
-        visibility: Any | None = None,
-    ) -> dict[str, Any]:
+    async def add_worklog(self, issueIdOrKey: str, notifyUsers: bool | None=None, adjustEstimate: str | None=None, newEstimate: str | None=None, reduceBy: str | None=None, expand: str | None=None, overrideEditableFlag: bool | None=None, author: Any | None=None, comment: Any | None=None, created: str | None=None, id: str | None=None, issueId: str | None=None, properties: list[dict[str, Any]] | None=None, self_arg_body: str | None=None, started: str | None=None, timeSpent: str | None=None, timeSpentSeconds: int | None=None, updateAuthor: Any | None=None, updated: str | None=None, visibility: Any | None=None) -> dict[str, Any]:
         """
         Adds a worklog entry to a Jira issue for time tracking and returns the created worklog details.
 
@@ -8088,36 +7080,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "author": author,
-            "comment": comment,
-            "created": created,
-            "id": id,
-            "issueId": issueId,
-            "properties": properties,
-            "self": self_arg_body,
-            "started": started,
-            "timeSpent": timeSpent,
-            "timeSpentSeconds": timeSpentSeconds,
-            "updateAuthor": updateAuthor,
-            "updated": updated,
-            "visibility": visibility,
-        }
+        request_body_data = {'author': author, 'comment': comment, 'created': created, 'id': id, 'issueId': issueId, 'properties': properties, 'self': self_arg_body, 'started': started, 'timeSpent': timeSpent, 'timeSpentSeconds': timeSpentSeconds, 'updateAuthor': updateAuthor, 'updated': updated, 'visibility': visibility}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog"
-        query_params = {
-            k: v
-            for k, v in [
-                ("notifyUsers", notifyUsers),
-                ("adjustEstimate", adjustEstimate),
-                ("newEstimate", newEstimate),
-                ("reduceBy", reduceBy),
-                ("expand", expand),
-                ("overrideEditableFlag", overrideEditableFlag),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog'
+        query_params = {k: v for k, v in [('notifyUsers', notifyUsers), ('adjustEstimate', adjustEstimate), ('newEstimate', newEstimate), ('reduceBy', reduceBy), ('expand', expand), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8126,14 +7093,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_move_worklogs(
-        self,
-        issueIdOrKey: str,
-        adjustEstimate: str | None = None,
-        overrideEditableFlag: bool | None = None,
-        ids: list[int] | None = None,
-        issueIdOrKey_body: str | None = None,
-    ) -> Any:
+    async def bulk_move_worklogs(self, issueIdOrKey: str, adjustEstimate: str | None=None, overrideEditableFlag: bool | None=None, ids: list[int] | None=None, issueIdOrKey_body: str | None=None) -> Any:
         """
         Moves worklogs from one Jira issue to another using the `POST` method, allowing adjustments to estimates and overriding editable flags if necessary.
 
@@ -8157,13 +7117,11 @@ class JiraApp(APIApplication):
         if issueIdOrKey is None:
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         request_body_data = None
-        request_body_data = {"ids": ids, "issueIdOrKey": issueIdOrKey_body}
+        request_body_data = {'ids': ids, 'issueIdOrKey': issueIdOrKey_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/move"
-        query_params = {
-            k: v for k, v in [("adjustEstimate", adjustEstimate), ("overrideEditableFlag", overrideEditableFlag)] if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/move'
+        query_params = {k: v for k, v in [('adjustEstimate', adjustEstimate), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8172,16 +7130,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_worklog(
-        self,
-        issueIdOrKey: str,
-        id: str,
-        notifyUsers: bool | None = None,
-        adjustEstimate: str | None = None,
-        newEstimate: str | None = None,
-        increaseBy: str | None = None,
-        overrideEditableFlag: bool | None = None,
-    ) -> Any:
+    async def delete_worklog(self, issueIdOrKey: str, id: str, notifyUsers: bool | None=None, adjustEstimate: str | None=None, newEstimate: str | None=None, increaseBy: str | None=None, overrideEditableFlag: bool | None=None) -> Any:
         """
         Deletes a specific worklog entry from a Jira issue using the worklog ID and returns a success status upon removal.
 
@@ -8208,19 +7157,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("notifyUsers", notifyUsers),
-                ("adjustEstimate", adjustEstimate),
-                ("newEstimate", newEstimate),
-                ("increaseBy", increaseBy),
-                ("overrideEditableFlag", overrideEditableFlag),
-            ]
-            if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}'
+        query_params = {k: v for k, v in [('notifyUsers', notifyUsers), ('adjustEstimate', adjustEstimate), ('newEstimate', newEstimate), ('increaseBy', increaseBy), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8229,7 +7168,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_worklog(self, issueIdOrKey: str, id: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_worklog(self, issueIdOrKey: str, id: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific worklog by its ID for a given Jira issue using the GET method.
 
@@ -8252,9 +7191,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8263,29 +7202,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_worklog(
-        self,
-        issueIdOrKey: str,
-        id: str,
-        notifyUsers: bool | None = None,
-        adjustEstimate: str | None = None,
-        newEstimate: str | None = None,
-        expand: str | None = None,
-        overrideEditableFlag: bool | None = None,
-        author: Any | None = None,
-        comment: Any | None = None,
-        created: str | None = None,
-        id_body: str | None = None,
-        issueId: str | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        self_arg_body: str | None = None,
-        started: str | None = None,
-        timeSpent: str | None = None,
-        timeSpentSeconds: int | None = None,
-        updateAuthor: Any | None = None,
-        updated: str | None = None,
-        visibility: Any | None = None,
-    ) -> dict[str, Any]:
+    async def update_worklog(self, issueIdOrKey: str, id: str, notifyUsers: bool | None=None, adjustEstimate: str | None=None, newEstimate: str | None=None, expand: str | None=None, overrideEditableFlag: bool | None=None, author: Any | None=None, comment: Any | None=None, created: str | None=None, id_body: str | None=None, issueId: str | None=None, properties: list[dict[str, Any]] | None=None, self_arg_body: str | None=None, started: str | None=None, timeSpent: str | None=None, timeSpentSeconds: int | None=None, updateAuthor: Any | None=None, updated: str | None=None, visibility: Any | None=None) -> dict[str, Any]:
         """
         Updates a specific worklog for an issue in Jira using the PUT method, allowing modifications to attributes such as the worklog comments, time spent, and start date, while requiring permissions to access and edit issue worklogs.
 
@@ -8326,35 +7243,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "author": author,
-            "comment": comment,
-            "created": created,
-            "id": id_body,
-            "issueId": issueId,
-            "properties": properties,
-            "self": self_arg_body,
-            "started": started,
-            "timeSpent": timeSpent,
-            "timeSpentSeconds": timeSpentSeconds,
-            "updateAuthor": updateAuthor,
-            "updated": updated,
-            "visibility": visibility,
-        }
+        request_body_data = {'author': author, 'comment': comment, 'created': created, 'id': id_body, 'issueId': issueId, 'properties': properties, 'self': self_arg_body, 'started': started, 'timeSpent': timeSpent, 'timeSpentSeconds': timeSpentSeconds, 'updateAuthor': updateAuthor, 'updated': updated, 'visibility': visibility}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("notifyUsers", notifyUsers),
-                ("adjustEstimate", adjustEstimate),
-                ("newEstimate", newEstimate),
-                ("expand", expand),
-                ("overrideEditableFlag", overrideEditableFlag),
-            ]
-            if v is not None
-        }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{id}'
+        query_params = {k: v for k, v in [('notifyUsers', notifyUsers), ('adjustEstimate', adjustEstimate), ('newEstimate', newEstimate), ('expand', expand), ('overrideEditableFlag', overrideEditableFlag)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8385,9 +7278,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueIdOrKey'.")
         if worklogId is None:
             raise ValueError("Missing required parameter 'worklogId'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8421,9 +7314,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'worklogId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8457,9 +7350,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'worklogId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8494,9 +7387,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issue/{issueIdOrKey}/worklog/{worklogId}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8505,9 +7398,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def link_issues(
-        self, inwardIssue: dict[str, Any], outwardIssue: dict[str, Any], type: dict[str, Any], comment: dict[str, Any] | None = None
-    ) -> Any:
+    async def link_issues(self, inwardIssue: dict[str, Any], outwardIssue: dict[str, Any], type: dict[str, Any], comment: dict[str, Any] | None=None) -> Any:
         """
         Creates a link between two Jira issues, allowing you to define the relationship type and optionally include a comment, using the POST method at the "/rest/api/3/issueLink" endpoint.
 
@@ -8531,11 +7422,11 @@ class JiraApp(APIApplication):
             Issue links
         """
         request_body_data = None
-        request_body_data = {"comment": comment, "inwardIssue": inwardIssue, "outwardIssue": outwardIssue, "type": type}
+        request_body_data = {'comment': comment, 'inwardIssue': inwardIssue, 'outwardIssue': outwardIssue, 'type': type}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issueLink"
+        url = f'{self.base_url}/rest/api/3/issueLink'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8563,9 +7454,9 @@ class JiraApp(APIApplication):
         """
         if linkId is None:
             raise ValueError("Missing required parameter 'linkId'.")
-        url = f"{self.base_url}/rest/api/3/issueLink/{linkId}"
+        url = f'{self.base_url}/rest/api/3/issueLink/{linkId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8593,9 +7484,9 @@ class JiraApp(APIApplication):
         """
         if linkId is None:
             raise ValueError("Missing required parameter 'linkId'.")
-        url = f"{self.base_url}/rest/api/3/issueLink/{linkId}"
+        url = f'{self.base_url}/rest/api/3/issueLink/{linkId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8618,9 +7509,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue link types
         """
-        url = f"{self.base_url}/rest/api/3/issueLinkType"
+        url = f'{self.base_url}/rest/api/3/issueLinkType'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8629,14 +7520,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_link_type(
-        self,
-        id: str | None = None,
-        inward: str | None = None,
-        name: str | None = None,
-        outward: str | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_issue_link_type(self, id: str | None=None, inward: str | None=None, name: str | None=None, outward: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Creates a new issue link type in Jira to define relationships between linked issues.
 
@@ -8670,11 +7554,11 @@ class JiraApp(APIApplication):
             Issue link types
         """
         request_body_data = None
-        request_body_data = {"id": id, "inward": inward, "name": name, "outward": outward, "self": self_arg_body}
+        request_body_data = {'id': id, 'inward': inward, 'name': name, 'outward': outward, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issueLinkType"
+        url = f'{self.base_url}/rest/api/3/issueLinkType'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8702,9 +7586,9 @@ class JiraApp(APIApplication):
         """
         if issueLinkTypeId is None:
             raise ValueError("Missing required parameter 'issueLinkTypeId'.")
-        url = f"{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}"
+        url = f'{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8732,9 +7616,9 @@ class JiraApp(APIApplication):
         """
         if issueLinkTypeId is None:
             raise ValueError("Missing required parameter 'issueLinkTypeId'.")
-        url = f"{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}"
+        url = f'{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8743,15 +7627,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_issue_link_type(
-        self,
-        issueLinkTypeId: str,
-        id: str | None = None,
-        inward: str | None = None,
-        name: str | None = None,
-        outward: str | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_issue_link_type(self, issueLinkTypeId: str, id: str | None=None, inward: str | None=None, name: str | None=None, outward: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Updates the specified issue link type (e.g., Duplicate, Blocks) by ID to modify its name and relationship descriptions.
 
@@ -8788,11 +7664,11 @@ class JiraApp(APIApplication):
         if issueLinkTypeId is None:
             raise ValueError("Missing required parameter 'issueLinkTypeId'.")
         request_body_data = None
-        request_body_data = {"id": id, "inward": inward, "name": name, "outward": outward, "self": self_arg_body}
+        request_body_data = {'id': id, 'inward': inward, 'name': name, 'outward': outward, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}"
+        url = f'{self.base_url}/rest/api/3/issueLinkType/{issueLinkTypeId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8801,14 +7677,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def export_archived_issues(
-        self,
-        archivedBy: list[str] | None = None,
-        archivedDateRange: dict[str, Any] | None = None,
-        issueTypes: list[str] | None = None,
-        projects: list[str] | None = None,
-        reporters: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def export_archived_issues(self, archivedBy: list[str] | None=None, archivedDateRange: dict[str, Any] | None=None, issueTypes: list[str] | None=None, projects: list[str] | None=None, reporters: list[str] | None=None) -> dict[str, Any]:
         """
         Exports archived issues using the Jira API, initiating a task that sends an email with a link to download a CSV file containing the issue details upon completion.
 
@@ -8830,17 +7699,11 @@ class JiraApp(APIApplication):
             Issues
         """
         request_body_data = None
-        request_body_data = {
-            "archivedBy": archivedBy,
-            "archivedDateRange": archivedDateRange,
-            "issueTypes": issueTypes,
-            "projects": projects,
-            "reporters": reporters,
-        }
+        request_body_data = {'archivedBy': archivedBy, 'archivedDateRange': archivedDateRange, 'issueTypes': issueTypes, 'projects': projects, 'reporters': reporters}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issues/archive/export"
+        url = f'{self.base_url}/rest/api/3/issues/archive/export'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8863,9 +7726,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue security schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8874,9 +7737,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_security_scheme(
-        self, name: str, description: str | None = None, levels: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def create_issue_security_scheme(self, name: str, description: str | None=None, levels: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Creates an issue security scheme in Jira Cloud using the POST method, allowing administrators to define security levels and members, and returns the ID of the newly created scheme upon success.
 
@@ -8896,11 +7757,11 @@ class JiraApp(APIApplication):
             Issue security schemes
         """
         request_body_data = None
-        request_body_data = {"description": description, "levels": levels, "name": name}
+        request_body_data = {'description': description, 'levels': levels, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8909,14 +7770,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_security_levels(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        id: list[str] | None = None,
-        schemeId: list[str] | None = None,
-        onlyDefault: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_security_levels(self, startAt: str | None=None, maxResults: str | None=None, id: list[str] | None=None, schemeId: list[str] | None=None, onlyDefault: bool | None=None) -> dict[str, Any]:
         """
         Retrieves details of issue security levels within a scheme, including pagination support and filtering by scheme ID or default status.
 
@@ -8937,13 +7791,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue security schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/level"
-        query_params = {
-            k: v
-            for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("schemeId", schemeId), ("onlyDefault", onlyDefault)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/level'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('schemeId', schemeId), ('onlyDefault', onlyDefault)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8970,11 +7820,11 @@ class JiraApp(APIApplication):
             Issue security schemes
         """
         request_body_data = None
-        request_body_data = {"defaultValues": defaultValues}
+        request_body_data = {'defaultValues': defaultValues}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/level/default"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/level/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -8983,15 +7833,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_security_level_members(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        id: list[str] | None = None,
-        schemeId: list[str] | None = None,
-        levelId: list[str] | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_security_level_members(self, startAt: str | None=None, maxResults: str | None=None, id: list[str] | None=None, schemeId: list[str] | None=None, levelId: list[str] | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves the members of a specific issue security level using the Jira Cloud API, allowing for pagination and expansion of details by specifying parameters such as start index, maximum results, and expansion options.
 
@@ -9013,20 +7855,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue security schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/level/member"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("schemeId", schemeId),
-                ("levelId", levelId),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/level/member'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('schemeId', schemeId), ('levelId', levelId), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9035,13 +7866,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_security_schemes_by_project(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        issueSecuritySchemeId: list[str] | None = None,
-        projectId: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def list_security_schemes_by_project(self, startAt: str | None=None, maxResults: str | None=None, issueSecuritySchemeId: list[str] | None=None, projectId: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves projects associated with specific issue security schemes based on scheme ID or project ID query parameters.
 
@@ -9061,18 +7886,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue security schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/project"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("issueSecuritySchemeId", issueSecuritySchemeId),
-                ("projectId", projectId),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/project'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('issueSecuritySchemeId', issueSecuritySchemeId), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9081,9 +7897,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def associate_schemes_to_projects(
-        self, projectId: str, schemeId: str, oldToNewSecurityLevelMappings: list[dict[str, Any]] | None = None
-    ) -> Any:
+    async def associate_schemes_to_projects(self, projectId: str, schemeId: str, oldToNewSecurityLevelMappings: list[dict[str, Any]] | None=None) -> Any:
         """
         Associates an issue security scheme with a project using the Jira Cloud API, allowing for the remapping of security levels for issues, with the operation being asynchronous.
 
@@ -9103,11 +7917,11 @@ class JiraApp(APIApplication):
             Issue security schemes
         """
         request_body_data = None
-        request_body_data = {"oldToNewSecurityLevelMappings": oldToNewSecurityLevelMappings, "projectId": projectId, "schemeId": schemeId}
+        request_body_data = {'oldToNewSecurityLevelMappings': oldToNewSecurityLevelMappings, 'projectId': projectId, 'schemeId': schemeId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/project"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/project'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9116,9 +7930,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_security_schemes(
-        self, startAt: str | None = None, maxResults: str | None = None, id: list[str] | None = None, projectId: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def search_security_schemes(self, startAt: str | None=None, maxResults: str | None=None, id: list[str] | None=None, projectId: list[str] | None=None) -> dict[str, Any]:
         """
         Searches for and returns issue security schemes in Jira Cloud, allowing filtering by start index, maximum results, ID, or project ID.
 
@@ -9138,11 +7950,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue security schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/search"
-        query_params = {
-            k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("projectId", projectId)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9170,9 +7980,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{id}"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9181,7 +7991,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_issue_security_scheme(self, id: str, description: str | None = None, name: str | None = None) -> Any:
+    async def update_issue_security_scheme(self, id: str, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates an existing issue security scheme by specifying the ID in the path using the Jira Cloud API.
 
@@ -9203,11 +8013,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{id}"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9216,14 +8026,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_security_level_members(
-        self,
-        issueSecuritySchemeId: str,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        issueSecurityLevelId: list[str] | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_issue_security_level_members(self, issueSecuritySchemeId: str, startAt: int | None=None, maxResults: int | None=None, issueSecurityLevelId: list[str] | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of members associated with issue security levels in a specified issue security scheme using the Jira API.
 
@@ -9246,18 +8049,9 @@ class JiraApp(APIApplication):
         """
         if issueSecuritySchemeId is None:
             raise ValueError("Missing required parameter 'issueSecuritySchemeId'.")
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{issueSecuritySchemeId}/members"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("issueSecurityLevelId", issueSecurityLevelId),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{issueSecuritySchemeId}/members'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('issueSecurityLevelId', issueSecurityLevelId), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9285,9 +8079,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9296,7 +8090,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_security_level(self, schemeId: str, levels: list[dict[str, Any]] | None = None) -> Any:
+    async def add_security_level(self, schemeId: str, levels: list[dict[str, Any]] | None=None) -> Any:
         """
         Updates an issue security level within a specified security scheme in Jira.
 
@@ -9317,11 +8111,11 @@ class JiraApp(APIApplication):
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
         request_body_data = None
-        request_body_data = {"levels": levels}
+        request_body_data = {'levels': levels}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9330,7 +8124,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_level(self, schemeId: str, levelId: str, replaceWith: str | None = None) -> Any:
+    async def remove_level(self, schemeId: str, levelId: str, replaceWith: str | None=None) -> Any:
         """
         Deletes an issue security level with the specified `levelId` from an issue security scheme identified by `schemeId`, optionally allowing replacement with another level using the `replaceWith` query parameter.
 
@@ -9353,9 +8147,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         if levelId is None:
             raise ValueError("Missing required parameter 'levelId'.")
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
-        query_params = {k: v for k, v in [("replaceWith", replaceWith)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}'
+        query_params = {k: v for k, v in [('replaceWith', replaceWith)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9364,7 +8158,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_security_level(self, schemeId: str, levelId: str, description: str | None = None, name: str | None = None) -> Any:
+    async def update_security_level(self, schemeId: str, levelId: str, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates an issue security level in a Jira issue security scheme by modifying its name and description using the `PUT` method.
 
@@ -9389,11 +8183,11 @@ class JiraApp(APIApplication):
         if levelId is None:
             raise ValueError("Missing required parameter 'levelId'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9402,7 +8196,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_security_level_members(self, schemeId: str, levelId: str, members: list[dict[str, Any]] | None = None) -> Any:
+    async def add_security_level_members(self, schemeId: str, levelId: str, members: list[dict[str, Any]] | None=None) -> Any:
         """
         Adds members to a specific security level within an issue security scheme in Jira.
 
@@ -9426,11 +8220,11 @@ class JiraApp(APIApplication):
         if levelId is None:
             raise ValueError("Missing required parameter 'levelId'.")
         request_body_data = None
-        request_body_data = {"members": members}
+        request_body_data = {'members': members}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9464,9 +8258,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'levelId'.")
         if memberId is None:
             raise ValueError("Missing required parameter 'memberId'.")
-        url = f"{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member/{memberId}"
+        url = f'{self.base_url}/rest/api/3/issuesecurityschemes/{schemeId}/level/{levelId}/member/{memberId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9489,9 +8283,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue types
         """
-        url = f"{self.base_url}/rest/api/3/issuetype"
+        url = f'{self.base_url}/rest/api/3/issuetype'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9500,9 +8294,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_type(
-        self, name: str, description: str | None = None, hierarchyLevel: int | None = None, type: str | None = None
-    ) -> dict[str, Any]:
+    async def create_issue_type(self, name: str, description: str | None=None, hierarchyLevel: int | None=None, type: str | None=None) -> dict[str, Any]:
         """
         Creates a new issue type in Jira and adds it to the default issue type scheme.
 
@@ -9530,11 +8322,11 @@ class JiraApp(APIApplication):
             Issue types
         """
         request_body_data = None
-        request_body_data = {"description": description, "hierarchyLevel": hierarchyLevel, "name": name, "type": type}
+        request_body_data = {'description': description, 'hierarchyLevel': hierarchyLevel, 'name': name, 'type': type}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetype"
+        url = f'{self.base_url}/rest/api/3/issuetype'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9543,7 +8335,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_types_for_project(self, projectId: int, level: int | None = None) -> list[Any]:
+    async def get_issue_types_for_project(self, projectId: int, level: int | None=None) -> list[Any]:
         """
         Retrieves issue types associated with a specified project in Jira using the "GET" method at the "/rest/api/3/issuetype/project" endpoint.
 
@@ -9561,9 +8353,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue types
         """
-        url = f"{self.base_url}/rest/api/3/issuetype/project"
-        query_params = {k: v for k, v in [("projectId", projectId), ("level", level)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetype/project'
+        query_params = {k: v for k, v in [('projectId', projectId), ('level', level)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9572,7 +8364,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_issue_type(self, id: str, alternativeIssueTypeId: str | None = None) -> Any:
+    async def delete_issue_type(self, id: str, alternativeIssueTypeId: str | None=None) -> Any:
         """
         Deletes the specified Jira issue type and migrates associated issues to an alternative type if provided.
 
@@ -9592,9 +8384,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issuetype/{id}"
-        query_params = {k: v for k, v in [("alternativeIssueTypeId", alternativeIssueTypeId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetype/{id}'
+        query_params = {k: v for k, v in [('alternativeIssueTypeId', alternativeIssueTypeId)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9622,9 +8414,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issuetype/{id}"
+        url = f'{self.base_url}/rest/api/3/issuetype/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9633,9 +8425,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_issue_type(
-        self, id: str, avatarId: int | None = None, description: str | None = None, name: str | None = None
-    ) -> dict[str, Any]:
+    async def update_issue_type(self, id: str, avatarId: int | None=None, description: str | None=None, name: str | None=None) -> dict[str, Any]:
         """
         Updates an existing Jira issue type by its ID, returning the modified issue type details or relevant error responses.
 
@@ -9658,11 +8448,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"avatarId": avatarId, "description": description, "name": name}
+        request_body_data = {'avatarId': avatarId, 'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetype/{id}"
+        url = f'{self.base_url}/rest/api/3/issuetype/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9690,9 +8480,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/issuetype/{id}/alternatives"
+        url = f'{self.base_url}/rest/api/3/issuetype/{id}/alternatives'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9701,9 +8491,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_type_avatar(
-        self, id: str, size: int, body_content: bytes, x: int | None = None, y: int | None = None
-    ) -> dict[str, Any]:
+    async def create_issue_type_avatar(self, id: str, size: int, body_content: bytes, x: int | None=None, y: int | None=None) -> dict[str, Any]:
         """
         Generates an avatar for a specific issue type in Jira using the "POST" method at the path "/rest/api/3/issuetype/{id}/avatar2", allowing parameters such as size and other query parameters.
 
@@ -9728,9 +8516,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
         request_body_data = body_content
-        url = f"{self.base_url}/rest/api/3/issuetype/{id}/avatar2"
-        query_params = {k: v for k, v in [("x", x), ("y", y), ("size", size)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="*/*")
+        url = f'{self.base_url}/rest/api/3/issuetype/{id}/avatar2'
+        query_params = {k: v for k, v in [('x', x), ('y', y), ('size', size)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='*/*')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9758,9 +8546,9 @@ class JiraApp(APIApplication):
         """
         if issueTypeId is None:
             raise ValueError("Missing required parameter 'issueTypeId'.")
-        url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties"
+        url = f'{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9791,9 +8579,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9824,9 +8612,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeId'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9858,9 +8646,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/issuetype/{issueTypeId}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9869,15 +8657,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_issue_type_schemes(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        id: list[int] | None = None,
-        orderBy: str | None = None,
-        expand: str | None = None,
-        queryString: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_issue_type_schemes(self, startAt: int | None=None, maxResults: int | None=None, id: list[int] | None=None, orderBy: str | None=None, expand: str | None=None, queryString: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of issue type schemes with optional filtering by ID, ordering, and expansion of related entities.
 
@@ -9899,20 +8679,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue type schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuetypescheme"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("orderBy", orderBy),
-                ("expand", expand),
-                ("queryString", queryString),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('orderBy', orderBy), ('expand', expand), ('queryString', queryString)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9921,9 +8690,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_type_scheme(
-        self, issueTypeIds: list[str], name: str, defaultIssueTypeId: str | None = None, description: str | None = None
-    ) -> dict[str, Any]:
+    async def create_issue_type_scheme(self, issueTypeIds: list[str], name: str, defaultIssueTypeId: str | None=None, description: str | None=None) -> dict[str, Any]:
         """
         Creates a new issue type scheme in Jira and returns the created resource.
 
@@ -9944,16 +8711,11 @@ class JiraApp(APIApplication):
             Issue type schemes
         """
         request_body_data = None
-        request_body_data = {
-            "defaultIssueTypeId": defaultIssueTypeId,
-            "description": description,
-            "issueTypeIds": issueTypeIds,
-            "name": name,
-        }
+        request_body_data = {'defaultIssueTypeId': defaultIssueTypeId, 'description': description, 'issueTypeIds': issueTypeIds, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescheme"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9962,9 +8724,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_type_schemes_mapping(
-        self, startAt: int | None = None, maxResults: int | None = None, issueTypeSchemeId: list[int] | None = None
-    ) -> dict[str, Any]:
+    async def get_issue_type_schemes_mapping(self, startAt: int | None=None, maxResults: int | None=None, issueTypeSchemeId: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of issue type scheme mappings for classic Jira projects, filtered by scheme ID.
 
@@ -9983,11 +8743,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue type schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/mapping"
-        query_params = {
-            k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("issueTypeSchemeId", issueTypeSchemeId)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/mapping'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('issueTypeSchemeId', issueTypeSchemeId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -9996,9 +8754,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_type_scheme_for_projects(
-        self, projectId: list[int], startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_issue_type_scheme_for_projects(self, projectId: list[int], startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of issue type schemes associated with specific Jira projects using query parameters for pagination (startAt, maxResults) and project filtering (projectId).
 
@@ -10017,9 +8773,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue type schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/project"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/project'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10047,11 +8803,11 @@ class JiraApp(APIApplication):
             Issue type schemes
         """
         request_body_data = None
-        request_body_data = {"issueTypeSchemeId": issueTypeSchemeId, "projectId": projectId}
+        request_body_data = {'issueTypeSchemeId': issueTypeSchemeId, 'projectId': projectId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/project"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/project'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10079,9 +8835,9 @@ class JiraApp(APIApplication):
         """
         if issueTypeSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeSchemeId'.")
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10090,9 +8846,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_issue_type_scheme(
-        self, issueTypeSchemeId: str, defaultIssueTypeId: str | None = None, description: str | None = None, name: str | None = None
-    ) -> Any:
+    async def update_issue_type_scheme(self, issueTypeSchemeId: str, defaultIssueTypeId: str | None=None, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates an issue type scheme by modifying its configuration (such as associated issue types) for the specified scheme ID.
 
@@ -10115,11 +8869,11 @@ class JiraApp(APIApplication):
         if issueTypeSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeSchemeId'.")
         request_body_data = None
-        request_body_data = {"defaultIssueTypeId": defaultIssueTypeId, "description": description, "name": name}
+        request_body_data = {'defaultIssueTypeId': defaultIssueTypeId, 'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10149,11 +8903,11 @@ class JiraApp(APIApplication):
         if issueTypeSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeSchemeId'.")
         request_body_data = None
-        request_body_data = {"issueTypeIds": issueTypeIds}
+        request_body_data = {'issueTypeIds': issueTypeIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10162,9 +8916,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_issue_type_in_scheme(
-        self, issueTypeSchemeId: str, issueTypeIds: list[str], after: str | None = None, position: str | None = None
-    ) -> Any:
+    async def move_issue_type_in_scheme(self, issueTypeSchemeId: str, issueTypeIds: list[str], after: str | None=None, position: str | None=None) -> Any:
         """
         Moves issue types within a specified issue type scheme in Jira and returns an empty response on success.
 
@@ -10187,11 +8939,11 @@ class JiraApp(APIApplication):
         if issueTypeSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeSchemeId'.")
         request_body_data = None
-        request_body_data = {"after": after, "issueTypeIds": issueTypeIds, "position": position}
+        request_body_data = {'after': after, 'issueTypeIds': issueTypeIds, 'position': position}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/move'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10222,9 +8974,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'issueTypeSchemeId'.")
         if issueTypeId is None:
             raise ValueError("Missing required parameter 'issueTypeId'.")
-        url = f"{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/{issueTypeId}"
+        url = f'{self.base_url}/rest/api/3/issuetypescheme/{issueTypeSchemeId}/issuetype/{issueTypeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10233,15 +8985,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_issue_type_screen_schemes(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        id: list[int] | None = None,
-        queryString: str | None = None,
-        orderBy: str | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_issue_type_screen_schemes(self, startAt: int | None=None, maxResults: int | None=None, id: list[int] | None=None, queryString: str | None=None, orderBy: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of issue type screen schemes in Jira with options to filter, paginate, and expand results.
 
@@ -10263,20 +9007,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue type screen schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("queryString", queryString),
-                ("orderBy", orderBy),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('queryString', queryString), ('orderBy', orderBy), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10285,9 +9018,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_issue_type_screen_scheme(
-        self, issueTypeMappings: list[dict[str, Any]], name: str, description: str | None = None
-    ) -> dict[str, Any]:
+    async def create_issue_type_screen_scheme(self, issueTypeMappings: list[dict[str, Any]], name: str, description: str | None=None) -> dict[str, Any]:
         """
         Creates an issue type screen scheme using the Jira Cloud API, allowing administrators to map issue types to specific screen schemes for organizing project workflows.
 
@@ -10307,11 +9038,11 @@ class JiraApp(APIApplication):
             Issue type screen schemes
         """
         request_body_data = None
-        request_body_data = {"description": description, "issueTypeMappings": issueTypeMappings, "name": name}
+        request_body_data = {'description': description, 'issueTypeMappings': issueTypeMappings, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10320,9 +9051,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_mappings(
-        self, startAt: int | None = None, maxResults: int | None = None, issueTypeScreenSchemeId: list[int] | None = None
-    ) -> dict[str, Any]:
+    async def list_mappings(self, startAt: int | None=None, maxResults: int | None=None, issueTypeScreenSchemeId: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves a list of issue type to screen scheme mappings associated with a specified issue type screen scheme using the Jira Cloud API.
 
@@ -10341,13 +9070,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue type screen schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/mapping"
-        query_params = {
-            k: v
-            for k, v in [("startAt", startAt), ("maxResults", maxResults), ("issueTypeScreenSchemeId", issueTypeScreenSchemeId)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/mapping'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('issueTypeScreenSchemeId', issueTypeScreenSchemeId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10356,9 +9081,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_screen_schemes(
-        self, projectId: list[int], startAt: int | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_project_screen_schemes(self, projectId: list[int], startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of issue type screen schemes and their associated projects using the specified query parameters.
 
@@ -10377,9 +9100,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue type screen schemes
         """
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/project"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/project'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10388,7 +9111,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_project_scheme(self, issueTypeScreenSchemeId: str | None = None, projectId: str | None = None) -> Any:
+    async def update_project_scheme(self, issueTypeScreenSchemeId: str | None=None, projectId: str | None=None) -> Any:
         """
         Assigns an issue type screen scheme to a project using the Jira API, requiring *Administer Jira* global permission to update project configurations.
 
@@ -10407,11 +9130,11 @@ class JiraApp(APIApplication):
             Issue type screen schemes
         """
         request_body_data = None
-        request_body_data = {"issueTypeScreenSchemeId": issueTypeScreenSchemeId, "projectId": projectId}
+        request_body_data = {'issueTypeScreenSchemeId': issueTypeScreenSchemeId, 'projectId': projectId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/project"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/project'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10439,9 +9162,9 @@ class JiraApp(APIApplication):
         """
         if issueTypeScreenSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10450,9 +9173,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_issue_type_screen_scheme(
-        self, issueTypeScreenSchemeId: str, description: str | None = None, name: str | None = None
-    ) -> Any:
+    async def update_issue_type_screen_scheme(self, issueTypeScreenSchemeId: str, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates the default screen scheme for unmapped issue types in the specified issue type screen scheme.
 
@@ -10474,11 +9195,11 @@ class JiraApp(APIApplication):
         if issueTypeScreenSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10508,11 +9229,11 @@ class JiraApp(APIApplication):
         if issueTypeScreenSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
         request_body_data = None
-        request_body_data = {"issueTypeMappings": issueTypeMappings}
+        request_body_data = {'issueTypeMappings': issueTypeMappings}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10542,11 +9263,11 @@ class JiraApp(APIApplication):
         if issueTypeScreenSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
         request_body_data = None
-        request_body_data = {"screenSchemeId": screenSchemeId}
+        request_body_data = {'screenSchemeId': screenSchemeId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping/default"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10576,11 +9297,11 @@ class JiraApp(APIApplication):
         if issueTypeScreenSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
         request_body_data = None
-        request_body_data = {"issueTypeIds": issueTypeIds}
+        request_body_data = {'issueTypeIds': issueTypeIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping/remove"
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/mapping/remove'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10589,9 +9310,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def fetch_project_by_scheme(
-        self, issueTypeScreenSchemeId: str, startAt: int | None = None, maxResults: int | None = None, query: str | None = None
-    ) -> dict[str, Any]:
+    async def fetch_project_by_scheme(self, issueTypeScreenSchemeId: str, startAt: int | None=None, maxResults: int | None=None, query: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of projects associated with a specific issue type screen scheme.
 
@@ -10613,9 +9332,9 @@ class JiraApp(APIApplication):
         """
         if issueTypeScreenSchemeId is None:
             raise ValueError("Missing required parameter 'issueTypeScreenSchemeId'.")
-        url = f"{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/project"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("query", query)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/issuetypescreenscheme/{issueTypeScreenSchemeId}/project'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('query', query)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10638,9 +9357,9 @@ class JiraApp(APIApplication):
         Tags:
             JQL
         """
-        url = f"{self.base_url}/rest/api/3/jql/autocompletedata"
+        url = f'{self.base_url}/rest/api/3/jql/autocompletedata'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10649,9 +9368,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_auto_complete_post(
-        self, includeCollapsedFields: bool | None = None, projectIds: list[int] | None = None
-    ) -> dict[str, Any]:
+    async def get_auto_complete_post(self, includeCollapsedFields: bool | None=None, projectIds: list[int] | None=None) -> dict[str, Any]:
         """
         Provides JQL search auto-complete data and field reference information to assist in programmatic query construction or validation.
 
@@ -10670,11 +9387,11 @@ class JiraApp(APIApplication):
             JQL
         """
         request_body_data = None
-        request_body_data = {"includeCollapsedFields": includeCollapsedFields, "projectIds": projectIds}
+        request_body_data = {'includeCollapsedFields': includeCollapsedFields, 'projectIds': projectIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/autocompletedata"
+        url = f'{self.base_url}/rest/api/3/jql/autocompletedata'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10683,13 +9400,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_jql_suggestions(
-        self,
-        fieldName: str | None = None,
-        fieldValue: str | None = None,
-        predicateName: str | None = None,
-        predicateValue: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_jql_suggestions(self, fieldName: str | None=None, fieldValue: str | None=None, predicateName: str | None=None, predicateValue: str | None=None) -> dict[str, Any]:
         """
         Retrieves JQL search autocomplete suggestions for specific fields, values, predicates, or predicate values to assist in query construction.
 
@@ -10709,18 +9420,9 @@ class JiraApp(APIApplication):
         Tags:
             JQL
         """
-        url = f"{self.base_url}/rest/api/3/jql/autocompletedata/suggestions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("fieldName", fieldName),
-                ("fieldValue", fieldValue),
-                ("predicateName", predicateName),
-                ("predicateValue", predicateValue),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/jql/autocompletedata/suggestions'
+        query_params = {k: v for k, v in [('fieldName', fieldName), ('fieldValue', fieldValue), ('predicateName', predicateName), ('predicateValue', predicateValue)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10729,9 +9431,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_precomputations(
-        self, functionKey: list[str] | None = None, startAt: int | None = None, maxResults: int | None = None, orderBy: str | None = None
-    ) -> dict[str, Any]:
+    async def get_precomputations(self, functionKey: list[str] | None=None, startAt: int | None=None, maxResults: int | None=None, orderBy: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of precomputations for a specified JQL function, including when they were created, updated, and last used, allowing apps to inspect their own functions.
 
@@ -10751,13 +9451,9 @@ class JiraApp(APIApplication):
         Tags:
             JQL functions (apps)
         """
-        url = f"{self.base_url}/rest/api/3/jql/function/computation"
-        query_params = {
-            k: v
-            for k, v in [("functionKey", functionKey), ("startAt", startAt), ("maxResults", maxResults), ("orderBy", orderBy)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/jql/function/computation'
+        query_params = {k: v for k, v in [('functionKey', functionKey), ('startAt', startAt), ('maxResults', maxResults), ('orderBy', orderBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10766,9 +9462,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_precomputations(
-        self, skipNotFoundPrecomputations: bool | None = None, values: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def update_precomputations(self, skipNotFoundPrecomputations: bool | None=None, values: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Updates precomputations (JQL fragments mapped to custom functions) and optionally skips invalid entries based on query parameters.
 
@@ -10787,11 +9481,11 @@ class JiraApp(APIApplication):
             JQL functions (apps)
         """
         request_body_data = None
-        request_body_data = {"values": values}
+        request_body_data = {'values': values}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/function/computation"
-        query_params = {k: v for k, v in [("skipNotFoundPrecomputations", skipNotFoundPrecomputations)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/jql/function/computation'
+        query_params = {k: v for k, v in [('skipNotFoundPrecomputations', skipNotFoundPrecomputations)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10800,7 +9494,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_precomputations_by_id(self, orderBy: str | None = None, precomputationIDs: list[str] | None = None) -> dict[str, Any]:
+    async def get_precomputations_by_id(self, orderBy: str | None=None, precomputationIDs: list[str] | None=None) -> dict[str, Any]:
         """
         Performs a computation search using JQL functions in Jira Cloud, allowing users to specify an **orderBy** parameter and returns the results of the computation search via a POST request.
 
@@ -10819,11 +9513,11 @@ class JiraApp(APIApplication):
             JQL functions (apps)
         """
         request_body_data = None
-        request_body_data = {"precomputationIDs": precomputationIDs}
+        request_body_data = {'precomputationIDs': precomputationIDs}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/function/computation/search"
-        query_params = {k: v for k, v in [("orderBy", orderBy)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/jql/function/computation/search'
+        query_params = {k: v for k, v in [('orderBy', orderBy)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10851,11 +9545,11 @@ class JiraApp(APIApplication):
             Issue search
         """
         request_body_data = None
-        request_body_data = {"issueIds": issueIds, "jqls": jqls}
+        request_body_data = {'issueIds': issueIds, 'jqls': jqls}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/match"
+        url = f'{self.base_url}/rest/api/3/jql/match'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10883,11 +9577,11 @@ class JiraApp(APIApplication):
             JQL
         """
         request_body_data = None
-        request_body_data = {"queries": queries}
+        request_body_data = {'queries': queries}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/parse"
-        query_params = {k: v for k, v in [("validation", validation)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/jql/parse'
+        query_params = {k: v for k, v in [('validation', validation)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10896,7 +9590,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def migrate_queries(self, queryStrings: list[str] | None = None) -> dict[str, Any]:
+    async def migrate_queries(self, queryStrings: list[str] | None=None) -> dict[str, Any]:
         """
         Converts JQL queries containing usernames or user keys to equivalent queries with account IDs, handling unknown users appropriately.
 
@@ -10914,11 +9608,11 @@ class JiraApp(APIApplication):
             JQL
         """
         request_body_data = None
-        request_body_data = {"queryStrings": queryStrings}
+        request_body_data = {'queryStrings': queryStrings}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/pdcleaner"
+        url = f'{self.base_url}/rest/api/3/jql/pdcleaner'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10945,11 +9639,11 @@ class JiraApp(APIApplication):
             JQL
         """
         request_body_data = None
-        request_body_data = {"queries": queries}
+        request_body_data = {'queries': queries}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/jql/sanitize"
+        url = f'{self.base_url}/rest/api/3/jql/sanitize'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -10958,7 +9652,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_labels(self, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_all_labels(self, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of labels starting from a specified index and limited by a maximum number of results using the Jira API.
 
@@ -10976,9 +9670,9 @@ class JiraApp(APIApplication):
         Tags:
             Labels
         """
-        url = f"{self.base_url}/rest/api/3/label"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/label'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11001,9 +9695,9 @@ class JiraApp(APIApplication):
         Tags:
             License metrics
         """
-        url = f"{self.base_url}/rest/api/3/license/approximateLicenseCount"
+        url = f'{self.base_url}/rest/api/3/license/approximateLicenseCount'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11031,9 +9725,9 @@ class JiraApp(APIApplication):
         """
         if applicationKey is None:
             raise ValueError("Missing required parameter 'applicationKey'.")
-        url = f"{self.base_url}/rest/api/3/license/approximateLicenseCount/product/{applicationKey}"
+        url = f'{self.base_url}/rest/api/3/license/approximateLicenseCount/product/{applicationKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11042,17 +9736,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_my_permissions(
-        self,
-        projectKey: str | None = None,
-        projectId: str | None = None,
-        issueKey: str | None = None,
-        issueId: str | None = None,
-        permissions: str | None = None,
-        projectUuid: str | None = None,
-        projectConfigurationUuid: str | None = None,
-        commentId: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_my_permissions(self, projectKey: str | None=None, projectId: str | None=None, issueKey: str | None=None, issueId: str | None=None, permissions: str | None=None, projectUuid: str | None=None, projectConfigurationUuid: str | None=None, commentId: str | None=None) -> dict[str, Any]:
         """
         Retrieves the current user's permissions in Jira, optionally filtered by project, issue, or specific permission keys, and indicates whether each permission is granted.
 
@@ -11076,22 +9760,9 @@ class JiraApp(APIApplication):
         Tags:
             Permissions
         """
-        url = f"{self.base_url}/rest/api/3/mypermissions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("projectKey", projectKey),
-                ("projectId", projectId),
-                ("issueKey", issueKey),
-                ("issueId", issueId),
-                ("permissions", permissions),
-                ("projectUuid", projectUuid),
-                ("projectConfigurationUuid", projectConfigurationUuid),
-                ("commentId", commentId),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/mypermissions'
+        query_params = {k: v for k, v in [('projectKey', projectKey), ('projectId', projectId), ('issueKey', issueKey), ('issueId', issueId), ('permissions', permissions), ('projectUuid', projectUuid), ('projectConfigurationUuid', projectConfigurationUuid), ('commentId', commentId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11117,9 +9788,9 @@ class JiraApp(APIApplication):
         Tags:
             Myself
         """
-        url = f"{self.base_url}/rest/api/3/mypreferences"
-        query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/mypreferences'
+        query_params = {k: v for k, v in [('key', key)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11145,9 +9816,9 @@ class JiraApp(APIApplication):
         Tags:
             Myself
         """
-        url = f"{self.base_url}/rest/api/3/mypreferences"
-        query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/mypreferences'
+        query_params = {k: v for k, v in [('key', key)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11174,9 +9845,9 @@ class JiraApp(APIApplication):
             Myself
         """
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/mypreferences"
-        query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/mypreferences'
+        query_params = {k: v for k, v in [('key', key)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11199,9 +9870,9 @@ class JiraApp(APIApplication):
         Tags:
             Myself
         """
-        url = f"{self.base_url}/rest/api/3/mypreferences/locale"
+        url = f'{self.base_url}/rest/api/3/mypreferences/locale'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11224,9 +9895,9 @@ class JiraApp(APIApplication):
         Tags:
             Myself
         """
-        url = f"{self.base_url}/rest/api/3/mypreferences/locale"
+        url = f'{self.base_url}/rest/api/3/mypreferences/locale'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11235,7 +9906,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_locale(self, locale: str | None = None) -> Any:
+    async def set_locale(self, locale: str | None=None) -> Any:
         """
         Updates the user's locale preference in Jira, restoring the default if no value is specified (deprecated, use user management API instead).
 
@@ -11253,11 +9924,11 @@ class JiraApp(APIApplication):
             Myself
         """
         request_body_data = None
-        request_body_data = {"locale": locale}
+        request_body_data = {'locale': locale}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/mypreferences/locale"
+        url = f'{self.base_url}/rest/api/3/mypreferences/locale'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11266,7 +9937,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_current_user(self, expand: str | None = None) -> dict[str, Any]:
+    async def get_current_user(self, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves the authenticated user's profile details (with privacy-based limitations on sensitive fields) from Jira Cloud.
 
@@ -11283,9 +9954,9 @@ class JiraApp(APIApplication):
         Tags:
             Myself
         """
-        url = f"{self.base_url}/rest/api/3/myself"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/myself'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11294,15 +9965,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_notification_schemes(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        id: list[str] | None = None,
-        projectId: list[str] | None = None,
-        onlyDefault: bool | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_notification_schemes(self, startAt: str | None=None, maxResults: str | None=None, id: list[str] | None=None, projectId: list[str] | None=None, onlyDefault: bool | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves notification schemes listing configured events and their notification recipients for Jira issues, supporting filtering by project, ID, and pagination.
 
@@ -11324,20 +9987,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue notification schemes
         """
-        url = f"{self.base_url}/rest/api/3/notificationscheme"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("projectId", projectId),
-                ("onlyDefault", onlyDefault),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/notificationscheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('projectId', projectId), ('onlyDefault', onlyDefault), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11346,9 +9998,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_notification_scheme(
-        self, name: str, description: str | None = None, notificationSchemeEvents: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def create_notification_scheme(self, name: str, description: str | None=None, notificationSchemeEvents: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Creates a new notification scheme using the "POST" method at the "/rest/api/3/notificationscheme" endpoint, returning a successful creation response when the operation is completed.
 
@@ -11368,11 +10018,11 @@ class JiraApp(APIApplication):
             Issue notification schemes
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name, "notificationSchemeEvents": notificationSchemeEvents}
+        request_body_data = {'description': description, 'name': name, 'notificationSchemeEvents': notificationSchemeEvents}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/notificationscheme"
+        url = f'{self.base_url}/rest/api/3/notificationscheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11381,13 +10031,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_notification_scheme_projects(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        notificationSchemeId: list[str] | None = None,
-        projectId: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def get_notification_scheme_projects(self, startAt: str | None=None, maxResults: str | None=None, notificationSchemeId: list[str] | None=None, projectId: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves the association between notification schemes and projects in Jira, including scheme IDs and project IDs, based on query parameters such as notificationSchemeId and projectId.
 
@@ -11407,18 +10051,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue notification schemes
         """
-        url = f"{self.base_url}/rest/api/3/notificationscheme/project"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("notificationSchemeId", notificationSchemeId),
-                ("projectId", projectId),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/notificationscheme/project'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('notificationSchemeId', notificationSchemeId), ('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11427,7 +10062,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_notification_scheme(self, id: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_notification_scheme(self, id: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves details of a specific notification scheme by its ID using the Jira API, optionally expanding the response with additional details.
 
@@ -11447,9 +10082,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/notificationscheme/{id}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/notificationscheme/{id}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11458,7 +10093,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_notification_scheme(self, id: str, description: str | None = None, name: str | None = None) -> Any:
+    async def update_notification_scheme(self, id: str, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates a notification scheme using its ID, allowing modifications to the scheme's configuration, such as events and recipients.
 
@@ -11480,11 +10115,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/notificationscheme/{id}"
+        url = f'{self.base_url}/rest/api/3/notificationscheme/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11514,11 +10149,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"notificationSchemeEvents": notificationSchemeEvents}
+        request_body_data = {'notificationSchemeEvents': notificationSchemeEvents}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/notificationscheme/{id}/notification"
+        url = f'{self.base_url}/rest/api/3/notificationscheme/{id}/notification'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11546,9 +10181,9 @@ class JiraApp(APIApplication):
         """
         if notificationSchemeId is None:
             raise ValueError("Missing required parameter 'notificationSchemeId'.")
-        url = f"{self.base_url}/rest/api/3/notificationscheme/{notificationSchemeId}"
+        url = f'{self.base_url}/rest/api/3/notificationscheme/{notificationSchemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11579,9 +10214,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'notificationSchemeId'.")
         if notificationId is None:
             raise ValueError("Missing required parameter 'notificationId'.")
-        url = f"{self.base_url}/rest/api/3/notificationscheme/{notificationSchemeId}/notification/{notificationId}"
+        url = f'{self.base_url}/rest/api/3/notificationscheme/{notificationSchemeId}/notification/{notificationId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11604,9 +10239,9 @@ class JiraApp(APIApplication):
         Tags:
             Permissions
         """
-        url = f"{self.base_url}/rest/api/3/permissions"
+        url = f'{self.base_url}/rest/api/3/permissions'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11615,12 +10250,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_bulk_permissions(
-        self,
-        accountId: str | None = None,
-        globalPermissions: list[str] | None = None,
-        projectPermissions: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
+    async def get_bulk_permissions(self, accountId: str | None=None, globalPermissions: list[str] | None=None, projectPermissions: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Checks user permissions in Jira projects and returns global and project-specific permission details.
 
@@ -11640,11 +10270,11 @@ class JiraApp(APIApplication):
             Permissions
         """
         request_body_data = None
-        request_body_data = {"accountId": accountId, "globalPermissions": globalPermissions, "projectPermissions": projectPermissions}
+        request_body_data = {'accountId': accountId, 'globalPermissions': globalPermissions, 'projectPermissions': projectPermissions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/permissions/check"
+        url = f'{self.base_url}/rest/api/3/permissions/check'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11671,11 +10301,11 @@ class JiraApp(APIApplication):
             Permissions
         """
         request_body_data = None
-        request_body_data = {"permissions": permissions}
+        request_body_data = {'permissions': permissions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/permissions/project"
+        url = f'{self.base_url}/rest/api/3/permissions/project'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11684,7 +10314,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_permission_schemes(self, expand: str | None = None) -> dict[str, Any]:
+    async def get_all_permission_schemes(self, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of all permission schemes in Jira Cloud, optionally expanding the response to include additional details such as groups by using the "expand" query parameter.
 
@@ -11701,9 +10331,9 @@ class JiraApp(APIApplication):
         Tags:
             Permission schemes
         """
-        url = f"{self.base_url}/rest/api/3/permissionscheme"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/permissionscheme'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11712,17 +10342,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_permission_scheme(
-        self,
-        name: str,
-        expand: str | None = None,
-        description: str | None = None,
-        expand_body: str | None = None,
-        id: int | None = None,
-        permissions: list[dict[str, Any]] | None = None,
-        scope: Any | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_permission_scheme(self, name: str, expand: str | None=None, description: str | None=None, expand_body: str | None=None, id: int | None=None, permissions: list[dict[str, Any]] | None=None, scope: Any | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Creates a new permission scheme in Jira using the "POST" method at the "/rest/api/3/permissionscheme" path, allowing for the definition of a permission set with various grants.
 
@@ -11747,19 +10367,11 @@ class JiraApp(APIApplication):
             Permission schemes
         """
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "expand": expand_body,
-            "id": id,
-            "name": name,
-            "permissions": permissions,
-            "scope": scope,
-            "self": self_arg_body,
-        }
+        request_body_data = {'description': description, 'expand': expand_body, 'id': id, 'name': name, 'permissions': permissions, 'scope': scope, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/permissionscheme"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/permissionscheme'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11787,9 +10399,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}"
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11798,7 +10410,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_permission_scheme(self, schemeId: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_permission_scheme(self, schemeId: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific permission scheme in Jira, identified by its scheme ID, and optionally expands its details with certain information based on the provided expand parameter.
 
@@ -11818,9 +10430,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11829,18 +10441,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_permission_scheme(
-        self,
-        schemeId: str,
-        name: str,
-        expand: str | None = None,
-        description: str | None = None,
-        expand_body: str | None = None,
-        id: int | None = None,
-        permissions: list[dict[str, Any]] | None = None,
-        scope: Any | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_permission_scheme(self, schemeId: str, name: str, expand: str | None=None, description: str | None=None, expand_body: str | None=None, id: int | None=None, permissions: list[dict[str, Any]] | None=None, scope: Any | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Updates a permission scheme identified by `{schemeId}` using the PUT method, allowing modifications to its permissions and settings.
 
@@ -11868,19 +10469,11 @@ class JiraApp(APIApplication):
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
         request_body_data = None
-        request_body_data = {
-            "description": description,
-            "expand": expand_body,
-            "id": id,
-            "name": name,
-            "permissions": permissions,
-            "scope": scope,
-            "self": self_arg_body,
-        }
+        request_body_data = {'description': description, 'expand': expand_body, 'id': id, 'name': name, 'permissions': permissions, 'scope': scope, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11889,7 +10482,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_permission_scheme_grants(self, schemeId: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_permission_scheme_grants(self, schemeId: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves the permissions granted by a specific permission scheme in Jira, including details about each permission grant within the scheme.
 
@@ -11909,9 +10502,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11920,15 +10513,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_permission_grant(
-        self,
-        schemeId: str,
-        expand: str | None = None,
-        holder: Any | None = None,
-        id: int | None = None,
-        permission: str | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_permission_grant(self, schemeId: str, expand: str | None=None, holder: Any | None=None, id: int | None=None, permission: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Adds permissions to a specific permission scheme in Jira, enabling access control configuration for users, groups, or roles.
 
@@ -11953,11 +10538,11 @@ class JiraApp(APIApplication):
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
         request_body_data = None
-        request_body_data = {"holder": holder, "id": id, "permission": permission, "self": self_arg_body}
+        request_body_data = {'holder': holder, 'id': id, 'permission': permission, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11988,9 +10573,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission/{permissionId}"
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission/{permissionId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -11999,7 +10584,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_permission_scheme_grant(self, schemeId: str, permissionId: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_permission_scheme_grant(self, schemeId: str, permissionId: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific permission grant's details within a Jira permission scheme identified by the scheme ID and permission ID.
 
@@ -12022,9 +10607,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'schemeId'.")
         if permissionId is None:
             raise ValueError("Missing required parameter 'permissionId'.")
-        url = f"{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission/{permissionId}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/permissionscheme/{schemeId}/permission/{permissionId}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12033,13 +10618,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_plans(
-        self,
-        includeTrashed: bool | None = None,
-        includeArchived: bool | None = None,
-        cursor: str | None = None,
-        maxResults: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_plans(self, includeTrashed: bool | None=None, includeArchived: bool | None=None, cursor: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves plan details using pagination and optional filters for trashed or archived items.
 
@@ -12059,18 +10638,9 @@ class JiraApp(APIApplication):
         Tags:
             Plans
         """
-        url = f"{self.base_url}/rest/api/3/plans/plan"
-        query_params = {
-            k: v
-            for k, v in [
-                ("includeTrashed", includeTrashed),
-                ("includeArchived", includeArchived),
-                ("cursor", cursor),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/plans/plan'
+        query_params = {k: v for k, v in [('includeTrashed', includeTrashed), ('includeArchived', includeArchived), ('cursor', cursor), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12079,18 +10649,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_plan(
-        self,
-        issueSources: list[dict[str, Any]],
-        name: str,
-        scheduling: Any,
-        useGroupId: bool | None = None,
-        crossProjectReleases: list[dict[str, Any]] | None = None,
-        customFields: list[dict[str, Any]] | None = None,
-        exclusionRules: Any | None = None,
-        leadAccountId: str | None = None,
-        permissions: list[dict[str, Any]] | None = None,
-    ) -> Any:
+    async def create_plan(self, issueSources: list[dict[str, Any]], name: str, scheduling: Any, useGroupId: bool | None=None, crossProjectReleases: list[dict[str, Any]] | None=None, customFields: list[dict[str, Any]] | None=None, exclusionRules: Any | None=None, leadAccountId: str | None=None, permissions: list[dict[str, Any]] | None=None) -> Any:
         """
         Creates a new plan resource via the specified endpoint, requiring a request body with plan details and supporting optional useGroupId query parameter for group association.
 
@@ -12116,20 +10675,11 @@ class JiraApp(APIApplication):
             Plans
         """
         request_body_data = None
-        request_body_data = {
-            "crossProjectReleases": crossProjectReleases,
-            "customFields": customFields,
-            "exclusionRules": exclusionRules,
-            "issueSources": issueSources,
-            "leadAccountId": leadAccountId,
-            "name": name,
-            "permissions": permissions,
-            "scheduling": scheduling,
-        }
+        request_body_data = {'crossProjectReleases': crossProjectReleases, 'customFields': customFields, 'exclusionRules': exclusionRules, 'issueSources': issueSources, 'leadAccountId': leadAccountId, 'name': name, 'permissions': permissions, 'scheduling': scheduling}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/plans/plan"
-        query_params = {k: v for k, v in [("useGroupId", useGroupId)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/plans/plan'
+        query_params = {k: v for k, v in [('useGroupId', useGroupId)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12138,7 +10688,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_plan(self, planId: str, useGroupId: bool | None = None) -> dict[str, Any]:
+    async def get_plan(self, planId: str, useGroupId: bool | None=None) -> dict[str, Any]:
         """
         Retrieves the details of a specific plan identified by its planId using a GET request.
 
@@ -12158,9 +10708,9 @@ class JiraApp(APIApplication):
         """
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}"
-        query_params = {k: v for k, v in [("useGroupId", useGroupId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}'
+        query_params = {k: v for k, v in [('useGroupId', useGroupId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12169,7 +10719,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_plan(self, planId: str, body_content: bytes, useGroupId: bool | None = None) -> Any:
+    async def update_plan(self, planId: str, body_content: bytes, useGroupId: bool | None=None) -> Any:
         """
         Updates a plan with the specified ID in "/rest/api/3/plans/plan/{planId}" using the PUT method, potentially modifying plan details based on provided parameters.
 
@@ -12192,9 +10742,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         request_body_data = None
         request_body_data = body_content
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}"
-        query_params = {k: v for k, v in [("useGroupId", useGroupId)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}'
+        query_params = {k: v for k, v in [('useGroupId', useGroupId)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json-patch+json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12223,9 +10773,9 @@ class JiraApp(APIApplication):
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/archive"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/archive'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12255,11 +10805,11 @@ class JiraApp(APIApplication):
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
         request_body_data = None
-        request_body_data = {"name": name}
+        request_body_data = {'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/duplicate"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/duplicate'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12268,7 +10818,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_teams(self, planId: str, cursor: str | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_teams(self, planId: str, cursor: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of teams associated with a specific plan in Jira Cloud.
 
@@ -12289,9 +10839,9 @@ class JiraApp(APIApplication):
         """
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team"
-        query_params = {k: v for k, v in [("cursor", cursor), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team'
+        query_params = {k: v for k, v in [('cursor', cursor), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12300,15 +10850,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_atlassian_team(
-        self,
-        planId: str,
-        id: str,
-        planningStyle: str,
-        capacity: float | None = None,
-        issueSourceId: int | None = None,
-        sprintLength: int | None = None,
-    ) -> Any:
+    async def add_atlassian_team(self, planId: str, id: str, planningStyle: str, capacity: float | None=None, issueSourceId: int | None=None, sprintLength: int | None=None) -> Any:
         """
         Adds an Atlassian team to a plan using the Jira Cloud API and returns a status message, allowing for the management of team configurations within plans.
 
@@ -12333,17 +10875,11 @@ class JiraApp(APIApplication):
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
         request_body_data = None
-        request_body_data = {
-            "capacity": capacity,
-            "id": id,
-            "issueSourceId": issueSourceId,
-            "planningStyle": planningStyle,
-            "sprintLength": sprintLength,
-        }
+        request_body_data = {'capacity': capacity, 'id': id, 'issueSourceId': issueSourceId, 'planningStyle': planningStyle, 'sprintLength': sprintLength}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12374,9 +10910,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         if atlassianTeamId is None:
             raise ValueError("Missing required parameter 'atlassianTeamId'.")
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12407,9 +10943,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         if atlassianTeamId is None:
             raise ValueError("Missing required parameter 'atlassianTeamId'.")
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12443,9 +10979,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'atlassianTeamId'.")
         request_body_data = None
         request_body_data = body_content
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/atlassian/{atlassianTeamId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json-patch+json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12454,16 +10990,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_plan_only_team(
-        self,
-        planId: str,
-        name: str,
-        planningStyle: str,
-        capacity: float | None = None,
-        issueSourceId: int | None = None,
-        memberAccountIds: list[str] | None = None,
-        sprintLength: int | None = None,
-    ) -> Any:
+    async def create_plan_only_team(self, planId: str, name: str, planningStyle: str, capacity: float | None=None, issueSourceId: int | None=None, memberAccountIds: list[str] | None=None, sprintLength: int | None=None) -> Any:
         """
         Creates a plan-only team in a Jira Cloud plan with specified planning settings and returns the configuration.
 
@@ -12489,18 +11016,11 @@ class JiraApp(APIApplication):
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
         request_body_data = None
-        request_body_data = {
-            "capacity": capacity,
-            "issueSourceId": issueSourceId,
-            "memberAccountIds": memberAccountIds,
-            "name": name,
-            "planningStyle": planningStyle,
-            "sprintLength": sprintLength,
-        }
+        request_body_data = {'capacity': capacity, 'issueSourceId': issueSourceId, 'memberAccountIds': memberAccountIds, 'name': name, 'planningStyle': planningStyle, 'sprintLength': sprintLength}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12531,9 +11051,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         if planOnlyTeamId is None:
             raise ValueError("Missing required parameter 'planOnlyTeamId'.")
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12564,9 +11084,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planId'.")
         if planOnlyTeamId is None:
             raise ValueError("Missing required parameter 'planOnlyTeamId'.")
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12600,9 +11120,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'planOnlyTeamId'.")
         request_body_data = None
         request_body_data = body_content
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/team/planonly/{planOnlyTeamId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json-patch+json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json-patch+json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12631,9 +11151,9 @@ class JiraApp(APIApplication):
         if planId is None:
             raise ValueError("Missing required parameter 'planId'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/plans/plan/{planId}/trash"
+        url = f'{self.base_url}/rest/api/3/plans/plan/{planId}/trash'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12656,9 +11176,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue priorities
         """
-        url = f"{self.base_url}/rest/api/3/priority"
+        url = f'{self.base_url}/rest/api/3/priority'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12667,9 +11187,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_priority(
-        self, name: str, statusColor: str, avatarId: int | None = None, description: str | None = None, iconUrl: str | None = None
-    ) -> dict[str, Any]:
+    async def create_priority(self, name: str, statusColor: str, avatarId: int | None=None, description: str | None=None, iconUrl: str | None=None) -> dict[str, Any]:
         """
         Creates a new priority in Jira with specified properties and returns the generated ID.
 
@@ -12691,11 +11209,11 @@ class JiraApp(APIApplication):
             Issue priorities
         """
         request_body_data = None
-        request_body_data = {"avatarId": avatarId, "description": description, "iconUrl": iconUrl, "name": name, "statusColor": statusColor}
+        request_body_data = {'avatarId': avatarId, 'description': description, 'iconUrl': iconUrl, 'name': name, 'statusColor': statusColor}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priority"
+        url = f'{self.base_url}/rest/api/3/priority'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12722,11 +11240,11 @@ class JiraApp(APIApplication):
             Issue priorities
         """
         request_body_data = None
-        request_body_data = {"id": id}
+        request_body_data = {'id': id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priority/default"
+        url = f'{self.base_url}/rest/api/3/priority/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12735,7 +11253,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_priorities(self, ids: list[str], after: str | None = None, position: str | None = None) -> Any:
+    async def move_priorities(self, ids: list[str], after: str | None=None, position: str | None=None) -> Any:
         """
         Reorders the priority of issues in Jira by updating their sequence using a PUT request.
 
@@ -12755,11 +11273,11 @@ class JiraApp(APIApplication):
             Issue priorities
         """
         request_body_data = None
-        request_body_data = {"after": after, "ids": ids, "position": position}
+        request_body_data = {'after': after, 'ids': ids, 'position': position}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priority/move"
+        url = f'{self.base_url}/rest/api/3/priority/move'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12768,16 +11286,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_priorities(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        id: list[str] | None = None,
-        projectId: list[str] | None = None,
-        priorityName: str | None = None,
-        onlyDefault: bool | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def search_priorities(self, startAt: str | None=None, maxResults: str | None=None, id: list[str] | None=None, projectId: list[str] | None=None, priorityName: str | None=None, onlyDefault: bool | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of priorities from Jira using the GET method at "/rest/api/3/priority/search", allowing for customizable queries with parameters like start index, maximum results, ID, project ID, priority name, and expansion options.
 
@@ -12800,21 +11309,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue priorities
         """
-        url = f"{self.base_url}/rest/api/3/priority/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("projectId", projectId),
-                ("priorityName", priorityName),
-                ("onlyDefault", onlyDefault),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/priority/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('projectId', projectId), ('priorityName', priorityName), ('onlyDefault', onlyDefault), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12842,9 +11339,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/priority/{id}"
+        url = f'{self.base_url}/rest/api/3/priority/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12872,9 +11369,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/priority/{id}"
+        url = f'{self.base_url}/rest/api/3/priority/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12883,15 +11380,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_priority(
-        self,
-        id: str,
-        avatarId: int | None = None,
-        description: str | None = None,
-        iconUrl: str | None = None,
-        name: str | None = None,
-        statusColor: str | None = None,
-    ) -> Any:
+    async def update_priority(self, id: str, avatarId: int | None=None, description: str | None=None, iconUrl: str | None=None, name: str | None=None, statusColor: str | None=None) -> Any:
         """
         Updates an issue priority with the specified ID using the Jira Cloud API, allowing modifications to priority details such as name or icon URL.
 
@@ -12916,11 +11405,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"avatarId": avatarId, "description": description, "iconUrl": iconUrl, "name": name, "statusColor": statusColor}
+        request_body_data = {'avatarId': avatarId, 'description': description, 'iconUrl': iconUrl, 'name': name, 'statusColor': statusColor}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priority/{id}"
+        url = f'{self.base_url}/rest/api/3/priority/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12929,17 +11418,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_priority_schemes(
-        self,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        priorityId: list[int] | None = None,
-        schemeId: list[int] | None = None,
-        schemeName: str | None = None,
-        onlyDefault: bool | None = None,
-        orderBy: str | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_priority_schemes(self, startAt: str | None=None, maxResults: str | None=None, priorityId: list[int] | None=None, schemeId: list[int] | None=None, schemeName: str | None=None, onlyDefault: bool | None=None, orderBy: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves priority schemes and their associated priorities from a Jira instance using various filters such as priority ID, scheme ID, scheme name, and more.
 
@@ -12963,22 +11442,9 @@ class JiraApp(APIApplication):
         Tags:
             Priority schemes
         """
-        url = f"{self.base_url}/rest/api/3/priorityscheme"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("priorityId", priorityId),
-                ("schemeId", schemeId),
-                ("schemeName", schemeName),
-                ("onlyDefault", onlyDefault),
-                ("orderBy", orderBy),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/priorityscheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('priorityId', priorityId), ('schemeId', schemeId), ('schemeName', schemeName), ('onlyDefault', onlyDefault), ('orderBy', orderBy), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -12987,15 +11453,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_priority_scheme(
-        self,
-        defaultPriorityId: int,
-        name: str,
-        priorityIds: list[int],
-        description: str | None = None,
-        mappings: Any | None = None,
-        projectIds: list[int] | None = None,
-    ) -> dict[str, Any]:
+    async def create_priority_scheme(self, defaultPriorityId: int, name: str, priorityIds: list[int], description: str | None=None, mappings: Any | None=None, projectIds: list[int] | None=None) -> dict[str, Any]:
         """
         Creates a new priority scheme with configurable priority mappings and project associations in Jira.
 
@@ -13031,18 +11489,11 @@ class JiraApp(APIApplication):
             Priority schemes
         """
         request_body_data = None
-        request_body_data = {
-            "defaultPriorityId": defaultPriorityId,
-            "description": description,
-            "mappings": mappings,
-            "name": name,
-            "priorityIds": priorityIds,
-            "projectIds": projectIds,
-        }
+        request_body_data = {'defaultPriorityId': defaultPriorityId, 'description': description, 'mappings': mappings, 'name': name, 'priorityIds': priorityIds, 'projectIds': projectIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priorityscheme"
+        url = f'{self.base_url}/rest/api/3/priorityscheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13051,14 +11502,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def suggested_priorities_for_mappings(
-        self,
-        maxResults: int | None = None,
-        priorities: Any | None = None,
-        projects: Any | None = None,
-        schemeId: int | None = None,
-        startAt: int | None = None,
-    ) -> dict[str, Any]:
+    async def suggested_priorities_for_mappings(self, maxResults: int | None=None, priorities: Any | None=None, projects: Any | None=None, schemeId: int | None=None, startAt: int | None=None) -> dict[str, Any]:
         """
         Submits priority mappings for a scheme and returns the updated configuration upon completion.
 
@@ -13080,17 +11524,11 @@ class JiraApp(APIApplication):
             Priority schemes
         """
         request_body_data = None
-        request_body_data = {
-            "maxResults": maxResults,
-            "priorities": priorities,
-            "projects": projects,
-            "schemeId": schemeId,
-            "startAt": startAt,
-        }
+        request_body_data = {'maxResults': maxResults, 'priorities': priorities, 'projects': projects, 'schemeId': schemeId, 'startAt': startAt}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priorityscheme/mappings"
+        url = f'{self.base_url}/rest/api/3/priorityscheme/mappings'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13099,14 +11537,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_priorities(
-        self,
-        schemeId: str,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        query: str | None = None,
-        exclude: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def list_priorities(self, schemeId: str, startAt: str | None=None, maxResults: str | None=None, query: str | None=None, exclude: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of available priorities for a specified priority scheme or across all schemes, supporting filtering by query and exclusion criteria.
 
@@ -13127,13 +11558,9 @@ class JiraApp(APIApplication):
         Tags:
             Priority schemes
         """
-        url = f"{self.base_url}/rest/api/3/priorityscheme/priorities/available"
-        query_params = {
-            k: v
-            for k, v in [("startAt", startAt), ("maxResults", maxResults), ("query", query), ("schemeId", schemeId), ("exclude", exclude)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/priorityscheme/priorities/available'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('query', query), ('schemeId', schemeId), ('exclude', exclude)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13161,9 +11588,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}"
+        url = f'{self.base_url}/rest/api/3/priorityscheme/{schemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13172,16 +11599,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_priority_scheme(
-        self,
-        schemeId: str,
-        defaultPriorityId: int | None = None,
-        description: str | None = None,
-        mappings: Any | None = None,
-        name: str | None = None,
-        priorities: Any | None = None,
-        projects: Any | None = None,
-    ) -> dict[str, Any]:
+    async def update_priority_scheme(self, schemeId: str, defaultPriorityId: int | None=None, description: str | None=None, mappings: Any | None=None, name: str | None=None, priorities: Any | None=None, projects: Any | None=None) -> dict[str, Any]:
         """
         Updates a Jira priority scheme configuration with the given ID, rejecting updates if they would require issue migrations.
 
@@ -13224,18 +11642,11 @@ class JiraApp(APIApplication):
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
         request_body_data = None
-        request_body_data = {
-            "defaultPriorityId": defaultPriorityId,
-            "description": description,
-            "mappings": mappings,
-            "name": name,
-            "priorities": priorities,
-            "projects": projects,
-        }
+        request_body_data = {'defaultPriorityId': defaultPriorityId, 'description': description, 'mappings': mappings, 'name': name, 'priorities': priorities, 'projects': projects}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}"
+        url = f'{self.base_url}/rest/api/3/priorityscheme/{schemeId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13244,9 +11655,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_priorities_by_priority_scheme(
-        self, schemeId: str, startAt: str | None = None, maxResults: str | None = None
-    ) -> dict[str, Any]:
+    async def get_priorities_by_priority_scheme(self, schemeId: str, startAt: str | None=None, maxResults: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of priorities associated with a specific priority scheme in Jira, supporting startAt and maxResults parameters.
 
@@ -13267,9 +11676,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}/priorities"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/priorityscheme/{schemeId}/priorities'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13278,14 +11687,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_projects_by_priority_scheme(
-        self,
-        schemeId: str,
-        startAt: str | None = None,
-        maxResults: str | None = None,
-        projectId: list[int] | None = None,
-        query: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_projects_by_priority_scheme(self, schemeId: str, startAt: str | None=None, maxResults: str | None=None, projectId: list[int] | None=None, query: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of projects associated with a specific priority scheme in Jira.
 
@@ -13308,11 +11710,9 @@ class JiraApp(APIApplication):
         """
         if schemeId is None:
             raise ValueError("Missing required parameter 'schemeId'.")
-        url = f"{self.base_url}/rest/api/3/priorityscheme/{schemeId}/projects"
-        query_params = {
-            k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("projectId", projectId), ("query", query)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/priorityscheme/{schemeId}/projects'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('projectId', projectId), ('query', query)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13321,9 +11721,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_projects(
-        self, expand: str | None = None, recent: int | None = None, properties: list[str] | None = None
-    ) -> list[Any]:
+    async def get_all_projects(self, expand: str | None=None, recent: int | None=None, properties: list[str] | None=None) -> list[Any]:
         """
         Retrieves project details from Jira with optional parameters to expand properties, limit to recent projects, or include specific properties.
 
@@ -13342,9 +11740,9 @@ class JiraApp(APIApplication):
         Tags:
             Projects
         """
-        url = f"{self.base_url}/rest/api/3/project"
-        query_params = {k: v for k, v in [("expand", expand), ("recent", recent), ("properties", properties)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project'
+        query_params = {k: v for k, v in [('expand', expand), ('recent', recent), ('properties', properties)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13353,27 +11751,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_project(
-        self,
-        key: str,
-        name: str,
-        assigneeType: str | None = None,
-        avatarId: int | None = None,
-        categoryId: int | None = None,
-        description: str | None = None,
-        fieldConfigurationScheme: int | None = None,
-        issueSecurityScheme: int | None = None,
-        issueTypeScheme: int | None = None,
-        issueTypeScreenScheme: int | None = None,
-        lead: str | None = None,
-        leadAccountId: str | None = None,
-        notificationScheme: int | None = None,
-        permissionScheme: int | None = None,
-        projectTemplateKey: str | None = None,
-        projectTypeKey: str | None = None,
-        url: str | None = None,
-        workflowScheme: int | None = None,
-    ) -> dict[str, Any]:
+    async def create_project(self, key: str, name: str, assigneeType: str | None=None, avatarId: int | None=None, categoryId: int | None=None, description: str | None=None, fieldConfigurationScheme: int | None=None, issueSecurityScheme: int | None=None, issueTypeScheme: int | None=None, issueTypeScreenScheme: int | None=None, lead: str | None=None, leadAccountId: str | None=None, notificationScheme: int | None=None, permissionScheme: int | None=None, projectTemplateKey: str | None=None, projectTypeKey: str | None=None, url: str | None=None, workflowScheme: int | None=None) -> dict[str, Any]:
         """
         Creates a new Jira project using the REST API, allowing the specification of project details such as key, name, type, and description.
 
@@ -13408,30 +11786,11 @@ class JiraApp(APIApplication):
             Projects
         """
         request_body_data = None
-        request_body_data = {
-            "assigneeType": assigneeType,
-            "avatarId": avatarId,
-            "categoryId": categoryId,
-            "description": description,
-            "fieldConfigurationScheme": fieldConfigurationScheme,
-            "issueSecurityScheme": issueSecurityScheme,
-            "issueTypeScheme": issueTypeScheme,
-            "issueTypeScreenScheme": issueTypeScreenScheme,
-            "key": key,
-            "lead": lead,
-            "leadAccountId": leadAccountId,
-            "name": name,
-            "notificationScheme": notificationScheme,
-            "permissionScheme": permissionScheme,
-            "projectTemplateKey": projectTemplateKey,
-            "projectTypeKey": projectTypeKey,
-            "url": url,
-            "workflowScheme": workflowScheme,
-        }
+        request_body_data = {'assigneeType': assigneeType, 'avatarId': avatarId, 'categoryId': categoryId, 'description': description, 'fieldConfigurationScheme': fieldConfigurationScheme, 'issueSecurityScheme': issueSecurityScheme, 'issueTypeScheme': issueTypeScheme, 'issueTypeScreenScheme': issueTypeScreenScheme, 'key': key, 'lead': lead, 'leadAccountId': leadAccountId, 'name': name, 'notificationScheme': notificationScheme, 'permissionScheme': permissionScheme, 'projectTemplateKey': projectTemplateKey, 'projectTypeKey': projectTypeKey, 'url': url, 'workflowScheme': workflowScheme}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project"
+        url = f'{self.base_url}/rest/api/3/project'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13440,7 +11799,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_project_template(self, details: dict[str, Any] | None = None, template: dict[str, Any] | None = None) -> Any:
+    async def create_project_template(self, details: dict[str, Any] | None=None, template: dict[str, Any] | None=None) -> Any:
         """
         Creates a project in Jira from a specified project template and returns a redirect response to the new project.
 
@@ -13459,11 +11818,11 @@ class JiraApp(APIApplication):
             Project templates
         """
         request_body_data = None
-        request_body_data = {"details": details, "template": template}
+        request_body_data = {'details': details, 'template': template}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project-template"
+        url = f'{self.base_url}/rest/api/3/project-template'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13472,7 +11831,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_recent(self, expand: str | None = None, properties: list[dict[str, Any]] | None = None) -> list[Any]:
+    async def get_recent(self, expand: str | None=None, properties: list[dict[str, Any]] | None=None) -> list[Any]:
         """
         Retrieves a list of up to 20 recently viewed projects still visible to the user.
 
@@ -13490,9 +11849,9 @@ class JiraApp(APIApplication):
         Tags:
             Projects
         """
-        url = f"{self.base_url}/rest/api/3/project/recent"
-        query_params = {k: v for k, v in [("expand", expand), ("properties", properties)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/recent'
+        query_params = {k: v for k, v in [('expand', expand), ('properties', properties)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13501,22 +11860,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_projects(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        orderBy: str | None = None,
-        id: list[int] | None = None,
-        keys: list[str] | None = None,
-        query: str | None = None,
-        typeKey: str | None = None,
-        categoryId: int | None = None,
-        action: str | None = None,
-        expand: str | None = None,
-        status: list[str] | None = None,
-        properties: list[dict[str, Any]] | None = None,
-        propertyQuery: str | None = None,
-    ) -> dict[str, Any]:
+    async def search_projects(self, startAt: int | None=None, maxResults: int | None=None, orderBy: str | None=None, id: list[int] | None=None, keys: list[str] | None=None, query: str | None=None, typeKey: str | None=None, categoryId: int | None=None, action: str | None=None, expand: str | None=None, status: list[str] | None=None, properties: list[dict[str, Any]] | None=None, propertyQuery: str | None=None) -> dict[str, Any]:
         """
         Searches for Jira projects using various criteria such as project ID, keys, category, and more, returning a list of matching projects based on the specified parameters using the Jira Cloud REST API.
 
@@ -13545,27 +11889,9 @@ class JiraApp(APIApplication):
         Tags:
             Projects
         """
-        url = f"{self.base_url}/rest/api/3/project/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("orderBy", orderBy),
-                ("id", id),
-                ("keys", keys),
-                ("query", query),
-                ("typeKey", typeKey),
-                ("categoryId", categoryId),
-                ("action", action),
-                ("expand", expand),
-                ("status", status),
-                ("properties", properties),
-                ("propertyQuery", propertyQuery),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('orderBy', orderBy), ('id', id), ('keys', keys), ('query', query), ('typeKey', typeKey), ('categoryId', categoryId), ('action', action), ('expand', expand), ('status', status), ('properties', properties), ('propertyQuery', propertyQuery)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13588,9 +11914,9 @@ class JiraApp(APIApplication):
         Tags:
             Project types
         """
-        url = f"{self.base_url}/rest/api/3/project/type"
+        url = f'{self.base_url}/rest/api/3/project/type'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13613,9 +11939,9 @@ class JiraApp(APIApplication):
         Tags:
             Project types
         """
-        url = f"{self.base_url}/rest/api/3/project/type/accessible"
+        url = f'{self.base_url}/rest/api/3/project/type/accessible'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13643,9 +11969,9 @@ class JiraApp(APIApplication):
         """
         if projectTypeKey is None:
             raise ValueError("Missing required parameter 'projectTypeKey'.")
-        url = f"{self.base_url}/rest/api/3/project/type/{projectTypeKey}"
+        url = f'{self.base_url}/rest/api/3/project/type/{projectTypeKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13673,9 +11999,9 @@ class JiraApp(APIApplication):
         """
         if projectTypeKey is None:
             raise ValueError("Missing required parameter 'projectTypeKey'.")
-        url = f"{self.base_url}/rest/api/3/project/type/{projectTypeKey}/accessible"
+        url = f'{self.base_url}/rest/api/3/project/type/{projectTypeKey}/accessible'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13684,7 +12010,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_project(self, projectIdOrKey: str, enableUndo: bool | None = None) -> Any:
+    async def delete_project(self, projectIdOrKey: str, enableUndo: bool | None=None) -> Any:
         """
         Deletes a Jira project identified by its ID or key, with an optional undo capability via query parameter.
 
@@ -13704,9 +12030,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}"
-        query_params = {k: v for k, v in [("enableUndo", enableUndo)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}'
+        query_params = {k: v for k, v in [('enableUndo', enableUndo)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13715,7 +12041,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project(self, projectIdOrKey: str, expand: str | None = None, properties: list[str] | None = None) -> dict[str, Any]:
+    async def get_project(self, projectIdOrKey: str, expand: str | None=None, properties: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves details about a specific Jira project by its ID or key, allowing optional expansion of additional details and properties, using the Jira REST API.
 
@@ -13736,9 +12062,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}"
-        query_params = {k: v for k, v in [("expand", expand), ("properties", properties)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}'
+        query_params = {k: v for k, v in [('expand', expand), ('properties', properties)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13747,24 +12073,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_project(
-        self,
-        projectIdOrKey: str,
-        expand: str | None = None,
-        assigneeType: str | None = None,
-        avatarId: int | None = None,
-        categoryId: int | None = None,
-        description: str | None = None,
-        issueSecurityScheme: int | None = None,
-        key: str | None = None,
-        lead: str | None = None,
-        leadAccountId: str | None = None,
-        name: str | None = None,
-        notificationScheme: int | None = None,
-        permissionScheme: int | None = None,
-        releasedProjectKeys: list[str] | None = None,
-        url: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_project(self, projectIdOrKey: str, expand: str | None=None, assigneeType: str | None=None, avatarId: int | None=None, categoryId: int | None=None, description: str | None=None, issueSecurityScheme: int | None=None, key: str | None=None, lead: str | None=None, leadAccountId: str | None=None, name: str | None=None, notificationScheme: int | None=None, permissionScheme: int | None=None, releasedProjectKeys: list[str] | None=None, url: str | None=None) -> dict[str, Any]:
         """
         Updates or replaces a Jira project identified by the projectIdOrKey and returns the modified project.
 
@@ -13798,25 +12107,11 @@ class JiraApp(APIApplication):
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "assigneeType": assigneeType,
-            "avatarId": avatarId,
-            "categoryId": categoryId,
-            "description": description,
-            "issueSecurityScheme": issueSecurityScheme,
-            "key": key,
-            "lead": lead,
-            "leadAccountId": leadAccountId,
-            "name": name,
-            "notificationScheme": notificationScheme,
-            "permissionScheme": permissionScheme,
-            "releasedProjectKeys": releasedProjectKeys,
-            "url": url,
-        }
+        request_body_data = {'assigneeType': assigneeType, 'avatarId': avatarId, 'categoryId': categoryId, 'description': description, 'issueSecurityScheme': issueSecurityScheme, 'key': key, 'lead': lead, 'leadAccountId': leadAccountId, 'name': name, 'notificationScheme': notificationScheme, 'permissionScheme': permissionScheme, 'releasedProjectKeys': releasedProjectKeys, 'url': url}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13845,9 +12140,9 @@ class JiraApp(APIApplication):
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/archive"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/archive'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13856,17 +12151,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_project_avatar(
-        self,
-        projectIdOrKey: str,
-        id: str,
-        fileName: str | None = None,
-        isDeletable: bool | None = None,
-        isSelected: bool | None = None,
-        isSystemAvatar: bool | None = None,
-        owner: str | None = None,
-        urls: dict[str, str] | None = None,
-    ) -> Any:
+    async def update_project_avatar(self, projectIdOrKey: str, id: str, fileName: str | None=None, isDeletable: bool | None=None, isSelected: bool | None=None, isSystemAvatar: bool | None=None, owner: str | None=None, urls: dict[str, str] | None=None) -> Any:
         """
         Sets the displayed avatar for a Jira project using the specified project ID or key.
 
@@ -13893,19 +12178,11 @@ class JiraApp(APIApplication):
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
-        request_body_data = {
-            "fileName": fileName,
-            "id": id,
-            "isDeletable": isDeletable,
-            "isSelected": isSelected,
-            "isSystemAvatar": isSystemAvatar,
-            "owner": owner,
-            "urls": urls,
-        }
+        request_body_data = {'fileName': fileName, 'id': id, 'isDeletable': isDeletable, 'isSelected': isSelected, 'isSystemAvatar': isSystemAvatar, 'owner': owner, 'urls': urls}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13936,9 +12213,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar/{id}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -13947,9 +12224,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_project_avatar(
-        self, projectIdOrKey: str, body_content: bytes, x: int | None = None, y: int | None = None, size: int | None = None
-    ) -> dict[str, Any]:
+    async def create_project_avatar(self, projectIdOrKey: str, body_content: bytes, x: int | None=None, y: int | None=None, size: int | None=None) -> dict[str, Any]:
         """
         Loads a custom avatar for a Jira project using the specified parameters and returns the avatar details upon success.
 
@@ -13974,9 +12249,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
         request_body_data = body_content
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar2"
-        query_params = {k: v for k, v in [("x", x), ("y", y), ("size", size)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="*/*")
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatar2'
+        query_params = {k: v for k, v in [('x', x), ('y', y), ('size', size)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='*/*')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14004,9 +12279,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatars"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/avatars'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14034,9 +12309,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14064,9 +12339,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14096,11 +12371,11 @@ class JiraApp(APIApplication):
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
-        request_body_data = {"id": id}
+        request_body_data = {'id': id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/classification-level/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14109,15 +12384,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_components_paginated(
-        self,
-        projectIdOrKey: str,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        orderBy: str | None = None,
-        componentSource: str | None = None,
-        query: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_project_components_paginated(self, projectIdOrKey: str, startAt: int | None=None, maxResults: int | None=None, orderBy: str | None=None, componentSource: str | None=None, query: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of components associated with a specified Jira project, optionally filtered and ordered by query parameters.
 
@@ -14141,19 +12408,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/component"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("orderBy", orderBy),
-                ("componentSource", componentSource),
-                ("query", query),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/component'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('orderBy', orderBy), ('componentSource', componentSource), ('query', query)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14162,7 +12419,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_components(self, projectIdOrKey: str, componentSource: str | None = None) -> list[Any]:
+    async def get_project_components(self, projectIdOrKey: str, componentSource: str | None=None) -> list[Any]:
         """
         Retrieves a list of components for a specified Jira project using its ID or key, with optional filtering by component source.
 
@@ -14182,9 +12439,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/components"
-        query_params = {k: v for k, v in [("componentSource", componentSource)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/components'
+        query_params = {k: v for k, v in [('componentSource', componentSource)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14213,9 +12470,9 @@ class JiraApp(APIApplication):
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/delete"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/delete'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14243,9 +12500,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/features"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/features'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14254,7 +12511,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def toggle_feature_for_project(self, projectIdOrKey: str, featureKey: str, state: str | None = None) -> dict[str, Any]:
+    async def toggle_feature_for_project(self, projectIdOrKey: str, featureKey: str, state: str | None=None) -> dict[str, Any]:
         """
         Updates the configuration of a specific feature for a Jira project using the project identifier and feature key.
 
@@ -14278,11 +12535,11 @@ class JiraApp(APIApplication):
         if featureKey is None:
             raise ValueError("Missing required parameter 'featureKey'.")
         request_body_data = None
-        request_body_data = {"state": state}
+        request_body_data = {'state': state}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/features/{featureKey}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/features/{featureKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14310,9 +12567,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14343,9 +12600,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14376,9 +12633,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14410,9 +12667,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14441,9 +12698,9 @@ class JiraApp(APIApplication):
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/restore"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/restore'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14471,9 +12728,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/role'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14482,9 +12739,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_actor(
-        self, projectIdOrKey: str, id: str, user: str | None = None, group: str | None = None, groupId: str | None = None
-    ) -> Any:
+    async def delete_actor(self, projectIdOrKey: str, id: str, user: str | None=None, group: str | None=None, groupId: str | None=None) -> Any:
         """
         Deletes a user or group from a specific project role in Jira, returning a success status if removed.
 
@@ -14509,9 +12764,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
-        query_params = {k: v for k, v in [("user", user), ("group", group), ("groupId", groupId)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}'
+        query_params = {k: v for k, v in [('user', user), ('group', group), ('groupId', groupId)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14520,7 +12775,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_role(self, projectIdOrKey: str, id: str, excludeInactiveUsers: bool | None = None) -> dict[str, Any]:
+    async def get_project_role(self, projectIdOrKey: str, id: str, excludeInactiveUsers: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a specific project role's details and associated actors for a Jira project using the provided project identifier and role ID.
 
@@ -14543,9 +12798,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
-        query_params = {k: v for k, v in [("excludeInactiveUsers", excludeInactiveUsers)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}'
+        query_params = {k: v for k, v in [('excludeInactiveUsers', excludeInactiveUsers)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14554,9 +12809,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_actor_users(
-        self, projectIdOrKey: str, id: str, group: list[str] | None = None, groupId: list[str] | None = None, user: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def add_actor_users(self, projectIdOrKey: str, id: str, group: list[str] | None=None, groupId: list[str] | None=None, user: list[str] | None=None) -> dict[str, Any]:
         """
         Partially updates a project role's name or description using the Jira REST API.
 
@@ -14584,11 +12837,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"group": group, "groupId": groupId, "user": user}
+        request_body_data = {'group': group, 'groupId': groupId, 'user': user}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14597,9 +12850,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_actors(
-        self, projectIdOrKey: str, id: str, categorisedActors: dict[str, list[str]] | None = None, id_body: int | None = None
-    ) -> dict[str, Any]:
+    async def set_actors(self, projectIdOrKey: str, id: str, categorisedActors: dict[str, list[str]] | None=None, id_body: int | None=None) -> dict[str, Any]:
         """
         Fully updates a project role by ID for a specified Jira project using the provided parameters.
 
@@ -14633,11 +12884,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"categorisedActors": categorisedActors, "id": id_body}
+        request_body_data = {'categorisedActors': categorisedActors, 'id': id_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/role/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14646,9 +12897,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_role_details(
-        self, projectIdOrKey: str, currentMember: bool | None = None, excludeConnectAddons: bool | None = None
-    ) -> list[Any]:
+    async def get_project_role_details(self, projectIdOrKey: str, currentMember: bool | None=None, excludeConnectAddons: bool | None=None) -> list[Any]:
         """
         Retrieves role details for a specified project, including information about project roles and their associated members, using a GET request.
 
@@ -14669,11 +12918,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/roledetails"
-        query_params = {
-            k: v for k, v in [("currentMember", currentMember), ("excludeConnectAddons", excludeConnectAddons)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/roledetails'
+        query_params = {k: v for k, v in [('currentMember', currentMember), ('excludeConnectAddons', excludeConnectAddons)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14701,9 +12948,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/statuses"
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/statuses'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14712,16 +12959,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_versions_paginated(
-        self,
-        projectIdOrKey: str,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        orderBy: str | None = None,
-        query: str | None = None,
-        status: str | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_project_versions_paginated(self, projectIdOrKey: str, startAt: int | None=None, maxResults: int | None=None, orderBy: str | None=None, query: str | None=None, status: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a list of versions for a specified Jira project, allowing for pagination, filtering, and expansion of details using various query parameters.
 
@@ -14746,20 +12984,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/version"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("orderBy", orderBy),
-                ("query", query),
-                ("status", status),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/version'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('orderBy', orderBy), ('query', query), ('status', status), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14768,7 +12995,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_versions(self, projectIdOrKey: str, expand: str | None = None) -> list[Any]:
+    async def get_project_versions(self, projectIdOrKey: str, expand: str | None=None) -> list[Any]:
         """
         Retrieves all versions of a specified Jira project, including version details like names, descriptions, and issue status counts.
 
@@ -14788,9 +13015,9 @@ class JiraApp(APIApplication):
         """
         if projectIdOrKey is None:
             raise ValueError("Missing required parameter 'projectIdOrKey'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectIdOrKey}/versions"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectIdOrKey}/versions'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14818,9 +13045,9 @@ class JiraApp(APIApplication):
         """
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectId}/email"
+        url = f'{self.base_url}/rest/api/3/project/{projectId}/email'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14829,9 +13056,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_project_email(
-        self, projectId: str, emailAddress: str | None = None, emailAddressStatus: list[str] | None = None
-    ) -> Any:
+    async def update_project_email(self, projectId: str, emailAddress: str | None=None, emailAddressStatus: list[str] | None=None) -> Any:
         """
         Updates the sender email address for a specific project's notifications and returns a success status upon completion.
 
@@ -14853,11 +13078,11 @@ class JiraApp(APIApplication):
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
-        request_body_data = {"emailAddress": emailAddress, "emailAddressStatus": emailAddressStatus}
+        request_body_data = {'emailAddress': emailAddress, 'emailAddressStatus': emailAddressStatus}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectId}/email"
+        url = f'{self.base_url}/rest/api/3/project/{projectId}/email'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14885,9 +13110,9 @@ class JiraApp(APIApplication):
         """
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectId}/hierarchy"
+        url = f'{self.base_url}/rest/api/3/project/{projectId}/hierarchy'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14915,9 +13140,9 @@ class JiraApp(APIApplication):
         """
         if projectKeyOrId is None:
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme"
+        url = f'{self.base_url}/rest/api/3/project/{projectKeyOrId}/issuesecuritylevelscheme'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14926,7 +13151,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_notification_scheme_by_project(self, projectKeyOrId: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_notification_scheme_by_project(self, projectKeyOrId: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves the notification scheme associated with a specific project in Jira, including event configurations and recipient details.
 
@@ -14946,9 +13171,9 @@ class JiraApp(APIApplication):
         """
         if projectKeyOrId is None:
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/notificationscheme"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectKeyOrId}/notificationscheme'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14957,7 +13182,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_assigned_permission_scheme(self, projectKeyOrId: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_assigned_permission_scheme(self, projectKeyOrId: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves the permission scheme associated with a specified Jira project by its key or ID, allowing optional expansion of certain details.
 
@@ -14977,9 +13202,9 @@ class JiraApp(APIApplication):
         """
         if projectKeyOrId is None:
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/permissionscheme"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/project/{projectKeyOrId}/permissionscheme'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -14988,7 +13213,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def assign_permission_scheme(self, projectKeyOrId: str, id: int, expand: str | None = None) -> dict[str, Any]:
+    async def assign_permission_scheme(self, projectKeyOrId: str, id: int, expand: str | None=None) -> dict[str, Any]:
         """
         Assigns a permission scheme to a project using the Jira Cloud API, allowing administrators to manage project permissions by associating a specific permission scheme with a given project.
 
@@ -15010,11 +13235,11 @@ class JiraApp(APIApplication):
         if projectKeyOrId is None:
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
         request_body_data = None
-        request_body_data = {"id": id}
+        request_body_data = {'id': id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/permissionscheme"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/project/{projectKeyOrId}/permissionscheme'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15042,9 +13267,9 @@ class JiraApp(APIApplication):
         """
         if projectKeyOrId is None:
             raise ValueError("Missing required parameter 'projectKeyOrId'.")
-        url = f"{self.base_url}/rest/api/3/project/{projectKeyOrId}/securitylevel"
+        url = f'{self.base_url}/rest/api/3/project/{projectKeyOrId}/securitylevel'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15067,9 +13292,9 @@ class JiraApp(APIApplication):
         Tags:
             Project categories
         """
-        url = f"{self.base_url}/rest/api/3/projectCategory"
+        url = f'{self.base_url}/rest/api/3/projectCategory'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15078,9 +13303,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_project_category(
-        self, description: str | None = None, id: str | None = None, name: str | None = None, self_arg_body: str | None = None
-    ) -> dict[str, Any]:
+    async def create_project_category(self, description: str | None=None, id: str | None=None, name: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Creates a new project category in Jira and returns the created category details.
 
@@ -15101,11 +13324,11 @@ class JiraApp(APIApplication):
             Project categories
         """
         request_body_data = None
-        request_body_data = {"description": description, "id": id, "name": name, "self": self_arg_body}
+        request_body_data = {'description': description, 'id': id, 'name': name, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/projectCategory"
+        url = f'{self.base_url}/rest/api/3/projectCategory'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15133,9 +13356,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/projectCategory/{id}"
+        url = f'{self.base_url}/rest/api/3/projectCategory/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15163,9 +13386,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/projectCategory/{id}"
+        url = f'{self.base_url}/rest/api/3/projectCategory/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15174,9 +13397,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_project_category(
-        self, id: str, description: str | None = None, id_body: str | None = None, name: str | None = None, self_arg_body: str | None = None
-    ) -> dict[str, Any]:
+    async def update_project_category(self, id: str, description: str | None=None, id_body: str | None=None, name: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Updates a specific project category by ID in Jira using the PUT method, allowing modifications to the category details such as name and description.
 
@@ -15200,11 +13421,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "id": id_body, "name": name, "self": self_arg_body}
+        request_body_data = {'description': description, 'id': id_body, 'name': name, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/projectCategory/{id}"
+        url = f'{self.base_url}/rest/api/3/projectCategory/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15213,7 +13434,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def validate_project_key(self, key: str | None = None) -> dict[str, Any]:
+    async def validate_project_key(self, key: str | None=None) -> dict[str, Any]:
         """
         Validates a project key by confirming the key's validity and checking for existing usage in Jira Cloud.
 
@@ -15230,9 +13451,9 @@ class JiraApp(APIApplication):
         Tags:
             Project key and name validation
         """
-        url = f"{self.base_url}/rest/api/3/projectvalidate/key"
-        query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/projectvalidate/key'
+        query_params = {k: v for k, v in [('key', key)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15241,7 +13462,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_valid_project_key(self, key: str | None = None) -> Any:
+    async def get_valid_project_key(self, key: str | None=None) -> Any:
         """
         Validates a project key by confirming it is a valid string and not in use, returning success or error messages using the Jira Cloud REST API.
 
@@ -15258,9 +13479,9 @@ class JiraApp(APIApplication):
         Tags:
             Project key and name validation
         """
-        url = f"{self.base_url}/rest/api/3/projectvalidate/validProjectKey"
-        query_params = {k: v for k, v in [("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/projectvalidate/validProjectKey'
+        query_params = {k: v for k, v in [('key', key)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15286,9 +13507,9 @@ class JiraApp(APIApplication):
         Tags:
             Project key and name validation
         """
-        url = f"{self.base_url}/rest/api/3/projectvalidate/validProjectName"
-        query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/projectvalidate/validProjectName'
+        query_params = {k: v for k, v in [('name', name)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15311,9 +13532,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue resolutions
         """
-        url = f"{self.base_url}/rest/api/3/resolution"
+        url = f'{self.base_url}/rest/api/3/resolution'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15322,7 +13543,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_resolution(self, name: str, description: str | None = None) -> dict[str, Any]:
+    async def create_resolution(self, name: str, description: str | None=None) -> dict[str, Any]:
         """
         Creates a new issue resolution in Jira using the REST API and returns the created resolution details.
 
@@ -15341,11 +13562,11 @@ class JiraApp(APIApplication):
             Issue resolutions
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/resolution"
+        url = f'{self.base_url}/rest/api/3/resolution'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15372,11 +13593,11 @@ class JiraApp(APIApplication):
             Issue resolutions
         """
         request_body_data = None
-        request_body_data = {"id": id}
+        request_body_data = {'id': id}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/resolution/default"
+        url = f'{self.base_url}/rest/api/3/resolution/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15385,7 +13606,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_resolutions(self, ids: list[str], after: str | None = None, position: str | None = None) -> Any:
+    async def move_resolutions(self, ids: list[str], after: str | None=None, position: str | None=None) -> Any:
         """
         Moves issue resolutions using the Jira Cloud API with a PUT request to the "/rest/api/3/resolution/move" endpoint.
 
@@ -15405,11 +13626,11 @@ class JiraApp(APIApplication):
             Issue resolutions
         """
         request_body_data = None
-        request_body_data = {"after": after, "ids": ids, "position": position}
+        request_body_data = {'after': after, 'ids': ids, 'position': position}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/resolution/move"
+        url = f'{self.base_url}/rest/api/3/resolution/move'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15418,9 +13639,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_resolutions(
-        self, startAt: str | None = None, maxResults: str | None = None, id: list[str] | None = None, onlyDefault: bool | None = None
-    ) -> dict[str, Any]:
+    async def search_resolutions(self, startAt: str | None=None, maxResults: str | None=None, id: list[str] | None=None, onlyDefault: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of Jira issue resolutions using the GET method at the "/rest/api/3/resolution/search" path, allowing for filtering by parameters such as start position, maximum results, resolution ID, and default-only options.
 
@@ -15440,11 +13659,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue resolutions
         """
-        url = f"{self.base_url}/rest/api/3/resolution/search"
-        query_params = {
-            k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("id", id), ("onlyDefault", onlyDefault)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/resolution/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('onlyDefault', onlyDefault)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15473,9 +13690,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/resolution/{id}"
-        query_params = {k: v for k, v in [("replaceWith", replaceWith)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/resolution/{id}'
+        query_params = {k: v for k, v in [('replaceWith', replaceWith)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15503,9 +13720,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/resolution/{id}"
+        url = f'{self.base_url}/rest/api/3/resolution/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15514,7 +13731,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_resolution(self, id: str, name: str, description: str | None = None) -> Any:
+    async def update_resolution(self, id: str, name: str, description: str | None=None) -> Any:
         """
         Updates the specified resolution's details in Jira using the provided ID, returning a success status upon completion.
 
@@ -15536,11 +13753,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/resolution/{id}"
+        url = f'{self.base_url}/rest/api/3/resolution/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15563,9 +13780,9 @@ class JiraApp(APIApplication):
         Tags:
             Project roles
         """
-        url = f"{self.base_url}/rest/api/3/role"
+        url = f'{self.base_url}/rest/api/3/role'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15574,7 +13791,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_project_role(self, description: str | None = None, name: str | None = None) -> dict[str, Any]:
+    async def create_project_role(self, description: str | None=None, name: str | None=None) -> dict[str, Any]:
         """
         Creates a new role using the Jira API and returns a status message, handling responses for various HTTP status codes including successful creation, bad requests, unauthorized access, forbidden actions, and conflicts.
 
@@ -15593,11 +13810,11 @@ class JiraApp(APIApplication):
             Project roles
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/role"
+        url = f'{self.base_url}/rest/api/3/role'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15606,7 +13823,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_project_role(self, id: str, swap: int | None = None) -> Any:
+    async def delete_project_role(self, id: str, swap: int | None=None) -> Any:
         """
         Deletes a role by its ID using the REST API.
 
@@ -15626,9 +13843,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/role/{id}"
-        query_params = {k: v for k, v in [("swap", swap)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/role/{id}'
+        query_params = {k: v for k, v in [('swap', swap)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15656,9 +13873,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/role/{id}"
+        url = f'{self.base_url}/rest/api/3/role/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15667,7 +13884,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def partial_update_project_role(self, id: str, description: str | None = None, name: str | None = None) -> dict[str, Any]:
+    async def partial_update_project_role(self, id: str, description: str | None=None, name: str | None=None) -> dict[str, Any]:
         """
         Updates a specific project role's configuration and returns the modified role details.
 
@@ -15689,11 +13906,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/role/{id}"
+        url = f'{self.base_url}/rest/api/3/role/{id}'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15702,7 +13919,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def fully_update_project_role(self, id: str, description: str | None = None, name: str | None = None) -> dict[str, Any]:
+    async def fully_update_project_role(self, id: str, description: str | None=None, name: str | None=None) -> dict[str, Any]:
         """
         Updates or replaces an existing role's configuration via specified ID and returns the operation status.
 
@@ -15724,11 +13941,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/role/{id}"
+        url = f'{self.base_url}/rest/api/3/role/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15737,9 +13954,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_role_actor_by_id(
-        self, id: str, user: str | None = None, groupId: str | None = None, group: str | None = None
-    ) -> dict[str, Any]:
+    async def delete_role_actor_by_id(self, id: str, user: str | None=None, groupId: str | None=None, group: str | None=None) -> dict[str, Any]:
         """
         Deletes actors from a role using the "DELETE" method with options to specify a user or group ID, and returns corresponding status codes based on the success or failure of the operation.
 
@@ -15761,9 +13976,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/role/{id}/actors"
-        query_params = {k: v for k, v in [("user", user), ("groupId", groupId), ("group", group)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/role/{id}/actors'
+        query_params = {k: v for k, v in [('user', user), ('groupId', groupId), ('group', group)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15791,9 +14006,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/role/{id}/actors"
+        url = f'{self.base_url}/rest/api/3/role/{id}/actors'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15802,9 +14017,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_project_role_actors_to_role(
-        self, id: str, group: list[str] | None = None, groupId: list[Any] | None = None, user: list[str] | None = None
-    ) -> dict[str, Any]:
+    async def add_project_role_actors_to_role(self, id: str, group: list[str] | None=None, groupId: list[Any] | None=None, user: list[str] | None=None) -> dict[str, Any]:
         """
         Adds or modifies actors (users/groups) for a specific project role ID and returns the updated role details.
 
@@ -15827,11 +14040,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"group": group, "groupId": groupId, "user": user}
+        request_body_data = {'group': group, 'groupId': groupId, 'user': user}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/role/{id}/actors"
+        url = f'{self.base_url}/rest/api/3/role/{id}/actors'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15840,15 +14053,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_screens(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        id: list[int] | None = None,
-        queryString: str | None = None,
-        scope: list[str] | None = None,
-        orderBy: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_screens(self, startAt: int | None=None, maxResults: int | None=None, id: list[int] | None=None, queryString: str | None=None, scope: list[str] | None=None, orderBy: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of all screens or specified screens by ID in Jira, allowing for optional filtering by query parameters such as start position, maximum results, and query string.
 
@@ -15870,20 +14075,9 @@ class JiraApp(APIApplication):
         Tags:
             Screens
         """
-        url = f"{self.base_url}/rest/api/3/screens"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("queryString", queryString),
-                ("scope", scope),
-                ("orderBy", orderBy),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/screens'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('queryString', queryString), ('scope', scope), ('orderBy', orderBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15892,7 +14086,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_screen(self, name: str, description: str | None = None) -> dict[str, Any]:
+    async def create_screen(self, name: str, description: str | None=None) -> dict[str, Any]:
         """
         Creates a new screen in Jira using the REST API and returns a successful response if the operation is completed without errors.
 
@@ -15911,11 +14105,11 @@ class JiraApp(APIApplication):
             Screens
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screens"
+        url = f'{self.base_url}/rest/api/3/screens'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15944,9 +14138,9 @@ class JiraApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/screens/addToDefault/{fieldId}"
+        url = f'{self.base_url}/rest/api/3/screens/addToDefault/{fieldId}'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -15955,9 +14149,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_bulk_screen_tabs(
-        self, screenId: list[int] | None = None, tabId: list[int] | None = None, startAt: int | None = None, maxResult: int | None = None
-    ) -> Any:
+    async def get_bulk_screen_tabs(self, screenId: list[int] | None=None, tabId: list[int] | None=None, startAt: int | None=None, maxResult: int | None=None) -> Any:
         """
         Retrieves the list of tabs for a specified screen in Jira Cloud, including pagination support through startAt and maxResult parameters.
 
@@ -15977,11 +14169,9 @@ class JiraApp(APIApplication):
         Tags:
             Screen tabs
         """
-        url = f"{self.base_url}/rest/api/3/screens/tabs"
-        query_params = {
-            k: v for k, v in [("screenId", screenId), ("tabId", tabId), ("startAt", startAt), ("maxResult", maxResult)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/screens/tabs'
+        query_params = {k: v for k, v in [('screenId', screenId), ('tabId', tabId), ('startAt', startAt), ('maxResult', maxResult)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16009,9 +14199,9 @@ class JiraApp(APIApplication):
         """
         if screenId is None:
             raise ValueError("Missing required parameter 'screenId'.")
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16020,7 +14210,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_screen(self, screenId: str, description: str | None = None, name: str | None = None) -> dict[str, Any]:
+    async def update_screen(self, screenId: str, description: str | None=None, name: str | None=None) -> dict[str, Any]:
         """
         Updates or replaces a screen resource identified by the specified `screenId` using the PUT method.
 
@@ -16042,11 +14232,11 @@ class JiraApp(APIApplication):
         if screenId is None:
             raise ValueError("Missing required parameter 'screenId'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name}
+        request_body_data = {'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16074,9 +14264,9 @@ class JiraApp(APIApplication):
         """
         if screenId is None:
             raise ValueError("Missing required parameter 'screenId'.")
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/availableFields"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/availableFields'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16085,7 +14275,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_screen_tabs(self, screenId: str, projectKey: str | None = None) -> list[Any]:
+    async def get_all_screen_tabs(self, screenId: str, projectKey: str | None=None) -> list[Any]:
         """
         Retrieves the list of tabs configured for a specific screen in Jira using the provided screen ID.
 
@@ -16105,9 +14295,9 @@ class JiraApp(APIApplication):
         """
         if screenId is None:
             raise ValueError("Missing required parameter 'screenId'.")
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs"
-        query_params = {k: v for k, v in [("projectKey", projectKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs'
+        query_params = {k: v for k, v in [('projectKey', projectKey)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16116,7 +14306,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_screen_tab(self, screenId: str, name: str, id: int | None = None) -> dict[str, Any]:
+    async def add_screen_tab(self, screenId: str, name: str, id: int | None=None) -> dict[str, Any]:
         """
         Creates a new tab in a Jira screen using the specified screen ID and returns the created screen tab.
 
@@ -16138,11 +14328,11 @@ class JiraApp(APIApplication):
         if screenId is None:
             raise ValueError("Missing required parameter 'screenId'.")
         request_body_data = None
-        request_body_data = {"id": id, "name": name}
+        request_body_data = {'id': id, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16173,9 +14363,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'screenId'.")
         if tabId is None:
             raise ValueError("Missing required parameter 'tabId'.")
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16184,7 +14374,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def rename_screen_tab(self, screenId: str, tabId: str, name: str, id: int | None = None) -> dict[str, Any]:
+    async def rename_screen_tab(self, screenId: str, tabId: str, name: str, id: int | None=None) -> dict[str, Any]:
         """
         Updates the details of a specific screen tab identified by `screenId` and `tabId` using the Jira API, returning a status message upon successful modification.
 
@@ -16209,11 +14399,11 @@ class JiraApp(APIApplication):
         if tabId is None:
             raise ValueError("Missing required parameter 'tabId'.")
         request_body_data = None
-        request_body_data = {"id": id, "name": name}
+        request_body_data = {'id': id, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16222,7 +14412,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_screen_tab_fields(self, screenId: str, tabId: str, projectKey: str | None = None) -> list[Any]:
+    async def get_all_screen_tab_fields(self, screenId: str, tabId: str, projectKey: str | None=None) -> list[Any]:
         """
         Retrieves all fields associated with a specific screen tab in Jira Cloud.
 
@@ -16245,9 +14435,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'screenId'.")
         if tabId is None:
             raise ValueError("Missing required parameter 'tabId'.")
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
-        query_params = {k: v for k, v in [("projectKey", projectKey)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields'
+        query_params = {k: v for k, v in [('projectKey', projectKey)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16280,11 +14470,11 @@ class JiraApp(APIApplication):
         if tabId is None:
             raise ValueError("Missing required parameter 'tabId'.")
         request_body_data = None
-        request_body_data = {"fieldId": fieldId}
+        request_body_data = {'fieldId': fieldId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16318,9 +14508,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'tabId'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16329,7 +14519,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_screen_tab_field(self, screenId: str, tabId: str, id: str, after: str | None = None, position: str | None = None) -> Any:
+    async def move_screen_tab_field(self, screenId: str, tabId: str, id: str, after: str | None=None, position: str | None=None) -> Any:
         """
         Moves a screen tab field to a new position using the Jira Cloud platform REST API, allowing for reorganization of issue details fields on a specific screen tab.
 
@@ -16357,11 +14547,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"after": after, "position": position}
+        request_body_data = {'after': after, 'position': position}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/fields/{id}/move'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16396,9 +14586,9 @@ class JiraApp(APIApplication):
         if pos is None:
             raise ValueError("Missing required parameter 'pos'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/move/{pos}"
+        url = f'{self.base_url}/rest/api/3/screens/{screenId}/tabs/{tabId}/move/{pos}'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16407,15 +14597,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_screen_schemes(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        id: list[int] | None = None,
-        expand: str | None = None,
-        queryString: str | None = None,
-        orderBy: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_screen_schemes(self, startAt: int | None=None, maxResults: int | None=None, id: list[int] | None=None, expand: str | None=None, queryString: str | None=None, orderBy: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of screen schemes used in classic projects in Jira Cloud using the GET method, allowing for optional filtering by query parameters such as startAt, maxResults, id, expand, queryString, and orderBy.
 
@@ -16437,20 +14619,9 @@ class JiraApp(APIApplication):
         Tags:
             Screen schemes
         """
-        url = f"{self.base_url}/rest/api/3/screenscheme"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("id", id),
-                ("expand", expand),
-                ("queryString", queryString),
-                ("orderBy", orderBy),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/screenscheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('id', id), ('expand', expand), ('queryString', queryString), ('orderBy', orderBy)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16459,7 +14630,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_screen_scheme(self, name: str, screens: Any, description: str | None = None) -> dict[str, Any]:
+    async def create_screen_scheme(self, name: str, screens: Any, description: str | None=None) -> dict[str, Any]:
         """
         Creates a new screen scheme in Jira for defining screen configurations associated with workflows and returns the created resource upon success.
 
@@ -16479,11 +14650,11 @@ class JiraApp(APIApplication):
             Screen schemes
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name, "screens": screens}
+        request_body_data = {'description': description, 'name': name, 'screens': screens}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screenscheme"
+        url = f'{self.base_url}/rest/api/3/screenscheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16511,9 +14682,9 @@ class JiraApp(APIApplication):
         """
         if screenSchemeId is None:
             raise ValueError("Missing required parameter 'screenSchemeId'.")
-        url = f"{self.base_url}/rest/api/3/screenscheme/{screenSchemeId}"
+        url = f'{self.base_url}/rest/api/3/screenscheme/{screenSchemeId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16522,9 +14693,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_screen_scheme(
-        self, screenSchemeId: str, description: str | None = None, name: str | None = None, screens: Any | None = None
-    ) -> Any:
+    async def update_screen_scheme(self, screenSchemeId: str, description: str | None=None, name: str | None=None, screens: Any | None=None) -> Any:
         """
         Updates a specific screen scheme, identified by its ID, in Jira Cloud's classic projects, allowing modifications to its details and settings.
 
@@ -16547,11 +14716,11 @@ class JiraApp(APIApplication):
         if screenSchemeId is None:
             raise ValueError("Missing required parameter 'screenSchemeId'.")
         request_body_data = None
-        request_body_data = {"description": description, "name": name, "screens": screens}
+        request_body_data = {'description': description, 'name': name, 'screens': screens}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/screenscheme/{screenSchemeId}"
+        url = f'{self.base_url}/rest/api/3/screenscheme/{screenSchemeId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16560,18 +14729,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_for_issues_using_jql(
-        self,
-        jql: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        validateQuery: str | None = None,
-        fields: list[str] | None = None,
-        expand: str | None = None,
-        properties: list[str] | None = None,
-        fieldsByKeys: bool | None = None,
-        failFast: bool | None = None,
-    ) -> dict[str, Any]:
+    async def search_for_issues_using_jql(self, jql: str | None=None, startAt: int | None=None, maxResults: int | None=None, validateQuery: str | None=None, fields: list[str] | None=None, expand: str | None=None, properties: list[str] | None=None, fieldsByKeys: bool | None=None, failFast: bool | None=None) -> dict[str, Any]:
         """
         Searches for Jira issues using JQL queries and returns paginated results with specified fields and expansion options.
 
@@ -16596,23 +14754,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue search
         """
-        url = f"{self.base_url}/rest/api/3/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("jql", jql),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("validateQuery", validateQuery),
-                ("fields", fields),
-                ("expand", expand),
-                ("properties", properties),
-                ("fieldsByKeys", fieldsByKeys),
-                ("failFast", failFast),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/search'
+        query_params = {k: v for k, v in [('jql', jql), ('startAt', startAt), ('maxResults', maxResults), ('validateQuery', validateQuery), ('fields', fields), ('expand', expand), ('properties', properties), ('fieldsByKeys', fieldsByKeys), ('failFast', failFast)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16621,17 +14765,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_for_issues_using_jql_post(
-        self,
-        expand: list[str] | None = None,
-        fields: list[str] | None = None,
-        fieldsByKeys: bool | None = None,
-        jql: str | None = None,
-        maxResults: int | None = None,
-        properties: list[str] | None = None,
-        startAt: int | None = None,
-        validateQuery: str | None = None,
-    ) -> dict[str, Any]:
+    async def search_for_issues_using_jql_post(self, expand: list[str] | None=None, fields: list[str] | None=None, fieldsByKeys: bool | None=None, jql: str | None=None, maxResults: int | None=None, properties: list[str] | None=None, startAt: int | None=None, validateQuery: str | None=None) -> dict[str, Any]:
         """
         Searches Jira issues using JQL queries and returns paginated results.
 
@@ -16691,20 +14825,11 @@ class JiraApp(APIApplication):
             Issue search
         """
         request_body_data = None
-        request_body_data = {
-            "expand": expand,
-            "fields": fields,
-            "fieldsByKeys": fieldsByKeys,
-            "jql": jql,
-            "maxResults": maxResults,
-            "properties": properties,
-            "startAt": startAt,
-            "validateQuery": validateQuery,
-        }
+        request_body_data = {'expand': expand, 'fields': fields, 'fieldsByKeys': fieldsByKeys, 'jql': jql, 'maxResults': maxResults, 'properties': properties, 'startAt': startAt, 'validateQuery': validateQuery}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/search"
+        url = f'{self.base_url}/rest/api/3/search'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16713,7 +14838,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def count_issues(self, jql: str | None = None) -> dict[str, Any]:
+    async def count_issues(self, jql: str | None=None) -> dict[str, Any]:
         """
         Retrieves an approximate count of Jira issues matching a specified JQL query using the POST method at the "/rest/api/3/search/approximate-count" endpoint.
 
@@ -16731,11 +14856,11 @@ class JiraApp(APIApplication):
             Issue search
         """
         request_body_data = None
-        request_body_data = {"jql": jql}
+        request_body_data = {'jql': jql}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/search/approximate-count"
+        url = f'{self.base_url}/rest/api/3/search/approximate-count'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16744,9 +14869,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_for_issues_ids(
-        self, jql: str | None = None, maxResults: int | None = None, nextPageToken: str | None = None
-    ) -> dict[str, Any]:
+    async def search_for_issues_ids(self, jql: str | None=None, maxResults: int | None=None, nextPageToken: str | None=None) -> dict[str, Any]:
         """
         Searches for Jira issues using JQL (Jira Query Language) and returns a list of matching issue IDs, along with a token for fetching additional results if needed, using the `POST` method at the path "/rest/api/3/search/id".
 
@@ -16766,11 +14889,11 @@ class JiraApp(APIApplication):
             Issue search
         """
         request_body_data = None
-        request_body_data = {"jql": jql, "maxResults": maxResults, "nextPageToken": nextPageToken}
+        request_body_data = {'jql': jql, 'maxResults': maxResults, 'nextPageToken': nextPageToken}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/search/id"
+        url = f'{self.base_url}/rest/api/3/search/id'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16779,18 +14902,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_search_by_jql(
-        self,
-        jql: str | None = None,
-        nextPageToken: str | None = None,
-        maxResults: int | None = None,
-        fields: list[str] | None = None,
-        expand: str | None = None,
-        properties: list[str] | None = None,
-        fieldsByKeys: bool | None = None,
-        failFast: bool | None = None,
-        reconcileIssues: list[int] | None = None,
-    ) -> dict[str, Any]:
+    async def get_search_by_jql(self, jql: str | None=None, nextPageToken: str | None=None, maxResults: int | None=None, fields: list[str] | None=None, expand: str | None=None, properties: list[str] | None=None, fieldsByKeys: bool | None=None, failFast: bool | None=None, reconcileIssues: list[int] | None=None) -> dict[str, Any]:
         """
         Retrieves a list of Jira issues matching a JQL query with pagination support, customizable field selection, and result optimization options.
 
@@ -16815,23 +14927,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue search
         """
-        url = f"{self.base_url}/rest/api/3/search/jql"
-        query_params = {
-            k: v
-            for k, v in [
-                ("jql", jql),
-                ("nextPageToken", nextPageToken),
-                ("maxResults", maxResults),
-                ("fields", fields),
-                ("expand", expand),
-                ("properties", properties),
-                ("fieldsByKeys", fieldsByKeys),
-                ("failFast", failFast),
-                ("reconcileIssues", reconcileIssues),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/search/jql'
+        query_params = {k: v for k, v in [('jql', jql), ('nextPageToken', nextPageToken), ('maxResults', maxResults), ('fields', fields), ('expand', expand), ('properties', properties), ('fieldsByKeys', fieldsByKeys), ('failFast', failFast), ('reconcileIssues', reconcileIssues)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16840,17 +14938,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def post_search_jql(
-        self,
-        expand: str | None = None,
-        fields: list[str] | None = None,
-        fieldsByKeys: bool | None = None,
-        jql: str | None = None,
-        maxResults: int | None = None,
-        nextPageToken: str | None = None,
-        properties: list[str] | None = None,
-        reconcileIssues: list[int] | None = None,
-    ) -> dict[str, Any]:
+    async def post_search_jql(self, expand: str | None=None, fields: list[str] | None=None, fieldsByKeys: bool | None=None, jql: str | None=None, maxResults: int | None=None, nextPageToken: str | None=None, properties: list[str] | None=None, reconcileIssues: list[int] | None=None) -> dict[str, Any]:
         """
         Executes a JQL query to search for issues, returning matching results and pagination tokens.
 
@@ -16907,20 +14995,11 @@ class JiraApp(APIApplication):
             Issue search
         """
         request_body_data = None
-        request_body_data = {
-            "expand": expand,
-            "fields": fields,
-            "fieldsByKeys": fieldsByKeys,
-            "jql": jql,
-            "maxResults": maxResults,
-            "nextPageToken": nextPageToken,
-            "properties": properties,
-            "reconcileIssues": reconcileIssues,
-        }
+        request_body_data = {'expand': expand, 'fields': fields, 'fieldsByKeys': fieldsByKeys, 'jql': jql, 'maxResults': maxResults, 'nextPageToken': nextPageToken, 'properties': properties, 'reconcileIssues': reconcileIssues}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/search/jql"
+        url = f'{self.base_url}/rest/api/3/search/jql'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16948,9 +15027,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/securitylevel/{id}"
+        url = f'{self.base_url}/rest/api/3/securitylevel/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16973,9 +15052,9 @@ class JiraApp(APIApplication):
         Tags:
             Server info
         """
-        url = f"{self.base_url}/rest/api/3/serverInfo"
+        url = f'{self.base_url}/rest/api/3/serverInfo'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -16998,9 +15077,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue navigator settings
         """
-        url = f"{self.base_url}/rest/api/3/settings/columns"
+        url = f'{self.base_url}/rest/api/3/settings/columns'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17009,7 +15088,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_settings_columns(self, columns: list[str] | None = None) -> Any:
+    async def update_settings_columns(self, columns: list[str] | None=None) -> Any:
         """
         Updates board column configurations via a PUT request to modify their settings.
 
@@ -17031,13 +15110,13 @@ class JiraApp(APIApplication):
         request_body_data = {}
         files_data = {}
         if columns is not None:
-            request_body_data["columns"] = columns
+            request_body_data['columns'] = columns
         files_data = {k: v for k, v in files_data.items() if v is not None}
         if not files_data:
             files_data = None
-        url = f"{self.base_url}/rest/api/3/settings/columns"
+        url = f'{self.base_url}/rest/api/3/settings/columns'
         query_params = {}
-        response = self._put(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        response = await self._aput(url, data=request_body_data, files=files_data, params=query_params, content_type='multipart/form-data')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17060,9 +15139,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflow statuses
         """
-        url = f"{self.base_url}/rest/api/3/status"
+        url = f'{self.base_url}/rest/api/3/status'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17090,9 +15169,9 @@ class JiraApp(APIApplication):
         """
         if idOrName is None:
             raise ValueError("Missing required parameter 'idOrName'.")
-        url = f"{self.base_url}/rest/api/3/status/{idOrName}"
+        url = f'{self.base_url}/rest/api/3/status/{idOrName}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17115,9 +15194,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflow status categories
         """
-        url = f"{self.base_url}/rest/api/3/statuscategory"
+        url = f'{self.base_url}/rest/api/3/statuscategory'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17145,9 +15224,9 @@ class JiraApp(APIApplication):
         """
         if idOrKey is None:
             raise ValueError("Missing required parameter 'idOrKey'.")
-        url = f"{self.base_url}/rest/api/3/statuscategory/{idOrKey}"
+        url = f'{self.base_url}/rest/api/3/statuscategory/{idOrKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17173,9 +15252,9 @@ class JiraApp(APIApplication):
         Tags:
             Status
         """
-        url = f"{self.base_url}/rest/api/3/statuses"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/statuses'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17184,7 +15263,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_statuses_by_id(self, id: list[str], expand: str | None = None) -> list[Any]:
+    async def get_statuses_by_id(self, id: list[str], expand: str | None=None) -> list[Any]:
         """
         Retrieves a list of statuses in Jira using the "/rest/api/3/statuses" endpoint, allowing you to fetch details of statuses based on query parameters like expansion and ID, though specific details about what statuses are returned are not provided.
 
@@ -17202,9 +15281,9 @@ class JiraApp(APIApplication):
         Tags:
             Status
         """
-        url = f"{self.base_url}/rest/api/3/statuses"
-        query_params = {k: v for k, v in [("expand", expand), ("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/statuses'
+        query_params = {k: v for k, v in [('expand', expand), ('id', id)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17232,11 +15311,11 @@ class JiraApp(APIApplication):
             Status
         """
         request_body_data = None
-        request_body_data = {"scope": scope, "statuses": statuses}
+        request_body_data = {'scope': scope, 'statuses': statuses}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/statuses"
+        url = f'{self.base_url}/rest/api/3/statuses'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17263,11 +15342,11 @@ class JiraApp(APIApplication):
             Status
         """
         request_body_data = None
-        request_body_data = {"statuses": statuses}
+        request_body_data = {'statuses': statuses}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/statuses"
+        url = f'{self.base_url}/rest/api/3/statuses'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17276,15 +15355,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search(
-        self,
-        expand: str | None = None,
-        projectId: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        searchString: str | None = None,
-        statusCategory: str | None = None,
-    ) -> dict[str, Any]:
+    async def search(self, expand: str | None=None, projectId: str | None=None, startAt: int | None=None, maxResults: int | None=None, searchString: str | None=None, statusCategory: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of Jira statuses with optional filtering by project, search string, or status category.
 
@@ -17306,20 +15377,9 @@ class JiraApp(APIApplication):
         Tags:
             Status
         """
-        url = f"{self.base_url}/rest/api/3/statuses/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("expand", expand),
-                ("projectId", projectId),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("searchString", searchString),
-                ("statusCategory", statusCategory),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/statuses/search'
+        query_params = {k: v for k, v in [('expand', expand), ('projectId', projectId), ('startAt', startAt), ('maxResults', maxResults), ('searchString', searchString), ('statusCategory', statusCategory)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17328,9 +15388,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_issue_type_usages(
-        self, statusId: str, projectId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_issue_type_usages(self, statusId: str, projectId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of issue types associated with a specific project and status, including pagination controls via `nextPageToken` and `maxResults`.
 
@@ -17354,9 +15412,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'statusId'.")
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
-        url = f"{self.base_url}/rest/api/3/statuses/{statusId}/project/{projectId}/issueTypeUsages"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/statuses/{statusId}/project/{projectId}/issueTypeUsages'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17365,9 +15423,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_usages_for_status(
-        self, statusId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_project_usages_for_status(self, statusId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves project usage information for a specific status identified by the status ID, supporting pagination through optional parameters for the next page token and maximum results.
 
@@ -17388,9 +15444,9 @@ class JiraApp(APIApplication):
         """
         if statusId is None:
             raise ValueError("Missing required parameter 'statusId'.")
-        url = f"{self.base_url}/rest/api/3/statuses/{statusId}/projectUsages"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/statuses/{statusId}/projectUsages'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17399,9 +15455,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_workflow_usages_for_status(
-        self, statusId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_workflow_usages_for_status(self, statusId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves the workflows associated with a specific status ID and returns their usage details.
 
@@ -17422,9 +15476,9 @@ class JiraApp(APIApplication):
         """
         if statusId is None:
             raise ValueError("Missing required parameter 'statusId'.")
-        url = f"{self.base_url}/rest/api/3/statuses/{statusId}/workflowUsages"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/statuses/{statusId}/workflowUsages'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17452,9 +15506,9 @@ class JiraApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
-        url = f"{self.base_url}/rest/api/3/task/{taskId}"
+        url = f'{self.base_url}/rest/api/3/task/{taskId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17483,9 +15537,9 @@ class JiraApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/task/{taskId}/cancel"
+        url = f'{self.base_url}/rest/api/3/task/{taskId}/cancel'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17494,9 +15548,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_ui_modifications(
-        self, startAt: int | None = None, maxResults: int | None = None, expand: str | None = None
-    ) -> dict[str, Any]:
+    async def get_ui_modifications(self, startAt: int | None=None, maxResults: int | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of UI modifications (including project, issue type, and view contexts) from Jira's REST API.
 
@@ -17515,9 +15567,9 @@ class JiraApp(APIApplication):
         Tags:
             UI modifications (apps)
         """
-        url = f"{self.base_url}/rest/api/3/uiModifications"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/uiModifications'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17526,9 +15578,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_ui_modification(
-        self, name: str, contexts: list[dict[str, Any]] | None = None, data: str | None = None, description: str | None = None
-    ) -> dict[str, Any]:
+    async def create_ui_modification(self, name: str, contexts: list[dict[str, Any]] | None=None, data: str | None=None, description: str | None=None) -> dict[str, Any]:
         """
         Applies modifications to the user interface using the REST API at the "/rest/api/3/uiModifications" endpoint, returning status codes to indicate success or failure.
 
@@ -17549,11 +15599,11 @@ class JiraApp(APIApplication):
             UI modifications (apps)
         """
         request_body_data = None
-        request_body_data = {"contexts": contexts, "data": data, "description": description, "name": name}
+        request_body_data = {'contexts': contexts, 'data': data, 'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/uiModifications"
+        url = f'{self.base_url}/rest/api/3/uiModifications'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17581,9 +15631,9 @@ class JiraApp(APIApplication):
         """
         if uiModificationId is None:
             raise ValueError("Missing required parameter 'uiModificationId'.")
-        url = f"{self.base_url}/rest/api/3/uiModifications/{uiModificationId}"
+        url = f'{self.base_url}/rest/api/3/uiModifications/{uiModificationId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17592,14 +15642,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_ui_modification(
-        self,
-        uiModificationId: str,
-        contexts: list[dict[str, Any]] | None = None,
-        data: str | None = None,
-        description: str | None = None,
-        name: str | None = None,
-    ) -> Any:
+    async def update_ui_modification(self, uiModificationId: str, contexts: list[dict[str, Any]] | None=None, data: str | None=None, description: str | None=None, name: str | None=None) -> Any:
         """
         Updates a UI modification identified by `uiModificationId` using the PUT method.
 
@@ -17623,11 +15666,11 @@ class JiraApp(APIApplication):
         if uiModificationId is None:
             raise ValueError("Missing required parameter 'uiModificationId'.")
         request_body_data = None
-        request_body_data = {"contexts": contexts, "data": data, "description": description, "name": name}
+        request_body_data = {'contexts': contexts, 'data': data, 'description': description, 'name': name}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/uiModifications/{uiModificationId}"
+        url = f'{self.base_url}/rest/api/3/uiModifications/{uiModificationId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17658,9 +15701,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'type'.")
         if entityId is None:
             raise ValueError("Missing required parameter 'entityId'.")
-        url = f"{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{entityId}"
+        url = f'{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{entityId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17669,9 +15712,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def store_avatar(
-        self, type: str, entityId: str, size: int, body_content: bytes, x: int | None = None, y: int | None = None
-    ) -> dict[str, Any]:
+    async def store_avatar(self, type: str, entityId: str, size: int, body_content: bytes, x: int | None=None, y: int | None=None) -> dict[str, Any]:
         """
         Creates a new avatar for the specified entity type (e.g., project, issue) using provided parameters (x, y, size) and returns a success status.
 
@@ -17699,9 +15740,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'entityId'.")
         request_body_data = None
         request_body_data = body_content
-        url = f"{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{entityId}"
-        query_params = {k: v for k, v in [("x", x), ("y", y), ("size", size)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="*/*")
+        url = f'{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{entityId}'
+        query_params = {k: v for k, v in [('x', x), ('y', y), ('size', size)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='*/*')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17735,9 +15776,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'owningObjectId'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{owningObjectId}/avatar/{id}"
+        url = f'{self.base_url}/rest/api/3/universal_avatar/type/{type}/owner/{owningObjectId}/avatar/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17746,7 +15787,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_avatar_image_by_type(self, type: str, size: str | None = None, format: str | None = None) -> dict[str, Any]:
+    async def get_avatar_image_by_type(self, type: str, size: str | None=None, format: str | None=None) -> dict[str, Any]:
         """
         Retrieves a Jira avatar image by type using the "GET" method, allowing specification of size and format for customization.
 
@@ -17767,9 +15808,9 @@ class JiraApp(APIApplication):
         """
         if type is None:
             raise ValueError("Missing required parameter 'type'.")
-        url = f"{self.base_url}/rest/api/3/universal_avatar/view/type/{type}"
-        query_params = {k: v for k, v in [("size", size), ("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/universal_avatar/view/type/{type}'
+        query_params = {k: v for k, v in [('size', size), ('format', format)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17778,7 +15819,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_avatar_image_by_id(self, type: str, id: str, size: str | None = None, format: str | None = None) -> dict[str, Any]:
+    async def get_avatar_image_by_id(self, type: str, id: str, size: str | None=None, format: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific avatar by type and ID using the Jira Universal Avatar API, allowing customization and display in various formats and sizes.
 
@@ -17802,9 +15843,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'type'.")
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/universal_avatar/view/type/{type}/avatar/{id}"
-        query_params = {k: v for k, v in [("size", size), ("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/universal_avatar/view/type/{type}/avatar/{id}'
+        query_params = {k: v for k, v in [('size', size), ('format', format)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17813,9 +15854,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_avatar_image_by_owner(
-        self, type: str, entityId: str, size: str | None = None, format: str | None = None
-    ) -> dict[str, Any]:
+    async def get_avatar_image_by_owner(self, type: str, entityId: str, size: str | None=None, format: str | None=None) -> dict[str, Any]:
         """
         Retrieves an avatar image for a specified owner entity (like user, project, or issue type) by type and ID, allowing optional size and format customization.
 
@@ -17839,9 +15878,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'type'.")
         if entityId is None:
             raise ValueError("Missing required parameter 'entityId'.")
-        url = f"{self.base_url}/rest/api/3/universal_avatar/view/type/{type}/owner/{entityId}"
-        query_params = {k: v for k, v in [("size", size), ("format", format)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/universal_avatar/view/type/{type}/owner/{entityId}'
+        query_params = {k: v for k, v in [('size', size), ('format', format)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17850,7 +15889,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_user(self, accountId: str, username: str | None = None, key: str | None = None) -> Any:
+    async def remove_user(self, accountId: str, username: str | None=None, key: str | None=None) -> Any:
         """
         Deletes a user from the system using the provided query parameters such as account ID, username, or key, and returns a status code indicating success or failure.
 
@@ -17869,9 +15908,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user"
-        query_params = {k: v for k, v in [("accountId", accountId), ("username", username), ("key", key)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user'
+        query_params = {k: v for k, v in [('accountId', accountId), ('username', username), ('key', key)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17880,9 +15919,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user(
-        self, accountId: str | None = None, username: str | None = None, key: str | None = None, expand: str | None = None
-    ) -> dict[str, Any]:
+    async def get_user(self, accountId: str | None=None, username: str | None=None, key: str | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific Jira user's details using the provided account ID, username, or user key via the Jira REST API.
 
@@ -17902,11 +15939,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user"
-        query_params = {
-            k: v for k, v in [("accountId", accountId), ("username", username), ("key", key), ("expand", expand)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user'
+        query_params = {k: v for k, v in [('accountId', accountId), ('username', username), ('key', key), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17915,17 +15950,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_user(
-        self,
-        emailAddress: str,
-        products: list[str],
-        applicationKeys: list[str] | None = None,
-        displayName: str | None = None,
-        key: str | None = None,
-        name: str | None = None,
-        password: str | None = None,
-        self_arg_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_user(self, emailAddress: str, products: list[str], applicationKeys: list[str] | None=None, displayName: str | None=None, key: str | None=None, name: str | None=None, password: str | None=None, self_arg_body: str | None=None) -> dict[str, Any]:
         """
         Creates a new user in Jira and returns the created user resource upon success.
 
@@ -17950,20 +15975,11 @@ class JiraApp(APIApplication):
             Users
         """
         request_body_data = None
-        request_body_data = {
-            "applicationKeys": applicationKeys,
-            "displayName": displayName,
-            "emailAddress": emailAddress,
-            "key": key,
-            "name": name,
-            "password": password,
-            "products": products,
-            "self": self_arg_body,
-        }
+        request_body_data = {'applicationKeys': applicationKeys, 'displayName': displayName, 'emailAddress': emailAddress, 'key': key, 'name': name, 'password': password, 'products': products, 'self': self_arg_body}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/user"
+        url = f'{self.base_url}/rest/api/3/user'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -17972,15 +15988,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_bulk_assignable_users(
-        self,
-        projectKeys: str,
-        query: str | None = None,
-        username: str | None = None,
-        accountId: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> list[Any]:
+    async def find_bulk_assignable_users(self, projectKeys: str, query: str | None=None, username: str | None=None, accountId: str | None=None, startAt: int | None=None, maxResults: int | None=None) -> list[Any]:
         """
         Retrieves a list of users who can be assigned issues in one or more specified projects, allowing filtering by various user attributes such as name or account ID.
 
@@ -18002,20 +16010,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/assignable/multiProjectSearch"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("username", username),
-                ("accountId", accountId),
-                ("projectKeys", projectKeys),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/assignable/multiProjectSearch'
+        query_params = {k: v for k, v in [('query', query), ('username', username), ('accountId', accountId), ('projectKeys', projectKeys), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18024,20 +16021,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_assignable_users(
-        self,
-        query: str | None = None,
-        sessionId: str | None = None,
-        username: str | None = None,
-        accountId: str | None = None,
-        project: str | None = None,
-        issueKey: str | None = None,
-        issueId: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        actionDescriptorId: int | None = None,
-        recommend: bool | None = None,
-    ) -> list[Any]:
+    async def find_assignable_users(self, query: str | None=None, sessionId: str | None=None, username: str | None=None, accountId: str | None=None, project: str | None=None, issueKey: str | None=None, issueId: str | None=None, startAt: int | None=None, maxResults: int | None=None, actionDescriptorId: int | None=None, recommend: bool | None=None) -> list[Any]:
         """
         Searches for users who can be assigned to issues in Jira, allowing filtering by query, session ID, username, account ID, project, issue key, issue ID, and other parameters, returning a list of assignable users.
 
@@ -18064,25 +16048,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/assignable/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("sessionId", sessionId),
-                ("username", username),
-                ("accountId", accountId),
-                ("project", project),
-                ("issueKey", issueKey),
-                ("issueId", issueId),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("actionDescriptorId", actionDescriptorId),
-                ("recommend", recommend),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/assignable/search'
+        query_params = {k: v for k, v in [('query', query), ('sessionId', sessionId), ('username', username), ('accountId', accountId), ('project', project), ('issueKey', issueKey), ('issueId', issueId), ('startAt', startAt), ('maxResults', maxResults), ('actionDescriptorId', actionDescriptorId), ('recommend', recommend)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18091,14 +16059,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_get_users(
-        self,
-        accountId: list[str],
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        username: list[str] | None = None,
-        key: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def bulk_get_users(self, accountId: list[str], startAt: int | None=None, maxResults: int | None=None, username: list[str] | None=None, key: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of user details for specified account IDs using the Jira REST API.
 
@@ -18119,13 +16080,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/bulk"
-        query_params = {
-            k: v
-            for k, v in [("startAt", startAt), ("maxResults", maxResults), ("username", username), ("key", key), ("accountId", accountId)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/bulk'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('username', username), ('key', key), ('accountId', accountId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18134,9 +16091,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_get_users_migration(
-        self, startAt: int | None = None, maxResults: int | None = None, username: list[str] | None = None, key: list[str] | None = None
-    ) -> list[Any]:
+    async def bulk_get_users_migration(self, startAt: int | None=None, maxResults: int | None=None, username: list[str] | None=None, key: list[str] | None=None) -> list[Any]:
         """
         Retrieves user migration information in bulk for Jira using the GET method, allowing filtering by username, key, and pagination via startAt and maxResults parameters.
 
@@ -18156,11 +16111,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/bulk/migration"
-        query_params = {
-            k: v for k, v in [("startAt", startAt), ("maxResults", maxResults), ("username", username), ("key", key)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/bulk/migration'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('username', username), ('key', key)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18169,7 +16122,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def reset_user_columns(self, accountId: str | None = None, username: str | None = None) -> Any:
+    async def reset_user_columns(self, accountId: str | None=None, username: str | None=None) -> Any:
         """
         Deletes a user's saved column configuration in Jira based on either their account ID or username.
 
@@ -18187,9 +16140,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/columns"
-        query_params = {k: v for k, v in [("accountId", accountId), ("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/columns'
+        query_params = {k: v for k, v in [('accountId', accountId), ('username', username)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18198,7 +16151,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user_default_columns(self, accountId: str | None = None, username: str | None = None) -> list[Any]:
+    async def get_user_default_columns(self, accountId: str | None=None, username: str | None=None) -> list[Any]:
         """
         Retrieves the default issue table columns for a Jira user, specified by either an accountId or the calling user if no accountId is provided, using the Jira Cloud Platform REST API.
 
@@ -18216,9 +16169,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/columns"
-        query_params = {k: v for k, v in [("accountId", accountId), ("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/columns'
+        query_params = {k: v for k, v in [('accountId', accountId), ('username', username)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18227,7 +16180,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_user_columns(self, accountId: str | None = None, columns: list[str] | None = None) -> Any:
+    async def set_user_columns(self, accountId: str | None=None, columns: list[str] | None=None) -> Any:
         """
         Updates the columns displayed for a specific user's issue list view in Jira and returns a success status upon completion.
 
@@ -18250,13 +16203,13 @@ class JiraApp(APIApplication):
         request_body_data = {}
         files_data = {}
         if columns is not None:
-            request_body_data["columns"] = columns
+            request_body_data['columns'] = columns
         files_data = {k: v for k, v in files_data.items() if v is not None}
         if not files_data:
             files_data = None
-        url = f"{self.base_url}/rest/api/3/user/columns"
-        query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._put(url, data=request_body_data, files=files_data, params=query_params, content_type="multipart/form-data")
+        url = f'{self.base_url}/rest/api/3/user/columns'
+        query_params = {k: v for k, v in [('accountId', accountId)] if v is not None}
+        response = await self._aput(url, data=request_body_data, files=files_data, params=query_params, content_type='multipart/form-data')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18282,9 +16235,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/email"
-        query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/email'
+        query_params = {k: v for k, v in [('accountId', accountId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18310,9 +16263,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/email/bulk"
-        query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/email/bulk'
+        query_params = {k: v for k, v in [('accountId', accountId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18321,7 +16274,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user_groups(self, accountId: str, username: str | None = None, key: str | None = None) -> list[Any]:
+    async def get_user_groups(self, accountId: str, username: str | None=None, key: str | None=None) -> list[Any]:
         """
         Retrieves a list of groups associated with a specified Jira user account using their accountId, username, or key.
 
@@ -18340,9 +16293,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/user/groups"
-        query_params = {k: v for k, v in [("accountId", accountId), ("username", username), ("key", key)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/groups'
+        query_params = {k: v for k, v in [('accountId', accountId), ('username', username), ('key', key)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18351,7 +16304,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user_nav_property(self, propertyKey: str, accountId: str | None = None) -> dict[str, Any]:
+    async def get_user_nav_property(self, propertyKey: str, accountId: str | None=None) -> dict[str, Any]:
         """
         Retrieves the value associated with a specified property key for a given account using the GET method.
 
@@ -18371,9 +16324,9 @@ class JiraApp(APIApplication):
         """
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/user/nav4-opt-property/{propertyKey}"
-        query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/nav4-opt-property/{propertyKey}'
+        query_params = {k: v for k, v in [('accountId', accountId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18382,7 +16335,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_user_nav_property(self, propertyKey: str, accountId: str | None = None) -> Any:
+    async def set_user_nav_property(self, propertyKey: str, accountId: str | None=None) -> Any:
         """
         Updates a user's navigation property (specified by propertyKey) in Jira using account-based identification and returns the operation status.
 
@@ -18403,9 +16356,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/user/nav4-opt-property/{propertyKey}"
-        query_params = {k: v for k, v in [("accountId", accountId)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/user/nav4-opt-property/{propertyKey}'
+        query_params = {k: v for k, v in [('accountId', accountId)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18414,17 +16367,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_users_with_all_permissions(
-        self,
-        permissions: str,
-        query: str | None = None,
-        username: str | None = None,
-        accountId: str | None = None,
-        issueKey: str | None = None,
-        projectKey: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> list[Any]:
+    async def find_users_with_all_permissions(self, permissions: str, query: str | None=None, username: str | None=None, accountId: str | None=None, issueKey: str | None=None, projectKey: str | None=None, startAt: int | None=None, maxResults: int | None=None) -> list[Any]:
         """
         Retrieves users with specified global or project permissions, filtered by query, account ID, or project/issue context, including pagination support.
 
@@ -18448,22 +16391,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/permission/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("username", username),
-                ("accountId", accountId),
-                ("permissions", permissions),
-                ("issueKey", issueKey),
-                ("projectKey", projectKey),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/permission/search'
+        query_params = {k: v for k, v in [('query', query), ('username', username), ('accountId', accountId), ('permissions', permissions), ('issueKey', issueKey), ('projectKey', projectKey), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18472,16 +16402,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_users_for_picker(
-        self,
-        query: str,
-        maxResults: int | None = None,
-        showAvatar: bool | None = None,
-        exclude: list[str] | None = None,
-        excludeAccountIds: list[str] | None = None,
-        avatarSize: str | None = None,
-        excludeConnectUsers: bool | None = None,
-    ) -> dict[str, Any]:
+    async def find_users_for_picker(self, query: str, maxResults: int | None=None, showAvatar: bool | None=None, exclude: list[str] | None=None, excludeAccountIds: list[str] | None=None, avatarSize: str | None=None, excludeConnectUsers: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a list of users and groups for a picker field, allowing filtering by query, exclusion parameters, and pagination, to populate user or group suggestion lists in Jira applications.
 
@@ -18504,21 +16425,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/picker"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("maxResults", maxResults),
-                ("showAvatar", showAvatar),
-                ("exclude", exclude),
-                ("excludeAccountIds", excludeAccountIds),
-                ("avatarSize", avatarSize),
-                ("excludeConnectUsers", excludeConnectUsers),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/picker'
+        query_params = {k: v for k, v in [('query', query), ('maxResults', maxResults), ('showAvatar', showAvatar), ('exclude', exclude), ('excludeAccountIds', excludeAccountIds), ('avatarSize', avatarSize), ('excludeConnectUsers', excludeConnectUsers)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18527,9 +16436,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user_property_keys(
-        self, accountId: str | None = None, userKey: str | None = None, username: str | None = None
-    ) -> dict[str, Any]:
+    async def get_user_property_keys(self, accountId: str | None=None, userKey: str | None=None, username: str | None=None) -> dict[str, Any]:
         """
         Retrieves the keys of all properties for a user using the Jira Cloud REST API.
 
@@ -18548,9 +16455,9 @@ class JiraApp(APIApplication):
         Tags:
             User properties
         """
-        url = f"{self.base_url}/rest/api/3/user/properties"
-        query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/properties'
+        query_params = {k: v for k, v in [('accountId', accountId), ('userKey', userKey), ('username', username)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18559,9 +16466,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_user_property(
-        self, propertyKey: str, accountId: str | None = None, userKey: str | None = None, username: str | None = None
-    ) -> Any:
+    async def delete_user_property(self, propertyKey: str, accountId: str | None=None, userKey: str | None=None, username: str | None=None) -> Any:
         """
         Deletes a user property identified by a specific property key using the Jira Cloud platform REST API, requiring permissions to manage user properties.
 
@@ -18583,9 +16488,9 @@ class JiraApp(APIApplication):
         """
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/user/properties/{propertyKey}"
-        query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/properties/{propertyKey}'
+        query_params = {k: v for k, v in [('accountId', accountId), ('userKey', userKey), ('username', username)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18594,9 +16499,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user_property(
-        self, propertyKey: str, accountId: str | None = None, userKey: str | None = None, username: str | None = None
-    ) -> dict[str, Any]:
+    async def get_user_property(self, propertyKey: str, accountId: str | None=None, userKey: str | None=None, username: str | None=None) -> dict[str, Any]:
         """
         Retrieves the value of a specified user property using the Jira Cloud API, returning the custom data associated with a user for a given property key.
 
@@ -18618,9 +16521,9 @@ class JiraApp(APIApplication):
         """
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/api/3/user/properties/{propertyKey}"
-        query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/properties/{propertyKey}'
+        query_params = {k: v for k, v in [('accountId', accountId), ('userKey', userKey), ('username', username)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18629,9 +16532,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_user_property(
-        self, propertyKey: str, accountId: str | None = None, userKey: str | None = None, username: str | None = None
-    ) -> Any:
+    async def set_user_property(self, propertyKey: str, accountId: str | None=None, userKey: str | None=None, username: str | None=None) -> Any:
         """
         Sets or updates a custom property value for a specific Jira user, enabling per-user data storage for integrations and apps.
 
@@ -18654,9 +16555,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/user/properties/{propertyKey}"
-        query_params = {k: v for k, v in [("accountId", accountId), ("userKey", userKey), ("username", username)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/user/properties/{propertyKey}'
+        query_params = {k: v for k, v in [('accountId', accountId), ('userKey', userKey), ('username', username)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18665,15 +16566,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_users(
-        self,
-        query: str | None = None,
-        username: str | None = None,
-        accountId: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        property: str | None = None,
-    ) -> list[Any]:
+    async def find_users(self, query: str | None=None, username: str | None=None, accountId: str | None=None, startAt: int | None=None, maxResults: int | None=None, property: str | None=None) -> list[Any]:
         """
         Searches for Jira users by matching a query against display names and email addresses, supporting pagination and specific property filters.
 
@@ -18695,20 +16588,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("username", username),
-                ("accountId", accountId),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("property", property),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/search'
+        query_params = {k: v for k, v in [('query', query), ('username', username), ('accountId', accountId), ('startAt', startAt), ('maxResults', maxResults), ('property', property)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18717,7 +16599,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_users_by_query(self, query: str, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def find_users_by_query(self, query: str, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Searches for users in Jira based on query parameters, returning paginated results.
 
@@ -18736,9 +16618,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/search/query"
-        query_params = {k: v for k, v in [("query", query), ("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/search/query'
+        query_params = {k: v for k, v in [('query', query), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18747,7 +16629,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_user_keys_by_query(self, query: str, startAt: int | None = None, maxResult: int | None = None) -> dict[str, Any]:
+    async def find_user_keys_by_query(self, query: str, startAt: int | None=None, maxResult: int | None=None) -> dict[str, Any]:
         """
         Searches for users based on a specified query, returning a list of matching users, with options to control the result set size and starting point.
 
@@ -18766,9 +16648,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/search/query/key"
-        query_params = {k: v for k, v in [("query", query), ("startAt", startAt), ("maxResult", maxResult)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/search/query/key'
+        query_params = {k: v for k, v in [('query', query), ('startAt', startAt), ('maxResult', maxResult)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18777,16 +16659,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def find_users_with_browse_permission(
-        self,
-        query: str | None = None,
-        username: str | None = None,
-        accountId: str | None = None,
-        issueKey: str | None = None,
-        projectKey: str | None = None,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-    ) -> list[Any]:
+    async def find_users_with_browse_permission(self, query: str | None=None, username: str | None=None, accountId: str | None=None, issueKey: str | None=None, projectKey: str | None=None, startAt: int | None=None, maxResults: int | None=None) -> list[Any]:
         """
         Searches for Jira issues based on specified parameters such as query, username, account ID, issue key, project key, and returns a list of matching issues with pagination options.
 
@@ -18809,21 +16682,9 @@ class JiraApp(APIApplication):
         Tags:
             User search
         """
-        url = f"{self.base_url}/rest/api/3/user/viewissue/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("query", query),
-                ("username", username),
-                ("accountId", accountId),
-                ("issueKey", issueKey),
-                ("projectKey", projectKey),
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/user/viewissue/search'
+        query_params = {k: v for k, v in [('query', query), ('username', username), ('accountId', accountId), ('issueKey', issueKey), ('projectKey', projectKey), ('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18832,7 +16693,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_users_default(self, startAt: int | None = None, maxResults: int | None = None) -> list[Any]:
+    async def get_all_users_default(self, startAt: int | None=None, maxResults: int | None=None) -> list[Any]:
         """
         Retrieves a list of Jira users, supporting pagination via the `startAt` and `maxResults` parameters, using the GET method at the `/rest/api/3/users` endpoint.
 
@@ -18850,9 +16711,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/users"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/users'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18861,7 +16722,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_users(self, startAt: int | None = None, maxResults: int | None = None) -> list[Any]:
+    async def get_all_users(self, startAt: int | None=None, maxResults: int | None=None) -> list[Any]:
         """
         Searches for Jira users matching query criteria and returns paginated results.
 
@@ -18879,9 +16740,9 @@ class JiraApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/rest/api/3/users/search"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/users/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18890,28 +16751,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_version(
-        self,
-        approvers: list[dict[str, Any]] | None = None,
-        archived: bool | None = None,
-        description: str | None = None,
-        driver: str | None = None,
-        expand: str | None = None,
-        id: str | None = None,
-        issuesStatusForFixVersion: Any | None = None,
-        moveUnfixedIssuesTo: str | None = None,
-        name: str | None = None,
-        operations: list[dict[str, Any]] | None = None,
-        overdue: bool | None = None,
-        project: str | None = None,
-        projectId: int | None = None,
-        releaseDate: str | None = None,
-        released: bool | None = None,
-        self_arg_body: str | None = None,
-        startDate: str | None = None,
-        userReleaseDate: str | None = None,
-        userStartDate: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_version(self, approvers: list[dict[str, Any]] | None=None, archived: bool | None=None, description: str | None=None, driver: str | None=None, expand: str | None=None, id: str | None=None, issuesStatusForFixVersion: Any | None=None, moveUnfixedIssuesTo: str | None=None, name: str | None=None, operations: list[dict[str, Any]] | None=None, overdue: bool | None=None, project: str | None=None, projectId: int | None=None, releaseDate: str | None=None, released: bool | None=None, self_arg_body: str | None=None, startDate: str | None=None, userReleaseDate: str | None=None, userStartDate: str | None=None) -> dict[str, Any]:
         """
         Creates a new project version in Jira and returns the details of the created version.
 
@@ -18954,31 +16794,11 @@ class JiraApp(APIApplication):
             Project versions
         """
         request_body_data = None
-        request_body_data = {
-            "approvers": approvers,
-            "archived": archived,
-            "description": description,
-            "driver": driver,
-            "expand": expand,
-            "id": id,
-            "issuesStatusForFixVersion": issuesStatusForFixVersion,
-            "moveUnfixedIssuesTo": moveUnfixedIssuesTo,
-            "name": name,
-            "operations": operations,
-            "overdue": overdue,
-            "project": project,
-            "projectId": projectId,
-            "releaseDate": releaseDate,
-            "released": released,
-            "self": self_arg_body,
-            "startDate": startDate,
-            "userReleaseDate": userReleaseDate,
-            "userStartDate": userStartDate,
-        }
+        request_body_data = {'approvers': approvers, 'archived': archived, 'description': description, 'driver': driver, 'expand': expand, 'id': id, 'issuesStatusForFixVersion': issuesStatusForFixVersion, 'moveUnfixedIssuesTo': moveUnfixedIssuesTo, 'name': name, 'operations': operations, 'overdue': overdue, 'project': project, 'projectId': projectId, 'releaseDate': releaseDate, 'released': released, 'self': self_arg_body, 'startDate': startDate, 'userReleaseDate': userReleaseDate, 'userStartDate': userStartDate}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/version"
+        url = f'{self.base_url}/rest/api/3/version'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -18987,7 +16807,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_version(self, id: str, moveFixIssuesTo: str | None = None, moveAffectedIssuesTo: str | None = None) -> Any:
+    async def delete_version(self, id: str, moveFixIssuesTo: str | None=None, moveAffectedIssuesTo: str | None=None) -> Any:
         """
         Deletes a Jira project version using the DELETE method, optionally allowing issues to be moved to alternative versions by specifying replacement versions for `fixVersion` and `affectedVersion` fields.
 
@@ -19008,11 +16828,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/version/{id}"
-        query_params = {
-            k: v for k, v in [("moveFixIssuesTo", moveFixIssuesTo), ("moveAffectedIssuesTo", moveAffectedIssuesTo)] if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/version/{id}'
+        query_params = {k: v for k, v in [('moveFixIssuesTo', moveFixIssuesTo), ('moveAffectedIssuesTo', moveAffectedIssuesTo)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19021,7 +16839,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_version(self, id: str, expand: str | None = None) -> dict[str, Any]:
+    async def get_version(self, id: str, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves detailed information about a specific Jira version using the Jira REST API, with options to expand additional fields.
 
@@ -19041,9 +16859,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/version/{id}"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/version/{id}'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19052,29 +16870,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_version(
-        self,
-        id: str,
-        approvers: list[dict[str, Any]] | None = None,
-        archived: bool | None = None,
-        description: str | None = None,
-        driver: str | None = None,
-        expand: str | None = None,
-        id_body: str | None = None,
-        issuesStatusForFixVersion: Any | None = None,
-        moveUnfixedIssuesTo: str | None = None,
-        name: str | None = None,
-        operations: list[dict[str, Any]] | None = None,
-        overdue: bool | None = None,
-        project: str | None = None,
-        projectId: int | None = None,
-        releaseDate: str | None = None,
-        released: bool | None = None,
-        self_arg_body: str | None = None,
-        startDate: str | None = None,
-        userReleaseDate: str | None = None,
-        userStartDate: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_version(self, id: str, approvers: list[dict[str, Any]] | None=None, archived: bool | None=None, description: str | None=None, driver: str | None=None, expand: str | None=None, id_body: str | None=None, issuesStatusForFixVersion: Any | None=None, moveUnfixedIssuesTo: str | None=None, name: str | None=None, operations: list[dict[str, Any]] | None=None, overdue: bool | None=None, project: str | None=None, projectId: int | None=None, releaseDate: str | None=None, released: bool | None=None, self_arg_body: str | None=None, startDate: str | None=None, userReleaseDate: str | None=None, userStartDate: str | None=None) -> dict[str, Any]:
         """
         Updates an existing version's details (e.g., name, description, release status) in Jira using the specified version ID.
 
@@ -19120,31 +16916,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "approvers": approvers,
-            "archived": archived,
-            "description": description,
-            "driver": driver,
-            "expand": expand,
-            "id": id_body,
-            "issuesStatusForFixVersion": issuesStatusForFixVersion,
-            "moveUnfixedIssuesTo": moveUnfixedIssuesTo,
-            "name": name,
-            "operations": operations,
-            "overdue": overdue,
-            "project": project,
-            "projectId": projectId,
-            "releaseDate": releaseDate,
-            "released": released,
-            "self": self_arg_body,
-            "startDate": startDate,
-            "userReleaseDate": userReleaseDate,
-            "userStartDate": userStartDate,
-        }
+        request_body_data = {'approvers': approvers, 'archived': archived, 'description': description, 'driver': driver, 'expand': expand, 'id': id_body, 'issuesStatusForFixVersion': issuesStatusForFixVersion, 'moveUnfixedIssuesTo': moveUnfixedIssuesTo, 'name': name, 'operations': operations, 'overdue': overdue, 'project': project, 'projectId': projectId, 'releaseDate': releaseDate, 'released': released, 'self': self_arg_body, 'startDate': startDate, 'userReleaseDate': userReleaseDate, 'userStartDate': userStartDate}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/version/{id}"
+        url = f'{self.base_url}/rest/api/3/version/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19176,9 +16952,9 @@ class JiraApp(APIApplication):
         if moveIssuesTo is None:
             raise ValueError("Missing required parameter 'moveIssuesTo'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/version/{id}/mergeto/{moveIssuesTo}"
+        url = f'{self.base_url}/rest/api/3/version/{id}/mergeto/{moveIssuesTo}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19187,7 +16963,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_version(self, id: str, after: str | None = None, position: str | None = None) -> dict[str, Any]:
+    async def move_version(self, id: str, after: str | None=None, position: str | None=None) -> dict[str, Any]:
         """
         Moves a project version to a new position within the ordered version list by specifying its ID and returns a status message indicating the success or failure of the operation.
 
@@ -19209,11 +16985,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"after": after, "position": position}
+        request_body_data = {'after': after, 'position': position}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/version/{id}/move"
+        url = f'{self.base_url}/rest/api/3/version/{id}/move'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19241,9 +17017,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/version/{id}/relatedIssueCounts"
+        url = f'{self.base_url}/rest/api/3/version/{id}/relatedIssueCounts'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19271,9 +17047,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/version/{id}/relatedwork"
+        url = f'{self.base_url}/rest/api/3/version/{id}/relatedwork'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19282,15 +17058,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_related_work(
-        self,
-        id: str,
-        category: str,
-        issueId: int | None = None,
-        relatedWorkId: str | None = None,
-        title: str | None = None,
-        url: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_related_work(self, id: str, category: str, issueId: int | None=None, relatedWorkId: str | None=None, title: str | None=None, url: str | None=None) -> dict[str, Any]:
         """
         Associates external related work (e.g., design files, communication links) with a Jira project version via a POST request.
 
@@ -19315,11 +17083,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"category": category, "issueId": issueId, "relatedWorkId": relatedWorkId, "title": title, "url": url}
+        request_body_data = {'category': category, 'issueId': issueId, 'relatedWorkId': relatedWorkId, 'title': title, 'url': url}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/version/{id}/relatedwork"
+        url = f'{self.base_url}/rest/api/3/version/{id}/relatedwork'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19328,15 +17096,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_related_work(
-        self,
-        id: str,
-        category: str,
-        issueId: int | None = None,
-        relatedWorkId: str | None = None,
-        title: str | None = None,
-        url: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_related_work(self, id: str, category: str, issueId: int | None=None, relatedWorkId: str | None=None, title: str | None=None, url: str | None=None) -> dict[str, Any]:
         """
         Updates a version's related work links in Jira using the PUT method at the "/rest/api/3/version/{id}/relatedwork" endpoint.
 
@@ -19361,11 +17121,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"category": category, "issueId": issueId, "relatedWorkId": relatedWorkId, "title": title, "url": url}
+        request_body_data = {'category': category, 'issueId': issueId, 'relatedWorkId': relatedWorkId, 'title': title, 'url': url}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/version/{id}/relatedwork"
+        url = f'{self.base_url}/rest/api/3/version/{id}/relatedwork'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19374,13 +17134,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_and_replace_version(
-        self,
-        id: str,
-        customFieldReplacementList: list[dict[str, Any]] | None = None,
-        moveAffectedIssuesTo: int | None = None,
-        moveFixIssuesTo: int | None = None,
-    ) -> Any:
+    async def delete_and_replace_version(self, id: str, customFieldReplacementList: list[dict[str, Any]] | None=None, moveAffectedIssuesTo: int | None=None, moveFixIssuesTo: int | None=None) -> Any:
         """
         Deletes a project version by ID and swaps it with another version in fixVersion and affectedVersion fields using a POST request.
 
@@ -19403,15 +17157,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "customFieldReplacementList": customFieldReplacementList,
-            "moveAffectedIssuesTo": moveAffectedIssuesTo,
-            "moveFixIssuesTo": moveFixIssuesTo,
-        }
+        request_body_data = {'customFieldReplacementList': customFieldReplacementList, 'moveAffectedIssuesTo': moveAffectedIssuesTo, 'moveFixIssuesTo': moveFixIssuesTo}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/version/{id}/removeAndSwap"
+        url = f'{self.base_url}/rest/api/3/version/{id}/removeAndSwap'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19439,9 +17189,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/version/{id}/unresolvedIssueCount"
+        url = f'{self.base_url}/rest/api/3/version/{id}/unresolvedIssueCount'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19472,9 +17222,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'versionId'.")
         if relatedWorkId is None:
             raise ValueError("Missing required parameter 'relatedWorkId'.")
-        url = f"{self.base_url}/rest/api/3/version/{versionId}/relatedwork/{relatedWorkId}"
+        url = f'{self.base_url}/rest/api/3/version/{versionId}/relatedwork/{relatedWorkId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19500,11 +17250,11 @@ class JiraApp(APIApplication):
         Tags:
             Webhooks
         """
-        request_body_data = {"webhookIds": webhookIds}
+        request_body_data = {'webhookIds': webhookIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/webhook"
+        url = f'{self.base_url}/rest/api/3/webhook'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19513,7 +17263,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_dynamic_webhooks_for_app(self, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_dynamic_webhooks_for_app(self, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of webhooks from Jira, allowing for pagination through parameters `startAt` and `maxResults`.
 
@@ -19531,9 +17281,9 @@ class JiraApp(APIApplication):
         Tags:
             Webhooks
         """
-        url = f"{self.base_url}/rest/api/3/webhook"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/webhook'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19561,11 +17311,11 @@ class JiraApp(APIApplication):
             Webhooks
         """
         request_body_data = None
-        request_body_data = {"url": url, "webhooks": webhooks}
+        request_body_data = {'url': url, 'webhooks': webhooks}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/webhook"
+        url = f'{self.base_url}/rest/api/3/webhook'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19574,7 +17324,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_failed_webhooks(self, maxResults: int | None = None, after: int | None = None) -> dict[str, Any]:
+    async def get_failed_webhooks(self, maxResults: int | None=None, after: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of failed webhook delivery attempts, supporting pagination via maxResults and after parameters.
 
@@ -19592,9 +17342,9 @@ class JiraApp(APIApplication):
         Tags:
             Webhooks
         """
-        url = f"{self.base_url}/rest/api/3/webhook/failed"
-        query_params = {k: v for k, v in [("maxResults", maxResults), ("after", after)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/webhook/failed'
+        query_params = {k: v for k, v in [('maxResults', maxResults), ('after', after)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19621,11 +17371,11 @@ class JiraApp(APIApplication):
             Webhooks
         """
         request_body_data = None
-        request_body_data = {"webhookIds": webhookIds}
+        request_body_data = {'webhookIds': webhookIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/webhook/refresh"
+        url = f'{self.base_url}/rest/api/3/webhook/refresh'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19634,7 +17384,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_workflows(self, workflowName: str | None = None) -> list[Any]:
+    async def get_all_workflows(self, workflowName: str | None=None) -> list[Any]:
         """
         Retrieves a list of all workflows in Jira or a specific workflow by name, depending on whether the `workflowName` parameter is provided, using the Jira Cloud REST API.
 
@@ -19651,9 +17401,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflows
         """
-        url = f"{self.base_url}/rest/api/3/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19662,9 +17412,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_workflow(
-        self, name: str, statuses: list[dict[str, Any]], transitions: list[dict[str, Any]], description: str | None = None
-    ) -> dict[str, Any]:
+    async def create_workflow(self, name: str, statuses: list[dict[str, Any]], transitions: list[dict[str, Any]], description: str | None=None) -> dict[str, Any]:
         """
         Creates a new workflow configuration in Jira Cloud using the REST API by sending a POST request to the "/rest/api/3/workflow" endpoint.
 
@@ -19695,11 +17443,11 @@ class JiraApp(APIApplication):
             Workflows
         """
         request_body_data = None
-        request_body_data = {"description": description, "name": name, "statuses": statuses, "transitions": transitions}
+        request_body_data = {'description': description, 'name': name, 'statuses': statuses, 'transitions': transitions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflow"
+        url = f'{self.base_url}/rest/api/3/workflow'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19708,17 +17456,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_workflow_rule_configs(
-        self,
-        types: list[str],
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        keys: list[str] | None = None,
-        workflowNames: list[str] | None = None,
-        withTags: list[str] | None = None,
-        draft: bool | None = None,
-        expand: str | None = None,
-    ) -> dict[str, Any]:
+    async def list_workflow_rule_configs(self, types: list[str], startAt: int | None=None, maxResults: int | None=None, keys: list[str] | None=None, workflowNames: list[str] | None=None, withTags: list[str] | None=None, draft: bool | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves and configures workflow rule configurations in Jira using the GET method, allowing filtering by various parameters such as workflow names and types.
 
@@ -19742,22 +17480,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflow transition rules
         """
-        url = f"{self.base_url}/rest/api/3/workflow/rule/config"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("types", types),
-                ("keys", keys),
-                ("workflowNames", workflowNames),
-                ("withTags", withTags),
-                ("draft", draft),
-                ("expand", expand),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/rule/config'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('types', types), ('keys', keys), ('workflowNames', workflowNames), ('withTags', withTags), ('draft', draft), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19784,11 +17509,11 @@ class JiraApp(APIApplication):
             Workflow transition rules
         """
         request_body_data = None
-        request_body_data = {"workflows": workflows}
+        request_body_data = {'workflows': workflows}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflow/rule/config"
+        url = f'{self.base_url}/rest/api/3/workflow/rule/config'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19815,11 +17540,11 @@ class JiraApp(APIApplication):
             Workflow transition rules
         """
         request_body_data = None
-        request_body_data = {"workflows": workflows}
+        request_body_data = {'workflows': workflows}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflow/rule/config/delete"
+        url = f'{self.base_url}/rest/api/3/workflow/rule/config/delete'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19828,16 +17553,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_workflows_paginated(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        workflowName: list[str] | None = None,
-        expand: str | None = None,
-        queryString: str | None = None,
-        orderBy: str | None = None,
-        isActive: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_workflows_paginated(self, startAt: int | None=None, maxResults: int | None=None, workflowName: list[str] | None=None, expand: str | None=None, queryString: str | None=None, orderBy: str | None=None, isActive: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a list of workflows in Jira using pagination, allowing filtering by parameters such as workflow name, query string, and active status, and optionally expanding details like statuses.
 
@@ -19860,21 +17576,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflows
         """
-        url = f"{self.base_url}/rest/api/3/workflow/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("workflowName", workflowName),
-                ("expand", expand),
-                ("queryString", queryString),
-                ("orderBy", orderBy),
-                ("isActive", isActive),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('workflowName', workflowName), ('expand', expand), ('queryString', queryString), ('orderBy', orderBy), ('isActive', isActive)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19883,7 +17587,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_transition_property(self, transitionId: str, key: str, workflowName: str, workflowMode: str | None = None) -> Any:
+    async def delete_transition_property(self, transitionId: str, key: str, workflowName: str, workflowMode: str | None=None) -> Any:
         """
         Deletes a specified property from a workflow transition in Jira using the "DELETE" method, allowing changes to the behavior of transitions by removing custom properties.
 
@@ -19905,9 +17609,9 @@ class JiraApp(APIApplication):
         """
         if transitionId is None:
             raise ValueError("Missing required parameter 'transitionId'.")
-        url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
-        query_params = {k: v for k, v in [("key", key), ("workflowName", workflowName), ("workflowMode", workflowMode)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties'
+        query_params = {k: v for k, v in [('key', key), ('workflowName', workflowName), ('workflowMode', workflowMode)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19916,14 +17620,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_transition_properties(
-        self,
-        transitionId: str,
-        workflowName: str,
-        includeReservedKeys: bool | None = None,
-        key: str | None = None,
-        workflowMode: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_transition_properties(self, transitionId: str, workflowName: str, includeReservedKeys: bool | None=None, key: str | None=None, workflowMode: str | None=None) -> dict[str, Any]:
         """
         Retrieves workflow transition properties for a specified transition ID using query parameters to filter results by keys and workflow details.
 
@@ -19946,18 +17643,9 @@ class JiraApp(APIApplication):
         """
         if transitionId is None:
             raise ValueError("Missing required parameter 'transitionId'.")
-        url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
-        query_params = {
-            k: v
-            for k, v in [
-                ("includeReservedKeys", includeReservedKeys),
-                ("key", key),
-                ("workflowName", workflowName),
-                ("workflowMode", workflowMode),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties'
+        query_params = {k: v for k, v in [('includeReservedKeys', includeReservedKeys), ('key', key), ('workflowName', workflowName), ('workflowMode', workflowMode)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -19966,16 +17654,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_transition_property(
-        self,
-        transitionId: str,
-        key: str,
-        workflowName: str,
-        value: str,
-        workflowMode: str | None = None,
-        id: str | None = None,
-        key_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_transition_property(self, transitionId: str, key: str, workflowName: str, value: str, workflowMode: str | None=None, id: str | None=None, key_body: str | None=None) -> dict[str, Any]:
         """
         Creates a workflow transition property using the Jira Cloud API by sending a POST request to the specified endpoint, allowing users to store custom data against a workflow transition and modify its behavior.
 
@@ -20001,11 +17680,11 @@ class JiraApp(APIApplication):
         if transitionId is None:
             raise ValueError("Missing required parameter 'transitionId'.")
         request_body_data = None
-        request_body_data = {"id": id, "key": key_body, "value": value}
+        request_body_data = {'id': id, 'key': key_body, 'value': value}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
-        query_params = {k: v for k, v in [("key", key), ("workflowName", workflowName), ("workflowMode", workflowMode)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties'
+        query_params = {k: v for k, v in [('key', key), ('workflowName', workflowName), ('workflowMode', workflowMode)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20014,16 +17693,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def put_workflow_transition_property(
-        self,
-        transitionId: str,
-        key: str,
-        workflowName: str,
-        value: str,
-        workflowMode: str | None = None,
-        id: str | None = None,
-        key_body: str | None = None,
-    ) -> dict[str, Any]:
+    async def put_workflow_transition_property(self, transitionId: str, key: str, workflowName: str, value: str, workflowMode: str | None=None, id: str | None=None, key_body: str | None=None) -> dict[str, Any]:
         """
         Updates a workflow transition property (or creates it if nonexistent) in Jira Cloud using the transition ID, workflow name, and key.
 
@@ -20049,11 +17719,11 @@ class JiraApp(APIApplication):
         if transitionId is None:
             raise ValueError("Missing required parameter 'transitionId'.")
         request_body_data = None
-        request_body_data = {"id": id, "key": key_body, "value": value}
+        request_body_data = {'id': id, 'key': key_body, 'value': value}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties"
-        query_params = {k: v for k, v in [("key", key), ("workflowName", workflowName), ("workflowMode", workflowMode)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflow/transitions/{transitionId}/properties'
+        query_params = {k: v for k, v in [('key', key), ('workflowName', workflowName), ('workflowMode', workflowMode)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20081,9 +17751,9 @@ class JiraApp(APIApplication):
         """
         if entityId is None:
             raise ValueError("Missing required parameter 'entityId'.")
-        url = f"{self.base_url}/rest/api/3/workflow/{entityId}"
+        url = f'{self.base_url}/rest/api/3/workflow/{entityId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20092,9 +17762,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_workflow_issue_type_usages(
-        self, workflowId: str, projectId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_workflow_issue_type_usages(self, workflowId: str, projectId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves issue type usage for a specific workflow within a project using the Jira API, returning data on how issue types are used in that workflow.
 
@@ -20118,9 +17786,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'workflowId'.")
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
-        url = f"{self.base_url}/rest/api/3/workflow/{workflowId}/project/{projectId}/issueTypeUsages"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/{workflowId}/project/{projectId}/issueTypeUsages'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20129,9 +17797,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_usages_for_workflow(
-        self, workflowId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_project_usages_for_workflow(self, workflowId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves the list of projects that use a specified workflow in Jira, supporting pagination with optional parameters for next page token and maximum results.
 
@@ -20152,9 +17818,9 @@ class JiraApp(APIApplication):
         """
         if workflowId is None:
             raise ValueError("Missing required parameter 'workflowId'.")
-        url = f"{self.base_url}/rest/api/3/workflow/{workflowId}/projectUsages"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/{workflowId}/projectUsages'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20163,9 +17829,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_workflow_schemes(
-        self, workflowId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def list_workflow_schemes(self, workflowId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of workflow schemes associated with a specific workflow ID, allowing pagination through query parameters like nextPageToken and maxResults.
 
@@ -20186,9 +17850,9 @@ class JiraApp(APIApplication):
         """
         if workflowId is None:
             raise ValueError("Missing required parameter 'workflowId'.")
-        url = f"{self.base_url}/rest/api/3/workflow/{workflowId}/workflowSchemes"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflow/{workflowId}/workflowSchemes'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20197,14 +17861,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def read_workflows(
-        self,
-        expand: str | None = None,
-        useApprovalConfiguration: bool | None = None,
-        projectAndIssueTypes: list[dict[str, Any]] | None = None,
-        workflowIds: list[str] | None = None,
-        workflowNames: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def read_workflows(self, expand: str | None=None, useApprovalConfiguration: bool | None=None, projectAndIssueTypes: list[dict[str, Any]] | None=None, workflowIds: list[str] | None=None, workflowNames: list[str] | None=None) -> dict[str, Any]:
         """
         Creates new workflows in Jira Cloud using the REST API with the specified parameters and returns a response indicating the outcome.
 
@@ -20226,11 +17883,11 @@ class JiraApp(APIApplication):
             Workflows
         """
         request_body_data = None
-        request_body_data = {"projectAndIssueTypes": projectAndIssueTypes, "workflowIds": workflowIds, "workflowNames": workflowNames}
+        request_body_data = {'projectAndIssueTypes': projectAndIssueTypes, 'workflowIds': workflowIds, 'workflowNames': workflowNames}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflows"
-        query_params = {k: v for k, v in [("expand", expand), ("useApprovalConfiguration", useApprovalConfiguration)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflows'
+        query_params = {k: v for k, v in [('expand', expand), ('useApprovalConfiguration', useApprovalConfiguration)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20239,9 +17896,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def workflow_capabilities(
-        self, workflowId: str | None = None, projectId: str | None = None, issueTypeId: str | None = None
-    ) -> dict[str, Any]:
+    async def workflow_capabilities(self, workflowId: str | None=None, projectId: str | None=None, issueTypeId: str | None=None) -> dict[str, Any]:
         """
         Retrieves workflow capabilities (e.g., transitions, statuses) based on specified workflow, project, or issue type identifiers.
 
@@ -20260,11 +17915,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflows
         """
-        url = f"{self.base_url}/rest/api/3/workflows/capabilities"
-        query_params = {
-            k: v for k, v in [("workflowId", workflowId), ("projectId", projectId), ("issueTypeId", issueTypeId)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflows/capabilities'
+        query_params = {k: v for k, v in [('workflowId', workflowId), ('projectId', projectId), ('issueTypeId', issueTypeId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20273,12 +17926,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_workflows(
-        self,
-        scope: dict[str, Any] | None = None,
-        statuses: list[dict[str, Any]] | None = None,
-        workflows: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
+    async def create_workflows(self, scope: dict[str, Any] | None=None, statuses: list[dict[str, Any]] | None=None, workflows: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Creates a Jira workflow via REST API and returns success/failure status codes.
 
@@ -20298,11 +17946,11 @@ class JiraApp(APIApplication):
             Workflows
         """
         request_body_data = None
-        request_body_data = {"scope": scope, "statuses": statuses, "workflows": workflows}
+        request_body_data = {'scope': scope, 'statuses': statuses, 'workflows': workflows}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflows/create"
+        url = f'{self.base_url}/rest/api/3/workflows/create'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20311,7 +17959,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def validate_create_workflows(self, payload: dict[str, Any], validationOptions: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def validate_create_workflows(self, payload: dict[str, Any], validationOptions: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Validates the creation of a new workflow using the Jira API and returns a response based on the validation outcome.
 
@@ -20330,11 +17978,11 @@ class JiraApp(APIApplication):
             Workflows
         """
         request_body_data = None
-        request_body_data = {"payload": payload, "validationOptions": validationOptions}
+        request_body_data = {'payload': payload, 'validationOptions': validationOptions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflows/create/validation"
+        url = f'{self.base_url}/rest/api/3/workflows/create/validation'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20343,16 +17991,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_workflows(
-        self,
-        startAt: int | None = None,
-        maxResults: int | None = None,
-        expand: str | None = None,
-        queryString: str | None = None,
-        orderBy: str | None = None,
-        scope: str | None = None,
-        isActive: bool | None = None,
-    ) -> dict[str, Any]:
+    async def search_workflows(self, startAt: int | None=None, maxResults: int | None=None, expand: str | None=None, queryString: str | None=None, orderBy: str | None=None, scope: str | None=None, isActive: bool | None=None) -> dict[str, Any]:
         """
         Searches for and retrieves workflows in Jira using specified query parameters, allowing for pagination, expansion of details, and filtering by active status.
 
@@ -20375,21 +18014,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflows
         """
-        url = f"{self.base_url}/rest/api/3/workflows/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startAt", startAt),
-                ("maxResults", maxResults),
-                ("expand", expand),
-                ("queryString", queryString),
-                ("orderBy", orderBy),
-                ("scope", scope),
-                ("isActive", isActive),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflows/search'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults), ('expand', expand), ('queryString', queryString), ('orderBy', orderBy), ('scope', scope), ('isActive', isActive)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20398,9 +18025,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_workflows(
-        self, expand: str | None = None, statuses: list[dict[str, Any]] | None = None, workflows: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def update_workflows(self, expand: str | None=None, statuses: list[dict[str, Any]] | None=None, workflows: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Updates a workflow using the specified parameters via the POST method at the "/rest/api/3/workflows/update" endpoint, potentially allowing expansion details based on the query parameter "expand".
 
@@ -20420,11 +18045,11 @@ class JiraApp(APIApplication):
             Workflows
         """
         request_body_data = None
-        request_body_data = {"statuses": statuses, "workflows": workflows}
+        request_body_data = {'statuses': statuses, 'workflows': workflows}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflows/update"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflows/update'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20433,7 +18058,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def validate_update_workflows(self, payload: dict[str, Any], validationOptions: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def validate_update_workflows(self, payload: dict[str, Any], validationOptions: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Validates workflow updates for Jira Cloud using specified criteria and returns validation results.
 
@@ -20452,11 +18077,11 @@ class JiraApp(APIApplication):
             Workflows
         """
         request_body_data = None
-        request_body_data = {"payload": payload, "validationOptions": validationOptions}
+        request_body_data = {'payload': payload, 'validationOptions': validationOptions}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflows/update/validation"
+        url = f'{self.base_url}/rest/api/3/workflows/update/validation'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20465,7 +18090,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_workflow_schemes(self, startAt: int | None = None, maxResults: int | None = None) -> dict[str, Any]:
+    async def get_all_workflow_schemes(self, startAt: int | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of workflow schemes in Jira Cloud, allowing for pagination by specifying a start index and maximum number of results, using the Atlassian Jira Cloud REST API.
 
@@ -20483,9 +18108,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflow schemes
         """
-        url = f"{self.base_url}/rest/api/3/workflowscheme"
-        query_params = {k: v for k, v in [("startAt", startAt), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme'
+        query_params = {k: v for k, v in [('startAt', startAt), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20494,22 +18119,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_workflow_scheme(
-        self,
-        defaultWorkflow: str | None = None,
-        description: str | None = None,
-        draft: bool | None = None,
-        id: int | None = None,
-        issueTypeMappings: dict[str, str] | None = None,
-        issueTypes: dict[str, dict[str, Any]] | None = None,
-        lastModified: str | None = None,
-        lastModifiedUser: Any | None = None,
-        name: str | None = None,
-        originalDefaultWorkflow: str | None = None,
-        originalIssueTypeMappings: dict[str, str] | None = None,
-        self_arg_body: str | None = None,
-        updateDraftIfNeeded: bool | None = None,
-    ) -> dict[str, Any]:
+    async def create_workflow_scheme(self, defaultWorkflow: str | None=None, description: str | None=None, draft: bool | None=None, id: int | None=None, issueTypeMappings: dict[str, str] | None=None, issueTypes: dict[str, dict[str, Any]] | None=None, lastModified: str | None=None, lastModifiedUser: Any | None=None, name: str | None=None, originalDefaultWorkflow: str | None=None, originalIssueTypeMappings: dict[str, str] | None=None, self_arg_body: str | None=None, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Creates a new workflow scheme in Jira Cloud with specified configurations like default workflow and issue type mappings.
 
@@ -20545,25 +18155,11 @@ class JiraApp(APIApplication):
             Workflow schemes
         """
         request_body_data = None
-        request_body_data = {
-            "defaultWorkflow": defaultWorkflow,
-            "description": description,
-            "draft": draft,
-            "id": id,
-            "issueTypeMappings": issueTypeMappings,
-            "issueTypes": issueTypes,
-            "lastModified": lastModified,
-            "lastModifiedUser": lastModifiedUser,
-            "name": name,
-            "originalDefaultWorkflow": originalDefaultWorkflow,
-            "originalIssueTypeMappings": originalIssueTypeMappings,
-            "self": self_arg_body,
-            "updateDraftIfNeeded": updateDraftIfNeeded,
-        }
+        request_body_data = {'defaultWorkflow': defaultWorkflow, 'description': description, 'draft': draft, 'id': id, 'issueTypeMappings': issueTypeMappings, 'issueTypes': issueTypes, 'lastModified': lastModified, 'lastModifiedUser': lastModifiedUser, 'name': name, 'originalDefaultWorkflow': originalDefaultWorkflow, 'originalIssueTypeMappings': originalIssueTypeMappings, 'self': self_arg_body, 'updateDraftIfNeeded': updateDraftIfNeeded}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme"
+        url = f'{self.base_url}/rest/api/3/workflowscheme'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20589,9 +18185,9 @@ class JiraApp(APIApplication):
         Tags:
             Workflow scheme project associations
         """
-        url = f"{self.base_url}/rest/api/3/workflowscheme/project"
-        query_params = {k: v for k, v in [("projectId", projectId)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/project'
+        query_params = {k: v for k, v in [('projectId', projectId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20600,7 +18196,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def assign_scheme_to_project(self, projectId: str, workflowSchemeId: str | None = None) -> Any:
+    async def assign_scheme_to_project(self, projectId: str, workflowSchemeId: str | None=None) -> Any:
         """
         Associates a workflow scheme with a Jira project using the specified scheme ID.
 
@@ -20619,11 +18215,11 @@ class JiraApp(APIApplication):
             Workflow scheme project associations
         """
         request_body_data = None
-        request_body_data = {"projectId": projectId, "workflowSchemeId": workflowSchemeId}
+        request_body_data = {'projectId': projectId, 'workflowSchemeId': workflowSchemeId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/project"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/project'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20632,9 +18228,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def read_workflow_schemes(
-        self, expand: str | None = None, projectIds: list[str] | None = None, workflowSchemeIds: list[str] | None = None
-    ) -> list[Any]:
+    async def read_workflow_schemes(self, expand: str | None=None, projectIds: list[str] | None=None, workflowSchemeIds: list[str] | None=None) -> list[Any]:
         """
         Retrieves a list of workflow schemes using provided workflow scheme IDs or project IDs via the Jira Cloud REST API.
 
@@ -20654,11 +18248,11 @@ class JiraApp(APIApplication):
             Workflow schemes
         """
         request_body_data = None
-        request_body_data = {"projectIds": projectIds, "workflowSchemeIds": workflowSchemeIds}
+        request_body_data = {'projectIds': projectIds, 'workflowSchemeIds': workflowSchemeIds}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/read"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflowscheme/read'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20667,17 +18261,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_schemes(
-        self,
-        description: str,
-        id: str,
-        name: str,
-        version: dict[str, Any],
-        defaultWorkflowId: str | None = None,
-        statusMappingsByIssueTypeOverride: list[dict[str, Any]] | None = None,
-        statusMappingsByWorkflows: list[dict[str, Any]] | None = None,
-        workflowsForIssueTypes: list[dict[str, Any]] | None = None,
-    ) -> Any:
+    async def update_schemes(self, description: str, id: str, name: str, version: dict[str, Any], defaultWorkflowId: str | None=None, statusMappingsByIssueTypeOverride: list[dict[str, Any]] | None=None, statusMappingsByWorkflows: list[dict[str, Any]] | None=None, workflowsForIssueTypes: list[dict[str, Any]] | None=None) -> Any:
         """
         Updates Jira workflow schemes (company-managed or team-managed projects) with immediate effect, optionally creating a draft if active, and migrates issues asynchronously when changing status mappings.
 
@@ -20702,20 +18286,11 @@ class JiraApp(APIApplication):
             Workflow schemes
         """
         request_body_data = None
-        request_body_data = {
-            "defaultWorkflowId": defaultWorkflowId,
-            "description": description,
-            "id": id,
-            "name": name,
-            "statusMappingsByIssueTypeOverride": statusMappingsByIssueTypeOverride,
-            "statusMappingsByWorkflows": statusMappingsByWorkflows,
-            "version": version,
-            "workflowsForIssueTypes": workflowsForIssueTypes,
-        }
+        request_body_data = {'defaultWorkflowId': defaultWorkflowId, 'description': description, 'id': id, 'name': name, 'statusMappingsByIssueTypeOverride': statusMappingsByIssueTypeOverride, 'statusMappingsByWorkflows': statusMappingsByWorkflows, 'version': version, 'workflowsForIssueTypes': workflowsForIssueTypes}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/update"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/update'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20724,9 +18299,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_workflow_scheme_mappings(
-        self, id: str, workflowsForIssueTypes: list[dict[str, Any]], defaultWorkflowId: str | None = None
-    ) -> dict[str, Any]:
+    async def update_workflow_scheme_mappings(self, id: str, workflowsForIssueTypes: list[dict[str, Any]], defaultWorkflowId: str | None=None) -> dict[str, Any]:
         """
         Updates workflow scheme status mappings asynchronously for issue types and triggers issue migrations if needed.
 
@@ -20746,11 +18319,11 @@ class JiraApp(APIApplication):
             Workflow schemes
         """
         request_body_data = None
-        request_body_data = {"defaultWorkflowId": defaultWorkflowId, "id": id, "workflowsForIssueTypes": workflowsForIssueTypes}
+        request_body_data = {'defaultWorkflowId': defaultWorkflowId, 'id': id, 'workflowsForIssueTypes': workflowsForIssueTypes}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/update/mappings"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/update/mappings'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20778,9 +18351,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20789,7 +18362,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_workflow_scheme(self, id: str, returnDraftIfExists: bool | None = None) -> dict[str, Any]:
+    async def get_workflow_scheme(self, id: str, returnDraftIfExists: bool | None=None) -> dict[str, Any]:
         """
         Retrieves a workflow scheme by ID from Jira, optionally returning the draft version if it exists.
 
@@ -20809,9 +18382,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}"
-        query_params = {k: v for k, v in [("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}'
+        query_params = {k: v for k, v in [('returnDraftIfExists', returnDraftIfExists)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20820,23 +18393,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_workflow_scheme(
-        self,
-        id: str,
-        defaultWorkflow: str | None = None,
-        description: str | None = None,
-        draft: bool | None = None,
-        id_body: int | None = None,
-        issueTypeMappings: dict[str, str] | None = None,
-        issueTypes: dict[str, dict[str, Any]] | None = None,
-        lastModified: str | None = None,
-        lastModifiedUser: Any | None = None,
-        name: str | None = None,
-        originalDefaultWorkflow: str | None = None,
-        originalIssueTypeMappings: dict[str, str] | None = None,
-        self_arg_body: str | None = None,
-        updateDraftIfNeeded: bool | None = None,
-    ) -> dict[str, Any]:
+    async def update_workflow_scheme(self, id: str, defaultWorkflow: str | None=None, description: str | None=None, draft: bool | None=None, id_body: int | None=None, issueTypeMappings: dict[str, str] | None=None, issueTypes: dict[str, dict[str, Any]] | None=None, lastModified: str | None=None, lastModifiedUser: Any | None=None, name: str | None=None, originalDefaultWorkflow: str | None=None, originalIssueTypeMappings: dict[str, str] | None=None, self_arg_body: str | None=None, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Updates a workflow scheme by setting a new default workflow, allowing for the creation or update of a draft scheme if the original is active.
 
@@ -20875,25 +18432,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "defaultWorkflow": defaultWorkflow,
-            "description": description,
-            "draft": draft,
-            "id": id_body,
-            "issueTypeMappings": issueTypeMappings,
-            "issueTypes": issueTypes,
-            "lastModified": lastModified,
-            "lastModifiedUser": lastModifiedUser,
-            "name": name,
-            "originalDefaultWorkflow": originalDefaultWorkflow,
-            "originalIssueTypeMappings": originalIssueTypeMappings,
-            "self": self_arg_body,
-            "updateDraftIfNeeded": updateDraftIfNeeded,
-        }
+        request_body_data = {'defaultWorkflow': defaultWorkflow, 'description': description, 'draft': draft, 'id': id_body, 'issueTypeMappings': issueTypeMappings, 'issueTypes': issueTypes, 'lastModified': lastModified, 'lastModifiedUser': lastModifiedUser, 'name': name, 'originalDefaultWorkflow': originalDefaultWorkflow, 'originalIssueTypeMappings': originalIssueTypeMappings, 'self': self_arg_body, 'updateDraftIfNeeded': updateDraftIfNeeded}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20922,9 +18465,9 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/createdraft"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/createdraft'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20933,7 +18476,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_default_workflow(self, id: str, updateDraftIfNeeded: bool | None = None) -> dict[str, Any]:
+    async def delete_default_workflow(self, id: str, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Deletes the default workflow from a Jira workflow scheme, resetting it to the system default (jira workflow) and optionally creates/updates a draft workflow scheme if specified.
 
@@ -20953,9 +18496,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/default"
-        query_params = {k: v for k, v in [("updateDraftIfNeeded", updateDraftIfNeeded)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/default'
+        query_params = {k: v for k, v in [('updateDraftIfNeeded', updateDraftIfNeeded)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20964,7 +18507,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_default_workflow(self, id: str, returnDraftIfExists: bool | None = None) -> dict[str, Any]:
+    async def get_default_workflow(self, id: str, returnDraftIfExists: bool | None=None) -> dict[str, Any]:
         """
         Retrieves the default workflow assigned to unassociated issue types in a specified Jira workflow scheme.
 
@@ -20984,9 +18527,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/default"
-        query_params = {k: v for k, v in [("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/default'
+        query_params = {k: v for k, v in [('returnDraftIfExists', returnDraftIfExists)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -20995,7 +18538,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_default_workflow(self, id: str, workflow: str, updateDraftIfNeeded: bool | None = None) -> dict[str, Any]:
+    async def update_default_workflow(self, id: str, workflow: str, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Updates the default workflow in a Jira Cloud workflow scheme, which applies to all unassigned issue types.
 
@@ -21017,11 +18560,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"updateDraftIfNeeded": updateDraftIfNeeded, "workflow": workflow}
+        request_body_data = {'updateDraftIfNeeded': updateDraftIfNeeded, 'workflow': workflow}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/default"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21049,9 +18592,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21079,9 +18622,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21090,23 +18633,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_workflow_scheme_draft(
-        self,
-        id: str,
-        defaultWorkflow: str | None = None,
-        description: str | None = None,
-        draft: bool | None = None,
-        id_body: int | None = None,
-        issueTypeMappings: dict[str, str] | None = None,
-        issueTypes: dict[str, dict[str, Any]] | None = None,
-        lastModified: str | None = None,
-        lastModifiedUser: Any | None = None,
-        name: str | None = None,
-        originalDefaultWorkflow: str | None = None,
-        originalIssueTypeMappings: dict[str, str] | None = None,
-        self_arg_body: str | None = None,
-        updateDraftIfNeeded: bool | None = None,
-    ) -> dict[str, Any]:
+    async def update_workflow_scheme_draft(self, id: str, defaultWorkflow: str | None=None, description: str | None=None, draft: bool | None=None, id_body: int | None=None, issueTypeMappings: dict[str, str] | None=None, issueTypes: dict[str, dict[str, Any]] | None=None, lastModified: str | None=None, lastModifiedUser: Any | None=None, name: str | None=None, originalDefaultWorkflow: str | None=None, originalIssueTypeMappings: dict[str, str] | None=None, self_arg_body: str | None=None, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Updates a draft workflow scheme, creating one if it does not exist for the specified active workflow scheme, using the provided details such as default workflow and issue type mappings.
 
@@ -21145,25 +18672,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "defaultWorkflow": defaultWorkflow,
-            "description": description,
-            "draft": draft,
-            "id": id_body,
-            "issueTypeMappings": issueTypeMappings,
-            "issueTypes": issueTypes,
-            "lastModified": lastModified,
-            "lastModifiedUser": lastModifiedUser,
-            "name": name,
-            "originalDefaultWorkflow": originalDefaultWorkflow,
-            "originalIssueTypeMappings": originalIssueTypeMappings,
-            "self": self_arg_body,
-            "updateDraftIfNeeded": updateDraftIfNeeded,
-        }
+        request_body_data = {'defaultWorkflow': defaultWorkflow, 'description': description, 'draft': draft, 'id': id_body, 'issueTypeMappings': issueTypeMappings, 'issueTypes': issueTypes, 'lastModified': lastModified, 'lastModifiedUser': lastModifiedUser, 'name': name, 'originalDefaultWorkflow': originalDefaultWorkflow, 'originalIssueTypeMappings': originalIssueTypeMappings, 'self': self_arg_body, 'updateDraftIfNeeded': updateDraftIfNeeded}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21191,9 +18704,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21221,9 +18734,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21232,7 +18745,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_draft_default_workflow(self, id: str, workflow: str, updateDraftIfNeeded: bool | None = None) -> dict[str, Any]:
+    async def update_draft_default_workflow(self, id: str, workflow: str, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Sets the default workflow for a draft workflow scheme in Jira, enabling configuration changes before publication.
 
@@ -21254,11 +18767,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"updateDraftIfNeeded": updateDraftIfNeeded, "workflow": workflow}
+        request_body_data = {'updateDraftIfNeeded': updateDraftIfNeeded, 'workflow': workflow}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/default'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21289,9 +18802,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         if issueType is None:
             raise ValueError("Missing required parameter 'issueType'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21322,9 +18835,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         if issueType is None:
             raise ValueError("Missing required parameter 'issueType'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21333,14 +18846,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_workflow_draft_issue_type(
-        self,
-        id: str,
-        issueType: str,
-        issueType_body: str | None = None,
-        updateDraftIfNeeded: bool | None = None,
-        workflow: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_workflow_draft_issue_type(self, id: str, issueType: str, issueType_body: str | None=None, updateDraftIfNeeded: bool | None=None, workflow: str | None=None) -> dict[str, Any]:
         """
         Updates an issue type in a workflow scheme draft using the Jira Cloud API, allowing modifications to workflow mappings without affecting the active scheme until published.
 
@@ -21366,11 +18872,11 @@ class JiraApp(APIApplication):
         if issueType is None:
             raise ValueError("Missing required parameter 'issueType'.")
         request_body_data = None
-        request_body_data = {"issueType": issueType_body, "updateDraftIfNeeded": updateDraftIfNeeded, "workflow": workflow}
+        request_body_data = {'issueType': issueType_body, 'updateDraftIfNeeded': updateDraftIfNeeded, 'workflow': workflow}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/issuetype/{issueType}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21379,9 +18885,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def publish_draft_workflow_scheme(
-        self, id: str, validateOnly: bool | None = None, statusMappings: list[dict[str, Any]] | None = None
-    ) -> Any:
+    async def publish_draft_workflow_scheme(self, id: str, validateOnly: bool | None=None, statusMappings: list[dict[str, Any]] | None=None) -> Any:
         """
         Publishes a draft workflow scheme in Jira, replacing the active scheme upon successful execution.
 
@@ -21403,11 +18907,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {"statusMappings": statusMappings}
+        request_body_data = {'statusMappings': statusMappings}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/publish"
-        query_params = {k: v for k, v in [("validateOnly", validateOnly)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/publish'
+        query_params = {k: v for k, v in [('validateOnly', validateOnly)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21436,9 +18940,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21447,7 +18951,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_draft_workflow(self, id: str, workflowName: str | None = None) -> dict[str, Any]:
+    async def get_draft_workflow(self, id: str, workflowName: str | None=None) -> dict[str, Any]:
         """
         Retrieves the workflow configuration for a draft workflow scheme in Jira by ID and optional workflow name.
 
@@ -21467,9 +18971,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21478,15 +18982,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_draft_workflow_mapping(
-        self,
-        id: str,
-        workflowName: str,
-        defaultMapping: bool | None = None,
-        issueTypes: list[str] | None = None,
-        updateDraftIfNeeded: bool | None = None,
-        workflow: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_draft_workflow_mapping(self, id: str, workflowName: str, defaultMapping: bool | None=None, issueTypes: list[str] | None=None, updateDraftIfNeeded: bool | None=None, workflow: str | None=None) -> dict[str, Any]:
         """
         Updates the draft workflow scheme's associated workflow for a specified workflow name.
 
@@ -21511,16 +19007,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "defaultMapping": defaultMapping,
-            "issueTypes": issueTypes,
-            "updateDraftIfNeeded": updateDraftIfNeeded,
-            "workflow": workflow,
-        }
+        request_body_data = {'defaultMapping': defaultMapping, 'issueTypes': issueTypes, 'updateDraftIfNeeded': updateDraftIfNeeded, 'workflow': workflow}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/draft/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21529,7 +19020,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_workflow_scheme_issue_type(self, id: str, issueType: str, updateDraftIfNeeded: bool | None = None) -> dict[str, Any]:
+    async def delete_workflow_scheme_issue_type(self, id: str, issueType: str, updateDraftIfNeeded: bool | None=None) -> dict[str, Any]:
         """
         Removes the workflow-issue type mapping for a specified issue type in a workflow scheme, creating/updating a draft if the scheme is active and updateDraftIfNeeded is enabled.
 
@@ -21552,9 +19043,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         if issueType is None:
             raise ValueError("Missing required parameter 'issueType'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
-        query_params = {k: v for k, v in [("updateDraftIfNeeded", updateDraftIfNeeded)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}'
+        query_params = {k: v for k, v in [('updateDraftIfNeeded', updateDraftIfNeeded)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21563,7 +19054,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_workflow_scheme_issue_type(self, id: str, issueType: str, returnDraftIfExists: bool | None = None) -> dict[str, Any]:
+    async def get_workflow_scheme_issue_type(self, id: str, issueType: str, returnDraftIfExists: bool | None=None) -> dict[str, Any]:
         """
         Retrieves the workflow associated with a specific issue type in a workflow scheme, optionally returning the draft configuration if it exists.
 
@@ -21586,9 +19077,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'id'.")
         if issueType is None:
             raise ValueError("Missing required parameter 'issueType'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
-        query_params = {k: v for k, v in [("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}'
+        query_params = {k: v for k, v in [('returnDraftIfExists', returnDraftIfExists)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21597,14 +19088,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def set_workflow_scheme_issue_type(
-        self,
-        id: str,
-        issueType: str,
-        issueType_body: str | None = None,
-        updateDraftIfNeeded: bool | None = None,
-        workflow: str | None = None,
-    ) -> dict[str, Any]:
+    async def set_workflow_scheme_issue_type(self, id: str, issueType: str, issueType_body: str | None=None, updateDraftIfNeeded: bool | None=None, workflow: str | None=None) -> dict[str, Any]:
         """
         Sets the workflow for a specific issue type in a workflow scheme using the provided ID and issue type parameters.
 
@@ -21630,11 +19114,11 @@ class JiraApp(APIApplication):
         if issueType is None:
             raise ValueError("Missing required parameter 'issueType'.")
         request_body_data = None
-        request_body_data = {"issueType": issueType_body, "updateDraftIfNeeded": updateDraftIfNeeded, "workflow": workflow}
+        request_body_data = {'issueType': issueType_body, 'updateDraftIfNeeded': updateDraftIfNeeded, 'workflow': workflow}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}"
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/issuetype/{issueType}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21643,7 +19127,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_workflow_mapping(self, id: str, workflowName: str, updateDraftIfNeeded: bool | None = None) -> Any:
+    async def delete_workflow_mapping(self, id: str, workflowName: str, updateDraftIfNeeded: bool | None=None) -> Any:
         """
         Deletes a specific workflow from a workflow scheme identified by the provided ID, optionally updating a draft if the scheme is active, using the Jira Cloud REST API.
 
@@ -21664,9 +19148,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName), ("updateDraftIfNeeded", updateDraftIfNeeded)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName), ('updateDraftIfNeeded', updateDraftIfNeeded)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21675,7 +19159,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_workflow(self, id: str, workflowName: str | None = None, returnDraftIfExists: bool | None = None) -> dict[str, Any]:
+    async def get_workflow(self, id: str, workflowName: str | None=None, returnDraftIfExists: bool | None=None) -> dict[str, Any]:
         """
         Retrieves the workflow configuration for a specified workflow scheme in Jira, optionally returning draft configurations if they exist.
 
@@ -21696,9 +19180,9 @@ class JiraApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName), ("returnDraftIfExists", returnDraftIfExists)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName), ('returnDraftIfExists', returnDraftIfExists)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21707,15 +19191,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_workflow_mapping(
-        self,
-        id: str,
-        workflowName: str,
-        defaultMapping: bool | None = None,
-        issueTypes: list[str] | None = None,
-        updateDraftIfNeeded: bool | None = None,
-        workflow: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_workflow_mapping(self, id: str, workflowName: str, defaultMapping: bool | None=None, issueTypes: list[str] | None=None, updateDraftIfNeeded: bool | None=None, workflow: str | None=None) -> dict[str, Any]:
         """
         Updates a specified workflow scheme by assigning a new workflow, identified by the `workflowName` query parameter, to it using the Jira Cloud platform's REST API.
 
@@ -21740,16 +19216,11 @@ class JiraApp(APIApplication):
         if id is None:
             raise ValueError("Missing required parameter 'id'.")
         request_body_data = None
-        request_body_data = {
-            "defaultMapping": defaultMapping,
-            "issueTypes": issueTypes,
-            "updateDraftIfNeeded": updateDraftIfNeeded,
-            "workflow": workflow,
-        }
+        request_body_data = {'defaultMapping': defaultMapping, 'issueTypes': issueTypes, 'updateDraftIfNeeded': updateDraftIfNeeded, 'workflow': workflow}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{id}/workflow"
-        query_params = {k: v for k, v in [("workflowName", workflowName)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{id}/workflow'
+        query_params = {k: v for k, v in [('workflowName', workflowName)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21758,9 +19229,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project_usages(
-        self, workflowSchemeId: str, nextPageToken: str | None = None, maxResults: int | None = None
-    ) -> dict[str, Any]:
+    async def get_project_usages(self, workflowSchemeId: str, nextPageToken: str | None=None, maxResults: int | None=None) -> dict[str, Any]:
         """
         Retrieves the list of projects associated with a specific workflow scheme using pagination.
 
@@ -21781,9 +19250,9 @@ class JiraApp(APIApplication):
         """
         if workflowSchemeId is None:
             raise ValueError("Missing required parameter 'workflowSchemeId'.")
-        url = f"{self.base_url}/rest/api/3/workflowscheme/{workflowSchemeId}/projectUsages"
-        query_params = {k: v for k, v in [("nextPageToken", nextPageToken), ("maxResults", maxResults)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/workflowscheme/{workflowSchemeId}/projectUsages'
+        query_params = {k: v for k, v in [('nextPageToken', nextPageToken), ('maxResults', maxResults)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21792,7 +19261,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_ids_of_worklogs_deleted_since(self, since: int | None = None) -> dict[str, Any]:
+    async def get_ids_of_worklogs_deleted_since(self, since: int | None=None) -> dict[str, Any]:
         """
         Retrieves a list of IDs and delete timestamps for worklogs that have been deleted since a specified time using the Jira API.
 
@@ -21809,9 +19278,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue worklogs
         """
-        url = f"{self.base_url}/rest/api/3/worklog/deleted"
-        query_params = {k: v for k, v in [("since", since)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/worklog/deleted'
+        query_params = {k: v for k, v in [('since', since)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21820,7 +19289,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_worklogs_for_ids(self, ids: list[int], expand: str | None = None) -> list[Any]:
+    async def get_worklogs_for_ids(self, ids: list[int], expand: str | None=None) -> list[Any]:
         """
         Retrieves a list of worklogs for specified IDs using the Jira API and returns their details.
 
@@ -21839,11 +19308,11 @@ class JiraApp(APIApplication):
             Issue worklogs
         """
         request_body_data = None
-        request_body_data = {"ids": ids}
+        request_body_data = {'ids': ids}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/api/3/worklog/list"
-        query_params = {k: v for k, v in [("expand", expand)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/rest/api/3/worklog/list'
+        query_params = {k: v for k, v in [('expand', expand)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21852,7 +19321,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_ids_of_worklogs_modified_since(self, since: int | None = None, expand: str | None = None) -> dict[str, Any]:
+    async def get_ids_of_worklogs_modified_since(self, since: int | None=None, expand: str | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of updated worklogs in Jira with optional filtering by timestamp and property expansion.
 
@@ -21870,9 +19339,9 @@ class JiraApp(APIApplication):
         Tags:
             Issue worklogs
         """
-        url = f"{self.base_url}/rest/api/3/worklog/updated"
-        query_params = {k: v for k, v in [("since", since), ("expand", expand)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/api/3/worklog/updated'
+        query_params = {k: v for k, v in [('since', since), ('expand', expand)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21900,9 +19369,9 @@ class JiraApp(APIApplication):
         """
         if addonKey is None:
             raise ValueError("Missing required parameter 'addonKey'.")
-        url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties"
+        url = f'{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21933,9 +19402,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'addonKey'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -21966,9 +19435,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'addonKey'.")
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22000,9 +19469,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/atlassian-connect/1/addons/{addonKey}/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22011,7 +19480,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def delete_module(self, moduleKey: list[str] | None = None) -> Any:
+    async def delete_module(self, moduleKey: list[str] | None=None) -> Any:
         """
         Removes specified or all dynamically registered modules for the calling app via query parameters.
 
@@ -22030,9 +19499,9 @@ class JiraApp(APIApplication):
         Tags:
             Dynamic modules
         """
-        url = f"{self.base_url}/rest/atlassian-connect/1/app/module/dynamic"
-        query_params = {k: v for k, v in [("moduleKey", moduleKey)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/rest/atlassian-connect/1/app/module/dynamic'
+        query_params = {k: v for k, v in [('moduleKey', moduleKey)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22055,9 +19524,9 @@ class JiraApp(APIApplication):
         Tags:
             Dynamic modules
         """
-        url = f"{self.base_url}/rest/atlassian-connect/1/app/module/dynamic"
+        url = f'{self.base_url}/rest/atlassian-connect/1/app/module/dynamic'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22085,11 +19554,11 @@ class JiraApp(APIApplication):
             Dynamic modules
         """
         request_body_data = None
-        request_body_data = {"modules": modules}
+        request_body_data = {'modules': modules}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/atlassian-connect/1/app/module/dynamic"
+        url = f'{self.base_url}/rest/atlassian-connect/1/app/module/dynamic'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22098,7 +19567,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def put_migration_field_update(self, updateValueList: list[dict[str, Any]] | None = None) -> Any:
+    async def put_migration_field_update(self, updateValueList: list[dict[str, Any]] | None=None) -> Any:
         """
         Updates multiple entity properties (up to 50 per request) for a specified object during Connect app migrations.
 
@@ -22116,11 +19585,11 @@ class JiraApp(APIApplication):
             App migration
         """
         request_body_data = None
-        request_body_data = {"updateValueList": updateValueList}
+        request_body_data = {'updateValueList': updateValueList}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/atlassian-connect/1/migration/field"
+        url = f'{self.base_url}/rest/atlassian-connect/1/migration/field'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22150,9 +19619,9 @@ class JiraApp(APIApplication):
             raise ValueError("Missing required parameter 'entityType'.")
         request_body_data = None
         request_body_data = items
-        url = f"{self.base_url}/rest/atlassian-connect/1/migration/properties/{entityType}"
+        url = f'{self.base_url}/rest/atlassian-connect/1/migration/properties/{entityType}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22161,7 +19630,7 @@ class JiraApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_workflow_rules(self, ruleIds: list[str], workflowEntityId: str, expand: str | None = None) -> dict[str, Any]:
+    async def search_workflow_rules(self, ruleIds: list[str], workflowEntityId: str, expand: str | None=None) -> dict[str, Any]:
         """
         Searches for and returns workflow transition rule configurations migrated from server to cloud, owned by the calling Connect app, using the Jira Cloud REST API.
 
@@ -22181,11 +19650,11 @@ class JiraApp(APIApplication):
             App migration
         """
         request_body_data = None
-        request_body_data = {"expand": expand, "ruleIds": ruleIds, "workflowEntityId": workflowEntityId}
+        request_body_data = {'expand': expand, 'ruleIds': ruleIds, 'workflowEntityId': workflowEntityId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/rest/atlassian-connect/1/migration/workflow/rule/search"
+        url = f'{self.base_url}/rest/atlassian-connect/1/migration/workflow/rule/search'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22211,9 +19680,9 @@ class JiraApp(APIApplication):
         Tags:
             Service Registry
         """
-        url = f"{self.base_url}/rest/atlassian-connect/1/service-registry"
-        query_params = {k: v for k, v in [("serviceIds", serviceIds)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/rest/atlassian-connect/1/service-registry'
+        query_params = {k: v for k, v in [('serviceIds', serviceIds)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22241,9 +19710,9 @@ class JiraApp(APIApplication):
         """
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
-        url = f"{self.base_url}/rest/forge/1/app/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/forge/1/app/properties/{propertyKey}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22272,9 +19741,9 @@ class JiraApp(APIApplication):
         if propertyKey is None:
             raise ValueError("Missing required parameter 'propertyKey'.")
         request_body_data = None
-        url = f"{self.base_url}/rest/forge/1/app/properties/{propertyKey}"
+        url = f'{self.base_url}/rest/forge/1/app/properties/{propertyKey}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -22284,594 +19753,4 @@ class JiraApp(APIApplication):
             return None
 
     def list_tools(self):
-        return [
-            self.get_banner,
-            self.set_banner,
-            self.get_custom_fields_configurations,
-            self.set_field_value,
-            self.get_custom_field_configuration,
-            self.update_custom_field_configuration,
-            self.update_custom_field_value,
-            self.get_application_property,
-            self.get_advanced_settings,
-            self.set_application_property,
-            self.get_all_application_roles,
-            self.get_application_role,
-            self.get_attachment_content,
-            self.get_attachment_meta,
-            self.get_attachment_thumbnail,
-            self.remove_attachment,
-            self.get_attachment,
-            self.expand_attachment_for_humans,
-            self.expand_attachment_for_machines,
-            self.get_audit_records,
-            self.get_all_system_avatars,
-            self.submit_bulk_delete,
-            self.get_bulk_editable_fields,
-            self.submit_bulk_edit,
-            self.submit_bulk_move,
-            self.get_available_transitions,
-            self.submit_bulk_transition,
-            self.submit_bulk_unwatch,
-            self.submit_bulk_watch,
-            self.get_bulk_operation_progress,
-            self.get_bulk_changelogs,
-            self.list_classification_levels,
-            self.get_comments_by_ids,
-            self.get_comment_property_keys,
-            self.delete_comment_property,
-            self.get_comment_property,
-            self.set_comment_property,
-            self.find_components_for_projects,
-            self.create_component,
-            self.delete_component,
-            self.get_component,
-            self.update_component,
-            self.get_component_related_issues,
-            self.get_configuration,
-            self.get_time_tracking_config,
-            self.update_time_tracking_config,
-            self.list_time_tracking_configs,
-            self.get_time_tracking_options,
-            self.update_time_tracking_options,
-            self.get_custom_field_option,
-            self.get_all_dashboards,
-            self.create_dashboard,
-            self.bulk_edit_dashboards,
-            self.get_gadgets,
-            self.get_dashboards_paginated,
-            self.get_all_gadgets,
-            self.add_gadget,
-            self.remove_gadget,
-            self.update_gadget,
-            self.get_dashboard_item_property_keys,
-            self.delete_dashboard_item_property,
-            self.get_dashboard_item_property,
-            self.set_dashboard_item_property,
-            self.delete_dashboard,
-            self.get_dashboard,
-            self.update_dashboard,
-            self.copy_dashboard,
-            self.get_policy,
-            self.get_policies,
-            self.get_events,
-            self.analyse_expression,
-            self.evaluate_jira_expression,
-            self.evaluate_jsisjira_expression,
-            self.get_fields,
-            self.create_custom_field,
-            self.remove_associations,
-            self.create_associations,
-            self.get_fields_paginated,
-            self.get_trashed_fields_paginated,
-            self.update_custom_field,
-            self.get_contexts_for_field,
-            self.create_custom_field_context,
-            self.get_default_values,
-            self.set_default_values,
-            self.get_field_issue_type_mappings,
-            self.post_field_context_mapping,
-            self.get_project_context_mapping,
-            self.delete_custom_field_context,
-            self.update_custom_field_context,
-            self.add_issue_types_to_context,
-            self.remove_issue_types_from_context,
-            self.get_options_for_context,
-            self.create_custom_field_option,
-            self.update_custom_field_option,
-            self.reorder_custom_field_options,
-            self.delete_custom_field_option,
-            self.replace_custom_field_option,
-            self.assign_project_field_context,
-            self.remove_project_from_field_context,
-            self.get_contexts_for_field_deprecated,
-            self.get_screens_for_field,
-            self.get_all_issue_field_options,
-            self.create_issue_field_option,
-            self.get_selectable_issue_field_options,
-            self.get_visible_issue_field_options,
-            self.delete_issue_field_option,
-            self.get_issue_field_option,
-            self.update_issue_field_option,
-            self.replace_issue_field_option,
-            self.delete_custom_field,
-            self.restore_custom_field,
-            self.trash_custom_field,
-            self.get_all_field_configurations,
-            self.create_field_configuration,
-            self.delete_field_configuration,
-            self.update_field_configuration,
-            self.get_field_configuration_items,
-            self.update_field_configuration_items,
-            self.list_field_configs,
-            self.create_field_configuration_scheme,
-            self.get_field_mapping,
-            self.get_field_configs_for_project,
-            self.update_field_config_scheme_project,
-            self.delete_field_configuration_scheme,
-            self.update_field_configuration_scheme,
-            self.update_field_config_scheme_mapping,
-            self.delete_field_config_mapping,
-            self.create_filter,
-            self.get_default_share_scope,
-            self.set_default_share_scope,
-            self.get_favourite_filters,
-            self.get_my_filters,
-            self.get_filters_paginated,
-            self.delete_filter,
-            self.get_filter,
-            self.update_filter,
-            self.reset_columns,
-            self.get_columns,
-            self.set_columns,
-            self.delete_favourite_for_filter,
-            self.set_favourite_for_filter,
-            self.change_filter_owner,
-            self.get_share_permissions,
-            self.add_share_permission,
-            self.delete_share_permission,
-            self.get_share_permission,
-            self.remove_group,
-            self.get_group,
-            self.create_group,
-            self.bulk_get_groups,
-            self.get_users_from_group,
-            self.remove_user_from_group,
-            self.add_user_to_group,
-            self.find_groups,
-            self.find_users_and_groups,
-            self.get_license,
-            self.create_issue,
-            self.archive_issues_async,
-            self.archive_issues,
-            self.create_issues,
-            self.bulk_fetch_issues,
-            self.get_create_issue_meta,
-            self.get_create_issue_meta_issue_types,
-            self.get_create_issue_meta_issue_type_id,
-            self.get_issue_limit_report,
-            self.get_issue_picker_resource,
-            self.bulk_set_issues_properties_list,
-            self.bulk_set_issue_properties_by_issue,
-            self.bulk_delete_issue_property,
-            self.bulk_set_issue_property,
-            self.unarchive_issues,
-            self.get_is_watching_issue_bulk,
-            self.delete_issue,
-            self.get_issue,
-            self.edit_issue,
-            self.assign_issue,
-            self.add_attachment,
-            self.get_change_logs,
-            self.get_change_logs_by_ids,
-            self.get_comments,
-            self.add_comment,
-            self.delete_comment,
-            self.get_comment,
-            self.update_comment,
-            self.get_edit_issue_meta,
-            self.notify,
-            self.get_issue_property_keys,
-            self.delete_issue_property,
-            self.get_issue_property,
-            self.set_issue_property,
-            self.delete_remote_link,
-            self.get_remote_issue_links,
-            self.create_or_update_remote_issue_link,
-            self.delete_remote_issue_link_by_id,
-            self.get_remote_issue_link_by_id,
-            self.update_remote_issue_link,
-            self.get_transitions,
-            self.do_transition,
-            self.remove_vote,
-            self.get_votes,
-            self.add_vote,
-            self.remove_watcher,
-            self.get_issue_watchers,
-            self.add_watcher,
-            self.bulk_delete_worklogs,
-            self.get_issue_worklog,
-            self.add_worklog,
-            self.bulk_move_worklogs,
-            self.delete_worklog,
-            self.get_worklog,
-            self.update_worklog,
-            self.get_worklog_property_keys,
-            self.delete_worklog_property,
-            self.get_worklog_property,
-            self.set_worklog_property,
-            self.link_issues,
-            self.delete_issue_link,
-            self.get_issue_link,
-            self.get_issue_link_types,
-            self.create_issue_link_type,
-            self.delete_issue_link_type,
-            self.get_issue_link_type,
-            self.update_issue_link_type,
-            self.export_archived_issues,
-            self.get_issue_security_schemes,
-            self.create_issue_security_scheme,
-            self.get_security_levels,
-            self.set_default_levels,
-            self.get_security_level_members,
-            self.list_security_schemes_by_project,
-            self.associate_schemes_to_projects,
-            self.search_security_schemes,
-            self.get_issue_security_scheme,
-            self.update_issue_security_scheme,
-            self.get_issue_security_level_members,
-            self.delete_security_scheme,
-            self.add_security_level,
-            self.remove_level,
-            self.update_security_level,
-            self.add_security_level_members,
-            self.remove_member_from_security_level,
-            self.get_issue_all_types,
-            self.create_issue_type,
-            self.get_issue_types_for_project,
-            self.delete_issue_type,
-            self.get_issue_type,
-            self.update_issue_type,
-            self.get_alternative_issue_types,
-            self.create_issue_type_avatar,
-            self.get_issue_type_property_keys,
-            self.delete_issue_type_property,
-            self.get_issue_type_property,
-            self.set_issue_type_property,
-            self.get_all_issue_type_schemes,
-            self.create_issue_type_scheme,
-            self.get_issue_type_schemes_mapping,
-            self.get_issue_type_scheme_for_projects,
-            self.assign_issue_type_scheme_to_project,
-            self.delete_issue_type_scheme,
-            self.update_issue_type_scheme,
-            self.add_issue_types_to_issue_type_scheme,
-            self.move_issue_type_in_scheme,
-            self.remove_issue_type_from_scheme_by_id,
-            self.get_all_issue_type_screen_schemes,
-            self.create_issue_type_screen_scheme,
-            self.list_mappings,
-            self.get_project_screen_schemes,
-            self.update_project_scheme,
-            self.delete_issue_type_screen_scheme,
-            self.update_issue_type_screen_scheme,
-            self.update_issue_type_screen_mapping,
-            self.update_default_screen_scheme,
-            self.remove_issue_type_mapping,
-            self.fetch_project_by_scheme,
-            self.get_auto_complete,
-            self.get_auto_complete_post,
-            self.get_jql_suggestions,
-            self.get_precomputations,
-            self.update_precomputations,
-            self.get_precomputations_by_id,
-            self.match_issues,
-            self.parse_jql_queries,
-            self.migrate_queries,
-            self.sanitise_jql_queries,
-            self.get_all_labels,
-            self.get_approximate_license_count,
-            self.get_license_count_by_product_key,
-            self.get_my_permissions,
-            self.remove_preference,
-            self.get_preference,
-            self.set_preference,
-            self.delete_locale,
-            self.get_locale,
-            self.set_locale,
-            self.get_current_user,
-            self.get_notification_schemes,
-            self.create_notification_scheme,
-            self.get_notification_scheme_projects,
-            self.get_notification_scheme,
-            self.update_notification_scheme,
-            self.add_notifications,
-            self.delete_notification_scheme,
-            self.delete_notification_from_scheme,
-            self.get_all_permissions,
-            self.get_bulk_permissions,
-            self.get_permitted_projects,
-            self.get_all_permission_schemes,
-            self.create_permission_scheme,
-            self.delete_permission_scheme,
-            self.get_permission_scheme,
-            self.update_permission_scheme,
-            self.get_permission_scheme_grants,
-            self.create_permission_grant,
-            self.delete_permission_scheme_entity,
-            self.get_permission_scheme_grant,
-            self.get_plans,
-            self.create_plan,
-            self.get_plan,
-            self.update_plan,
-            self.archive_plan,
-            self.duplicate_plan,
-            self.get_teams,
-            self.add_atlassian_team,
-            self.remove_atlassian_team,
-            self.get_atlassian_team,
-            self.update_atlassian_team,
-            self.create_plan_only_team,
-            self.delete_plan_only_team,
-            self.get_plan_only_team,
-            self.update_plan_only_team,
-            self.trash_plan,
-            self.get_priorities,
-            self.create_priority,
-            self.set_default_priority,
-            self.move_priorities,
-            self.search_priorities,
-            self.delete_priority,
-            self.get_priority,
-            self.update_priority,
-            self.get_priority_schemes,
-            self.create_priority_scheme,
-            self.suggested_priorities_for_mappings,
-            self.list_priorities,
-            self.delete_priority_scheme,
-            self.update_priority_scheme,
-            self.get_priorities_by_priority_scheme,
-            self.get_projects_by_priority_scheme,
-            self.get_all_projects,
-            self.create_project,
-            self.create_project_template,
-            self.get_recent,
-            self.search_projects,
-            self.get_all_project_types,
-            self.get_all_accessible_project_types,
-            self.get_project_type_by_key,
-            self.get_accessible_project_type_by_key,
-            self.delete_project,
-            self.get_project,
-            self.update_project,
-            self.archive_project,
-            self.update_project_avatar,
-            self.delete_project_avatar,
-            self.create_project_avatar,
-            self.get_all_project_avatars,
-            self.delete_classification_level,
-            self.get_project_classification_level,
-            self.update_project_class_default,
-            self.get_project_components_paginated,
-            self.get_project_components,
-            self.delete_project_asynchronously,
-            self.get_features_for_project,
-            self.toggle_feature_for_project,
-            self.get_project_property_keys,
-            self.delete_project_property,
-            self.get_project_property,
-            self.set_project_property,
-            self.restore,
-            self.get_project_roles,
-            self.delete_actor,
-            self.get_project_role,
-            self.add_actor_users,
-            self.set_actors,
-            self.get_project_role_details,
-            self.get_all_statuses,
-            self.get_project_versions_paginated,
-            self.get_project_versions,
-            self.get_project_email,
-            self.update_project_email,
-            self.get_hierarchy,
-            self.get_project_issue_security_scheme,
-            self.get_notification_scheme_by_project,
-            self.get_assigned_permission_scheme,
-            self.assign_permission_scheme,
-            self.get_security_levels_for_project,
-            self.get_all_project_categories,
-            self.create_project_category,
-            self.remove_project_category,
-            self.get_project_category_by_id,
-            self.update_project_category,
-            self.validate_project_key,
-            self.get_valid_project_key,
-            self.get_valid_project_name,
-            self.get_resolutions,
-            self.create_resolution,
-            self.set_default_resolution,
-            self.move_resolutions,
-            self.search_resolutions,
-            self.delete_resolution,
-            self.get_resolution,
-            self.update_resolution,
-            self.get_all_project_roles,
-            self.create_project_role,
-            self.delete_project_role,
-            self.get_project_role_by_id,
-            self.partial_update_project_role,
-            self.fully_update_project_role,
-            self.delete_role_actor_by_id,
-            self.get_project_role_actors_for_role,
-            self.add_project_role_actors_to_role,
-            self.get_screens,
-            self.create_screen,
-            self.add_field_to_default_screen,
-            self.get_bulk_screen_tabs,
-            self.delete_screen,
-            self.update_screen,
-            self.get_available_screen_fields,
-            self.get_all_screen_tabs,
-            self.add_screen_tab,
-            self.delete_screen_tab,
-            self.rename_screen_tab,
-            self.get_all_screen_tab_fields,
-            self.add_screen_tab_field,
-            self.remove_screen_tab_field,
-            self.move_screen_tab_field,
-            self.move_screen_tab,
-            self.get_screen_schemes,
-            self.create_screen_scheme,
-            self.delete_screen_scheme,
-            self.update_screen_scheme,
-            self.search_for_issues_using_jql,
-            self.search_for_issues_using_jql_post,
-            self.count_issues,
-            self.search_for_issues_ids,
-            self.get_search_by_jql,
-            self.post_search_jql,
-            self.get_issue_security_level,
-            self.get_server_info,
-            self.list_columns,
-            self.update_settings_columns,
-            self.get_statuses,
-            self.get_status,
-            self.get_status_categories,
-            self.get_status_category,
-            self.delete_statuses_by_id,
-            self.get_statuses_by_id,
-            self.create_statuses,
-            self.update_statuses,
-            self.search,
-            self.get_issue_type_usages,
-            self.get_project_usages_for_status,
-            self.get_workflow_usages_for_status,
-            self.get_task,
-            self.cancel_task,
-            self.get_ui_modifications,
-            self.create_ui_modification,
-            self.delete_ui_modification,
-            self.update_ui_modification,
-            self.get_avatars,
-            self.store_avatar,
-            self.delete_avatar,
-            self.get_avatar_image_by_type,
-            self.get_avatar_image_by_id,
-            self.get_avatar_image_by_owner,
-            self.remove_user,
-            self.get_user,
-            self.create_user,
-            self.find_bulk_assignable_users,
-            self.find_assignable_users,
-            self.bulk_get_users,
-            self.bulk_get_users_migration,
-            self.reset_user_columns,
-            self.get_user_default_columns,
-            self.set_user_columns,
-            self.get_user_email,
-            self.get_user_email_bulk,
-            self.get_user_groups,
-            self.get_user_nav_property,
-            self.set_user_nav_property,
-            self.find_users_with_all_permissions,
-            self.find_users_for_picker,
-            self.get_user_property_keys,
-            self.delete_user_property,
-            self.get_user_property,
-            self.set_user_property,
-            self.find_users,
-            self.find_users_by_query,
-            self.find_user_keys_by_query,
-            self.find_users_with_browse_permission,
-            self.get_all_users_default,
-            self.get_all_users,
-            self.create_version,
-            self.delete_version,
-            self.get_version,
-            self.update_version,
-            self.merge_versions,
-            self.move_version,
-            self.get_version_related_issues,
-            self.get_related_work,
-            self.create_related_work,
-            self.update_related_work,
-            self.delete_and_replace_version,
-            self.get_version_unresolved_issues,
-            self.delete_related_work,
-            self.delete_webhook_by_id,
-            self.get_dynamic_webhooks_for_app,
-            self.register_dynamic_webhooks,
-            self.get_failed_webhooks,
-            self.refresh_webhooks,
-            self.get_all_workflows,
-            self.create_workflow,
-            self.list_workflow_rule_configs,
-            self.update_workflow_rule_config,
-            self.delete_workflow_rule_config,
-            self.get_workflows_paginated,
-            self.delete_transition_property,
-            self.get_transition_properties,
-            self.update_transition_property,
-            self.put_workflow_transition_property,
-            self.delete_inactive_workflow,
-            self.get_workflow_issue_type_usages,
-            self.get_project_usages_for_workflow,
-            self.list_workflow_schemes,
-            self.read_workflows,
-            self.workflow_capabilities,
-            self.create_workflows,
-            self.validate_create_workflows,
-            self.search_workflows,
-            self.update_workflows,
-            self.validate_update_workflows,
-            self.get_all_workflow_schemes,
-            self.create_workflow_scheme,
-            self.get_workflow_schemes_by_project_id,
-            self.assign_scheme_to_project,
-            self.read_workflow_schemes,
-            self.update_schemes,
-            self.update_workflow_scheme_mappings,
-            self.delete_workflow_scheme,
-            self.get_workflow_scheme,
-            self.update_workflow_scheme,
-            self.create_workflow_draft,
-            self.delete_default_workflow,
-            self.get_default_workflow,
-            self.update_default_workflow,
-            self.delete_workflow_scheme_draft,
-            self.get_workflow_scheme_draft,
-            self.update_workflow_scheme_draft,
-            self.delete_draft_default_workflow,
-            self.get_draft_default_workflow,
-            self.update_draft_default_workflow,
-            self.delete_issue_type_draft_from_scheme,
-            self.get_issue_type_draft,
-            self.update_workflow_draft_issue_type,
-            self.publish_draft_workflow_scheme,
-            self.delete_draft_workflow_mapping,
-            self.get_draft_workflow,
-            self.update_draft_workflow_mapping,
-            self.delete_workflow_scheme_issue_type,
-            self.get_workflow_scheme_issue_type,
-            self.set_workflow_scheme_issue_type,
-            self.delete_workflow_mapping,
-            self.get_workflow,
-            self.update_workflow_mapping,
-            self.get_project_usages,
-            self.get_ids_of_worklogs_deleted_since,
-            self.get_worklogs_for_ids,
-            self.get_ids_of_worklogs_modified_since,
-            self.get_addon_properties,
-            self.delete_addon_property,
-            self.get_addon_property,
-            self.update_addon_property,
-            self.delete_module,
-            self.list_dynamic_modules,
-            self.create_module,
-            self.put_migration_field_update,
-            self.update_entity_properties,
-            self.search_workflow_rules,
-            self.get_service_registry_by_ids,
-            self.delete_forge_app_property,
-            self.put_forge_app_property,
-        ]
+        return [self.get_banner, self.set_banner, self.get_custom_fields_configurations, self.set_field_value, self.get_custom_field_configuration, self.update_custom_field_configuration, self.update_custom_field_value, self.get_application_property, self.get_advanced_settings, self.set_application_property, self.get_all_application_roles, self.get_application_role, self.get_attachment_content, self.get_attachment_meta, self.get_attachment_thumbnail, self.remove_attachment, self.get_attachment, self.expand_attachment_for_humans, self.expand_attachment_for_machines, self.get_audit_records, self.get_all_system_avatars, self.submit_bulk_delete, self.get_bulk_editable_fields, self.submit_bulk_edit, self.submit_bulk_move, self.get_available_transitions, self.submit_bulk_transition, self.submit_bulk_unwatch, self.submit_bulk_watch, self.get_bulk_operation_progress, self.get_bulk_changelogs, self.list_classification_levels, self.get_comments_by_ids, self.get_comment_property_keys, self.delete_comment_property, self.get_comment_property, self.set_comment_property, self.find_components_for_projects, self.create_component, self.delete_component, self.get_component, self.update_component, self.get_component_related_issues, self.get_configuration, self.get_time_tracking_config, self.update_time_tracking_config, self.list_time_tracking_configs, self.get_time_tracking_options, self.update_time_tracking_options, self.get_custom_field_option, self.get_all_dashboards, self.create_dashboard, self.bulk_edit_dashboards, self.get_gadgets, self.get_dashboards_paginated, self.get_all_gadgets, self.add_gadget, self.remove_gadget, self.update_gadget, self.get_dashboard_item_property_keys, self.delete_dashboard_item_property, self.get_dashboard_item_property, self.set_dashboard_item_property, self.delete_dashboard, self.get_dashboard, self.update_dashboard, self.copy_dashboard, self.get_policy, self.get_policies, self.get_events, self.analyse_expression, self.evaluate_jira_expression, self.evaluate_jsisjira_expression, self.get_fields, self.create_custom_field, self.remove_associations, self.create_associations, self.get_fields_paginated, self.get_trashed_fields_paginated, self.update_custom_field, self.get_contexts_for_field, self.create_custom_field_context, self.get_default_values, self.set_default_values, self.get_field_issue_type_mappings, self.post_field_context_mapping, self.get_project_context_mapping, self.delete_custom_field_context, self.update_custom_field_context, self.add_issue_types_to_context, self.remove_issue_types_from_context, self.get_options_for_context, self.create_custom_field_option, self.update_custom_field_option, self.reorder_custom_field_options, self.delete_custom_field_option, self.replace_custom_field_option, self.assign_project_field_context, self.remove_project_from_field_context, self.get_contexts_for_field_deprecated, self.get_screens_for_field, self.get_all_issue_field_options, self.create_issue_field_option, self.get_selectable_issue_field_options, self.get_visible_issue_field_options, self.delete_issue_field_option, self.get_issue_field_option, self.update_issue_field_option, self.replace_issue_field_option, self.delete_custom_field, self.restore_custom_field, self.trash_custom_field, self.get_all_field_configurations, self.create_field_configuration, self.delete_field_configuration, self.update_field_configuration, self.get_field_configuration_items, self.update_field_configuration_items, self.list_field_configs, self.create_field_configuration_scheme, self.get_field_mapping, self.get_field_configs_for_project, self.update_field_config_scheme_project, self.delete_field_configuration_scheme, self.update_field_configuration_scheme, self.update_field_config_scheme_mapping, self.delete_field_config_mapping, self.create_filter, self.get_default_share_scope, self.set_default_share_scope, self.get_favourite_filters, self.get_my_filters, self.get_filters_paginated, self.delete_filter, self.get_filter, self.update_filter, self.reset_columns, self.get_columns, self.set_columns, self.delete_favourite_for_filter, self.set_favourite_for_filter, self.change_filter_owner, self.get_share_permissions, self.add_share_permission, self.delete_share_permission, self.get_share_permission, self.remove_group, self.get_group, self.create_group, self.bulk_get_groups, self.get_users_from_group, self.remove_user_from_group, self.add_user_to_group, self.find_groups, self.find_users_and_groups, self.get_license, self.create_issue, self.archive_issues_async, self.archive_issues, self.create_issues, self.bulk_fetch_issues, self.get_create_issue_meta, self.get_create_issue_meta_issue_types, self.get_create_issue_meta_issue_type_id, self.get_issue_limit_report, self.get_issue_picker_resource, self.bulk_set_issues_properties_list, self.bulk_set_issue_properties_by_issue, self.bulk_delete_issue_property, self.bulk_set_issue_property, self.unarchive_issues, self.get_is_watching_issue_bulk, self.delete_issue, self.get_issue, self.edit_issue, self.assign_issue, self.add_attachment, self.get_change_logs, self.get_change_logs_by_ids, self.get_comments, self.add_comment, self.delete_comment, self.get_comment, self.update_comment, self.get_edit_issue_meta, self.notify, self.get_issue_property_keys, self.delete_issue_property, self.get_issue_property, self.set_issue_property, self.delete_remote_link, self.get_remote_issue_links, self.create_or_update_remote_issue_link, self.delete_remote_issue_link_by_id, self.get_remote_issue_link_by_id, self.update_remote_issue_link, self.get_transitions, self.do_transition, self.remove_vote, self.get_votes, self.add_vote, self.remove_watcher, self.get_issue_watchers, self.add_watcher, self.bulk_delete_worklogs, self.get_issue_worklog, self.add_worklog, self.bulk_move_worklogs, self.delete_worklog, self.get_worklog, self.update_worklog, self.get_worklog_property_keys, self.delete_worklog_property, self.get_worklog_property, self.set_worklog_property, self.link_issues, self.delete_issue_link, self.get_issue_link, self.get_issue_link_types, self.create_issue_link_type, self.delete_issue_link_type, self.get_issue_link_type, self.update_issue_link_type, self.export_archived_issues, self.get_issue_security_schemes, self.create_issue_security_scheme, self.get_security_levels, self.set_default_levels, self.get_security_level_members, self.list_security_schemes_by_project, self.associate_schemes_to_projects, self.search_security_schemes, self.get_issue_security_scheme, self.update_issue_security_scheme, self.get_issue_security_level_members, self.delete_security_scheme, self.add_security_level, self.remove_level, self.update_security_level, self.add_security_level_members, self.remove_member_from_security_level, self.get_issue_all_types, self.create_issue_type, self.get_issue_types_for_project, self.delete_issue_type, self.get_issue_type, self.update_issue_type, self.get_alternative_issue_types, self.create_issue_type_avatar, self.get_issue_type_property_keys, self.delete_issue_type_property, self.get_issue_type_property, self.set_issue_type_property, self.get_all_issue_type_schemes, self.create_issue_type_scheme, self.get_issue_type_schemes_mapping, self.get_issue_type_scheme_for_projects, self.assign_issue_type_scheme_to_project, self.delete_issue_type_scheme, self.update_issue_type_scheme, self.add_issue_types_to_issue_type_scheme, self.move_issue_type_in_scheme, self.remove_issue_type_from_scheme_by_id, self.get_all_issue_type_screen_schemes, self.create_issue_type_screen_scheme, self.list_mappings, self.get_project_screen_schemes, self.update_project_scheme, self.delete_issue_type_screen_scheme, self.update_issue_type_screen_scheme, self.update_issue_type_screen_mapping, self.update_default_screen_scheme, self.remove_issue_type_mapping, self.fetch_project_by_scheme, self.get_auto_complete, self.get_auto_complete_post, self.get_jql_suggestions, self.get_precomputations, self.update_precomputations, self.get_precomputations_by_id, self.match_issues, self.parse_jql_queries, self.migrate_queries, self.sanitise_jql_queries, self.get_all_labels, self.get_approximate_license_count, self.get_license_count_by_product_key, self.get_my_permissions, self.remove_preference, self.get_preference, self.set_preference, self.delete_locale, self.get_locale, self.set_locale, self.get_current_user, self.get_notification_schemes, self.create_notification_scheme, self.get_notification_scheme_projects, self.get_notification_scheme, self.update_notification_scheme, self.add_notifications, self.delete_notification_scheme, self.delete_notification_from_scheme, self.get_all_permissions, self.get_bulk_permissions, self.get_permitted_projects, self.get_all_permission_schemes, self.create_permission_scheme, self.delete_permission_scheme, self.get_permission_scheme, self.update_permission_scheme, self.get_permission_scheme_grants, self.create_permission_grant, self.delete_permission_scheme_entity, self.get_permission_scheme_grant, self.get_plans, self.create_plan, self.get_plan, self.update_plan, self.archive_plan, self.duplicate_plan, self.get_teams, self.add_atlassian_team, self.remove_atlassian_team, self.get_atlassian_team, self.update_atlassian_team, self.create_plan_only_team, self.delete_plan_only_team, self.get_plan_only_team, self.update_plan_only_team, self.trash_plan, self.get_priorities, self.create_priority, self.set_default_priority, self.move_priorities, self.search_priorities, self.delete_priority, self.get_priority, self.update_priority, self.get_priority_schemes, self.create_priority_scheme, self.suggested_priorities_for_mappings, self.list_priorities, self.delete_priority_scheme, self.update_priority_scheme, self.get_priorities_by_priority_scheme, self.get_projects_by_priority_scheme, self.get_all_projects, self.create_project, self.create_project_template, self.get_recent, self.search_projects, self.get_all_project_types, self.get_all_accessible_project_types, self.get_project_type_by_key, self.get_accessible_project_type_by_key, self.delete_project, self.get_project, self.update_project, self.archive_project, self.update_project_avatar, self.delete_project_avatar, self.create_project_avatar, self.get_all_project_avatars, self.delete_classification_level, self.get_project_classification_level, self.update_project_class_default, self.get_project_components_paginated, self.get_project_components, self.delete_project_asynchronously, self.get_features_for_project, self.toggle_feature_for_project, self.get_project_property_keys, self.delete_project_property, self.get_project_property, self.set_project_property, self.restore, self.get_project_roles, self.delete_actor, self.get_project_role, self.add_actor_users, self.set_actors, self.get_project_role_details, self.get_all_statuses, self.get_project_versions_paginated, self.get_project_versions, self.get_project_email, self.update_project_email, self.get_hierarchy, self.get_project_issue_security_scheme, self.get_notification_scheme_by_project, self.get_assigned_permission_scheme, self.assign_permission_scheme, self.get_security_levels_for_project, self.get_all_project_categories, self.create_project_category, self.remove_project_category, self.get_project_category_by_id, self.update_project_category, self.validate_project_key, self.get_valid_project_key, self.get_valid_project_name, self.get_resolutions, self.create_resolution, self.set_default_resolution, self.move_resolutions, self.search_resolutions, self.delete_resolution, self.get_resolution, self.update_resolution, self.get_all_project_roles, self.create_project_role, self.delete_project_role, self.get_project_role_by_id, self.partial_update_project_role, self.fully_update_project_role, self.delete_role_actor_by_id, self.get_project_role_actors_for_role, self.add_project_role_actors_to_role, self.get_screens, self.create_screen, self.add_field_to_default_screen, self.get_bulk_screen_tabs, self.delete_screen, self.update_screen, self.get_available_screen_fields, self.get_all_screen_tabs, self.add_screen_tab, self.delete_screen_tab, self.rename_screen_tab, self.get_all_screen_tab_fields, self.add_screen_tab_field, self.remove_screen_tab_field, self.move_screen_tab_field, self.move_screen_tab, self.get_screen_schemes, self.create_screen_scheme, self.delete_screen_scheme, self.update_screen_scheme, self.search_for_issues_using_jql, self.search_for_issues_using_jql_post, self.count_issues, self.search_for_issues_ids, self.get_search_by_jql, self.post_search_jql, self.get_issue_security_level, self.get_server_info, self.list_columns, self.update_settings_columns, self.get_statuses, self.get_status, self.get_status_categories, self.get_status_category, self.delete_statuses_by_id, self.get_statuses_by_id, self.create_statuses, self.update_statuses, self.search, self.get_issue_type_usages, self.get_project_usages_for_status, self.get_workflow_usages_for_status, self.get_task, self.cancel_task, self.get_ui_modifications, self.create_ui_modification, self.delete_ui_modification, self.update_ui_modification, self.get_avatars, self.store_avatar, self.delete_avatar, self.get_avatar_image_by_type, self.get_avatar_image_by_id, self.get_avatar_image_by_owner, self.remove_user, self.get_user, self.create_user, self.find_bulk_assignable_users, self.find_assignable_users, self.bulk_get_users, self.bulk_get_users_migration, self.reset_user_columns, self.get_user_default_columns, self.set_user_columns, self.get_user_email, self.get_user_email_bulk, self.get_user_groups, self.get_user_nav_property, self.set_user_nav_property, self.find_users_with_all_permissions, self.find_users_for_picker, self.get_user_property_keys, self.delete_user_property, self.get_user_property, self.set_user_property, self.find_users, self.find_users_by_query, self.find_user_keys_by_query, self.find_users_with_browse_permission, self.get_all_users_default, self.get_all_users, self.create_version, self.delete_version, self.get_version, self.update_version, self.merge_versions, self.move_version, self.get_version_related_issues, self.get_related_work, self.create_related_work, self.update_related_work, self.delete_and_replace_version, self.get_version_unresolved_issues, self.delete_related_work, self.delete_webhook_by_id, self.get_dynamic_webhooks_for_app, self.register_dynamic_webhooks, self.get_failed_webhooks, self.refresh_webhooks, self.get_all_workflows, self.create_workflow, self.list_workflow_rule_configs, self.update_workflow_rule_config, self.delete_workflow_rule_config, self.get_workflows_paginated, self.delete_transition_property, self.get_transition_properties, self.update_transition_property, self.put_workflow_transition_property, self.delete_inactive_workflow, self.get_workflow_issue_type_usages, self.get_project_usages_for_workflow, self.list_workflow_schemes, self.read_workflows, self.workflow_capabilities, self.create_workflows, self.validate_create_workflows, self.search_workflows, self.update_workflows, self.validate_update_workflows, self.get_all_workflow_schemes, self.create_workflow_scheme, self.get_workflow_schemes_by_project_id, self.assign_scheme_to_project, self.read_workflow_schemes, self.update_schemes, self.update_workflow_scheme_mappings, self.delete_workflow_scheme, self.get_workflow_scheme, self.update_workflow_scheme, self.create_workflow_draft, self.delete_default_workflow, self.get_default_workflow, self.update_default_workflow, self.delete_workflow_scheme_draft, self.get_workflow_scheme_draft, self.update_workflow_scheme_draft, self.delete_draft_default_workflow, self.get_draft_default_workflow, self.update_draft_default_workflow, self.delete_issue_type_draft_from_scheme, self.get_issue_type_draft, self.update_workflow_draft_issue_type, self.publish_draft_workflow_scheme, self.delete_draft_workflow_mapping, self.get_draft_workflow, self.update_draft_workflow_mapping, self.delete_workflow_scheme_issue_type, self.get_workflow_scheme_issue_type, self.set_workflow_scheme_issue_type, self.delete_workflow_mapping, self.get_workflow, self.update_workflow_mapping, self.get_project_usages, self.get_ids_of_worklogs_deleted_since, self.get_worklogs_for_ids, self.get_ids_of_worklogs_modified_since, self.get_addon_properties, self.delete_addon_property, self.get_addon_property, self.update_addon_property, self.delete_module, self.list_dynamic_modules, self.create_module, self.put_migration_field_update, self.update_entity_properties, self.search_workflow_rules, self.get_service_registry_by_ids, self.delete_forge_app_property, self.put_forge_app_property]

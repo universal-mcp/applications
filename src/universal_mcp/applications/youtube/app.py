@@ -5,9 +5,9 @@ from universal_mcp.integrations import Integration
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.proxies import WebshareProxyConfig
 
-
 class YoutubeApp(APIApplication):
-    def __init__(self, integration: Integration | None = None, **kwargs) -> None:
+
+    def __init__(self, integration: Integration | None=None, **kwargs) -> None:
         """
         Initializes an instance of a YouTube application integration.
 
@@ -18,19 +18,10 @@ class YoutubeApp(APIApplication):
         Returns:
             None
         """
-        super().__init__(name="youtube", integration=integration, **kwargs)
-        self.base_url = "https://www.googleapis.com/youtube/v3"
+        super().__init__(name='youtube', integration=integration, **kwargs)
+        self.base_url = 'https://www.googleapis.com/youtube/v3'
 
-    async def list_job_reports(
-        self,
-        jobId,
-        createdAfter=None,
-        onBehalfOfContentOwner=None,
-        pageSize=None,
-        pageToken=None,
-        startTimeAtOrAfter=None,
-        startTimeBefore=None,
-    ) -> Any:
+    async def list_job_reports(self, jobId, createdAfter=None, onBehalfOfContentOwner=None, pageSize=None, pageToken=None, startTimeAtOrAfter=None, startTimeBefore=None) -> Any:
         """
         Retrieves a paginated list of all reports for a specific job ID, with options for filtering by date. Unlike `get_jobs_job_reports_report`, which fetches a single report by its ID, this function returns a collection of reports associated with a job.
 
@@ -54,20 +45,9 @@ class YoutubeApp(APIApplication):
         """
         if jobId is None:
             raise ValueError("Missing required parameter 'jobId'")
-        url = f"{self.base_url}/v1/jobs/{jobId}/reports"
-        query_params = {
-            k: v
-            for k, v in [
-                ("createdAfter", createdAfter),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("startTimeAtOrAfter", startTimeAtOrAfter),
-                ("startTimeBefore", startTimeBefore),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v1/jobs/{jobId}/reports'
+        query_params = {k: v for k, v in [('createdAfter', createdAfter), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('pageSize', pageSize), ('pageToken', pageToken), ('startTimeAtOrAfter', startTimeAtOrAfter), ('startTimeBefore', startTimeBefore)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -94,9 +74,9 @@ class YoutubeApp(APIApplication):
             raise ValueError("Missing required parameter 'jobId'")
         if reportId is None:
             raise ValueError("Missing required parameter 'reportId'")
-        url = f"{self.base_url}/v1/jobs/{jobId}/reports/{reportId}"
-        query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v1/jobs/{jobId}/reports/{reportId}'
+        query_params = {k: v for k, v in [('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -120,9 +100,9 @@ class YoutubeApp(APIApplication):
         """
         if jobId is None:
             raise ValueError("Missing required parameter 'jobId'")
-        url = f"{self.base_url}/v1/jobs/{jobId}"
-        query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v1/jobs/{jobId}'
+        query_params = {k: v for k, v in [('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -145,18 +125,9 @@ class YoutubeApp(APIApplication):
         Tags:
             list, scrape, management
         """
-        url = f"{self.base_url}/v1/jobs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("includeSystemManaged", includeSystemManaged),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v1/jobs'
+        query_params = {k: v for k, v in [('includeSystemManaged', includeSystemManaged), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('pageSize', pageSize), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -179,9 +150,9 @@ class YoutubeApp(APIApplication):
         """
         if resourceName is None:
             raise ValueError("Missing required parameter 'resourceName'")
-        url = f"{self.base_url}/v1/media/{resourceName}"
+        url = f'{self.base_url}/v1/media/{resourceName}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -204,18 +175,9 @@ class YoutubeApp(APIApplication):
         Tags:
             retrieve, list, api-resource, filtering, pagination, report-management
         """
-        url = f"{self.base_url}/v1/reportTypes"
-        query_params = {
-            k: v
-            for k, v in [
-                ("includeSystemManaged", includeSystemManaged),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v1/reportTypes'
+        query_params = {k: v for k, v in [('includeSystemManaged', includeSystemManaged), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('pageSize', pageSize), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -237,11 +199,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, captions, api, management
         """
-        url = f"{self.base_url}/captions"
-        query_params = {
-            k: v for k, v in [("id", id), ("onBehalfOf", onBehalfOf), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/captions'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOf', onBehalfOf), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -265,19 +225,17 @@ class YoutubeApp(APIApplication):
         if video_id is None:
             raise ValueError("Missing required parameter 'video_id'")
         try:
-            proxy_username = os.getenv("PROXY_USERNAME")
-            proxy_password = os.getenv("PROXY_PASSWORD")
-            proxy_port = int(os.getenv("PROXY_PORT", 80))
+            proxy_username = os.getenv('PROXY_USERNAME')
+            proxy_password = os.getenv('PROXY_PASSWORD')
+            proxy_port = int(os.getenv('PROXY_PORT', 80))
             if not proxy_username or not proxy_password:
-                raise ValueError("PROXY_USERNAME and PROXY_PASSWORD must be set when using proxy")
-            api = YouTubeTranscriptApi(
-                proxy_config=WebshareProxyConfig(proxy_username=proxy_username, proxy_password=proxy_password, proxy_port=proxy_port)
-            )
+                raise ValueError('PROXY_USERNAME and PROXY_PASSWORD must be set when using proxy')
+            api = YouTubeTranscriptApi(proxy_config=WebshareProxyConfig(proxy_username=proxy_username, proxy_password=proxy_password, proxy_port=proxy_port))
             transcript = api.fetch(video_id)
-            transcript_text = " ".join([snippet.text for snippet in transcript.snippets])
+            transcript_text = ' '.join([snippet.text for snippet in transcript.snippets])
             return transcript_text
         except Exception as e:
-            raise Exception(f"Failed to retrieve transcript for video {video_id}: {str(e)}")
+            raise Exception(f'Failed to retrieve transcript for video {video_id}: {str(e)}')
 
     async def delete_comments(self, id=None) -> Any:
         """
@@ -295,9 +253,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, comments, management
         """
-        url = f"{self.base_url}/comments"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/comments'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         return self._handle_response(response)
 
     async def mark_comment_as_spam(self, id=None) -> Any:
@@ -316,9 +274,9 @@ class YoutubeApp(APIApplication):
         Tags:
             comments, spam, post-request, api, moderation
         """
-        url = f"{self.base_url}/comments/markAsSpam"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/comments/markAsSpam'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -340,9 +298,9 @@ class YoutubeApp(APIApplication):
         Tags:
             moderation, comments, management, api-client, status-update, ban-author
         """
-        url = f"{self.base_url}/comments/setModerationStatus"
-        query_params = {k: v for k, v in [("banAuthor", banAuthor), ("id", id), ("moderationStatus", moderationStatus)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/comments/setModerationStatus'
+        query_params = {k: v for k, v in [('banAuthor', banAuthor), ('id', id), ('moderationStatus', moderationStatus)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -364,23 +322,13 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, live-broadcast, management, api
         """
-        url = f"{self.base_url}/liveBroadcasts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("id", id),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("onBehalfOfContentOwnerChannel", onBehalfOfContentOwnerChannel),
-            ]
-            if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/liveBroadcasts'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('onBehalfOfContentOwnerChannel', onBehalfOfContentOwnerChannel)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def bind_live_broadcast_to_stream(
-        self, id=None, onBehalfOfContentOwner=None, onBehalfOfContentOwnerChannel=None, part=None, streamId=None
-    ) -> Any:
+    async def bind_live_broadcast_to_stream(self, id=None, onBehalfOfContentOwner=None, onBehalfOfContentOwnerChannel=None, part=None, streamId=None) -> Any:
         """
         Binds a YouTube live broadcast to a video stream using their respective IDs. This action associates the broadcast's metadata with the content stream, optionally performing the action on behalf of a content owner, facilitating the link between a planned event and its live video feed.
 
@@ -400,32 +348,13 @@ class YoutubeApp(APIApplication):
         Tags:
             bind, youtube-api, live-broadcast, stream
         """
-        url = f"{self.base_url}/liveBroadcasts/bind"
-        query_params = {
-            k: v
-            for k, v in [
-                ("id", id),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("onBehalfOfContentOwnerChannel", onBehalfOfContentOwnerChannel),
-                ("part", part),
-                ("streamId", streamId),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/liveBroadcasts/bind'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('onBehalfOfContentOwnerChannel', onBehalfOfContentOwnerChannel), ('part', part), ('streamId', streamId)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def control_live_broadcast(
-        self,
-        displaySlate=None,
-        id=None,
-        offsetTimeMs=None,
-        onBehalfOfContentOwner=None,
-        onBehalfOfContentOwnerChannel=None,
-        part=None,
-        walltime=None,
-    ) -> Any:
+    async def control_live_broadcast(self, displaySlate=None, id=None, offsetTimeMs=None, onBehalfOfContentOwner=None, onBehalfOfContentOwnerChannel=None, part=None, walltime=None) -> Any:
         """
         Sends control commands to a YouTube live broadcast, identified by its ID. It can display a slate or schedule an action using a time offset. Unlike `add_live_broadcasts_transition`, which alters broadcast status (e.g., 'live'), this function manages in-stream state.
 
@@ -447,27 +376,13 @@ class YoutubeApp(APIApplication):
         Tags:
             control, live-broadcast, async_job, management
         """
-        url = f"{self.base_url}/liveBroadcasts/control"
-        query_params = {
-            k: v
-            for k, v in [
-                ("displaySlate", displaySlate),
-                ("id", id),
-                ("offsetTimeMs", offsetTimeMs),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("onBehalfOfContentOwnerChannel", onBehalfOfContentOwnerChannel),
-                ("part", part),
-                ("walltime", walltime),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/liveBroadcasts/control'
+        query_params = {k: v for k, v in [('displaySlate', displaySlate), ('id', id), ('offsetTimeMs', offsetTimeMs), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('onBehalfOfContentOwnerChannel', onBehalfOfContentOwnerChannel), ('part', part), ('walltime', walltime)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def transition_live_broadcast(
-        self, broadcastStatus=None, id=None, onBehalfOfContentOwner=None, onBehalfOfContentOwnerChannel=None, part=None
-    ) -> Any:
+    async def transition_live_broadcast(self, broadcastStatus=None, id=None, onBehalfOfContentOwner=None, onBehalfOfContentOwnerChannel=None, part=None) -> Any:
         """
         Changes a YouTube live broadcast's status (e.g., making it 'live' or 'complete') by posting to the API's transition endpoint. This function alters the broadcast's lifecycle state, distinct from other control actions like binding it to a stream, and returns the API's JSON response.
 
@@ -487,19 +402,9 @@ class YoutubeApp(APIApplication):
         Tags:
             transition, live-broadcast, youtube-api, video-management
         """
-        url = f"{self.base_url}/liveBroadcasts/transition"
-        query_params = {
-            k: v
-            for k, v in [
-                ("broadcastStatus", broadcastStatus),
-                ("id", id),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("onBehalfOfContentOwnerChannel", onBehalfOfContentOwnerChannel),
-                ("part", part),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/liveBroadcasts/transition'
+        query_params = {k: v for k, v in [('broadcastStatus', broadcastStatus), ('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('onBehalfOfContentOwnerChannel', onBehalfOfContentOwnerChannel), ('part', part)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -519,9 +424,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, management, live-chat, async-job
         """
-        url = f"{self.base_url}/liveChat/bans"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/liveChat/bans'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -541,9 +446,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, live-chat, message-management
         """
-        url = f"{self.base_url}/liveChat/messages"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/liveChat/messages'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -563,9 +468,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, moderators, management, live-chat, async_job, ids
         """
-        url = f"{self.base_url}/liveChat/moderators"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/liveChat/moderators'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -586,9 +491,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, video-management, api, async_job
         """
-        url = f"{self.base_url}/videos"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/videos'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -609,9 +514,9 @@ class YoutubeApp(APIApplication):
         Tags:
             check, video-management
         """
-        url = f"{self.base_url}/videos/getRating"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/videos/getRating'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -632,9 +537,9 @@ class YoutubeApp(APIApplication):
         Tags:
             rate, video-management, importance
         """
-        url = f"{self.base_url}/videos/rate"
-        query_params = {k: v for k, v in [("id", id), ("rating", rating)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/videos/rate'
+        query_params = {k: v for k, v in [('id', id), ('rating', rating)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -654,9 +559,9 @@ class YoutubeApp(APIApplication):
         Tags:
             report, abuse, video, content, api
         """
-        url = f"{self.base_url}/videos/reportAbuse"
-        query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/videos/reportAbuse'
+        query_params = {k: v for k, v in [('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -677,9 +582,9 @@ class YoutubeApp(APIApplication):
         Tags:
             watermark, youtube, management, channel-config
         """
-        url = f"{self.base_url}/watermarks/set"
-        query_params = {k: v for k, v in [("channelId", channelId), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/watermarks/set'
+        query_params = {k: v for k, v in [('channelId', channelId), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -700,24 +605,13 @@ class YoutubeApp(APIApplication):
         Tags:
             remove, watermark, youtube
         """
-        url = f"{self.base_url}/watermarks/unset"
-        query_params = {k: v for k, v in [("channelId", channelId), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/watermarks/unset'
+        query_params = {k: v for k, v in [('channelId', channelId), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_activities(
-        self,
-        channelId=None,
-        home=None,
-        maxResults=None,
-        mine=None,
-        pageToken=None,
-        part=None,
-        publishedAfter=None,
-        publishedBefore=None,
-        regionCode=None,
-    ) -> Any:
+    async def get_activities(self, channelId=None, home=None, maxResults=None, mine=None, pageToken=None, part=None, publishedAfter=None, publishedBefore=None, regionCode=None) -> Any:
         """
         Retrieves a list of YouTube activities, such as video uploads or social posts. Supports filtering by channel, authenticated user's feed, publication date, and region. The function also handles pagination to navigate through large result sets and returns the JSON response from the API.
 
@@ -741,23 +635,9 @@ class YoutubeApp(APIApplication):
         Tags:
             retrieve, activities, youtube, api-client, pagination, filter, async
         """
-        url = f"{self.base_url}/activities"
-        query_params = {
-            k: v
-            for k, v in [
-                ("channelId", channelId),
-                ("home", home),
-                ("maxResults", maxResults),
-                ("mine", mine),
-                ("pageToken", pageToken),
-                ("part", part),
-                ("publishedAfter", publishedAfter),
-                ("publishedBefore", publishedBefore),
-                ("regionCode", regionCode),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/activities'
+        query_params = {k: v for k, v in [('channelId', channelId), ('home', home), ('maxResults', maxResults), ('mine', mine), ('pageToken', pageToken), ('part', part), ('publishedAfter', publishedAfter), ('publishedBefore', publishedBefore), ('regionCode', regionCode)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -778,9 +658,9 @@ class YoutubeApp(APIApplication):
         Tags:
             insert, channel, banner, youtube-api, management, async_job
         """
-        url = f"{self.base_url}/channelBanners/insert"
-        query_params = {k: v for k, v in [("channelId", channelId), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/channelBanners/insert'
+        query_params = {k: v for k, v in [('channelId', channelId), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -801,26 +681,13 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, channel-section, management
         """
-        url = f"{self.base_url}/channelSections"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/channelSections'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_channels(
-        self,
-        categoryId=None,
-        forUsername=None,
-        hl=None,
-        id=None,
-        managedByMe=None,
-        maxResults=None,
-        mine=None,
-        mySubscribers=None,
-        onBehalfOfContentOwner=None,
-        pageToken=None,
-        part=None,
-    ) -> Any:
+    async def list_channels(self, categoryId=None, forUsername=None, hl=None, id=None, managedByMe=None, maxResults=None, mine=None, mySubscribers=None, onBehalfOfContentOwner=None, pageToken=None, part=None) -> Any:
         """
         Retrieves channel data from the YouTube API using specific filters like ID, username, or ownership status (`mine`, `managedByMe`). The function supports pagination and localization, returning a JSON object containing details for the targeted channels.
 
@@ -846,42 +713,13 @@ class YoutubeApp(APIApplication):
         Tags:
             search, youtube, channels, management, important
         """
-        url = f"{self.base_url}/channels"
-        query_params = {
-            k: v
-            for k, v in [
-                ("categoryId", categoryId),
-                ("forUsername", forUsername),
-                ("hl", hl),
-                ("id", id),
-                ("managedByMe", managedByMe),
-                ("maxResults", maxResults),
-                ("mine", mine),
-                ("mySubscribers", mySubscribers),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("pageToken", pageToken),
-                ("part", part),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/channels'
+        query_params = {k: v for k, v in [('categoryId', categoryId), ('forUsername', forUsername), ('hl', hl), ('id', id), ('managedByMe', managedByMe), ('maxResults', maxResults), ('mine', mine), ('mySubscribers', mySubscribers), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('pageToken', pageToken), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_comment_threads(
-        self,
-        allThreadsRelatedToChannelId=None,
-        channelId=None,
-        id=None,
-        maxResults=None,
-        moderationStatus=None,
-        order=None,
-        pageToken=None,
-        part=None,
-        searchTerms=None,
-        textFormat=None,
-        videoId=None,
-    ) -> Any:
+    async def get_comment_threads(self, allThreadsRelatedToChannelId=None, channelId=None, id=None, maxResults=None, moderationStatus=None, order=None, pageToken=None, part=None, searchTerms=None, textFormat=None, videoId=None) -> Any:
         """
         Retrieves YouTube comment threads using filters like channel ID, video ID, or search terms. It supports pagination and sorting, serving as the primary method for fetching comment data, distinct from other functions in the script that moderate or delete individual comments.
 
@@ -907,25 +745,9 @@ class YoutubeApp(APIApplication):
         Tags:
             retrieve, comments, pagination, youtube-api, rest, data-fetch
         """
-        url = f"{self.base_url}/commentThreads"
-        query_params = {
-            k: v
-            for k, v in [
-                ("allThreadsRelatedToChannelId", allThreadsRelatedToChannelId),
-                ("channelId", channelId),
-                ("id", id),
-                ("maxResults", maxResults),
-                ("moderationStatus", moderationStatus),
-                ("order", order),
-                ("pageToken", pageToken),
-                ("part", part),
-                ("searchTerms", searchTerms),
-                ("textFormat", textFormat),
-                ("videoId", videoId),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/commentThreads'
+        query_params = {k: v for k, v in [('allThreadsRelatedToChannelId', allThreadsRelatedToChannelId), ('channelId', channelId), ('id', id), ('maxResults', maxResults), ('moderationStatus', moderationStatus), ('order', order), ('pageToken', pageToken), ('part', part), ('searchTerms', searchTerms), ('textFormat', textFormat), ('videoId', videoId)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -948,11 +770,9 @@ class YoutubeApp(APIApplication):
         Tags:
             retrieve, events, fanfunding
         """
-        url = f"{self.base_url}/fanFundingEvents"
-        query_params = {
-            k: v for k, v in [("hl", hl), ("maxResults", maxResults), ("pageToken", pageToken), ("part", part)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/fanFundingEvents'
+        query_params = {k: v for k, v in [('hl', hl), ('maxResults', maxResults), ('pageToken', pageToken), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -975,9 +795,9 @@ class YoutubeApp(APIApplication):
         Tags:
             get, fetch, guide-categories, api-call
         """
-        url = f"{self.base_url}/guideCategories"
-        query_params = {k: v for k, v in [("hl", hl), ("id", id), ("part", part), ("regionCode", regionCode)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/guideCategories'
+        query_params = {k: v for k, v in [('hl', hl), ('id', id), ('part', part), ('regionCode', regionCode)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -998,9 +818,9 @@ class YoutubeApp(APIApplication):
         Tags:
             fetch, i18n, languages, api-client
         """
-        url = f"{self.base_url}/i18nLanguages"
-        query_params = {k: v for k, v in [("hl", hl), ("part", part)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/i18nLanguages'
+        query_params = {k: v for k, v in [('hl', hl), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1021,9 +841,9 @@ class YoutubeApp(APIApplication):
         Tags:
             list, regions, i18n, api
         """
-        url = f"{self.base_url}/i18nRegions"
-        query_params = {k: v for k, v in [("hl", hl), ("part", part)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/i18nRegions'
+        query_params = {k: v for k, v in [('hl', hl), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1045,17 +865,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, livestream, youtube, api
         """
-        url = f"{self.base_url}/liveStreams"
-        query_params = {
-            k: v
-            for k, v in [
-                ("id", id),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("onBehalfOfContentOwnerChannel", onBehalfOfContentOwnerChannel),
-            ]
-            if v is not None
-        }
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/liveStreams'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('onBehalfOfContentOwnerChannel', onBehalfOfContentOwnerChannel)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1076,9 +888,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, playlist-items, management
         """
-        url = f"{self.base_url}/playlistItems"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/playlistItems'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1099,46 +911,13 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, playlists, youtube-api, management
         """
-        url = f"{self.base_url}/playlists"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/playlists'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_search(
-        self,
-        channelId=None,
-        channelType=None,
-        eventType=None,
-        forContentOwner=None,
-        forDeveloper=None,
-        forMine=None,
-        location=None,
-        locationRadius=None,
-        maxResults=None,
-        onBehalfOfContentOwner=None,
-        order=None,
-        pageToken=None,
-        part=None,
-        publishedAfter=None,
-        publishedBefore=None,
-        q=None,
-        regionCode=None,
-        relatedToVideoId=None,
-        relevanceLanguage=None,
-        safeSearch=None,
-        topicId=None,
-        type=None,
-        videoCaption=None,
-        videoCategoryId=None,
-        videoDefinition=None,
-        videoDimension=None,
-        videoDuration=None,
-        videoEmbeddable=None,
-        videoLicense=None,
-        videoSyndicated=None,
-        videoType=None,
-    ) -> Any:
+    async def get_search(self, channelId=None, channelType=None, eventType=None, forContentOwner=None, forDeveloper=None, forMine=None, location=None, locationRadius=None, maxResults=None, onBehalfOfContentOwner=None, order=None, pageToken=None, part=None, publishedAfter=None, publishedBefore=None, q=None, regionCode=None, relatedToVideoId=None, relevanceLanguage=None, safeSearch=None, topicId=None, type=None, videoCaption=None, videoCategoryId=None, videoDefinition=None, videoDimension=None, videoDuration=None, videoEmbeddable=None, videoLicense=None, videoSyndicated=None, videoType=None) -> Any:
         """
         Performs a versatile search on YouTube for videos, channels, or playlists. This function supports extensive filters, including keywords, publication dates, location, and specific video attributes like category or duration, returning a paginated list of matching resources from the YouTube Data API.
 
@@ -1184,45 +963,9 @@ class YoutubeApp(APIApplication):
         Tags:
             search, youtube-api, video-search, web-api, important
         """
-        url = f"{self.base_url}/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("channelId", channelId),
-                ("channelType", channelType),
-                ("eventType", eventType),
-                ("forContentOwner", forContentOwner),
-                ("forDeveloper", forDeveloper),
-                ("forMine", forMine),
-                ("location", location),
-                ("locationRadius", locationRadius),
-                ("maxResults", maxResults),
-                ("onBehalfOfContentOwner", onBehalfOfContentOwner),
-                ("order", order),
-                ("pageToken", pageToken),
-                ("part", part),
-                ("publishedAfter", publishedAfter),
-                ("publishedBefore", publishedBefore),
-                ("q", q),
-                ("regionCode", regionCode),
-                ("relatedToVideoId", relatedToVideoId),
-                ("relevanceLanguage", relevanceLanguage),
-                ("safeSearch", safeSearch),
-                ("topicId", topicId),
-                ("type", type),
-                ("videoCaption", videoCaption),
-                ("videoCategoryId", videoCategoryId),
-                ("videoDefinition", videoDefinition),
-                ("videoDimension", videoDimension),
-                ("videoDuration", videoDuration),
-                ("videoEmbeddable", videoEmbeddable),
-                ("videoLicense", videoLicense),
-                ("videoSyndicated", videoSyndicated),
-                ("videoType", videoType),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/search'
+        query_params = {k: v for k, v in [('channelId', channelId), ('channelType', channelType), ('eventType', eventType), ('forContentOwner', forContentOwner), ('forDeveloper', forDeveloper), ('forMine', forMine), ('location', location), ('locationRadius', locationRadius), ('maxResults', maxResults), ('onBehalfOfContentOwner', onBehalfOfContentOwner), ('order', order), ('pageToken', pageToken), ('part', part), ('publishedAfter', publishedAfter), ('publishedBefore', publishedBefore), ('q', q), ('regionCode', regionCode), ('relatedToVideoId', relatedToVideoId), ('relevanceLanguage', relevanceLanguage), ('safeSearch', safeSearch), ('topicId', topicId), ('type', type), ('videoCaption', videoCaption), ('videoCategoryId', videoCategoryId), ('videoDefinition', videoDefinition), ('videoDimension', videoDimension), ('videoDuration', videoDuration), ('videoEmbeddable', videoEmbeddable), ('videoLicense', videoLicense), ('videoSyndicated', videoSyndicated), ('videoType', videoType)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1245,11 +988,9 @@ class YoutubeApp(APIApplication):
         Tags:
             fetch, list, pagination, filter, sponsors, api
         """
-        url = f"{self.base_url}/sponsors"
-        query_params = {
-            k: v for k, v in [("filter", filter), ("maxResults", maxResults), ("pageToken", pageToken), ("part", part)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/sponsors'
+        query_params = {k: v for k, v in [('filter', filter), ('maxResults', maxResults), ('pageToken', pageToken), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1269,9 +1010,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, subscriptions, async-job, management
         """
-        url = f"{self.base_url}/subscriptions"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/subscriptions'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1294,11 +1035,9 @@ class YoutubeApp(APIApplication):
         Tags:
             fetch, youtube-api, async-job
         """
-        url = f"{self.base_url}/superChatEvents"
-        query_params = {
-            k: v for k, v in [("hl", hl), ("maxResults", maxResults), ("pageToken", pageToken), ("part", part)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/superChatEvents'
+        query_params = {k: v for k, v in [('hl', hl), ('maxResults', maxResults), ('pageToken', pageToken), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1319,9 +1058,9 @@ class YoutubeApp(APIApplication):
         Tags:
             thumbnail, youtube-api, video-management, async-job
         """
-        url = f"{self.base_url}/thumbnails/set"
-        query_params = {k: v for k, v in [("onBehalfOfContentOwner", onBehalfOfContentOwner), ("videoId", videoId)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/thumbnails/set'
+        query_params = {k: v for k, v in [('onBehalfOfContentOwner', onBehalfOfContentOwner), ('videoId', videoId)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1342,9 +1081,9 @@ class YoutubeApp(APIApplication):
         Tags:
             fetch, management, abuse-report, video-content
         """
-        url = f"{self.base_url}/videoAbuseReportReasons"
-        query_params = {k: v for k, v in [("hl", hl), ("part", part)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/videoAbuseReportReasons'
+        query_params = {k: v for k, v in [('hl', hl), ('part', part)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1367,9 +1106,9 @@ class YoutubeApp(APIApplication):
         Tags:
             fetch, video-categories, api-request, json-response
         """
-        url = f"{self.base_url}/videoCategories"
-        query_params = {k: v for k, v in [("hl", hl), ("id", id), ("part", part), ("regionCode", regionCode)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/videoCategories'
+        query_params = {k: v for k, v in [('hl', hl), ('id', id), ('part', part), ('regionCode', regionCode)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1390,9 +1129,9 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, groupitems, management
         """
-        url = f"{self.base_url}/groupItems"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/groupItems'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1413,15 +1152,13 @@ class YoutubeApp(APIApplication):
         Tags:
             delete, management, async_job, api
         """
-        url = f"{self.base_url}/groups"
-        query_params = {k: v for k, v in [("id", id), ("onBehalfOfContentOwner", onBehalfOfContentOwner)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/groups'
+        query_params = {k: v for k, v in [('id', id), ('onBehalfOfContentOwner', onBehalfOfContentOwner)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_analytics_report(
-        self, currency=None, dimensions=None, end=None, filters=None, ids=None, include=None, max=None, metrics=None, sort=None, start=None
-    ) -> Any:
+    async def get_analytics_report(self, currency=None, dimensions=None, end=None, filters=None, ids=None, include=None, max=None, metrics=None, sort=None, start=None) -> Any:
         """
         Queries the YouTube Analytics API for performance reports, allowing customization via metrics, dimensions, and filters. Unlike `get_jobs_job_reports` which manages bulk report jobs, this function fetches analytical data directly, providing on-demand insights into channel or content performance.
 
@@ -1446,24 +1183,9 @@ class YoutubeApp(APIApplication):
         Tags:
             fetch, report, api, filter, sort, metrics, management
         """
-        url = f"{self.base_url}/reports"
-        query_params = {
-            k: v
-            for k, v in [
-                ("currency", currency),
-                ("dimensions", dimensions),
-                ("end", end),
-                ("filters", filters),
-                ("ids", ids),
-                ("include", include),
-                ("max", max),
-                ("metrics", metrics),
-                ("sort", sort),
-                ("start", start),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/reports'
+        query_params = {k: v for k, v in [('currency', currency), ('dimensions', dimensions), ('end', end), ('filters', filters), ('ids', ids), ('include', include), ('max', max), ('metrics', metrics), ('sort', sort), ('start', start)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1477,51 +1199,4 @@ class YoutubeApp(APIApplication):
         Returns:
             list: A list containing references to various tool methods associated with job reports, media resources, comments, broadcasts, videos, activities, channels, etc.
         """
-        return [
-            self.list_job_reports,
-            self.get_job_report,
-            self.delete_job,
-            self.list_jobs,
-            self.download_report_media,
-            self.get_reporttypes,
-            self.delete_captions,
-            self.get_transcript_text,
-            self.delete_comments,
-            self.mark_comment_as_spam,
-            self.set_comment_moderation_status,
-            self.delete_live_broadcasts,
-            self.bind_live_broadcast_to_stream,
-            self.control_live_broadcast,
-            self.transition_live_broadcast,
-            self.delete_live_chat_ban,
-            self.delete_live_chat_message,
-            self.delete_live_chat_moderators,
-            self.delete_videos,
-            self.get_video_ratings,
-            self.rate_video,
-            self.report_video_for_abuse,
-            self.set_channel_watermark,
-            self.unset_channel_watermark,
-            self.get_activities,
-            self.insert_channel_banner,
-            self.delete_channel_sections,
-            self.list_channels,
-            self.get_comment_threads,
-            self.get_fanfundingevents,
-            self.get_guide_categories,
-            self.get_i18n_languages,
-            self.get_i18n_regions,
-            self.delete_livestreams,
-            self.delete_playlist_items,
-            self.delete_playlists,
-            self.get_search,
-            self.list_sponsors,
-            self.delete_subscriptions,
-            self.get_super_chat_events,
-            self.set_video_thumbnail,
-            self.get_video_abuse_report_reasons,
-            self.get_video_categories,
-            self.delete_group_items,
-            self.delete_groups,
-            self.get_analytics_report,
-        ]
+        return [self.list_job_reports, self.get_job_report, self.delete_job, self.list_jobs, self.download_report_media, self.get_reporttypes, self.delete_captions, self.get_transcript_text, self.delete_comments, self.mark_comment_as_spam, self.set_comment_moderation_status, self.delete_live_broadcasts, self.bind_live_broadcast_to_stream, self.control_live_broadcast, self.transition_live_broadcast, self.delete_live_chat_ban, self.delete_live_chat_message, self.delete_live_chat_moderators, self.delete_videos, self.get_video_ratings, self.rate_video, self.report_video_for_abuse, self.set_channel_watermark, self.unset_channel_watermark, self.get_activities, self.insert_channel_banner, self.delete_channel_sections, self.list_channels, self.get_comment_threads, self.get_fanfundingevents, self.get_guide_categories, self.get_i18n_languages, self.get_i18n_regions, self.delete_livestreams, self.delete_playlist_items, self.delete_playlists, self.get_search, self.list_sponsors, self.delete_subscriptions, self.get_super_chat_events, self.set_video_thumbnail, self.get_video_abuse_report_reasons, self.get_video_categories, self.delete_group_items, self.delete_groups, self.get_analytics_report]

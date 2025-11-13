@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class CalendlyApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="calendly", integration=integration, **kwargs)
-        self.base_url = "https://api.calendly.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='calendly', integration=integration, **kwargs)
+        self.base_url = 'https://api.calendly.com'
 
     async def list_event_invitees(self, uuid, status=None, sort=None, email=None, page_token=None, count=None) -> dict[str, Any]:
         """
@@ -28,13 +28,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/scheduled_events/{uuid}/invitees"
-        query_params = {
-            k: v
-            for k, v in [("status", status), ("sort", sort), ("email", email), ("page_token", page_token), ("count", count)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/scheduled_events/{uuid}/invitees'
+        query_params = {k: v for k, v in [('status', status), ('sort', sort), ('email', email), ('page_token', page_token), ('count', count)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -53,9 +49,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/scheduled_events/{uuid}"
+        url = f'{self.base_url}/scheduled_events/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -77,25 +73,13 @@ class CalendlyApp(APIApplication):
             raise ValueError("Missing required parameter 'event_uuid'")
         if invitee_uuid is None:
             raise ValueError("Missing required parameter 'invitee_uuid'")
-        url = f"{self.base_url}/scheduled_events/{event_uuid}/invitees/{invitee_uuid}"
+        url = f'{self.base_url}/scheduled_events/{event_uuid}/invitees/{invitee_uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_scheduled_events(
-        self,
-        user=None,
-        organization=None,
-        invitee_email=None,
-        status=None,
-        sort=None,
-        min_start_time=None,
-        max_start_time=None,
-        page_token=None,
-        count=None,
-        group=None,
-    ) -> dict[str, Any]:
+    async def list_scheduled_events(self, user=None, organization=None, invitee_email=None, status=None, sort=None, min_start_time=None, max_start_time=None, page_token=None, count=None, group=None) -> dict[str, Any]:
         """
         Fetches a list of scheduled events, offering extensive filtering by user, organization, invitee email, status, and time range. Supports pagination and sorting, providing a flexible method to query specific event data from the Calendly API.
 
@@ -119,24 +103,9 @@ class CalendlyApp(APIApplication):
         Tags:
             scheduled_events, important
         """
-        url = f"{self.base_url}/scheduled_events"
-        query_params = {
-            k: v
-            for k, v in [
-                ("user", user),
-                ("organization", organization),
-                ("invitee_email", invitee_email),
-                ("status", status),
-                ("sort", sort),
-                ("min_start_time", min_start_time),
-                ("max_start_time", max_start_time),
-                ("page_token", page_token),
-                ("count", count),
-                ("group", group),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/scheduled_events'
+        query_params = {k: v for k, v in [('user', user), ('organization', organization), ('invitee_email', invitee_email), ('status', status), ('sort', sort), ('min_start_time', min_start_time), ('max_start_time', max_start_time), ('page_token', page_token), ('count', count), ('group', group)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -155,23 +124,13 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/event_types/{uuid}"
+        url = f'{self.base_url}/event_types/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_event_types(
-        self,
-        active=None,
-        organization=None,
-        user=None,
-        user_availability_schedule=None,
-        sort=None,
-        admin_managed=None,
-        page_token=None,
-        count=None,
-    ) -> dict[str, Any]:
+    async def list_event_types(self, active=None, organization=None, user=None, user_availability_schedule=None, sort=None, admin_managed=None, page_token=None, count=None) -> dict[str, Any]:
         """
         Retrieves a collection of event types from the `/event_types` endpoint. Results can be filtered by user, organization, or status, and the list supports sorting and pagination for controlled data retrieval.
 
@@ -191,22 +150,9 @@ class CalendlyApp(APIApplication):
         Tags:
             event_types
         """
-        url = f"{self.base_url}/event_types"
-        query_params = {
-            k: v
-            for k, v in [
-                ("active", active),
-                ("organization", organization),
-                ("user", user),
-                ("user_availability_schedule", user_availability_schedule),
-                ("sort", sort),
-                ("admin_managed", admin_managed),
-                ("page_token", page_token),
-                ("count", count),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/event_types'
+        query_params = {k: v for k, v in [('active', active), ('organization', organization), ('user', user), ('user_availability_schedule', user_availability_schedule), ('sort', sort), ('admin_managed', admin_managed), ('page_token', page_token), ('count', count)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -225,9 +171,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/users/{uuid}"
+        url = f'{self.base_url}/users/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -241,9 +187,9 @@ class CalendlyApp(APIApplication):
         Tags:
             users, me, important
         """
-        url = f"{self.base_url}/users/me"
+        url = f'{self.base_url}/users/me'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -267,13 +213,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/organizations/{uuid}/invitations"
-        query_params = {
-            k: v
-            for k, v in [("count", count), ("page_token", page_token), ("sort", sort), ("email", email), ("status", status)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/organizations/{uuid}/invitations'
+        query_params = {k: v for k, v in [('count', count), ('page_token', page_token), ('sort', sort), ('email', email), ('status', status)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -299,11 +241,11 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        request_body = {"email": email}
+        request_body = {'email': email}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/organizations/{uuid}/invitations"
+        url = f'{self.base_url}/organizations/{uuid}/invitations'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -325,9 +267,9 @@ class CalendlyApp(APIApplication):
             raise ValueError("Missing required parameter 'org_uuid'")
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/organizations/{org_uuid}/invitations/{uuid}"
+        url = f'{self.base_url}/organizations/{org_uuid}/invitations/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -349,9 +291,9 @@ class CalendlyApp(APIApplication):
             raise ValueError("Missing required parameter 'org_uuid'")
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/organizations/{org_uuid}/invitations/{uuid}"
+        url = f'{self.base_url}/organizations/{org_uuid}/invitations/{uuid}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -370,9 +312,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/organization_memberships/{uuid}"
+        url = f'{self.base_url}/organization_memberships/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -391,9 +333,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/organization_memberships/{uuid}"
+        url = f'{self.base_url}/organization_memberships/{uuid}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -414,13 +356,9 @@ class CalendlyApp(APIApplication):
         Tags:
             organization_memberships
         """
-        url = f"{self.base_url}/organization_memberships"
-        query_params = {
-            k: v
-            for k, v in [("page_token", page_token), ("count", count), ("email", email), ("organization", organization), ("user", user)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/organization_memberships'
+        query_params = {k: v for k, v in [('page_token', page_token), ('count', count), ('email', email), ('organization', organization), ('user', user)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -439,9 +377,9 @@ class CalendlyApp(APIApplication):
         """
         if webhook_uuid is None:
             raise ValueError("Missing required parameter 'webhook_uuid'")
-        url = f"{self.base_url}/webhook_subscriptions/{webhook_uuid}"
+        url = f'{self.base_url}/webhook_subscriptions/{webhook_uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -460,15 +398,13 @@ class CalendlyApp(APIApplication):
         """
         if webhook_uuid is None:
             raise ValueError("Missing required parameter 'webhook_uuid'")
-        url = f"{self.base_url}/webhook_subscriptions/{webhook_uuid}"
+        url = f'{self.base_url}/webhook_subscriptions/{webhook_uuid}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_webhook_subscriptions(
-        self, organization=None, user=None, page_token=None, count=None, sort=None, scope=None
-    ) -> dict[str, Any]:
+    async def list_webhook_subscriptions(self, organization=None, user=None, page_token=None, count=None, sort=None, scope=None) -> dict[str, Any]:
         """
         Retrieves a collection of webhook subscriptions for a given scope (organization or user). Supports filtering, sorting, and pagination to browse multiple subscriptions, unlike functions like `get_webhook_subscription` which fetches a single subscription by its unique ID.
 
@@ -488,26 +424,13 @@ class CalendlyApp(APIApplication):
         Tags:
             webhook_subscriptions
         """
-        url = f"{self.base_url}/webhook_subscriptions"
-        query_params = {
-            k: v
-            for k, v in [
-                ("organization", organization),
-                ("user", user),
-                ("page_token", page_token),
-                ("count", count),
-                ("sort", sort),
-                ("scope", scope),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/webhook_subscriptions'
+        query_params = {k: v for k, v in [('organization', organization), ('user', user), ('page_token', page_token), ('count', count), ('sort', sort), ('scope', scope)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_webhook_subscription(
-        self, events=None, group=None, organization=None, scope=None, signing_key=None, url=None, user=None
-    ) -> dict[str, Any]:
+    async def create_webhook_subscription(self, events=None, group=None, organization=None, scope=None, signing_key=None, url=None, user=None) -> dict[str, Any]:
         """
         Creates a Calendly webhook subscription for specified events. It requires a callback URL, the scope (e.g., organization, user), and the list of events to monitor, registering the webhook via a POST request to the API.
 
@@ -541,19 +464,11 @@ class CalendlyApp(APIApplication):
         Tags:
             webhook_subscriptions
         """
-        request_body = {
-            "events": events,
-            "group": group,
-            "organization": organization,
-            "scope": scope,
-            "signing_key": signing_key,
-            "url": url,
-            "user": user,
-        }
+        request_body = {'events': events, 'group': group, 'organization': organization, 'scope': scope, 'signing_key': signing_key, 'url': url, 'user': user}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/webhook_subscriptions"
+        url = f'{self.base_url}/webhook_subscriptions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -580,11 +495,11 @@ class CalendlyApp(APIApplication):
         Tags:
             scheduling_links
         """
-        request_body = {"max_event_count": max_event_count, "owner": owner, "owner_type": owner_type}
+        request_body = {'max_event_count': max_event_count, 'owner': owner, 'owner_type': owner_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/scheduling_links"
+        url = f'{self.base_url}/scheduling_links'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -610,11 +525,11 @@ class CalendlyApp(APIApplication):
         Tags:
             data_compliance, deletion, invitees12
         """
-        request_body = {"emails": emails}
+        request_body = {'emails': emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_compliance/deletion/invitees"
+        url = f'{self.base_url}/data_compliance/deletion/invitees'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -639,11 +554,11 @@ class CalendlyApp(APIApplication):
         Tags:
             data_compliance, deletion, events
         """
-        request_body = {"end_time": end_time, "start_time": start_time}
+        request_body = {'end_time': end_time, 'start_time': start_time}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_compliance/deletion/events"
+        url = f'{self.base_url}/data_compliance/deletion/events'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -662,9 +577,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/invitee_no_shows/{uuid}"
+        url = f'{self.base_url}/invitee_no_shows/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -683,9 +598,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/invitee_no_shows/{uuid}"
+        url = f'{self.base_url}/invitee_no_shows/{uuid}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -708,11 +623,11 @@ class CalendlyApp(APIApplication):
         Tags:
             invitee_no_shows
         """
-        request_body = {"invitee": invitee}
+        request_body = {'invitee': invitee}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/invitee_no_shows"
+        url = f'{self.base_url}/invitee_no_shows'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -731,9 +646,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/groups/{uuid}"
+        url = f'{self.base_url}/groups/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -752,9 +667,9 @@ class CalendlyApp(APIApplication):
         Tags:
             groups
         """
-        url = f"{self.base_url}/groups"
-        query_params = {k: v for k, v in [("organization", organization), ("page_token", page_token), ("count", count)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/groups'
+        query_params = {k: v for k, v in [('organization', organization), ('page_token', page_token), ('count', count)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -773,9 +688,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/group_relationships/{uuid}"
+        url = f'{self.base_url}/group_relationships/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -797,13 +712,9 @@ class CalendlyApp(APIApplication):
         Tags:
             group_relationships
         """
-        url = f"{self.base_url}/group_relationships"
-        query_params = {
-            k: v
-            for k, v in [("count", count), ("page_token", page_token), ("organization", organization), ("owner", owner), ("group", group)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/group_relationships'
+        query_params = {k: v for k, v in [('count', count), ('page_token', page_token), ('organization', organization), ('owner', owner), ('group', group)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -822,9 +733,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/routing_forms/{uuid}"
+        url = f'{self.base_url}/routing_forms/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -844,11 +755,9 @@ class CalendlyApp(APIApplication):
         Tags:
             routing_forms
         """
-        url = f"{self.base_url}/routing_forms"
-        query_params = {
-            k: v for k, v in [("organization", organization), ("count", count), ("page_token", page_token), ("sort", sort)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/routing_forms'
+        query_params = {k: v for k, v in [('organization', organization), ('count', count), ('page_token', page_token), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -867,9 +776,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/routing_form_submissions/{uuid}"
+        url = f'{self.base_url}/routing_form_submissions/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -889,9 +798,9 @@ class CalendlyApp(APIApplication):
         Tags:
             routing_form_submissions
         """
-        url = f"{self.base_url}/routing_form_submissions"
-        query_params = {k: v for k, v in [("form", form), ("count", count), ("page_token", page_token), ("sort", sort)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/routing_form_submissions'
+        query_params = {k: v for k, v in [('form', form), ('count', count), ('page_token', page_token), ('sort', sort)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -910,25 +819,13 @@ class CalendlyApp(APIApplication):
         Tags:
             event_type_available_times
         """
-        url = f"{self.base_url}/event_type_available_times"
-        query_params = {k: v for k, v in [("event_type", event_type), ("start_time", start_time), ("end_time", end_time)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/event_type_available_times'
+        query_params = {k: v for k, v in [('event_type', event_type), ('start_time', start_time), ('end_time', end_time)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_activity_log_entries(
-        self,
-        organization=None,
-        search_term=None,
-        actor=None,
-        sort=None,
-        min_occurred_at=None,
-        max_occurred_at=None,
-        page_token=None,
-        count=None,
-        namespace=None,
-        action=None,
-    ) -> dict[str, Any]:
+    async def list_activity_log_entries(self, organization=None, search_term=None, actor=None, sort=None, min_occurred_at=None, max_occurred_at=None, page_token=None, count=None, namespace=None, action=None) -> dict[str, Any]:
         """
         Fetches a paginated list of activity log entries for an organization. Allows advanced filtering by actor, time range, search term, namespace, and action, with support for custom sorting and pagination to refine the results.
 
@@ -950,40 +847,13 @@ class CalendlyApp(APIApplication):
         Tags:
             activity_log_entries
         """
-        url = f"{self.base_url}/activity_log_entries"
-        query_params = {
-            k: v
-            for k, v in [
-                ("organization", organization),
-                ("search_term", search_term),
-                ("actor", actor),
-                ("sort", sort),
-                ("min_occurred_at", min_occurred_at),
-                ("max_occurred_at", max_occurred_at),
-                ("page_token", page_token),
-                ("count", count),
-                ("namespace", namespace),
-                ("action", action),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/activity_log_entries'
+        query_params = {k: v for k, v in [('organization', organization), ('search_term', search_term), ('actor', actor), ('sort', sort), ('min_occurred_at', min_occurred_at), ('max_occurred_at', max_occurred_at), ('page_token', page_token), ('count', count), ('namespace', namespace), ('action', action)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_shareable_link(
-        self,
-        availability_rule=None,
-        duration=None,
-        end_date=None,
-        event_type=None,
-        hide_location=None,
-        location_configurations=None,
-        max_booking_time=None,
-        name=None,
-        period_type=None,
-        start_date=None,
-    ) -> dict[str, Any]:
+    async def create_shareable_link(self, availability_rule=None, duration=None, end_date=None, event_type=None, hide_location=None, location_configurations=None, max_booking_time=None, name=None, period_type=None, start_date=None) -> dict[str, Any]:
         """
         Creates a custom, shareable scheduling link by defining properties like availability rules, event duration, and location. This generates a unique booking link tailored to specific settings, differing from standard event types or single-use links.
 
@@ -1069,22 +939,11 @@ class CalendlyApp(APIApplication):
         Tags:
             shares
         """
-        request_body = {
-            "availability_rule": availability_rule,
-            "duration": duration,
-            "end_date": end_date,
-            "event_type": event_type,
-            "hide_location": hide_location,
-            "location_configurations": location_configurations,
-            "max_booking_time": max_booking_time,
-            "name": name,
-            "period_type": period_type,
-            "start_date": start_date,
-        }
+        request_body = {'availability_rule': availability_rule, 'duration': duration, 'end_date': end_date, 'event_type': event_type, 'hide_location': hide_location, 'location_configurations': location_configurations, 'max_booking_time': max_booking_time, 'name': name, 'period_type': period_type, 'start_date': start_date}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/shares"
+        url = f'{self.base_url}/shares'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1103,9 +962,9 @@ class CalendlyApp(APIApplication):
         Tags:
             user_busy_times
         """
-        url = f"{self.base_url}/user_busy_times"
-        query_params = {k: v for k, v in [("user", user), ("start_time", start_time), ("end_time", end_time)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/user_busy_times'
+        query_params = {k: v for k, v in [('user', user), ('start_time', start_time), ('end_time', end_time)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1124,9 +983,9 @@ class CalendlyApp(APIApplication):
         """
         if uuid is None:
             raise ValueError("Missing required parameter 'uuid'")
-        url = f"{self.base_url}/user_availability_schedules/{uuid}"
+        url = f'{self.base_url}/user_availability_schedules/{uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1143,9 +1002,9 @@ class CalendlyApp(APIApplication):
         Tags:
             user_availability_schedules
         """
-        url = f"{self.base_url}/user_availability_schedules"
-        query_params = {k: v for k, v in [("user", user)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/user_availability_schedules'
+        query_params = {k: v for k, v in [('user', user)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1164,15 +1023,13 @@ class CalendlyApp(APIApplication):
         Tags:
             event_type_memberships
         """
-        url = f"{self.base_url}/event_type_memberships"
-        query_params = {k: v for k, v in [("event_type", event_type), ("count", count), ("page_token", page_token)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/event_type_memberships'
+        query_params = {k: v for k, v in [('event_type', event_type), ('count', count), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_one_off_event_type(
-        self, co_hosts=None, date_setting=None, duration=None, host=None, location=None, name=None, timezone=None
-    ) -> dict[str, Any]:
+    async def create_one_off_event_type(self, co_hosts=None, date_setting=None, duration=None, host=None, location=None, name=None, timezone=None) -> dict[str, Any]:
         """
         Creates a unique, non-reusable event type for a single, ad-hoc meeting. It defines event details like host, co-hosts, duration, and location, distinguishing it from standard, reusable event types.
 
@@ -1210,19 +1067,11 @@ class CalendlyApp(APIApplication):
         Tags:
             one_off_event_types
         """
-        request_body = {
-            "co_hosts": co_hosts,
-            "date_setting": date_setting,
-            "duration": duration,
-            "host": host,
-            "location": location,
-            "name": name,
-            "timezone": timezone,
-        }
+        request_body = {'co_hosts': co_hosts, 'date_setting': date_setting, 'duration': duration, 'host': host, 'location': location, 'name': name, 'timezone': timezone}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/one_off_event_types"
+        url = f'{self.base_url}/one_off_event_types'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1242,56 +1091,11 @@ class CalendlyApp(APIApplication):
         Tags:
             sample_webhook_data
         """
-        url = f"{self.base_url}/sample_webhook_data"
-        query_params = {
-            k: v for k, v in [("event", event), ("organization", organization), ("user", user), ("scope", scope)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/sample_webhook_data'
+        query_params = {k: v for k, v in [('event', event), ('organization', organization), ('user', user), ('scope', scope)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.list_event_invitees,
-            self.get_scheduled_event,
-            self.get_event_invitee,
-            self.list_scheduled_events,
-            self.get_event_type,
-            self.list_event_types,
-            self.get_user,
-            self.get_current_user,
-            self.list_organization_invitations,
-            self.create_organization_invitation,
-            self.get_organization_invitation,
-            self.revoke_user_organization_invitation,
-            self.get_organization_membership,
-            self.delete_organization_membership,
-            self.list_organization_memberships,
-            self.get_webhook_subscription,
-            self.delete_webhook_subscription,
-            self.list_webhook_subscriptions,
-            self.create_webhook_subscription,
-            self.create_limited_use_scheduling_link,
-            self.request_invitee_data_deletion,
-            self.request_scheduled_event_data_deletion,
-            self.get_invitee_no_show,
-            self.revoke_invitee_no_show,
-            self.mark_invitee_as_no_show,
-            self.get_group_by_id,
-            self.list_groups,
-            self.get_group_relationship,
-            self.list_group_relationships,
-            self.get_routing_form,
-            self.list_routing_forms,
-            self.get_routing_form_submission,
-            self.get_routing_form_submissions,
-            self.list_event_type_available_times,
-            self.list_activity_log_entries,
-            self.create_shareable_link,
-            self.list_user_busy_times,
-            self.get_user_availability_schedule,
-            self.list_schedules_for_user,
-            self.list_event_type_memberships,
-            self.create_one_off_event_type,
-            self.get_sample_webhook_data,
-        ]
+        return [self.list_event_invitees, self.get_scheduled_event, self.get_event_invitee, self.list_scheduled_events, self.get_event_type, self.list_event_types, self.get_user, self.get_current_user, self.list_organization_invitations, self.create_organization_invitation, self.get_organization_invitation, self.revoke_user_organization_invitation, self.get_organization_membership, self.delete_organization_membership, self.list_organization_memberships, self.get_webhook_subscription, self.delete_webhook_subscription, self.list_webhook_subscriptions, self.create_webhook_subscription, self.create_limited_use_scheduling_link, self.request_invitee_data_deletion, self.request_scheduled_event_data_deletion, self.get_invitee_no_show, self.revoke_invitee_no_show, self.mark_invitee_as_no_show, self.get_group_by_id, self.list_groups, self.get_group_relationship, self.list_group_relationships, self.get_routing_form, self.list_routing_forms, self.get_routing_form_submission, self.get_routing_form_submissions, self.list_event_type_available_times, self.list_activity_log_entries, self.create_shareable_link, self.list_user_busy_times, self.get_user_availability_schedule, self.list_schedules_for_user, self.list_event_type_memberships, self.create_one_off_event_type, self.get_sample_webhook_data]

@@ -2,9 +2,9 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class WrikeApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
         """
         Initializes the OfficialWrikeCollectionV21App with a specified integration and additional keyword arguments.
 
@@ -15,8 +15,8 @@ class WrikeApp(APIApplication):
         Returns:
             None. This constructor initializes the instance in place.
         """
-        super().__init__(name="wrike", integration=integration, **kwargs)
-        self.base_url = "https://www.wrike.com/api/v4"
+        super().__init__(name='wrike', integration=integration, **kwargs)
+        self.base_url = 'https://www.wrike.com/api/v4'
 
     async def get_contacts(self, deleted=None, fields=None, metadata=None) -> Any:
         """
@@ -36,9 +36,9 @@ class WrikeApp(APIApplication):
         Tags:
             retrieve, contacts, filter, api, important
         """
-        url = f"{self.base_url}/contacts"
-        query_params = {k: v for k, v in [("deleted", deleted), ("fields", fields), ("metadata", metadata)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/contacts'
+        query_params = {k: v for k, v in [('deleted', deleted), ('fields', fields), ('metadata', metadata)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -61,15 +61,13 @@ class WrikeApp(APIApplication):
         """
         if contactId is None:
             raise ValueError("Missing required parameter 'contactId'")
-        url = f"{self.base_url}/contacts/{contactId}"
-        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/contacts/{contactId}'
+        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def put_contacts_by_contactid(
-        self, contactId, metadata=None, currentBillRate=None, currentCostRate=None, jobRoleId=None, customFields=None, fields=None
-    ) -> Any:
+    async def put_contacts_by_contactid(self, contactId, metadata=None, currentBillRate=None, currentCostRate=None, jobRoleId=None, customFields=None, fields=None) -> Any:
         """
         Updates an existing contact using the specified contact ID with provided details including metadata, billing/cost rates, job role, and custom fields.
 
@@ -94,18 +92,11 @@ class WrikeApp(APIApplication):
         """
         if contactId is None:
             raise ValueError("Missing required parameter 'contactId'")
-        request_body = {
-            "metadata": metadata,
-            "currentBillRate": currentBillRate,
-            "currentCostRate": currentCostRate,
-            "jobRoleId": jobRoleId,
-            "customFields": customFields,
-            "fields": fields,
-        }
+        request_body = {'metadata': metadata, 'currentBillRate': currentBillRate, 'currentCostRate': currentCostRate, 'jobRoleId': jobRoleId, 'customFields': customFields, 'fields': fields}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/contacts/{contactId}"
+        url = f'{self.base_url}/contacts/{contactId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -128,9 +119,9 @@ class WrikeApp(APIApplication):
         """
         if userId is None:
             raise ValueError("Missing required parameter 'userId'")
-        url = f"{self.base_url}/users/{userId}"
+        url = f'{self.base_url}/users/{userId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -154,11 +145,11 @@ class WrikeApp(APIApplication):
         """
         if userId is None:
             raise ValueError("Missing required parameter 'userId'")
-        request_body = {"profile": profile}
+        request_body = {'profile': profile}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/users/{userId}"
+        url = f'{self.base_url}/users/{userId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -181,11 +172,9 @@ class WrikeApp(APIApplication):
         Tags:
             list, management, important
         """
-        url = f"{self.base_url}/groups"
-        query_params = {
-            k: v for k, v in [("metadata", metadata), ("pageSize", pageSize), ("pageToken", pageToken), ("fields", fields)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/groups'
+        query_params = {k: v for k, v in [('metadata', metadata), ('pageSize', pageSize), ('pageToken', pageToken), ('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -211,11 +200,11 @@ class WrikeApp(APIApplication):
         """
         if title is None:
             raise ValueError("Missing required parameter 'title'")
-        request_body = {"title": title, "members": members, "parent": parent, "avatar": avatar, "metadata": metadata}
+        request_body = {'title': title, 'members': members, 'parent': parent, 'avatar': avatar, 'metadata': metadata}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/groups"
+        url = f'{self.base_url}/groups'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -238,24 +227,13 @@ class WrikeApp(APIApplication):
         """
         if groupId is None:
             raise ValueError("Missing required parameter 'groupId'")
-        url = f"{self.base_url}/groups/{groupId}"
-        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/groups/{groupId}'
+        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def put_groups_by_groupid(
-        self,
-        groupId,
-        title=None,
-        addMembers=None,
-        removeMembers=None,
-        addInvitations=None,
-        removeInvitations=None,
-        parent=None,
-        avatar=None,
-        metadata=None,
-    ) -> Any:
+    async def put_groups_by_groupid(self, groupId, title=None, addMembers=None, removeMembers=None, addInvitations=None, removeInvitations=None, parent=None, avatar=None, metadata=None) -> Any:
         """
         Updates an existing group by groupId with new properties and membership changes via a PUT request.
 
@@ -281,20 +259,11 @@ class WrikeApp(APIApplication):
         """
         if groupId is None:
             raise ValueError("Missing required parameter 'groupId'")
-        request_body = {
-            "title": title,
-            "addMembers": addMembers,
-            "removeMembers": removeMembers,
-            "addInvitations": addInvitations,
-            "removeInvitations": removeInvitations,
-            "parent": parent,
-            "avatar": avatar,
-            "metadata": metadata,
-        }
+        request_body = {'title': title, 'addMembers': addMembers, 'removeMembers': removeMembers, 'addInvitations': addInvitations, 'removeInvitations': removeInvitations, 'parent': parent, 'avatar': avatar, 'metadata': metadata}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/groups/{groupId}"
+        url = f'{self.base_url}/groups/{groupId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -316,9 +285,9 @@ class WrikeApp(APIApplication):
         """
         if groupId is None:
             raise ValueError("Missing required parameter 'groupId'")
-        url = f"{self.base_url}/groups/{groupId}"
+        url = f'{self.base_url}/groups/{groupId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -340,11 +309,11 @@ class WrikeApp(APIApplication):
         """
         if members is None:
             raise ValueError("Missing required parameter 'members'")
-        request_body = {"members": members}
+        request_body = {'members': members}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/groups_bulk"
+        url = f'{self.base_url}/groups_bulk'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -364,15 +333,13 @@ class WrikeApp(APIApplication):
         Tags:
             retrieve, list, invitations, async_job
         """
-        url = f"{self.base_url}/invitations"
+        url = f'{self.base_url}/invitations'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def post_invitations(
-        self, email, firstName=None, lastName=None, role=None, external=None, subject=None, message=None, userTypeId=None
-    ) -> Any:
+    async def post_invitations(self, email, firstName=None, lastName=None, role=None, external=None, subject=None, message=None, userTypeId=None) -> Any:
         """
         Sends an invitation email to a user with optional details such as name, role, and custom message.
 
@@ -397,20 +364,11 @@ class WrikeApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        request_body = {
-            "email": email,
-            "firstName": firstName,
-            "lastName": lastName,
-            "role": role,
-            "external": external,
-            "subject": subject,
-            "message": message,
-            "userTypeId": userTypeId,
-        }
+        request_body = {'email': email, 'firstName': firstName, 'lastName': lastName, 'role': role, 'external': external, 'subject': subject, 'message': message, 'userTypeId': userTypeId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/invitations"
+        url = f'{self.base_url}/invitations'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -437,11 +395,11 @@ class WrikeApp(APIApplication):
         """
         if invitationId is None:
             raise ValueError("Missing required parameter 'invitationId'")
-        request_body = {"resend": resend, "role": role, "external": external, "userTypeId": userTypeId}
+        request_body = {'resend': resend, 'role': role, 'external': external, 'userTypeId': userTypeId}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/invitations/{invitationId}"
+        url = f'{self.base_url}/invitations/{invitationId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -464,9 +422,9 @@ class WrikeApp(APIApplication):
         """
         if invitationId is None:
             raise ValueError("Missing required parameter 'invitationId'")
-        url = f"{self.base_url}/invitations/{invitationId}"
+        url = f'{self.base_url}/invitations/{invitationId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -486,9 +444,9 @@ class WrikeApp(APIApplication):
         Tags:
             retrieve, account, api
         """
-        url = f"{self.base_url}/account"
-        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/account'
+        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -508,11 +466,11 @@ class WrikeApp(APIApplication):
         Tags:
             put, account, metadata, async_job
         """
-        request_body = {"metadata": metadata}
+        request_body = {'metadata': metadata}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/account"
+        url = f'{self.base_url}/account'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -532,9 +490,9 @@ class WrikeApp(APIApplication):
         Tags:
             list, fetch, workflows, management, important
         """
-        url = f"{self.base_url}/workflows"
+        url = f'{self.base_url}/workflows'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -555,9 +513,9 @@ class WrikeApp(APIApplication):
         Tags:
             post, create, workflow, async_job, management
         """
-        url = f"{self.base_url}/workflows"
-        query_params = {k: v for k, v in [("name", name)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/workflows'
+        query_params = {k: v for k, v in [('name', name)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -582,9 +540,9 @@ class WrikeApp(APIApplication):
         """
         if workflowId is None:
             raise ValueError("Missing required parameter 'workflowId'")
-        url = f"{self.base_url}/workflows/{workflowId}"
-        query_params = {k: v for k, v in [("name", name), ("hidden", hidden)] if v is not None}
-        response = self._put(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/workflows/{workflowId}'
+        query_params = {k: v for k, v in [('name', name), ('hidden', hidden)] if v is not None}
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -604,9 +562,9 @@ class WrikeApp(APIApplication):
         Tags:
             fetch, api_call, data_retrieval
         """
-        url = f"{self.base_url}/customfields"
+        url = f'{self.base_url}/customfields'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -636,20 +594,9 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'title'")
         if type is None:
             raise ValueError("Missing required parameter 'type'")
-        url = f"{self.base_url}/customfields"
-        query_params = {
-            k: v
-            for k, v in [
-                ("title", title),
-                ("type", type),
-                ("spaceId", spaceId),
-                ("sharing", sharing),
-                ("shareds", shareds),
-                ("settings", settings),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/customfields'
+        query_params = {k: v for k, v in [('title', title), ('type', type), ('spaceId', spaceId), ('sharing', sharing), ('shareds', shareds), ('settings', settings)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -671,26 +618,13 @@ class WrikeApp(APIApplication):
         """
         if customFieldId is None:
             raise ValueError("Missing required parameter 'customFieldId'")
-        url = f"{self.base_url}/customfields/{customFieldId}"
+        url = f'{self.base_url}/customfields/{customFieldId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def put_customfields_by_customfieldid(
-        self,
-        customFieldId,
-        title=None,
-        type=None,
-        changeScope=None,
-        spaceId=None,
-        sharing=None,
-        addShareds=None,
-        removeShareds=None,
-        settings=None,
-        addMirrors=None,
-        removeMirrors=None,
-    ) -> Any:
+    async def put_customfields_by_customfieldid(self, customFieldId, title=None, type=None, changeScope=None, spaceId=None, sharing=None, addShareds=None, removeShareds=None, settings=None, addMirrors=None, removeMirrors=None) -> Any:
         """
         Updates a custom field specified by its ID with the provided parameters.
 
@@ -718,24 +652,9 @@ class WrikeApp(APIApplication):
         """
         if customFieldId is None:
             raise ValueError("Missing required parameter 'customFieldId'")
-        url = f"{self.base_url}/customfields/{customFieldId}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("title", title),
-                ("type", type),
-                ("changeScope", changeScope),
-                ("spaceId", spaceId),
-                ("sharing", sharing),
-                ("addShareds", addShareds),
-                ("removeShareds", removeShareds),
-                ("settings", settings),
-                ("addMirrors", addMirrors),
-                ("removeMirrors", removeMirrors),
-            ]
-            if v is not None
-        }
-        response = self._put(url, data={}, params=query_params)
+        url = f'{self.base_url}/customfields/{customFieldId}'
+        query_params = {k: v for k, v in [('title', title), ('type', type), ('changeScope', changeScope), ('spaceId', spaceId), ('sharing', sharing), ('addShareds', addShareds), ('removeShareds', removeShareds), ('settings', settings), ('addMirrors', addMirrors), ('removeMirrors', removeMirrors)] if v is not None}
+        response = await self._aput(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -757,29 +676,13 @@ class WrikeApp(APIApplication):
         """
         if customFieldId is None:
             raise ValueError("Missing required parameter 'customFieldId'")
-        url = f"{self.base_url}/customfields/{customFieldId}"
+        url = f'{self.base_url}/customfields/{customFieldId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_folders(
-        self,
-        permalink=None,
-        descendants=None,
-        metadata=None,
-        customFields=None,
-        updatedDate=None,
-        withInvitations=None,
-        project=None,
-        deleted=None,
-        contractTypes=None,
-        plainTextCustomFields=None,
-        customItemTypes=None,
-        pageSize=None,
-        nextPageToken=None,
-        fields=None,
-    ) -> Any:
+    async def get_folders(self, permalink=None, descendants=None, metadata=None, customFields=None, updatedDate=None, withInvitations=None, project=None, deleted=None, contractTypes=None, plainTextCustomFields=None, customItemTypes=None, pageSize=None, nextPageToken=None, fields=None) -> Any:
         """
         Retrieves a list of folders from the API with support for filtering, pagination, and field selection.
 
@@ -808,48 +711,13 @@ class WrikeApp(APIApplication):
         Tags:
             retrieve, list, filter, pagination, api-call, folders, metadata
         """
-        url = f"{self.base_url}/folders"
-        query_params = {
-            k: v
-            for k, v in [
-                ("permalink", permalink),
-                ("descendants", descendants),
-                ("metadata", metadata),
-                ("customFields", customFields),
-                ("updatedDate", updatedDate),
-                ("withInvitations", withInvitations),
-                ("project", project),
-                ("deleted", deleted),
-                ("contractTypes", contractTypes),
-                ("plainTextCustomFields", plainTextCustomFields),
-                ("customItemTypes", customItemTypes),
-                ("pageSize", pageSize),
-                ("nextPageToken", nextPageToken),
-                ("fields", fields),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/folders'
+        query_params = {k: v for k, v in [('permalink', permalink), ('descendants', descendants), ('metadata', metadata), ('customFields', customFields), ('updatedDate', updatedDate), ('withInvitations', withInvitations), ('project', project), ('deleted', deleted), ('contractTypes', contractTypes), ('plainTextCustomFields', plainTextCustomFields), ('customItemTypes', customItemTypes), ('pageSize', pageSize), ('nextPageToken', nextPageToken), ('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_folders_by_folderid_folders(
-        self,
-        folderId,
-        permalink=None,
-        descendants=None,
-        metadata=None,
-        customFields=None,
-        updatedDate=None,
-        withInvitations=None,
-        project=None,
-        contractTypes=None,
-        plainTextCustomFields=None,
-        customItemTypes=None,
-        pageSize=None,
-        nextPageToken=None,
-        fields=None,
-    ) -> Any:
+    async def get_folders_by_folderid_folders(self, folderId, permalink=None, descendants=None, metadata=None, customFields=None, updatedDate=None, withInvitations=None, project=None, contractTypes=None, plainTextCustomFields=None, customItemTypes=None, pageSize=None, nextPageToken=None, fields=None) -> Any:
         """
         Retrieves subfolders of a specified folder, applying optional filters and pagination parameters.
 
@@ -880,46 +748,13 @@ class WrikeApp(APIApplication):
         """
         if folderId is None:
             raise ValueError("Missing required parameter 'folderId'")
-        url = f"{self.base_url}/folders/{folderId}/folders"
-        query_params = {
-            k: v
-            for k, v in [
-                ("permalink", permalink),
-                ("descendants", descendants),
-                ("metadata", metadata),
-                ("customFields", customFields),
-                ("updatedDate", updatedDate),
-                ("withInvitations", withInvitations),
-                ("project", project),
-                ("contractTypes", contractTypes),
-                ("plainTextCustomFields", plainTextCustomFields),
-                ("customItemTypes", customItemTypes),
-                ("pageSize", pageSize),
-                ("nextPageToken", nextPageToken),
-                ("fields", fields),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/folders/{folderId}/folders'
+        query_params = {k: v for k, v in [('permalink', permalink), ('descendants', descendants), ('metadata', metadata), ('customFields', customFields), ('updatedDate', updatedDate), ('withInvitations', withInvitations), ('project', project), ('contractTypes', contractTypes), ('plainTextCustomFields', plainTextCustomFields), ('customItemTypes', customItemTypes), ('pageSize', pageSize), ('nextPageToken', nextPageToken), ('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def post_folders_by_folderid_folders(
-        self,
-        folderId,
-        title,
-        description=None,
-        shareds=None,
-        metadata=None,
-        customFields=None,
-        customColumns=None,
-        project=None,
-        userAccessRoles=None,
-        withInvitations=None,
-        customItemTypeId=None,
-        plainTextCustomFields=None,
-        fields=None,
-    ) -> Any:
+    async def post_folders_by_folderid_folders(self, folderId, title, description=None, shareds=None, metadata=None, customFields=None, customColumns=None, project=None, userAccessRoles=None, withInvitations=None, customItemTypeId=None, plainTextCustomFields=None, fields=None) -> Any:
         """
         Creates a new subfolder within a specified folder by folder ID, with configurable attributes such as title, description, sharing, metadata, and permissions.
 
@@ -951,24 +786,11 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'folderId'")
         if title is None:
             raise ValueError("Missing required parameter 'title'")
-        request_body = {
-            "title": title,
-            "description": description,
-            "shareds": shareds,
-            "metadata": metadata,
-            "customFields": customFields,
-            "customColumns": customColumns,
-            "project": project,
-            "userAccessRoles": userAccessRoles,
-            "withInvitations": withInvitations,
-            "customItemTypeId": customItemTypeId,
-            "plainTextCustomFields": plainTextCustomFields,
-            "fields": fields,
-        }
+        request_body = {'title': title, 'description': description, 'shareds': shareds, 'metadata': metadata, 'customFields': customFields, 'customColumns': customColumns, 'project': project, 'userAccessRoles': userAccessRoles, 'withInvitations': withInvitations, 'customItemTypeId': customItemTypeId, 'plainTextCustomFields': plainTextCustomFields, 'fields': fields}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/folders/{folderId}/folders"
+        url = f'{self.base_url}/folders/{folderId}/folders'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -991,34 +813,13 @@ class WrikeApp(APIApplication):
         """
         if folderId is None:
             raise ValueError("Missing required parameter 'folderId'")
-        url = f"{self.base_url}/folders/{folderId}"
+        url = f'{self.base_url}/folders/{folderId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def put_folders_by_folderid(
-        self,
-        folderId,
-        title=None,
-        description=None,
-        addParents=None,
-        removeParents=None,
-        addShareds=None,
-        removeShareds=None,
-        metadata=None,
-        restore=None,
-        customFields=None,
-        customColumns=None,
-        clearCustomColumns=None,
-        project=None,
-        addAccessRoles=None,
-        removeAccessRoles=None,
-        withInvitations=None,
-        convertToCustomItemType=None,
-        plainTextCustomFields=None,
-        fields=None,
-    ) -> Any:
+    async def put_folders_by_folderid(self, folderId, title=None, description=None, addParents=None, removeParents=None, addShareds=None, removeShareds=None, metadata=None, restore=None, customFields=None, customColumns=None, clearCustomColumns=None, project=None, addAccessRoles=None, removeAccessRoles=None, withInvitations=None, convertToCustomItemType=None, plainTextCustomFields=None, fields=None) -> Any:
         """
         Updates a folder's properties and relationships using a PUT request, allowing comprehensive modifications including metadata, access roles, and parent associations.
 
@@ -1055,66 +856,15 @@ class WrikeApp(APIApplication):
         """
         if folderId is None:
             raise ValueError("Missing required parameter 'folderId'")
-        request_body = {
-            "title": title,
-            "description": description,
-            "addParents": addParents,
-            "removeParents": removeParents,
-            "addShareds": addShareds,
-            "removeShareds": removeShareds,
-            "metadata": metadata,
-            "restore": restore,
-            "customFields": customFields,
-            "customColumns": customColumns,
-            "clearCustomColumns": clearCustomColumns,
-            "project": project,
-            "addAccessRoles": addAccessRoles,
-            "removeAccessRoles": removeAccessRoles,
-            "withInvitations": withInvitations,
-            "convertToCustomItemType": convertToCustomItemType,
-            "plainTextCustomFields": plainTextCustomFields,
-            "fields": fields,
-        }
+        request_body = {'title': title, 'description': description, 'addParents': addParents, 'removeParents': removeParents, 'addShareds': addShareds, 'removeShareds': removeShareds, 'metadata': metadata, 'restore': restore, 'customFields': customFields, 'customColumns': customColumns, 'clearCustomColumns': clearCustomColumns, 'project': project, 'addAccessRoles': addAccessRoles, 'removeAccessRoles': removeAccessRoles, 'withInvitations': withInvitations, 'convertToCustomItemType': convertToCustomItemType, 'plainTextCustomFields': plainTextCustomFields, 'fields': fields}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/folders/{folderId}"
+        url = f'{self.base_url}/folders/{folderId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_tasks(
-        self,
-        descendants=None,
-        title=None,
-        status=None,
-        importance=None,
-        startDate=None,
-        dueDate=None,
-        scheduledDate=None,
-        createdDate=None,
-        updatedDate=None,
-        completedDate=None,
-        authors=None,
-        responsibles=None,
-        responsiblePlaceholders=None,
-        permalink=None,
-        type=None,
-        limit=None,
-        sortField=None,
-        sortOrder=None,
-        subTasks=None,
-        pageSize=None,
-        nextPageToken=None,
-        metadata=None,
-        customField=None,
-        customFields=None,
-        customStatuses=None,
-        withInvitations=None,
-        billingTypes=None,
-        plainTextCustomFields=None,
-        customItemTypes=None,
-        fields=None,
-    ) -> Any:
+    async def get_tasks(self, descendants=None, title=None, status=None, importance=None, startDate=None, dueDate=None, scheduledDate=None, createdDate=None, updatedDate=None, completedDate=None, authors=None, responsibles=None, responsiblePlaceholders=None, permalink=None, type=None, limit=None, sortField=None, sortOrder=None, subTasks=None, pageSize=None, nextPageToken=None, metadata=None, customField=None, customFields=None, customStatuses=None, withInvitations=None, billingTypes=None, plainTextCustomFields=None, customItemTypes=None, fields=None) -> Any:
         """
         Retrieves tasks from the API with optional filtering, sorting, pagination, and field selection parameters.
 
@@ -1159,44 +909,9 @@ class WrikeApp(APIApplication):
         Tags:
             list, filter, api_call, async_job_support, management
         """
-        url = f"{self.base_url}/tasks"
-        query_params = {
-            k: v
-            for k, v in [
-                ("descendants", descendants),
-                ("title", title),
-                ("status", status),
-                ("importance", importance),
-                ("startDate", startDate),
-                ("dueDate", dueDate),
-                ("scheduledDate", scheduledDate),
-                ("createdDate", createdDate),
-                ("updatedDate", updatedDate),
-                ("completedDate", completedDate),
-                ("authors", authors),
-                ("responsibles", responsibles),
-                ("responsiblePlaceholders", responsiblePlaceholders),
-                ("permalink", permalink),
-                ("type", type),
-                ("limit", limit),
-                ("sortField", sortField),
-                ("sortOrder", sortOrder),
-                ("subTasks", subTasks),
-                ("pageSize", pageSize),
-                ("nextPageToken", nextPageToken),
-                ("metadata", metadata),
-                ("customField", customField),
-                ("customFields", customFields),
-                ("customStatuses", customStatuses),
-                ("withInvitations", withInvitations),
-                ("billingTypes", billingTypes),
-                ("plainTextCustomFields", plainTextCustomFields),
-                ("customItemTypes", customItemTypes),
-                ("fields", fields),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/tasks'
+        query_params = {k: v for k, v in [('descendants', descendants), ('title', title), ('status', status), ('importance', importance), ('startDate', startDate), ('dueDate', dueDate), ('scheduledDate', scheduledDate), ('createdDate', createdDate), ('updatedDate', updatedDate), ('completedDate', completedDate), ('authors', authors), ('responsibles', responsibles), ('responsiblePlaceholders', responsiblePlaceholders), ('permalink', permalink), ('type', type), ('limit', limit), ('sortField', sortField), ('sortOrder', sortOrder), ('subTasks', subTasks), ('pageSize', pageSize), ('nextPageToken', nextPageToken), ('metadata', metadata), ('customField', customField), ('customFields', customFields), ('customStatuses', customStatuses), ('withInvitations', withInvitations), ('billingTypes', billingTypes), ('plainTextCustomFields', plainTextCustomFields), ('customItemTypes', customItemTypes), ('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1219,45 +934,13 @@ class WrikeApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'")
-        url = f"{self.base_url}/tasks/{taskId}"
-        query_params = {k: v for k, v in [("fields", fields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/tasks/{taskId}'
+        query_params = {k: v for k, v in [('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def put_tasks_by_taskid(
-        self,
-        taskId,
-        title=None,
-        description=None,
-        status=None,
-        importance=None,
-        dates=None,
-        addParents=None,
-        removeParents=None,
-        addShareds=None,
-        removeShareds=None,
-        addResponsibles=None,
-        removeResponsibles=None,
-        addResponsiblePlaceholders=None,
-        removeResponsiblePlaceholders=None,
-        addFollowers=None,
-        follow=None,
-        priorityBefore=None,
-        priorityAfter=None,
-        addSuperTasks=None,
-        removeSuperTasks=None,
-        metadata=None,
-        customFields=None,
-        customStatus=None,
-        restore=None,
-        effortAllocation=None,
-        billingType=None,
-        withInvitations=None,
-        convertToCustomItemType=None,
-        plainTextCustomFields=None,
-        fields=None,
-    ) -> Any:
+    async def put_tasks_by_taskid(self, taskId, title=None, description=None, status=None, importance=None, dates=None, addParents=None, removeParents=None, addShareds=None, removeShareds=None, addResponsibles=None, removeResponsibles=None, addResponsiblePlaceholders=None, removeResponsiblePlaceholders=None, addFollowers=None, follow=None, priorityBefore=None, priorityAfter=None, addSuperTasks=None, removeSuperTasks=None, metadata=None, customFields=None, customStatus=None, restore=None, effortAllocation=None, billingType=None, withInvitations=None, convertToCustomItemType=None, plainTextCustomFields=None, fields=None) -> Any:
         """
         Updates a task's properties and relationships by ID, returning the updated task data.
 
@@ -1305,41 +988,11 @@ class WrikeApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'")
-        request_body = {
-            "title": title,
-            "description": description,
-            "status": status,
-            "importance": importance,
-            "dates": dates,
-            "addParents": addParents,
-            "removeParents": removeParents,
-            "addShareds": addShareds,
-            "removeShareds": removeShareds,
-            "addResponsibles": addResponsibles,
-            "removeResponsibles": removeResponsibles,
-            "addResponsiblePlaceholders": addResponsiblePlaceholders,
-            "removeResponsiblePlaceholders": removeResponsiblePlaceholders,
-            "addFollowers": addFollowers,
-            "follow": follow,
-            "priorityBefore": priorityBefore,
-            "priorityAfter": priorityAfter,
-            "addSuperTasks": addSuperTasks,
-            "removeSuperTasks": removeSuperTasks,
-            "metadata": metadata,
-            "customFields": customFields,
-            "customStatus": customStatus,
-            "restore": restore,
-            "effortAllocation": effortAllocation,
-            "billingType": billingType,
-            "withInvitations": withInvitations,
-            "convertToCustomItemType": convertToCustomItemType,
-            "plainTextCustomFields": plainTextCustomFields,
-            "fields": fields,
-        }
+        request_body = {'title': title, 'description': description, 'status': status, 'importance': importance, 'dates': dates, 'addParents': addParents, 'removeParents': removeParents, 'addShareds': addShareds, 'removeShareds': removeShareds, 'addResponsibles': addResponsibles, 'removeResponsibles': removeResponsibles, 'addResponsiblePlaceholders': addResponsiblePlaceholders, 'removeResponsiblePlaceholders': removeResponsiblePlaceholders, 'addFollowers': addFollowers, 'follow': follow, 'priorityBefore': priorityBefore, 'priorityAfter': priorityAfter, 'addSuperTasks': addSuperTasks, 'removeSuperTasks': removeSuperTasks, 'metadata': metadata, 'customFields': customFields, 'customStatus': customStatus, 'restore': restore, 'effortAllocation': effortAllocation, 'billingType': billingType, 'withInvitations': withInvitations, 'convertToCustomItemType': convertToCustomItemType, 'plainTextCustomFields': plainTextCustomFields, 'fields': fields}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/tasks/{taskId}"
+        url = f'{self.base_url}/tasks/{taskId}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1362,39 +1015,13 @@ class WrikeApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'")
-        url = f"{self.base_url}/tasks/{taskId}"
+        url = f'{self.base_url}/tasks/{taskId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def post_folders_by_folderid_tasks(
-        self,
-        folderId,
-        title,
-        description=None,
-        status=None,
-        importance=None,
-        dates=None,
-        shareds=None,
-        parents=None,
-        responsibles=None,
-        responsiblePlaceholders=None,
-        followers=None,
-        follow=None,
-        priorityBefore=None,
-        priorityAfter=None,
-        superTasks=None,
-        metadata=None,
-        customFields=None,
-        customStatus=None,
-        effortAllocation=None,
-        billingType=None,
-        withInvitations=None,
-        customItemTypeId=None,
-        plainTextCustomFields=None,
-        fields=None,
-    ) -> Any:
+    async def post_folders_by_folderid_tasks(self, folderId, title, description=None, status=None, importance=None, dates=None, shareds=None, parents=None, responsibles=None, responsiblePlaceholders=None, followers=None, follow=None, priorityBefore=None, priorityAfter=None, superTasks=None, metadata=None, customFields=None, customStatus=None, effortAllocation=None, billingType=None, withInvitations=None, customItemTypeId=None, plainTextCustomFields=None, fields=None) -> Any:
         """
         Creates a new task in a specified folder with configurable attributes including title, description, assignments, and custom fields.
 
@@ -1438,73 +1065,13 @@ class WrikeApp(APIApplication):
             raise ValueError("Missing required parameter 'folderId'")
         if title is None:
             raise ValueError("Missing required parameter 'title'")
-        request_body = {
-            "title": title,
-            "description": description,
-            "status": status,
-            "importance": importance,
-            "dates": dates,
-            "shareds": shareds,
-            "parents": parents,
-            "responsibles": responsibles,
-            "responsiblePlaceholders": responsiblePlaceholders,
-            "followers": followers,
-            "follow": follow,
-            "priorityBefore": priorityBefore,
-            "priorityAfter": priorityAfter,
-            "superTasks": superTasks,
-            "metadata": metadata,
-            "customFields": customFields,
-            "customStatus": customStatus,
-            "effortAllocation": effortAllocation,
-            "billingType": billingType,
-            "withInvitations": withInvitations,
-            "customItemTypeId": customItemTypeId,
-            "plainTextCustomFields": plainTextCustomFields,
-            "fields": fields,
-        }
+        request_body = {'title': title, 'description': description, 'status': status, 'importance': importance, 'dates': dates, 'shareds': shareds, 'parents': parents, 'responsibles': responsibles, 'responsiblePlaceholders': responsiblePlaceholders, 'followers': followers, 'follow': follow, 'priorityBefore': priorityBefore, 'priorityAfter': priorityAfter, 'superTasks': superTasks, 'metadata': metadata, 'customFields': customFields, 'customStatus': customStatus, 'effortAllocation': effortAllocation, 'billingType': billingType, 'withInvitations': withInvitations, 'customItemTypeId': customItemTypeId, 'plainTextCustomFields': plainTextCustomFields, 'fields': fields}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/folders/{folderId}/tasks"
+        url = f'{self.base_url}/folders/{folderId}/tasks'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.get_contacts,
-            self.get_contacts_by_contactid,
-            self.put_contacts_by_contactid,
-            self.get_users_by_userid,
-            self.put_users_by_userid,
-            self.get_groups,
-            self.post_groups,
-            self.get_groups_by_groupid,
-            self.put_groups_by_groupid,
-            self.delete_groups_by_groupid,
-            self.put_groups_bulk,
-            self.get_invitations,
-            self.post_invitations,
-            self.put_invitations_by_invitationid,
-            self.delete_invitations_by_invitationid,
-            self.get_a_ccount,
-            self.put_a_ccount,
-            self.get_workflows,
-            self.post_workflows,
-            self.put_workflows_by_workflowid,
-            self.get_customfields,
-            self.post_customfields,
-            self.get_customfields_by_customfieldid,
-            self.put_customfields_by_customfieldid,
-            self.delete_customfields_by_customfieldid,
-            self.get_folders,
-            self.get_folders_by_folderid_folders,
-            self.post_folders_by_folderid_folders,
-            self.delete_folders_by_folderid,
-            self.put_folders_by_folderid,
-            self.get_tasks,
-            self.get_tasks_by_taskid,
-            self.put_tasks_by_taskid,
-            self.delete_tasks_by_taskid,
-            self.post_folders_by_folderid_tasks,
-        ]
+        return [self.get_contacts, self.get_contacts_by_contactid, self.put_contacts_by_contactid, self.get_users_by_userid, self.put_users_by_userid, self.get_groups, self.post_groups, self.get_groups_by_groupid, self.put_groups_by_groupid, self.delete_groups_by_groupid, self.put_groups_bulk, self.get_invitations, self.post_invitations, self.put_invitations_by_invitationid, self.delete_invitations_by_invitationid, self.get_a_ccount, self.put_a_ccount, self.get_workflows, self.post_workflows, self.put_workflows_by_workflowid, self.get_customfields, self.post_customfields, self.get_customfields_by_customfieldid, self.put_customfields_by_customfieldid, self.delete_customfields_by_customfieldid, self.get_folders, self.get_folders_by_folderid_folders, self.post_folders_by_folderid_folders, self.delete_folders_by_folderid, self.put_folders_by_folderid, self.get_tasks, self.get_tasks_by_taskid, self.put_tasks_by_taskid, self.delete_tasks_by_taskid, self.post_folders_by_folderid_tasks]

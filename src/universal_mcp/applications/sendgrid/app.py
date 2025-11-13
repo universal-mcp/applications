@@ -2,11 +2,11 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class SendgridApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="sendgrid", integration=integration, **kwargs)
-        self.base_url = "https://api.sendgrid.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='sendgrid', integration=integration, **kwargs)
+        self.base_url = 'https://api.sendgrid.com'
 
     async def list_access_activity(self, limit=None) -> dict[str, Any]:
         """
@@ -21,9 +21,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Access Management, important
         """
-        url = f"{self.base_url}/v3/access_settings/activity"
-        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/access_settings/activity'
+        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -40,11 +40,11 @@ class SendgridApp(APIApplication):
         Tags:
             IP Access Management
         """
-        request_body = {"ids": ids}
+        request_body = {'ids': ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/access_settings/whitelist"
+        url = f'{self.base_url}/v3/access_settings/whitelist'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -58,9 +58,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Access Management
         """
-        url = f"{self.base_url}/v3/access_settings/whitelist"
+        url = f'{self.base_url}/v3/access_settings/whitelist'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -77,11 +77,11 @@ class SendgridApp(APIApplication):
         Tags:
             IP Access Management
         """
-        request_body = {"ips": ips}
+        request_body = {'ips': ips}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/access_settings/whitelist"
+        url = f'{self.base_url}/v3/access_settings/whitelist'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -100,9 +100,9 @@ class SendgridApp(APIApplication):
         """
         if rule_id is None:
             raise ValueError("Missing required parameter 'rule_id'")
-        url = f"{self.base_url}/v3/access_settings/whitelist/{rule_id}"
+        url = f'{self.base_url}/v3/access_settings/whitelist/{rule_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -121,9 +121,9 @@ class SendgridApp(APIApplication):
         """
         if rule_id is None:
             raise ValueError("Missing required parameter 'rule_id'")
-        url = f"{self.base_url}/v3/access_settings/whitelist/{rule_id}"
+        url = f'{self.base_url}/v3/access_settings/whitelist/{rule_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -137,9 +137,9 @@ class SendgridApp(APIApplication):
         Tags:
             Alerts, important
         """
-        url = f"{self.base_url}/v3/alerts"
+        url = f'{self.base_url}/v3/alerts'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -162,11 +162,11 @@ class SendgridApp(APIApplication):
         Tags:
             Alerts
         """
-        request_body = {"email_to": email_to, "frequency": frequency, "percentage": percentage, "type": type}
+        request_body = {'email_to': email_to, 'frequency': frequency, 'percentage': percentage, 'type': type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/alerts"
+        url = f'{self.base_url}/v3/alerts'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -185,9 +185,9 @@ class SendgridApp(APIApplication):
         """
         if alert_id is None:
             raise ValueError("Missing required parameter 'alert_id'")
-        url = f"{self.base_url}/v3/alerts/{alert_id}"
+        url = f'{self.base_url}/v3/alerts/{alert_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -206,9 +206,9 @@ class SendgridApp(APIApplication):
         """
         if alert_id is None:
             raise ValueError("Missing required parameter 'alert_id'")
-        url = f"{self.base_url}/v3/alerts/{alert_id}"
+        url = f'{self.base_url}/v3/alerts/{alert_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -233,9 +233,9 @@ class SendgridApp(APIApplication):
         """
         if alert_id is None:
             raise ValueError("Missing required parameter 'alert_id'")
-        request_body = {"email_to": email_to, "frequency": frequency, "percentage": percentage}
+        request_body = {'email_to': email_to, 'frequency': frequency, 'percentage': percentage}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/alerts/{alert_id}"
+        url = f'{self.base_url}/v3/alerts/{alert_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -254,9 +254,9 @@ class SendgridApp(APIApplication):
         Tags:
             API Keys
         """
-        url = f"{self.base_url}/v3/api_keys"
-        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/api_keys'
+        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -274,11 +274,11 @@ class SendgridApp(APIApplication):
         Tags:
             API Keys
         """
-        request_body = {"name": name, "scopes": scopes}
+        request_body = {'name': name, 'scopes': scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/api_keys"
+        url = f'{self.base_url}/v3/api_keys'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -297,9 +297,9 @@ class SendgridApp(APIApplication):
         """
         if api_key_id is None:
             raise ValueError("Missing required parameter 'api_key_id'")
-        url = f"{self.base_url}/v3/api_keys/{api_key_id}"
+        url = f'{self.base_url}/v3/api_keys/{api_key_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -318,9 +318,9 @@ class SendgridApp(APIApplication):
         """
         if api_key_id is None:
             raise ValueError("Missing required parameter 'api_key_id'")
-        url = f"{self.base_url}/v3/api_keys/{api_key_id}"
+        url = f'{self.base_url}/v3/api_keys/{api_key_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -340,9 +340,9 @@ class SendgridApp(APIApplication):
         """
         if api_key_id is None:
             raise ValueError("Missing required parameter 'api_key_id'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/api_keys/{api_key_id}"
+        url = f'{self.base_url}/v3/api_keys/{api_key_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -365,11 +365,11 @@ class SendgridApp(APIApplication):
         """
         if api_key_id is None:
             raise ValueError("Missing required parameter 'api_key_id'")
-        request_body = {"name": name, "scopes": scopes}
+        request_body = {'name': name, 'scopes': scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/api_keys/{api_key_id}"
+        url = f'{self.base_url}/v3/api_keys/{api_key_id}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -386,9 +386,9 @@ class SendgridApp(APIApplication):
         Tags:
             Unsubscribe Groups
         """
-        url = f"{self.base_url}/v3/asm/groups"
-        query_params = {k: v for k, v in [("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/asm/groups'
+        query_params = {k: v for k, v in [('id', id)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -407,11 +407,11 @@ class SendgridApp(APIApplication):
         Tags:
             Unsubscribe Groups
         """
-        request_body = {"description": description, "is_default": is_default, "name": name}
+        request_body = {'description': description, 'is_default': is_default, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/asm/groups"
+        url = f'{self.base_url}/v3/asm/groups'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -430,9 +430,9 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        url = f"{self.base_url}/v3/asm/groups/{group_id}"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -451,9 +451,9 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        url = f"{self.base_url}/v3/asm/groups/{group_id}"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -475,9 +475,9 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {"description": description, "is_default": is_default, "name": name}
+        request_body = {'description': description, 'is_default': is_default, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/asm/groups/{group_id}"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -498,9 +498,9 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}/suppressions'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -520,11 +520,11 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {"recipient_emails": recipient_emails}
+        request_body = {'recipient_emails': recipient_emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}/suppressions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -544,11 +544,11 @@ class SendgridApp(APIApplication):
         """
         if group_id is None:
             raise ValueError("Missing required parameter 'group_id'")
-        request_body = {"recipient_emails": recipient_emails}
+        request_body = {'recipient_emails': recipient_emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions/search"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}/suppressions/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -570,9 +570,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'group_id'")
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/asm/groups/{group_id}/suppressions/{email}"
+        url = f'{self.base_url}/v3/asm/groups/{group_id}/suppressions/{email}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -586,9 +586,9 @@ class SendgridApp(APIApplication):
         Tags:
             Suppressions
         """
-        url = f"{self.base_url}/v3/asm/suppressions"
+        url = f'{self.base_url}/v3/asm/suppressions'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -605,11 +605,11 @@ class SendgridApp(APIApplication):
         Tags:
             Global Suppressions
         """
-        request_body = {"recipient_emails": recipient_emails}
+        request_body = {'recipient_emails': recipient_emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/asm/suppressions/global"
+        url = f'{self.base_url}/v3/asm/suppressions/global'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -628,9 +628,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/asm/suppressions/global/{email}"
+        url = f'{self.base_url}/v3/asm/suppressions/global/{email}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -649,9 +649,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/asm/suppressions/global/{email}"
+        url = f'{self.base_url}/v3/asm/suppressions/global/{email}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -670,9 +670,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/asm/suppressions/{email}"
+        url = f'{self.base_url}/v3/asm/suppressions/{email}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -694,20 +694,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/browsers/stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("browsers", browsers),
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/browsers/stats'
+        query_params = {k: v for k, v in [('browsers', browsers), ('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -725,27 +714,13 @@ class SendgridApp(APIApplication):
         Tags:
             Campaigns API, important
         """
-        url = f"{self.base_url}/v3/campaigns"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/campaigns'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_campaign(
-        self,
-        categories=None,
-        custom_unsubscribe_url=None,
-        editor=None,
-        html_content=None,
-        ip_pool=None,
-        list_ids=None,
-        plain_content=None,
-        segment_ids=None,
-        sender_id=None,
-        subject=None,
-        suppression_group_id=None,
-        title=None,
-    ) -> dict[str, Any]:
+    async def create_campaign(self, categories=None, custom_unsubscribe_url=None, editor=None, html_content=None, ip_pool=None, list_ids=None, plain_content=None, segment_ids=None, sender_id=None, subject=None, suppression_group_id=None, title=None) -> dict[str, Any]:
         """
         Creates a new campaign resource using the provided JSON payload and returns a status code upon success or failure.
 
@@ -769,24 +744,11 @@ class SendgridApp(APIApplication):
         Tags:
             Campaigns API
         """
-        request_body = {
-            "categories": categories,
-            "custom_unsubscribe_url": custom_unsubscribe_url,
-            "editor": editor,
-            "html_content": html_content,
-            "ip_pool": ip_pool,
-            "list_ids": list_ids,
-            "plain_content": plain_content,
-            "segment_ids": segment_ids,
-            "sender_id": sender_id,
-            "subject": subject,
-            "suppression_group_id": suppression_group_id,
-            "title": title,
-        }
+        request_body = {'categories': categories, 'custom_unsubscribe_url': custom_unsubscribe_url, 'editor': editor, 'html_content': html_content, 'ip_pool': ip_pool, 'list_ids': list_ids, 'plain_content': plain_content, 'segment_ids': segment_ids, 'sender_id': sender_id, 'subject': subject, 'suppression_group_id': suppression_group_id, 'title': title}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/campaigns"
+        url = f'{self.base_url}/v3/campaigns'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -805,9 +767,9 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -826,15 +788,13 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_campaign(
-        self, campaign_id, categories=None, html_content=None, plain_content=None, subject=None, title=None
-    ) -> dict[str, Any]:
+    async def update_campaign(self, campaign_id, categories=None, html_content=None, plain_content=None, subject=None, title=None) -> dict[str, Any]:
         """
         Modifies a specific campaign by updating selected fields identified by the `{campaign_id}` using JSON data in the request body, returning a status response.
 
@@ -854,15 +814,9 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {
-            "categories": categories,
-            "html_content": html_content,
-            "plain_content": plain_content,
-            "subject": subject,
-            "title": title,
-        }
+        request_body = {'categories': categories, 'html_content': html_content, 'plain_content': plain_content, 'subject': subject, 'title': title}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -883,9 +837,9 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}/schedules'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -904,9 +858,9 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}/schedules'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -926,9 +880,9 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {"send_at": send_at}
+        request_body = {'send_at': send_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}/schedules'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -950,11 +904,11 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {"send_at": send_at}
+        request_body = {'send_at': send_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}/schedules'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -973,9 +927,9 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules/now"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}/schedules/now'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -995,11 +949,11 @@ class SendgridApp(APIApplication):
         """
         if campaign_id is None:
             raise ValueError("Missing required parameter 'campaign_id'")
-        request_body = {"to": to}
+        request_body = {'to': to}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/campaigns/{campaign_id}/schedules/test"
+        url = f'{self.base_url}/v3/campaigns/{campaign_id}/schedules/test'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1019,19 +973,13 @@ class SendgridApp(APIApplication):
         Tags:
             Categories
         """
-        url = f"{self.base_url}/v3/categories/stats"
-        query_params = {
-            k: v
-            for k, v in [("start_date", start_date), ("end_date", end_date), ("categories", categories), ("aggregated_by", aggregated_by)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/categories/stats'
+        query_params = {k: v for k, v in [('start_date', start_date), ('end_date', end_date), ('categories', categories), ('aggregated_by', aggregated_by)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_category_stat_sum(
-        self, start_date, sort_by_metric=None, sort_by_direction=None, end_date=None, limit=None, offset=None, aggregated_by=None
-    ) -> dict[str, Any]:
+    async def list_category_stat_sum(self, start_date, sort_by_metric=None, sort_by_direction=None, end_date=None, limit=None, offset=None, aggregated_by=None) -> dict[str, Any]:
         """
         Retrieves summary statistics for categories using the "GET" method, allowing filtering by date range, sorting, and aggregation options.
 
@@ -1050,21 +998,9 @@ class SendgridApp(APIApplication):
         Tags:
             Categories
         """
-        url = f"{self.base_url}/v3/categories/stats/sums"
-        query_params = {
-            k: v
-            for k, v in [
-                ("sort_by_metric", sort_by_metric),
-                ("sort_by_direction", sort_by_direction),
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/categories/stats/sums'
+        query_params = {k: v for k, v in [('sort_by_metric', sort_by_metric), ('sort_by_direction', sort_by_direction), ('start_date', start_date), ('end_date', end_date), ('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1083,11 +1019,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/clients/stats"
-        query_params = {
-            k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("aggregated_by", aggregated_by)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/clients/stats'
+        query_params = {k: v for k, v in [('start_date', start_date), ('end_date', end_date), ('aggregated_by', aggregated_by)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1109,11 +1043,9 @@ class SendgridApp(APIApplication):
         """
         if client_type is None:
             raise ValueError("Missing required parameter 'client_type'")
-        url = f"{self.base_url}/v3/clients/{client_type}/stats"
-        query_params = {
-            k: v for k, v in [("start_date", start_date), ("end_date", end_date), ("aggregated_by", aggregated_by)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/clients/{client_type}/stats'
+        query_params = {k: v for k, v in [('start_date', start_date), ('end_date', end_date), ('aggregated_by', aggregated_by)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1127,9 +1059,9 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        url = f"{self.base_url}/v3/contactdb/custom_fields"
+        url = f'{self.base_url}/v3/contactdb/custom_fields'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1147,11 +1079,11 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        request_body = {"name": name, "type": type}
+        request_body = {'name': name, 'type': type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/contactdb/custom_fields"
+        url = f'{self.base_url}/v3/contactdb/custom_fields'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1170,9 +1102,9 @@ class SendgridApp(APIApplication):
         """
         if custom_field_id is None:
             raise ValueError("Missing required parameter 'custom_field_id'")
-        url = f"{self.base_url}/v3/contactdb/custom_fields/{custom_field_id}"
+        url = f'{self.base_url}/v3/contactdb/custom_fields/{custom_field_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1191,9 +1123,9 @@ class SendgridApp(APIApplication):
         """
         if custom_field_id is None:
             raise ValueError("Missing required parameter 'custom_field_id'")
-        url = f"{self.base_url}/v3/contactdb/custom_fields/{custom_field_id}"
+        url = f'{self.base_url}/v3/contactdb/custom_fields/{custom_field_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1209,9 +1141,9 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        url = f"{self.base_url}/v3/contactdb/lists"
+        url = f'{self.base_url}/v3/contactdb/lists'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1225,9 +1157,9 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        url = f"{self.base_url}/v3/contactdb/lists"
+        url = f'{self.base_url}/v3/contactdb/lists'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1244,11 +1176,11 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/contactdb/lists"
+        url = f'{self.base_url}/v3/contactdb/lists'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1268,9 +1200,9 @@ class SendgridApp(APIApplication):
         """
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
-        query_params = {k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}'
+        query_params = {k: v for k, v in [('delete_contacts', delete_contacts)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1289,9 +1221,9 @@ class SendgridApp(APIApplication):
         """
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1311,9 +1243,9 @@ class SendgridApp(APIApplication):
         """
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}"
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1336,9 +1268,9 @@ class SendgridApp(APIApplication):
         """
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients"
-        query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}/recipients'
+        query_params = {k: v for k, v in [('page', page), ('page_size', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1358,9 +1290,9 @@ class SendgridApp(APIApplication):
         if list_id is None:
             raise ValueError("Missing required parameter 'list_id'")
         request_body = items
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients"
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}/recipients'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1382,9 +1314,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         if recipient_id is None:
             raise ValueError("Missing required parameter 'recipient_id'")
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients/{recipient_id}"
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}/recipients/{recipient_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1406,9 +1338,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'list_id'")
         if recipient_id is None:
             raise ValueError("Missing required parameter 'recipient_id'")
-        url = f"{self.base_url}/v3/contactdb/lists/{list_id}/recipients/{recipient_id}"
+        url = f'{self.base_url}/v3/contactdb/lists/{list_id}/recipients/{recipient_id}'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1424,9 +1356,9 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        url = f"{self.base_url}/v3/contactdb/recipients"
+        url = f'{self.base_url}/v3/contactdb/recipients'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1444,9 +1376,9 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        url = f"{self.base_url}/v3/contactdb/recipients"
-        query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/contactdb/recipients'
+        query_params = {k: v for k, v in [('page', page), ('page_size', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1463,7 +1395,7 @@ class SendgridApp(APIApplication):
             Recipients
         """
         request_body = items
-        url = f"{self.base_url}/v3/contactdb/recipients"
+        url = f'{self.base_url}/v3/contactdb/recipients'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1482,9 +1414,9 @@ class SendgridApp(APIApplication):
             Recipients
         """
         request_body = items
-        url = f"{self.base_url}/v3/contactdb/recipients"
+        url = f'{self.base_url}/v3/contactdb/recipients'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1498,9 +1430,9 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        url = f"{self.base_url}/v3/contactdb/recipients/billable_count"
+        url = f'{self.base_url}/v3/contactdb/recipients/billable_count'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1514,9 +1446,9 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        url = f"{self.base_url}/v3/contactdb/recipients/count"
+        url = f'{self.base_url}/v3/contactdb/recipients/count'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1533,9 +1465,9 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        url = f"{self.base_url}/v3/contactdb/recipients/search"
-        query_params = {k: v for k, v in [("field_name", field_name)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/contactdb/recipients/search'
+        query_params = {k: v for k, v in [('field_name', field_name)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1553,11 +1485,11 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        request_body = {"conditions": conditions, "list_id": list_id}
+        request_body = {'conditions': conditions, 'list_id': list_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/contactdb/recipients/search"
+        url = f'{self.base_url}/v3/contactdb/recipients/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1576,9 +1508,9 @@ class SendgridApp(APIApplication):
         """
         if recipient_id is None:
             raise ValueError("Missing required parameter 'recipient_id'")
-        url = f"{self.base_url}/v3/contactdb/recipients/{recipient_id}"
+        url = f'{self.base_url}/v3/contactdb/recipients/{recipient_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1597,9 +1529,9 @@ class SendgridApp(APIApplication):
         """
         if recipient_id is None:
             raise ValueError("Missing required parameter 'recipient_id'")
-        url = f"{self.base_url}/v3/contactdb/recipients/{recipient_id}"
+        url = f'{self.base_url}/v3/contactdb/recipients/{recipient_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1618,9 +1550,9 @@ class SendgridApp(APIApplication):
         """
         if recipient_id is None:
             raise ValueError("Missing required parameter 'recipient_id'")
-        url = f"{self.base_url}/v3/contactdb/recipients/{recipient_id}/lists"
+        url = f'{self.base_url}/v3/contactdb/recipients/{recipient_id}/lists'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1634,9 +1566,9 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        url = f"{self.base_url}/v3/contactdb/reserved_fields"
+        url = f'{self.base_url}/v3/contactdb/reserved_fields'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1650,9 +1582,9 @@ class SendgridApp(APIApplication):
         Tags:
             Segments, important
         """
-        url = f"{self.base_url}/v3/contactdb/segments"
+        url = f'{self.base_url}/v3/contactdb/segments'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1672,11 +1604,11 @@ class SendgridApp(APIApplication):
         Tags:
             Segments
         """
-        request_body = {"conditions": conditions, "list_id": list_id, "name": name, "recipient_count": recipient_count}
+        request_body = {'conditions': conditions, 'list_id': list_id, 'name': name, 'recipient_count': recipient_count}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/contactdb/segments"
+        url = f'{self.base_url}/v3/contactdb/segments'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1697,9 +1629,9 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        url = f"{self.base_url}/v3/contactdb/segments/{segment_id}/recipients"
-        query_params = {k: v for k, v in [("page", page), ("page_size", page_size)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/contactdb/segments/{segment_id}/recipients'
+        query_params = {k: v for k, v in [('page', page), ('page_size', page_size)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1713,9 +1645,9 @@ class SendgridApp(APIApplication):
         Tags:
             Recipients
         """
-        url = f"{self.base_url}/v3/contactdb/status"
+        url = f'{self.base_url}/v3/contactdb/status'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1734,9 +1666,9 @@ class SendgridApp(APIApplication):
         Tags:
             Designs
         """
-        url = f"{self.base_url}/v3/designs"
-        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token), ("summary", summary)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/designs'
+        query_params = {k: v for k, v in [('page_size', page_size), ('page_token', page_token), ('summary', summary)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1756,11 +1688,11 @@ class SendgridApp(APIApplication):
         Tags:
             Designs
         """
-        request_body = {"editor": editor, "html_content": html_content, "name": name, "plain_content": plain_content}
+        request_body = {'editor': editor, 'html_content': html_content, 'name': name, 'plain_content': plain_content}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/designs"
+        url = f'{self.base_url}/v3/designs'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1779,9 +1711,9 @@ class SendgridApp(APIApplication):
         Tags:
             Designs
         """
-        url = f"{self.base_url}/v3/designs/pre-builts"
-        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token), ("summary", summary)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/designs/pre-builts'
+        query_params = {k: v for k, v in [('page_size', page_size), ('page_token', page_token), ('summary', summary)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1800,9 +1732,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/designs/pre-builts/{id}"
+        url = f'{self.base_url}/v3/designs/pre-builts/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1823,11 +1755,11 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"editor": editor, "name": name}
+        request_body = {'editor': editor, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/designs/pre-builts/{id}"
+        url = f'{self.base_url}/v3/designs/pre-builts/{id}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1846,9 +1778,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/designs/{id}"
+        url = f'{self.base_url}/v3/designs/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1867,15 +1799,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/designs/{id}"
+        url = f'{self.base_url}/v3/designs/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_design(
-        self, id, categories=None, generate_plain_content=None, html_content=None, name=None, plain_content=None, subject=None
-    ) -> dict[str, Any]:
+    async def update_design(self, id, categories=None, generate_plain_content=None, html_content=None, name=None, plain_content=None, subject=None) -> dict[str, Any]:
         """
         Updates a specific design resource by modifying partial attributes identified by the `{id}` at the `/v3/designs/{id}` endpoint using JSON data in the request body.
 
@@ -1896,16 +1826,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "categories": categories,
-            "generate_plain_content": generate_plain_content,
-            "html_content": html_content,
-            "name": name,
-            "plain_content": plain_content,
-            "subject": subject,
-        }
+        request_body = {'categories': categories, 'generate_plain_content': generate_plain_content, 'html_content': html_content, 'name': name, 'plain_content': plain_content, 'subject': subject}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/designs/{id}"
+        url = f'{self.base_url}/v3/designs/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -1928,11 +1851,11 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"editor": editor, "name": name}
+        request_body = {'editor': editor, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/designs/{id}"
+        url = f'{self.base_url}/v3/designs/{id}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1953,19 +1876,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/devices/stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/devices/stats'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -1983,9 +1896,9 @@ class SendgridApp(APIApplication):
         Tags:
             Engagement Quality
         """
-        url = f"{self.base_url}/v3/engagementquality/scores"
-        query_params = {k: v for k, v in [("from", from_), ("to", to)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/engagementquality/scores'
+        query_params = {k: v for k, v in [('from', from_), ('to', to)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2004,9 +1917,9 @@ class SendgridApp(APIApplication):
         Tags:
             Engagement Quality
         """
-        url = f"{self.base_url}/v3/engagementquality/subusers/scores"
-        query_params = {k: v for k, v in [("limit", limit), ("date", date), ("after_key", after_key)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/engagementquality/subusers/scores'
+        query_params = {k: v for k, v in [('limit', limit), ('date', date), ('after_key', after_key)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2028,20 +1941,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/geo/stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("country", country),
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/geo/stats'
+        query_params = {k: v for k, v in [('country', country), ('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2055,9 +1957,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Addresses
         """
-        url = f"{self.base_url}/v3/ips/assigned"
+        url = f'{self.base_url}/v3/ips/assigned'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2071,9 +1973,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Pools
         """
-        url = f"{self.base_url}/v3/ips/pools"
+        url = f'{self.base_url}/v3/ips/pools'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2093,11 +1995,11 @@ class SendgridApp(APIApplication):
         """
         if pool_name is None:
             raise ValueError("Missing required parameter 'pool_name'")
-        request_body = {"ip": ip}
+        request_body = {'ip': ip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/ips/pools/{pool_name}/ips"
+        url = f'{self.base_url}/v3/ips/pools/{pool_name}/ips'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2119,9 +2021,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'pool_name'")
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        url = f"{self.base_url}/v3/ips/pools/{pool_name}/ips/{ip}"
+        url = f'{self.base_url}/v3/ips/pools/{pool_name}/ips/{ip}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2135,9 +2037,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Addresses
         """
-        url = f"{self.base_url}/v3/ips/remaining"
+        url = f'{self.base_url}/v3/ips/remaining'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2151,9 +2053,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Warmup
         """
-        url = f"{self.base_url}/v3/ips/warmup"
+        url = f'{self.base_url}/v3/ips/warmup'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2170,11 +2072,11 @@ class SendgridApp(APIApplication):
         Tags:
             IP Warmup
         """
-        request_body = {"ip": ip}
+        request_body = {'ip': ip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/ips/warmup"
+        url = f'{self.base_url}/v3/ips/warmup'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2193,9 +2095,9 @@ class SendgridApp(APIApplication):
         """
         if ip_address is None:
             raise ValueError("Missing required parameter 'ip_address'")
-        url = f"{self.base_url}/v3/ips/warmup/{ip_address}"
+        url = f'{self.base_url}/v3/ips/warmup/{ip_address}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2214,9 +2116,9 @@ class SendgridApp(APIApplication):
         """
         if ip_address is None:
             raise ValueError("Missing required parameter 'ip_address'")
-        url = f"{self.base_url}/v3/ips/warmup/{ip_address}"
+        url = f'{self.base_url}/v3/ips/warmup/{ip_address}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2230,9 +2132,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Batch
         """
-        url = f"{self.base_url}/v3/mail/batch"
+        url = f'{self.base_url}/v3/mail/batch'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2251,32 +2153,13 @@ class SendgridApp(APIApplication):
         """
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'")
-        url = f"{self.base_url}/v3/mail/batch/{batch_id}"
+        url = f'{self.base_url}/v3/mail/batch/{batch_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def send_mail(
-        self,
-        asm=None,
-        attachments=None,
-        batch_id=None,
-        categories=None,
-        content=None,
-        custom_args=None,
-        from_=None,
-        headers=None,
-        ip_pool_name=None,
-        mail_settings=None,
-        personalizations=None,
-        reply_to=None,
-        reply_to_list=None,
-        send_at=None,
-        subject=None,
-        template_id=None,
-        tracking_settings=None,
-    ) -> Any:
+    async def send_mail(self, asm=None, attachments=None, batch_id=None, categories=None, content=None, custom_args=None, from_=None, headers=None, ip_pool_name=None, mail_settings=None, personalizations=None, reply_to=None, reply_to_list=None, send_at=None, subject=None, template_id=None, tracking_settings=None) -> Any:
         """
         Sends an email using the specified mail service by transmitting the required data via the POST method at the "/v3/mail/send" endpoint.
 
@@ -2384,29 +2267,11 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Send
         """
-        request_body = {
-            "asm": asm,
-            "attachments": attachments,
-            "batch_id": batch_id,
-            "categories": categories,
-            "content": content,
-            "custom_args": custom_args,
-            "from": from_,
-            "headers": headers,
-            "ip_pool_name": ip_pool_name,
-            "mail_settings": mail_settings,
-            "personalizations": personalizations,
-            "reply_to": reply_to,
-            "reply_to_list": reply_to_list,
-            "send_at": send_at,
-            "subject": subject,
-            "template_id": template_id,
-            "tracking_settings": tracking_settings,
-        }
+        request_body = {'asm': asm, 'attachments': attachments, 'batch_id': batch_id, 'categories': categories, 'content': content, 'custom_args': custom_args, 'from': from_, 'headers': headers, 'ip_pool_name': ip_pool_name, 'mail_settings': mail_settings, 'personalizations': personalizations, 'reply_to': reply_to, 'reply_to_list': reply_to_list, 'send_at': send_at, 'subject': subject, 'template_id': template_id, 'tracking_settings': tracking_settings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail/send"
+        url = f'{self.base_url}/v3/mail/send'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2424,9 +2289,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/mail_settings'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2440,9 +2305,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings/address_whitelist"
+        url = f'{self.base_url}/v3/mail_settings/address_whitelist'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2460,9 +2325,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {"enabled": enabled, "list": list}
+        request_body = {'enabled': enabled, 'list': list}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail_settings/address_whitelist"
+        url = f'{self.base_url}/v3/mail_settings/address_whitelist'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2478,9 +2343,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings/bounce_purge"
+        url = f'{self.base_url}/v3/mail_settings/bounce_purge'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2499,9 +2364,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {"enabled": enabled, "hard_bounces": hard_bounces, "soft_bounces": soft_bounces}
+        request_body = {'enabled': enabled, 'hard_bounces': hard_bounces, 'soft_bounces': soft_bounces}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail_settings/bounce_purge"
+        url = f'{self.base_url}/v3/mail_settings/bounce_purge'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2517,9 +2382,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings/footer"
+        url = f'{self.base_url}/v3/mail_settings/footer'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2538,9 +2403,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {"enabled": enabled, "html_content": html_content, "plain_content": plain_content}
+        request_body = {'enabled': enabled, 'html_content': html_content, 'plain_content': plain_content}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail_settings/footer"
+        url = f'{self.base_url}/v3/mail_settings/footer'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2556,9 +2421,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings/forward_bounce"
+        url = f'{self.base_url}/v3/mail_settings/forward_bounce'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2576,9 +2441,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {"email": email, "enabled": enabled}
+        request_body = {'email': email, 'enabled': enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail_settings/forward_bounce"
+        url = f'{self.base_url}/v3/mail_settings/forward_bounce'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2594,9 +2459,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings/forward_spam"
+        url = f'{self.base_url}/v3/mail_settings/forward_spam'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2614,9 +2479,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {"email": email, "enabled": enabled}
+        request_body = {'email': email, 'enabled': enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail_settings/forward_spam"
+        url = f'{self.base_url}/v3/mail_settings/forward_spam'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -2632,9 +2497,9 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        url = f"{self.base_url}/v3/mail_settings/template"
+        url = f'{self.base_url}/v3/mail_settings/template'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2652,17 +2517,15 @@ class SendgridApp(APIApplication):
         Tags:
             Mail Settings
         """
-        request_body = {"enabled": enabled, "html_content": html_content}
+        request_body = {'enabled': enabled, 'html_content': html_content}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/mail_settings/template"
+        url = f'{self.base_url}/v3/mail_settings/template'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_mailbox_provider_stat(
-        self, start_date, mailbox_providers=None, limit=None, offset=None, aggregated_by=None, end_date=None
-    ) -> list[Any]:
+    async def list_mailbox_provider_stat(self, start_date, mailbox_providers=None, limit=None, offset=None, aggregated_by=None, end_date=None) -> list[Any]:
         """
         Retrieves email statistics segmented by recipient mailbox provider, allowing for filtering by provider, date range, and aggregation type.
 
@@ -2680,20 +2543,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/mailbox_providers/stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("mailbox_providers", mailbox_providers),
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/mailbox_providers/stats'
+        query_params = {k: v for k, v in [('mailbox_providers', mailbox_providers), ('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2711,9 +2563,9 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        url = f"{self.base_url}/v3/marketing/contacts"
-        query_params = {k: v for k, v in [("delete_all_contacts", delete_all_contacts), ("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/contacts'
+        query_params = {k: v for k, v in [('delete_all_contacts', delete_all_contacts), ('ids', ids)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2727,9 +2579,9 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        url = f"{self.base_url}/v3/marketing/contacts"
+        url = f'{self.base_url}/v3/marketing/contacts'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2747,11 +2599,11 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {"contacts": contacts, "list_ids": list_ids}
+        request_body = {'contacts': contacts, 'list_ids': list_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts"
+        url = f'{self.base_url}/v3/marketing/contacts'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2768,11 +2620,11 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {"ids": ids}
+        request_body = {'ids': ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/batch"
+        url = f'{self.base_url}/v3/marketing/contacts/batch'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2786,15 +2638,13 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        url = f"{self.base_url}/v3/marketing/contacts/exports"
+        url = f'{self.base_url}/v3/marketing/contacts/exports'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def export_contact(
-        self, file_type=None, list_ids=None, max_file_size=None, notifications=None, segment_ids=None
-    ) -> dict[str, Any]:
+    async def export_contact(self, file_type=None, list_ids=None, max_file_size=None, notifications=None, segment_ids=None) -> dict[str, Any]:
         """
         Exports contacts using a POST request to the "/v3/marketing/contacts/exports" endpoint, accepting JSON data in the request body.
 
@@ -2811,17 +2661,11 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {
-            "file_type": file_type,
-            "list_ids": list_ids,
-            "max_file_size": max_file_size,
-            "notifications": notifications,
-            "segment_ids": segment_ids,
-        }
+        request_body = {'file_type': file_type, 'list_ids': list_ids, 'max_file_size': max_file_size, 'notifications': notifications, 'segment_ids': segment_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/exports"
+        url = f'{self.base_url}/v3/marketing/contacts/exports'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2840,9 +2684,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/contacts/exports/{id}"
+        url = f'{self.base_url}/v3/marketing/contacts/exports/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2861,11 +2705,11 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {"field_mappings": field_mappings, "file_type": file_type, "list_ids": list_ids}
+        request_body = {'field_mappings': field_mappings, 'file_type': file_type, 'list_ids': list_ids}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/imports"
+        url = f'{self.base_url}/v3/marketing/contacts/imports'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2884,9 +2728,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/contacts/imports/{id}"
+        url = f'{self.base_url}/v3/marketing/contacts/imports/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2903,11 +2747,11 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {"query": query}
+        request_body = {'query': query}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/search"
+        url = f'{self.base_url}/v3/marketing/contacts/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2927,11 +2771,11 @@ class SendgridApp(APIApplication):
         Tags:
             Contacts
         """
-        request_body = {"anonymous_id": anonymous_id, "emails": emails, "external_id": external_id, "phone_number_id": phone_number_id}
+        request_body = {'anonymous_id': anonymous_id, 'emails': emails, 'external_id': external_id, 'phone_number_id': phone_number_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/search/emails"
+        url = f'{self.base_url}/v3/marketing/contacts/search/emails'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2951,11 +2795,11 @@ class SendgridApp(APIApplication):
         """
         if identifier_type is None:
             raise ValueError("Missing required parameter 'identifier_type'")
-        request_body = {"identifiers": identifiers}
+        request_body = {'identifiers': identifiers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/search/identifiers/{identifier_type}"
+        url = f'{self.base_url}/v3/marketing/contacts/search/identifiers/{identifier_type}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2976,11 +2820,11 @@ class SendgridApp(APIApplication):
         """
         if contact_id is None:
             raise ValueError("Missing required parameter 'contact_id'")
-        request_body = {"identifier_type": identifier_type, "identifier_value": identifier_value}
+        request_body = {'identifier_type': identifier_type, 'identifier_value': identifier_value}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/contacts/{contact_id}/identifiers"
+        url = f'{self.base_url}/v3/marketing/contacts/{contact_id}/identifiers'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -2999,9 +2843,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/contacts/{id}"
+        url = f'{self.base_url}/v3/marketing/contacts/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3015,9 +2859,9 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        url = f"{self.base_url}/v3/marketing/field_definitions"
+        url = f'{self.base_url}/v3/marketing/field_definitions'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3035,11 +2879,11 @@ class SendgridApp(APIApplication):
         Tags:
             Custom Fields
         """
-        request_body = {"field_type": field_type, "name": name}
+        request_body = {'field_type': field_type, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/field_definitions"
+        url = f'{self.base_url}/v3/marketing/field_definitions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3058,9 +2902,9 @@ class SendgridApp(APIApplication):
         """
         if custom_field_id is None:
             raise ValueError("Missing required parameter 'custom_field_id'")
-        url = f"{self.base_url}/v3/marketing/field_definitions/{custom_field_id}"
+        url = f'{self.base_url}/v3/marketing/field_definitions/{custom_field_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3080,9 +2924,9 @@ class SendgridApp(APIApplication):
         """
         if custom_field_id is None:
             raise ValueError("Missing required parameter 'custom_field_id'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/field_definitions/{custom_field_id}"
+        url = f'{self.base_url}/v3/marketing/field_definitions/{custom_field_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3101,9 +2945,9 @@ class SendgridApp(APIApplication):
         Tags:
             External Integration Endpoints
         """
-        url = f"{self.base_url}/v3/marketing/integrations"
-        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/integrations'
+        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3117,9 +2961,9 @@ class SendgridApp(APIApplication):
         Tags:
             External Integration Endpoints
         """
-        url = f"{self.base_url}/v3/marketing/integrations"
+        url = f'{self.base_url}/v3/marketing/integrations'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3159,11 +3003,11 @@ class SendgridApp(APIApplication):
         Tags:
             External Integration Endpoints
         """
-        request_body = {"destination": destination, "filters": filters, "label": label, "properties": properties}
+        request_body = {'destination': destination, 'filters': filters, 'label': label, 'properties': properties}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/integrations"
+        url = f'{self.base_url}/v3/marketing/integrations'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3182,9 +3026,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/integrations/{id}"
+        url = f'{self.base_url}/v3/marketing/integrations/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3224,9 +3068,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"destination": destination, "filters": filters, "label": label, "properties": properties}
+        request_body = {'destination': destination, 'filters': filters, 'label': label, 'properties': properties}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/integrations/{id}"
+        url = f'{self.base_url}/v3/marketing/integrations/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3246,9 +3090,9 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        url = f"{self.base_url}/v3/marketing/lists"
-        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/lists'
+        query_params = {k: v for k, v in [('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3265,11 +3109,11 @@ class SendgridApp(APIApplication):
         Tags:
             Lists
         """
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/lists"
+        url = f'{self.base_url}/v3/marketing/lists'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3289,9 +3133,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/lists/{id}"
-        query_params = {k: v for k, v in [("delete_contacts", delete_contacts)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/lists/{id}'
+        query_params = {k: v for k, v in [('delete_contacts', delete_contacts)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3311,9 +3155,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/lists/{id}"
-        query_params = {k: v for k, v in [("contact_sample", contact_sample)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/lists/{id}'
+        query_params = {k: v for k, v in [('contact_sample', contact_sample)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3333,9 +3177,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/lists/{id}"
+        url = f'{self.base_url}/v3/marketing/lists/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3356,9 +3200,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/lists/{id}/contacts/count"
+        url = f'{self.base_url}/v3/marketing/lists/{id}/contacts/count'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3377,10 +3221,8 @@ class SendgridApp(APIApplication):
         Tags:
             Segmenting Contacts V2
         """
-        url = f"{self.base_url}/v3/marketing/segments/2.0"
-        query_params = {
-            k: v for k, v in [("ids", ids), ("parent_list_ids", parent_list_ids), ("no_parent_list_id", no_parent_list_id)] if v is not None
-        }
+        url = f'{self.base_url}/v3/marketing/segments/2.0'
+        query_params = {k: v for k, v in [('ids', ids), ('parent_list_ids', parent_list_ids), ('no_parent_list_id', no_parent_list_id)] if v is not None}
         response = self._get(url, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -3401,11 +3243,11 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        request_body = {"user_time_zone": user_time_zone}
+        request_body = {'user_time_zone': user_time_zone}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/segments/2.0/refresh/{segment_id}"
+        url = f'{self.base_url}/v3/marketing/segments/2.0/refresh/{segment_id}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3424,9 +3266,9 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
+        url = f'{self.base_url}/v3/marketing/segments/2.0/{segment_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3446,9 +3288,9 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
-        query_params = {k: v for k, v in [("contacts_sample", contacts_sample)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/segments/2.0/{segment_id}'
+        query_params = {k: v for k, v in [('contacts_sample', contacts_sample)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3469,17 +3311,15 @@ class SendgridApp(APIApplication):
         """
         if segment_id is None:
             raise ValueError("Missing required parameter 'segment_id'")
-        request_body = {"name": name, "query_dsl": query_dsl}
+        request_body = {'name': name, 'query_dsl': query_dsl}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/segments/2.0/{segment_id}"
+        url = f'{self.base_url}/v3/marketing/segments/2.0/{segment_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_sender(
-        self, address=None, address_2=None, city=None, country=None, from_=None, nickname=None, reply_to=None, state=None, zip=None
-    ) -> dict[str, Any]:
+    async def create_sender(self, address=None, address_2=None, city=None, country=None, from_=None, nickname=None, reply_to=None, state=None, zip=None) -> dict[str, Any]:
         """
         Adds a new sender to the marketing senders list using the SendGrid API and returns a status code indicating the success or failure of the operation.
 
@@ -3500,21 +3340,11 @@ class SendgridApp(APIApplication):
         Tags:
             Senders
         """
-        request_body = {
-            "address": address,
-            "address_2": address_2,
-            "city": city,
-            "country": country,
-            "from": from_,
-            "nickname": nickname,
-            "reply_to": reply_to,
-            "state": state,
-            "zip": zip,
-        }
+        request_body = {'address': address, 'address_2': address_2, 'city': city, 'country': country, 'from': from_, 'nickname': nickname, 'reply_to': reply_to, 'state': state, 'zip': zip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/senders"
+        url = f'{self.base_url}/v3/marketing/senders'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3533,9 +3363,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/senders/{id}"
+        url = f'{self.base_url}/v3/marketing/senders/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3554,15 +3384,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/senders/{id}"
+        url = f'{self.base_url}/v3/marketing/senders/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_sender(
-        self, id, address=None, address_2=None, city=None, country=None, from_=None, nickname=None, reply_to=None, state=None, zip=None
-    ) -> dict[str, Any]:
+    async def update_sender(self, id, address=None, address_2=None, city=None, country=None, from_=None, nickname=None, reply_to=None, state=None, zip=None) -> dict[str, Any]:
         """
         Updates the properties of a marketing sender resource identified by the given ID using a PATCH request and returns the appropriate status code.
 
@@ -3586,19 +3414,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "address": address,
-            "address_2": address_2,
-            "city": city,
-            "country": country,
-            "from": from_,
-            "nickname": nickname,
-            "reply_to": reply_to,
-            "state": state,
-            "zip": zip,
-        }
+        request_body = {'address': address, 'address_2': address_2, 'city': city, 'country': country, 'from': from_, 'nickname': nickname, 'reply_to': reply_to, 'state': state, 'zip': zip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/senders/{id}"
+        url = f'{self.base_url}/v3/marketing/senders/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3619,9 +3437,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/senders/{id}/resend_verification"
+        url = f'{self.base_url}/v3/marketing/senders/{id}/resend_verification'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3638,9 +3456,9 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        url = f"{self.base_url}/v3/marketing/singlesends"
-        query_params = {k: v for k, v in [("ids", ids)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/singlesends'
+        query_params = {k: v for k, v in [('ids', ids)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3658,9 +3476,9 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        url = f"{self.base_url}/v3/marketing/singlesends"
-        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/singlesends'
+        query_params = {k: v for k, v in [('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3681,11 +3499,11 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        request_body = {"categories": categories, "email_config": email_config, "name": name, "send_at": send_at, "send_to": send_to}
+        request_body = {'categories': categories, 'email_config': email_config, 'name': name, 'send_at': send_at, 'send_to': send_to}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/singlesends"
+        url = f'{self.base_url}/v3/marketing/singlesends'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3699,9 +3517,9 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        url = f"{self.base_url}/v3/marketing/singlesends/categories"
+        url = f'{self.base_url}/v3/marketing/singlesends/categories'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3726,11 +3544,11 @@ class SendgridApp(APIApplication):
         Tags:
             Single Sends
         """
-        request_body = {"categories": categories, "name": name, "status": status}
+        request_body = {'categories': categories, 'name': name, 'status': status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/singlesends/search"
-        query_params = {k: v for k, v in [("page_size", page_size), ("page_token", page_token)] if v is not None}
-        response = self._post(url, data=request_body, params=query_params)
+        url = f'{self.base_url}/v3/marketing/singlesends/search'
+        query_params = {k: v for k, v in [('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3749,9 +3567,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/singlesends/{id}"
+        url = f'{self.base_url}/v3/marketing/singlesends/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3770,9 +3588,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/singlesends/{id}"
+        url = f'{self.base_url}/v3/marketing/singlesends/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3796,9 +3614,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"categories": categories, "email_config": email_config, "name": name, "send_at": send_at, "send_to": send_to}
+        request_body = {'categories': categories, 'email_config': email_config, 'name': name, 'send_at': send_at, 'send_to': send_to}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/singlesends/{id}"
+        url = f'{self.base_url}/v3/marketing/singlesends/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -3820,11 +3638,11 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/singlesends/{id}"
+        url = f'{self.base_url}/v3/marketing/singlesends/{id}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3843,9 +3661,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/singlesends/{id}/schedule"
+        url = f'{self.base_url}/v3/marketing/singlesends/{id}/schedule'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3865,11 +3683,11 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"send_at": send_at}
+        request_body = {'send_at': send_at}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/singlesends/{id}/schedule"
+        url = f'{self.base_url}/v3/marketing/singlesends/{id}/schedule'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3888,11 +3706,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/marketing/stats/automations"
-        query_params = {
-            k: v for k, v in [("automation_ids", automation_ids), ("page_size", page_size), ("page_token", page_token)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/automations'
+        query_params = {k: v for k, v in [('automation_ids', automation_ids), ('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3910,24 +3726,13 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/marketing/stats/automations/export"
-        query_params = {k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/automations/export'
+        query_params = {k: v for k, v in [('ids', ids), ('timezone', timezone)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_automation_stat(
-        self,
-        id,
-        group_by=None,
-        step_ids=None,
-        aggregated_by=None,
-        start_date=None,
-        end_date=None,
-        timezone=None,
-        page_size=None,
-        page_token=None,
-    ) -> dict[str, Any]:
+    async def get_automation_stat(self, id, group_by=None, step_ids=None, aggregated_by=None, start_date=None, end_date=None, timezone=None, page_size=None, page_token=None) -> dict[str, Any]:
         """
         Retrieves detailed statistics for a specific automation identified by its ID, supporting filtering, grouping, date ranges, timezone selection, and pagination.
 
@@ -3950,22 +3755,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/stats/automations/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("group_by", group_by),
-                ("step_ids", step_ids),
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("timezone", timezone),
-                ("page_size", page_size),
-                ("page_token", page_token),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/automations/{id}'
+        query_params = {k: v for k, v in [('group_by', group_by), ('step_ids', step_ids), ('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date), ('timezone', timezone), ('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -3988,13 +3780,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/stats/automations/{id}/links"
-        query_params = {
-            k: v
-            for k, v in [("group_by", group_by), ("step_ids", step_ids), ("page_size", page_size), ("page_token", page_token)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/automations/{id}/links'
+        query_params = {k: v for k, v in [('group_by', group_by), ('step_ids', step_ids), ('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4013,11 +3801,9 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/marketing/stats/singlesends"
-        query_params = {
-            k: v for k, v in [("singlesend_ids", singlesend_ids), ("page_size", page_size), ("page_token", page_token)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/singlesends'
+        query_params = {k: v for k, v in [('singlesend_ids', singlesend_ids), ('page_size', page_size), ('page_token', page_token)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4035,15 +3821,13 @@ class SendgridApp(APIApplication):
         Tags:
             Stats
         """
-        url = f"{self.base_url}/v3/marketing/stats/singlesends/export"
-        query_params = {k: v for k, v in [("ids", ids), ("timezone", timezone)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/singlesends/export'
+        query_params = {k: v for k, v in [('ids', ids), ('timezone', timezone)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def get_single_send_stat(
-        self, id, aggregated_by=None, start_date=None, end_date=None, timezone=None, page_size=None, page_token=None, group_by=None
-    ) -> dict[str, Any]:
+    async def get_single_send_stat(self, id, aggregated_by=None, start_date=None, end_date=None, timezone=None, page_size=None, page_token=None, group_by=None) -> dict[str, Any]:
         """
         Retrieves aggregated marketing statistics for a specific single send campaign, supporting filtering by date, timezone, pagination, and optional grouping.
 
@@ -4065,27 +3849,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/stats/singlesends/{id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("timezone", timezone),
-                ("page_size", page_size),
-                ("page_token", page_token),
-                ("group_by", group_by),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/singlesends/{id}'
+        query_params = {k: v for k, v in [('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date), ('timezone', timezone), ('page_size', page_size), ('page_token', page_token), ('group_by', group_by)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_single_send_tracking_stat(
-        self, id, page_size=None, page_token=None, group_by=None, ab_variation_id=None, ab_phase_id=None
-    ) -> dict[str, Any]:
+    async def list_single_send_tracking_stat(self, id, page_size=None, page_token=None, group_by=None, ab_variation_id=None, ab_phase_id=None) -> dict[str, Any]:
         """
         Retrieves statistics for links in a single send campaign identified by {id}, allowing for pagination and filtering by group by, variation ID, and phase ID.
 
@@ -4105,32 +3875,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/marketing/stats/singlesends/{id}/links"
-        query_params = {
-            k: v
-            for k, v in [
-                ("page_size", page_size),
-                ("page_token", page_token),
-                ("group_by", group_by),
-                ("ab_variation_id", ab_variation_id),
-                ("ab_phase_id", ab_phase_id),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/marketing/stats/singlesends/{id}/links'
+        query_params = {k: v for k, v in [('page_size', page_size), ('page_token', page_token), ('group_by', group_by), ('ab_variation_id', ab_variation_id), ('ab_phase_id', ab_phase_id)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def send_test_marketing_email(
-        self,
-        custom_unsubscribe_url=None,
-        emails=None,
-        from_address=None,
-        sender_id=None,
-        suppression_group_id=None,
-        template_id=None,
-        version_id_override=None,
-    ) -> dict[str, Any]:
+    async def send_test_marketing_email(self, custom_unsubscribe_url=None, emails=None, from_address=None, sender_id=None, suppression_group_id=None, template_id=None, version_id_override=None) -> dict[str, Any]:
         """
         Sends an email for marketing testing purposes using the provided JSON data and returns a success status when processed successfully.
 
@@ -4149,19 +3900,11 @@ class SendgridApp(APIApplication):
         Tags:
             Send Test Email
         """
-        request_body = {
-            "custom_unsubscribe_url": custom_unsubscribe_url,
-            "emails": emails,
-            "from_address": from_address,
-            "sender_id": sender_id,
-            "suppression_group_id": suppression_group_id,
-            "template_id": template_id,
-            "version_id_override": version_id_override,
-        }
+        request_body = {'custom_unsubscribe_url': custom_unsubscribe_url, 'emails': emails, 'from_address': from_address, 'sender_id': sender_id, 'suppression_group_id': suppression_group_id, 'template_id': template_id, 'version_id_override': version_id_override}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/marketing/test/send_email"
+        url = f'{self.base_url}/v3/marketing/test/send_email'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4179,9 +3922,9 @@ class SendgridApp(APIApplication):
         Tags:
             Email Activity
         """
-        url = f"{self.base_url}/v3/messages"
-        query_params = {k: v for k, v in [("query", query), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/messages'
+        query_params = {k: v for k, v in [('query', query), ('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4198,9 +3941,9 @@ class SendgridApp(APIApplication):
         Tags:
             Email Activity
         """
-        url = f"{self.base_url}/v3/messages/download"
-        query_params = {k: v for k, v in [("query", query)] if v is not None}
-        response = self._post(url, data={}, params=query_params)
+        url = f'{self.base_url}/v3/messages/download'
+        query_params = {k: v for k, v in [('query', query)] if v is not None}
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4219,9 +3962,9 @@ class SendgridApp(APIApplication):
         """
         if download_uuid is None:
             raise ValueError("Missing required parameter 'download_uuid'")
-        url = f"{self.base_url}/v3/messages/download/{download_uuid}"
+        url = f'{self.base_url}/v3/messages/download/{download_uuid}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4240,9 +3983,9 @@ class SendgridApp(APIApplication):
         """
         if msg_id is None:
             raise ValueError("Missing required parameter 'msg_id'")
-        url = f"{self.base_url}/v3/messages/{msg_id}"
+        url = f'{self.base_url}/v3/messages/{msg_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4260,9 +4003,9 @@ class SendgridApp(APIApplication):
         Tags:
             Partner Settings
         """
-        url = f"{self.base_url}/v3/partner_settings"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/partner_settings'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4300,11 +4043,11 @@ class SendgridApp(APIApplication):
         Tags:
             Account
         """
-        request_body = {"offerings": offerings, "profile": profile}
+        request_body = {'offerings': offerings, 'profile': profile}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/partners/accounts"
+        url = f'{self.base_url}/v3/partners/accounts'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4323,9 +4066,9 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        url = f"{self.base_url}/v3/partners/accounts/{accountID}"
+        url = f'{self.base_url}/v3/partners/accounts/{accountID}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4344,9 +4087,9 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        url = f"{self.base_url}/v3/partners/accounts/{accountID}/offerings"
+        url = f'{self.base_url}/v3/partners/accounts/{accountID}/offerings'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4378,11 +4121,11 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        request_body = {"offerings": offerings}
+        request_body = {'offerings': offerings}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/partners/accounts/{accountID}/offerings"
+        url = f'{self.base_url}/v3/partners/accounts/{accountID}/offerings'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4401,9 +4144,9 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        url = f"{self.base_url}/v3/partners/accounts/{accountID}/sso"
+        url = f'{self.base_url}/v3/partners/accounts/{accountID}/sso'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4422,9 +4165,9 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        url = f"{self.base_url}/v3/partners/accounts/{accountID}/state"
+        url = f'{self.base_url}/v3/partners/accounts/{accountID}/state'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4444,11 +4187,11 @@ class SendgridApp(APIApplication):
         """
         if accountID is None:
             raise ValueError("Missing required parameter 'accountID'")
-        request_body = {"state": state}
+        request_body = {'state': state}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/partners/accounts/{accountID}/state"
+        url = f'{self.base_url}/v3/partners/accounts/{accountID}/state'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4462,9 +4205,9 @@ class SendgridApp(APIApplication):
         Tags:
             Offering
         """
-        url = f"{self.base_url}/v3/partners/offerings"
+        url = f'{self.base_url}/v3/partners/offerings'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4490,11 +4233,11 @@ class SendgridApp(APIApplication):
         Tags:
             Point Delete System
         """
-        request_body = {"email_addresses": email_addresses}
+        request_body = {'email_addresses': email_addresses}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/recipients/erasejob"
+        url = f'{self.base_url}/v3/recipients/erasejob'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4508,9 +4251,9 @@ class SendgridApp(APIApplication):
         Tags:
             Scopes
         """
-        url = f"{self.base_url}/v3/scopes"
+        url = f'{self.base_url}/v3/scopes'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4528,9 +4271,9 @@ class SendgridApp(APIApplication):
         Tags:
             Scopes
         """
-        url = f"{self.base_url}/v3/scopes/requests"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/scopes/requests'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4549,9 +4292,9 @@ class SendgridApp(APIApplication):
         """
         if request_id is None:
             raise ValueError("Missing required parameter 'request_id'")
-        url = f"{self.base_url}/v3/scopes/requests/{request_id}"
+        url = f'{self.base_url}/v3/scopes/requests/{request_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4570,27 +4313,13 @@ class SendgridApp(APIApplication):
         """
         if request_id is None:
             raise ValueError("Missing required parameter 'request_id'")
-        url = f"{self.base_url}/v3/scopes/requests/{request_id}/approve"
+        url = f'{self.base_url}/v3/scopes/requests/{request_id}/approve'
         query_params = {}
         response = self._patch(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_ip(
-        self,
-        ip=None,
-        limit=None,
-        after_key=None,
-        before_key=None,
-        is_leased=None,
-        is_enabled=None,
-        is_parent_assigned=None,
-        pool=None,
-        start_added_at=None,
-        end_added_at=None,
-        region=None,
-        include_region=None,
-    ) -> dict[str, Any]:
+    async def list_ip(self, ip=None, limit=None, after_key=None, before_key=None, is_leased=None, is_enabled=None, is_parent_assigned=None, pool=None, start_added_at=None, end_added_at=None, region=None, include_region=None) -> dict[str, Any]:
         """
         Retrieves a list of IP addresses based on specified query parameters, including filtering by lease status, enabled status, pool assignment, and other criteria.
 
@@ -4614,26 +4343,9 @@ class SendgridApp(APIApplication):
         Tags:
             IP Address Management
         """
-        url = f"{self.base_url}/v3/send_ips/ips"
-        query_params = {
-            k: v
-            for k, v in [
-                ("ip", ip),
-                ("limit", limit),
-                ("after_key", after_key),
-                ("before_key", before_key),
-                ("is_leased", is_leased),
-                ("is_enabled", is_enabled),
-                ("is_parent_assigned", is_parent_assigned),
-                ("pool", pool),
-                ("start_added_at", start_added_at),
-                ("end_added_at", end_added_at),
-                ("region", region),
-                ("include_region", include_region),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/send_ips/ips'
+        query_params = {k: v for k, v in [('ip', ip), ('limit', limit), ('after_key', after_key), ('before_key', before_key), ('is_leased', is_leased), ('is_enabled', is_enabled), ('is_parent_assigned', is_parent_assigned), ('pool', pool), ('start_added_at', start_added_at), ('end_added_at', end_added_at), ('region', region), ('include_region', include_region)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4664,17 +4376,11 @@ class SendgridApp(APIApplication):
         Tags:
             IP Address Management
         """
-        request_body = {
-            "include_region": include_region,
-            "is_auto_warmup": is_auto_warmup,
-            "is_parent_assigned": is_parent_assigned,
-            "region": region,
-            "subusers": subusers,
-        }
+        request_body = {'include_region': include_region, 'is_auto_warmup': is_auto_warmup, 'is_parent_assigned': is_parent_assigned, 'region': region, 'subusers': subusers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/ips"
+        url = f'{self.base_url}/v3/send_ips/ips'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4694,9 +4400,9 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        url = f"{self.base_url}/v3/send_ips/ips/{ip}"
-        query_params = {k: v for k, v in [("include_region", include_region)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/send_ips/ips/{ip}'
+        query_params = {k: v for k, v in [('include_region', include_region)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4726,9 +4432,9 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        request_body = {"is_auto_warmup": is_auto_warmup, "is_enabled": is_enabled, "is_parent_assigned": is_parent_assigned}
+        request_body = {'is_auto_warmup': is_auto_warmup, 'is_enabled': is_enabled, 'is_parent_assigned': is_parent_assigned}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/ips/{ip}"
+        url = f'{self.base_url}/v3/send_ips/ips/{ip}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -4751,9 +4457,9 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers"
-        query_params = {k: v for k, v in [("after_key", after_key), ("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/send_ips/ips/{ip}/subusers'
+        query_params = {k: v for k, v in [('after_key', after_key), ('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4782,11 +4488,11 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        request_body = {"subusers": subusers}
+        request_body = {'subusers': subusers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchAdd"
+        url = f'{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchAdd'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4815,11 +4521,11 @@ class SendgridApp(APIApplication):
         """
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        request_body = {"subusers": subusers}
+        request_body = {'subusers': subusers}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchDelete"
+        url = f'{self.base_url}/v3/send_ips/ips/{ip}/subusers:batchDelete'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4847,11 +4553,11 @@ class SendgridApp(APIApplication):
         Tags:
             IP Address Management
         """
-        request_body = {"ips": ips, "name": name}
+        request_body = {'ips': ips, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/pools"
+        url = f'{self.base_url}/v3/send_ips/pools'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4870,9 +4576,9 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
+        url = f'{self.base_url}/v3/send_ips/pools/{poolid}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4892,9 +4598,9 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
-        query_params = {k: v for k, v in [("include_region", include_region)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/send_ips/pools/{poolid}'
+        query_params = {k: v for k, v in [('include_region', include_region)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4920,11 +4626,11 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/pools/{poolid}"
+        url = f'{self.base_url}/v3/send_ips/pools/{poolid}'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4946,9 +4652,9 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips"
-        query_params = {k: v for k, v in [("limit", limit), ("after_key", after_key), ("include_region", include_region)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/send_ips/pools/{poolid}/ips'
+        query_params = {k: v for k, v in [('limit', limit), ('after_key', after_key), ('include_region', include_region)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -4979,11 +4685,11 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        request_body = {"ips": ips}
+        request_body = {'ips': ips}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchAdd"
+        url = f'{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchAdd'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5014,11 +4720,11 @@ class SendgridApp(APIApplication):
         """
         if poolid is None:
             raise ValueError("Missing required parameter 'poolid'")
-        request_body = {"ips": ips}
+        request_body = {'ips': ips}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchDelete"
+        url = f'{self.base_url}/v3/send_ips/pools/{poolid}/ips:batchDelete'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5032,9 +4738,9 @@ class SendgridApp(APIApplication):
         Tags:
             Sender Identities
         """
-        url = f"{self.base_url}/v3/senders"
+        url = f'{self.base_url}/v3/senders'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5053,11 +4759,11 @@ class SendgridApp(APIApplication):
         Tags:
             SSO Certificates
         """
-        request_body = {"enabled": enabled, "integration_id": integration_id, "public_certificate": public_certificate}
+        request_body = {'enabled': enabled, 'integration_id': integration_id, 'public_certificate': public_certificate}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/sso/certificates"
+        url = f'{self.base_url}/v3/sso/certificates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5076,9 +4782,9 @@ class SendgridApp(APIApplication):
         """
         if cert_id is None:
             raise ValueError("Missing required parameter 'cert_id'")
-        url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
+        url = f'{self.base_url}/v3/sso/certificates/{cert_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5097,9 +4803,9 @@ class SendgridApp(APIApplication):
         """
         if cert_id is None:
             raise ValueError("Missing required parameter 'cert_id'")
-        url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
+        url = f'{self.base_url}/v3/sso/certificates/{cert_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5121,9 +4827,9 @@ class SendgridApp(APIApplication):
         """
         if cert_id is None:
             raise ValueError("Missing required parameter 'cert_id'")
-        request_body = {"enabled": enabled, "integration_id": integration_id, "public_certificate": public_certificate}
+        request_body = {'enabled': enabled, 'integration_id': integration_id, 'public_certificate': public_certificate}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/sso/certificates/{cert_id}"
+        url = f'{self.base_url}/v3/sso/certificates/{cert_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -5142,15 +4848,13 @@ class SendgridApp(APIApplication):
         Tags:
             SSO Settings
         """
-        url = f"{self.base_url}/v3/sso/integrations"
-        query_params = {k: v for k, v in [("si", si)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/sso/integrations'
+        query_params = {k: v for k, v in [('si', si)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_sso_integration(
-        self, completed_integration=None, enabled=None, entity_id=None, name=None, signin_url=None, signout_url=None
-    ) -> dict[str, Any]:
+    async def create_sso_integration(self, completed_integration=None, enabled=None, entity_id=None, name=None, signin_url=None, signout_url=None) -> dict[str, Any]:
         """
         Creates a new Single Sign-On (SSO) integration using the provided details, returning a status message indicating the outcome of the operation.
 
@@ -5168,18 +4872,11 @@ class SendgridApp(APIApplication):
         Tags:
             SSO Settings
         """
-        request_body = {
-            "completed_integration": completed_integration,
-            "enabled": enabled,
-            "entity_id": entity_id,
-            "name": name,
-            "signin_url": signin_url,
-            "signout_url": signout_url,
-        }
+        request_body = {'completed_integration': completed_integration, 'enabled': enabled, 'entity_id': entity_id, 'name': name, 'signin_url': signin_url, 'signout_url': signout_url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/sso/integrations"
+        url = f'{self.base_url}/v3/sso/integrations'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5198,9 +4895,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/sso/integrations/{id}"
+        url = f'{self.base_url}/v3/sso/integrations/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5220,15 +4917,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/sso/integrations/{id}"
-        query_params = {k: v for k, v in [("si", si)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/sso/integrations/{id}'
+        query_params = {k: v for k, v in [('si', si)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_sso_integration(
-        self, id, si=None, completed_integration=None, enabled=None, entity_id=None, name=None, signin_url=None, signout_url=None
-    ) -> dict[str, Any]:
+    async def update_sso_integration(self, id, si=None, completed_integration=None, enabled=None, entity_id=None, name=None, signin_url=None, signout_url=None) -> dict[str, Any]:
         """
         Updates an existing single sign-on integration identified by {id} at path "/v3/sso/integrations/{id}" using the "PATCH" method.
 
@@ -5250,17 +4945,10 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "completed_integration": completed_integration,
-            "enabled": enabled,
-            "entity_id": entity_id,
-            "name": name,
-            "signin_url": signin_url,
-            "signout_url": signout_url,
-        }
+        request_body = {'completed_integration': completed_integration, 'enabled': enabled, 'entity_id': entity_id, 'name': name, 'signin_url': signin_url, 'signout_url': signout_url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/sso/integrations/{id}"
-        query_params = {k: v for k, v in [("si", si)] if v is not None}
+        url = f'{self.base_url}/v3/sso/integrations/{id}'
+        query_params = {k: v for k, v in [('si', si)] if v is not None}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -5280,23 +4968,13 @@ class SendgridApp(APIApplication):
         """
         if integration_id is None:
             raise ValueError("Missing required parameter 'integration_id'")
-        url = f"{self.base_url}/v3/sso/integrations/{integration_id}/certificates"
+        url = f'{self.base_url}/v3/sso/integrations/{integration_id}/certificates'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_sso_teammate(
-        self,
-        email=None,
-        first_name=None,
-        has_restricted_subuser_access=None,
-        is_admin=None,
-        last_name=None,
-        persona=None,
-        scopes=None,
-        subuser_access=None,
-    ) -> dict[str, Any]:
+    async def create_sso_teammate(self, email=None, first_name=None, has_restricted_subuser_access=None, is_admin=None, last_name=None, persona=None, scopes=None, subuser_access=None) -> dict[str, Any]:
         """
         Adds team members using single sign-on (SSO) and returns a status message upon successful addition.
 
@@ -5326,34 +5004,15 @@ class SendgridApp(APIApplication):
         Tags:
             SSO Teammates
         """
-        request_body = {
-            "email": email,
-            "first_name": first_name,
-            "has_restricted_subuser_access": has_restricted_subuser_access,
-            "is_admin": is_admin,
-            "last_name": last_name,
-            "persona": persona,
-            "scopes": scopes,
-            "subuser_access": subuser_access,
-        }
+        request_body = {'email': email, 'first_name': first_name, 'has_restricted_subuser_access': has_restricted_subuser_access, 'is_admin': is_admin, 'last_name': last_name, 'persona': persona, 'scopes': scopes, 'subuser_access': subuser_access}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/sso/teammates"
+        url = f'{self.base_url}/v3/sso/teammates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_sso_teammate(
-        self,
-        username,
-        first_name=None,
-        has_restricted_subuser_access=None,
-        is_admin=None,
-        last_name=None,
-        persona=None,
-        scopes=None,
-        subuser_access=None,
-    ) -> dict[str, Any]:
+    async def update_sso_teammate(self, username, first_name=None, has_restricted_subuser_access=None, is_admin=None, last_name=None, persona=None, scopes=None, subuser_access=None) -> dict[str, Any]:
         """
         Updates the team membership or role of a specified user in a team using their username, supporting various permission checks and returning appropriate status codes.
 
@@ -5384,17 +5043,9 @@ class SendgridApp(APIApplication):
         """
         if username is None:
             raise ValueError("Missing required parameter 'username'")
-        request_body = {
-            "first_name": first_name,
-            "has_restricted_subuser_access": has_restricted_subuser_access,
-            "is_admin": is_admin,
-            "last_name": last_name,
-            "persona": persona,
-            "scopes": scopes,
-            "subuser_access": subuser_access,
-        }
+        request_body = {'first_name': first_name, 'has_restricted_subuser_access': has_restricted_subuser_access, 'is_admin': is_admin, 'last_name': last_name, 'persona': persona, 'scopes': scopes, 'subuser_access': subuser_access}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/sso/teammates/{username}"
+        url = f'{self.base_url}/v3/sso/teammates/{username}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -5417,19 +5068,9 @@ class SendgridApp(APIApplication):
         Tags:
             Subusers
         """
-        url = f"{self.base_url}/v3/subusers"
-        query_params = {
-            k: v
-            for k, v in [
-                ("username", username),
-                ("limit", limit),
-                ("region", region),
-                ("include_region", include_region),
-                ("offset", offset),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/subusers'
+        query_params = {k: v for k, v in [('username', username), ('limit', limit), ('region', region), ('include_region', include_region), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5451,18 +5092,11 @@ class SendgridApp(APIApplication):
         Tags:
             Subusers
         """
-        request_body = {
-            "email": email,
-            "include_region": include_region,
-            "ips": ips,
-            "password": password,
-            "region": region,
-            "username": username,
-        }
+        request_body = {'email': email, 'include_region': include_region, 'ips': ips, 'password': password, 'region': region, 'username': username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/subusers"
+        url = f'{self.base_url}/v3/subusers'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5479,9 +5113,9 @@ class SendgridApp(APIApplication):
         Tags:
             Subusers
         """
-        url = f"{self.base_url}/v3/subusers/reputations"
-        query_params = {k: v for k, v in [("usernames", usernames)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/subusers/reputations'
+        query_params = {k: v for k, v in [('usernames', usernames)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5503,26 +5137,13 @@ class SendgridApp(APIApplication):
         Tags:
             Subuser Statistics
         """
-        url = f"{self.base_url}/v3/subusers/stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("subusers", subusers),
-                ("start_date", start_date),
-                ("end_date", end_date),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/subusers/stats'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('subusers', subusers), ('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_monthly_stat(
-        self, date, subuser=None, sort_by_metric=None, sort_by_direction=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def list_monthly_stat(self, date, subuser=None, sort_by_metric=None, sort_by_direction=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves and returns monthly statistics for subusers, filterable by date and customizable with sorting, pagination, and subuser selection.
 
@@ -5540,26 +5161,13 @@ class SendgridApp(APIApplication):
         Tags:
             Subuser Statistics
         """
-        url = f"{self.base_url}/v3/subusers/stats/monthly"
-        query_params = {
-            k: v
-            for k, v in [
-                ("date", date),
-                ("subuser", subuser),
-                ("sort_by_metric", sort_by_metric),
-                ("sort_by_direction", sort_by_direction),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/subusers/stats/monthly'
+        query_params = {k: v for k, v in [('date', date), ('subuser', subuser), ('sort_by_metric', sort_by_metric), ('sort_by_direction', sort_by_direction), ('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_stat_sum(
-        self, start_date, sort_by_direction=None, end_date=None, limit=None, offset=None, aggregated_by=None, sort_by_metric=None
-    ) -> dict[str, Any]:
+    async def list_stat_sum(self, start_date, sort_by_direction=None, end_date=None, limit=None, offset=None, aggregated_by=None, sort_by_metric=None) -> dict[str, Any]:
         """
         Retrieves summary statistics for subusers, allowing optional filtering by sort direction, start and end dates, data aggregation, and sorting metrics.
 
@@ -5578,21 +5186,9 @@ class SendgridApp(APIApplication):
         Tags:
             Subuser Statistics
         """
-        url = f"{self.base_url}/v3/subusers/stats/sums"
-        query_params = {
-            k: v
-            for k, v in [
-                ("sort_by_direction", sort_by_direction),
-                ("start_date", start_date),
-                ("end_date", end_date),
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("sort_by_metric", sort_by_metric),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/subusers/stats/sums'
+        query_params = {k: v for k, v in [('sort_by_direction', sort_by_direction), ('start_date', start_date), ('end_date', end_date), ('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('sort_by_metric', sort_by_metric)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5611,9 +5207,9 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        url = f"{self.base_url}/v3/subusers/{subuser_name}"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5633,9 +5229,9 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {"disabled": disabled}
+        request_body = {'disabled': disabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/subusers/{subuser_name}"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -5656,9 +5252,9 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        url = f"{self.base_url}/v3/subusers/{subuser_name}/credits"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}/credits'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5680,11 +5276,11 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {"reset_frequency": reset_frequency, "total": total, "type": type}
+        request_body = {'reset_frequency': reset_frequency, 'total': total, 'type': type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/subusers/{subuser_name}/credits"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}/credits'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5704,9 +5300,9 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {"allocation_update": allocation_update}
+        request_body = {'allocation_update': allocation_update}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/subusers/{subuser_name}/credits/remaining"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}/credits/remaining'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -5728,15 +5324,13 @@ class SendgridApp(APIApplication):
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
         request_body = items
-        url = f"{self.base_url}/v3/subusers/{subuser_name}/ips"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}/ips'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def list_subuser_monthly_stat(
-        self, subuser_name, date, sort_by_metric=None, sort_by_direction=None, limit=None, offset=None
-    ) -> dict[str, Any]:
+    async def list_subuser_monthly_stat(self, subuser_name, date, sort_by_metric=None, sort_by_direction=None, limit=None, offset=None) -> dict[str, Any]:
         """
         Retrieves monthly statistics for a specified subuser using the "GET" method, allowing filtering by date and optional sorting and pagination parameters.
 
@@ -5756,19 +5350,9 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        url = f"{self.base_url}/v3/subusers/{subuser_name}/stats/monthly"
-        query_params = {
-            k: v
-            for k, v in [
-                ("date", date),
-                ("sort_by_metric", sort_by_metric),
-                ("sort_by_direction", sort_by_direction),
-                ("limit", limit),
-                ("offset", offset),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/subusers/{subuser_name}/stats/monthly'
+        query_params = {k: v for k, v in [('date', date), ('sort_by_metric', sort_by_metric), ('sort_by_direction', sort_by_direction), ('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5788,9 +5372,9 @@ class SendgridApp(APIApplication):
         """
         if subuser_name is None:
             raise ValueError("Missing required parameter 'subuser_name'")
-        request_body = {"disabled": disabled}
+        request_body = {'disabled': disabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/subusers/{subuser_name}/website_access"
+        url = f'{self.base_url}/v3/subusers/{subuser_name}/website_access'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -5810,11 +5394,11 @@ class SendgridApp(APIApplication):
         Tags:
             Blocks
         """
-        request_body = {"delete_all": delete_all, "emails": emails}
+        request_body = {'delete_all': delete_all, 'emails': emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/suppression/blocks"
+        url = f'{self.base_url}/v3/suppression/blocks'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5835,13 +5419,9 @@ class SendgridApp(APIApplication):
         Tags:
             Blocks
         """
-        url = f"{self.base_url}/v3/suppression/blocks"
-        query_params = {
-            k: v
-            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/blocks'
+        query_params = {k: v for k, v in [('start_time', start_time), ('end_time', end_time), ('limit', limit), ('offset', offset), ('email', email)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5860,9 +5440,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/blocks/{email}"
+        url = f'{self.base_url}/v3/suppression/blocks/{email}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5881,9 +5461,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/blocks/{email}"
+        url = f'{self.base_url}/v3/suppression/blocks/{email}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5901,11 +5481,11 @@ class SendgridApp(APIApplication):
         Tags:
             Bounces
         """
-        request_body = {"delete_all": delete_all, "emails": emails}
+        request_body = {'delete_all': delete_all, 'emails': emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/suppression/bounces"
+        url = f'{self.base_url}/v3/suppression/bounces'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5926,13 +5506,9 @@ class SendgridApp(APIApplication):
         Tags:
             Bounces
         """
-        url = f"{self.base_url}/v3/suppression/bounces"
-        query_params = {
-            k: v
-            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/bounces'
+        query_params = {k: v for k, v in [('start_time', start_time), ('end_time', end_time), ('limit', limit), ('offset', offset), ('email', email)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5950,9 +5526,9 @@ class SendgridApp(APIApplication):
         Tags:
             Bounces
         """
-        url = f"{self.base_url}/v3/suppression/bounces/classifications"
-        query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/bounces/classifications'
+        query_params = {k: v for k, v in [('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5973,9 +5549,9 @@ class SendgridApp(APIApplication):
         """
         if classification is None:
             raise ValueError("Missing required parameter 'classification'")
-        url = f"{self.base_url}/v3/suppression/bounces/classifications/{classification}"
-        query_params = {k: v for k, v in [("start_date", start_date), ("end_date", end_date)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/bounces/classifications/{classification}'
+        query_params = {k: v for k, v in [('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -5994,9 +5570,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/bounces/{email}"
+        url = f'{self.base_url}/v3/suppression/bounces/{email}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6015,9 +5591,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/bounces/{email}"
+        url = f'{self.base_url}/v3/suppression/bounces/{email}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6035,11 +5611,11 @@ class SendgridApp(APIApplication):
         Tags:
             Invalid Emails
         """
-        request_body = {"delete_all": delete_all, "emails": emails}
+        request_body = {'delete_all': delete_all, 'emails': emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/suppression/invalid_emails"
+        url = f'{self.base_url}/v3/suppression/invalid_emails'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6060,13 +5636,9 @@ class SendgridApp(APIApplication):
         Tags:
             Invalid Emails
         """
-        url = f"{self.base_url}/v3/suppression/invalid_emails"
-        query_params = {
-            k: v
-            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/invalid_emails'
+        query_params = {k: v for k, v in [('start_time', start_time), ('end_time', end_time), ('limit', limit), ('offset', offset), ('email', email)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6085,9 +5657,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/invalid_emails/{email}"
+        url = f'{self.base_url}/v3/suppression/invalid_emails/{email}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6106,9 +5678,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/invalid_emails/{email}"
+        url = f'{self.base_url}/v3/suppression/invalid_emails/{email}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6126,11 +5698,11 @@ class SendgridApp(APIApplication):
         Tags:
             Spam Reports
         """
-        request_body = {"delete_all": delete_all, "emails": emails}
+        request_body = {'delete_all': delete_all, 'emails': emails}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/suppression/spam_reports"
+        url = f'{self.base_url}/v3/suppression/spam_reports'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6151,13 +5723,9 @@ class SendgridApp(APIApplication):
         Tags:
             Spam Reports
         """
-        url = f"{self.base_url}/v3/suppression/spam_reports"
-        query_params = {
-            k: v
-            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/spam_reports'
+        query_params = {k: v for k, v in [('start_time', start_time), ('end_time', end_time), ('limit', limit), ('offset', offset), ('email', email)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6176,9 +5744,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/spam_reports/{email}"
+        url = f'{self.base_url}/v3/suppression/spam_reports/{email}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6197,9 +5765,9 @@ class SendgridApp(APIApplication):
         """
         if email is None:
             raise ValueError("Missing required parameter 'email'")
-        url = f"{self.base_url}/v3/suppression/spam_reports/{email}"
+        url = f'{self.base_url}/v3/suppression/spam_reports/{email}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6220,13 +5788,9 @@ class SendgridApp(APIApplication):
         Tags:
             Global Suppressions
         """
-        url = f"{self.base_url}/v3/suppression/unsubscribes"
-        query_params = {
-            k: v
-            for k, v in [("start_time", start_time), ("end_time", end_time), ("limit", limit), ("offset", offset), ("email", email)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/suppression/unsubscribes'
+        query_params = {k: v for k, v in [('start_time', start_time), ('end_time', end_time), ('limit', limit), ('offset', offset), ('email', email)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6244,9 +5808,9 @@ class SendgridApp(APIApplication):
         Tags:
             Teammates
         """
-        url = f"{self.base_url}/v3/teammates"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/teammates'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6265,11 +5829,11 @@ class SendgridApp(APIApplication):
         Tags:
             Teammates
         """
-        request_body = {"email": email, "is_admin": is_admin, "scopes": scopes}
+        request_body = {'email': email, 'is_admin': is_admin, 'scopes': scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/teammates"
+        url = f'{self.base_url}/v3/teammates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6283,9 +5847,9 @@ class SendgridApp(APIApplication):
         Tags:
             Teammates
         """
-        url = f"{self.base_url}/v3/teammates/pending"
+        url = f'{self.base_url}/v3/teammates/pending'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6304,9 +5868,9 @@ class SendgridApp(APIApplication):
         """
         if token is None:
             raise ValueError("Missing required parameter 'token'")
-        url = f"{self.base_url}/v3/teammates/pending/{token}"
+        url = f'{self.base_url}/v3/teammates/pending/{token}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6325,9 +5889,9 @@ class SendgridApp(APIApplication):
         """
         if token is None:
             raise ValueError("Missing required parameter 'token'")
-        url = f"{self.base_url}/v3/teammates/pending/{token}/resend"
+        url = f'{self.base_url}/v3/teammates/pending/{token}/resend'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6346,9 +5910,9 @@ class SendgridApp(APIApplication):
         """
         if teammate_name is None:
             raise ValueError("Missing required parameter 'teammate_name'")
-        url = f"{self.base_url}/v3/teammates/{teammate_name}/subuser_access"
+        url = f'{self.base_url}/v3/teammates/{teammate_name}/subuser_access'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6367,9 +5931,9 @@ class SendgridApp(APIApplication):
         """
         if username is None:
             raise ValueError("Missing required parameter 'username'")
-        url = f"{self.base_url}/v3/teammates/{username}"
+        url = f'{self.base_url}/v3/teammates/{username}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6388,9 +5952,9 @@ class SendgridApp(APIApplication):
         """
         if username is None:
             raise ValueError("Missing required parameter 'username'")
-        url = f"{self.base_url}/v3/teammates/{username}"
+        url = f'{self.base_url}/v3/teammates/{username}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6411,9 +5975,9 @@ class SendgridApp(APIApplication):
         """
         if username is None:
             raise ValueError("Missing required parameter 'username'")
-        request_body = {"is_admin": is_admin, "scopes": scopes}
+        request_body = {'is_admin': is_admin, 'scopes': scopes}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/teammates/{username}"
+        url = f'{self.base_url}/v3/teammates/{username}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -6433,11 +5997,11 @@ class SendgridApp(APIApplication):
         Tags:
             Templates
         """
-        request_body = {"generation": generation, "name": name}
+        request_body = {'generation': generation, 'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/templates"
+        url = f'{self.base_url}/v3/templates'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6456,9 +6020,9 @@ class SendgridApp(APIApplication):
         """
         if template_id is None:
             raise ValueError("Missing required parameter 'template_id'")
-        url = f"{self.base_url}/v3/templates/{template_id}"
+        url = f'{self.base_url}/v3/templates/{template_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6477,9 +6041,9 @@ class SendgridApp(APIApplication):
         """
         if template_id is None:
             raise ValueError("Missing required parameter 'template_id'")
-        url = f"{self.base_url}/v3/templates/{template_id}"
+        url = f'{self.base_url}/v3/templates/{template_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6499,26 +6063,15 @@ class SendgridApp(APIApplication):
         """
         if template_id is None:
             raise ValueError("Missing required parameter 'template_id'")
-        request_body = {"name": name}
+        request_body = {'name': name}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/templates/{template_id}"
+        url = f'{self.base_url}/v3/templates/{template_id}'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_template_version(
-        self,
-        template_id,
-        active=None,
-        editor=None,
-        generate_plain_content=None,
-        html_content=None,
-        name=None,
-        plain_content=None,
-        subject=None,
-        test_data=None,
-    ) -> dict[str, Any]:
+    async def create_template_version(self, template_id, active=None, editor=None, generate_plain_content=None, html_content=None, name=None, plain_content=None, subject=None, test_data=None) -> dict[str, Any]:
         """
         Creates a new version for a specified template using the POST method and returns a 201 Created response upon success.
 
@@ -6541,20 +6094,11 @@ class SendgridApp(APIApplication):
         """
         if template_id is None:
             raise ValueError("Missing required parameter 'template_id'")
-        request_body = {
-            "active": active,
-            "editor": editor,
-            "generate_plain_content": generate_plain_content,
-            "html_content": html_content,
-            "name": name,
-            "plain_content": plain_content,
-            "subject": subject,
-            "test_data": test_data,
-        }
+        request_body = {'active': active, 'editor': editor, 'generate_plain_content': generate_plain_content, 'html_content': html_content, 'name': name, 'plain_content': plain_content, 'subject': subject, 'test_data': test_data}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/templates/{template_id}/versions"
+        url = f'{self.base_url}/v3/templates/{template_id}/versions'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6576,9 +6120,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         if version_id is None:
             raise ValueError("Missing required parameter 'version_id'")
-        url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}"
+        url = f'{self.base_url}/v3/templates/{template_id}/versions/{version_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6600,9 +6144,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         if version_id is None:
             raise ValueError("Missing required parameter 'version_id'")
-        url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}"
+        url = f'{self.base_url}/v3/templates/{template_id}/versions/{version_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6624,9 +6168,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'template_id'")
         if version_id is None:
             raise ValueError("Missing required parameter 'version_id'")
-        url = f"{self.base_url}/v3/templates/{template_id}/versions/{version_id}/activate"
+        url = f'{self.base_url}/v3/templates/{template_id}/versions/{version_id}/activate'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6640,9 +6184,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        url = f"{self.base_url}/v3/tracking_settings"
+        url = f'{self.base_url}/v3/tracking_settings'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6656,9 +6200,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        url = f"{self.base_url}/v3/tracking_settings/click"
+        url = f'{self.base_url}/v3/tracking_settings/click'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6675,9 +6219,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        request_body = {"enabled": enabled}
+        request_body = {'enabled': enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/tracking_settings/click"
+        url = f'{self.base_url}/v3/tracking_settings/click'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -6693,15 +6237,13 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        url = f"{self.base_url}/v3/tracking_settings/google_analytics"
+        url = f'{self.base_url}/v3/tracking_settings/google_analytics'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_google_analytics_tracking_setting(
-        self, enabled=None, utm_campaign=None, utm_content=None, utm_medium=None, utm_source=None, utm_term=None
-    ) -> dict[str, Any]:
+    async def update_google_analytics_tracking_setting(self, enabled=None, utm_campaign=None, utm_content=None, utm_medium=None, utm_source=None, utm_term=None) -> dict[str, Any]:
         """
         Updates the Google Analytics tracking settings for the specified resource using the provided configuration.
 
@@ -6719,16 +6261,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        request_body = {
-            "enabled": enabled,
-            "utm_campaign": utm_campaign,
-            "utm_content": utm_content,
-            "utm_medium": utm_medium,
-            "utm_source": utm_source,
-            "utm_term": utm_term,
-        }
+        request_body = {'enabled': enabled, 'utm_campaign': utm_campaign, 'utm_content': utm_content, 'utm_medium': utm_medium, 'utm_source': utm_source, 'utm_term': utm_term}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/tracking_settings/google_analytics"
+        url = f'{self.base_url}/v3/tracking_settings/google_analytics'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -6744,9 +6279,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        url = f"{self.base_url}/v3/tracking_settings/open"
+        url = f'{self.base_url}/v3/tracking_settings/open'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6763,9 +6298,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        request_body = {"enabled": enabled}
+        request_body = {'enabled': enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/tracking_settings/open"
+        url = f'{self.base_url}/v3/tracking_settings/open'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -6781,15 +6316,13 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        url = f"{self.base_url}/v3/tracking_settings/subscription"
+        url = f'{self.base_url}/v3/tracking_settings/subscription'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_subscription_tracking_setting(
-        self, enabled=None, html_content=None, landing=None, plain_content=None, replace=None, url=None
-    ) -> dict[str, Any]:
+    async def update_subscription_tracking_setting(self, enabled=None, html_content=None, landing=None, plain_content=None, replace=None, url=None) -> dict[str, Any]:
         """
         Modifies the tracking settings subscription using the PATCH method, allowing partial updates to specific fields of the resource at the "/v3/tracking_settings/subscription" path.
 
@@ -6807,16 +6340,9 @@ class SendgridApp(APIApplication):
         Tags:
             Tracking
         """
-        request_body = {
-            "enabled": enabled,
-            "html_content": html_content,
-            "landing": landing,
-            "plain_content": plain_content,
-            "replace": replace,
-            "url": url,
-        }
+        request_body = {'enabled': enabled, 'html_content': html_content, 'landing': landing, 'plain_content': plain_content, 'replace': replace, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/tracking_settings/subscription"
+        url = f'{self.base_url}/v3/tracking_settings/subscription'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -6832,9 +6358,9 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        url = f"{self.base_url}/v3/user/account"
+        url = f'{self.base_url}/v3/user/account'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6848,9 +6374,9 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        url = f"{self.base_url}/v3/user/credits"
+        url = f'{self.base_url}/v3/user/credits'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6864,9 +6390,9 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        url = f"{self.base_url}/v3/user/email"
+        url = f'{self.base_url}/v3/user/email'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6883,11 +6409,11 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {"email": email}
+        request_body = {'email': email}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/email"
+        url = f'{self.base_url}/v3/user/email'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6905,11 +6431,11 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {"new_password": new_password, "old_password": old_password}
+        request_body = {'new_password': new_password, 'old_password': old_password}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/password"
+        url = f'{self.base_url}/v3/user/password'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -6923,26 +6449,13 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        url = f"{self.base_url}/v3/user/profile"
+        url = f'{self.base_url}/v3/user/profile'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_profile(
-        self,
-        address=None,
-        address2=None,
-        city=None,
-        company=None,
-        country=None,
-        first_name=None,
-        last_name=None,
-        phone=None,
-        state=None,
-        website=None,
-        zip=None,
-    ) -> dict[str, Any]:
+    async def update_profile(self, address=None, address2=None, city=None, company=None, country=None, first_name=None, last_name=None, phone=None, state=None, website=None, zip=None) -> dict[str, Any]:
         """
         Updates specific fields in the authenticated user's profile using partial modifications with a JSON request payload.
 
@@ -6965,21 +6478,9 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {
-            "address": address,
-            "address2": address2,
-            "city": city,
-            "company": company,
-            "country": country,
-            "first_name": first_name,
-            "last_name": last_name,
-            "phone": phone,
-            "state": state,
-            "website": website,
-            "zip": zip,
-        }
+        request_body = {'address': address, 'address2': address2, 'city': city, 'company': company, 'country': country, 'first_name': first_name, 'last_name': last_name, 'phone': phone, 'state': state, 'website': website, 'zip': zip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/profile"
+        url = f'{self.base_url}/v3/user/profile'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -6995,9 +6496,9 @@ class SendgridApp(APIApplication):
         Tags:
             Scheduled Sends
         """
-        url = f"{self.base_url}/v3/user/scheduled_sends"
+        url = f'{self.base_url}/v3/user/scheduled_sends'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7015,11 +6516,11 @@ class SendgridApp(APIApplication):
         Tags:
             Scheduled Sends
         """
-        request_body = {"batch_id": batch_id, "status": status}
+        request_body = {'batch_id': batch_id, 'status': status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/scheduled_sends"
+        url = f'{self.base_url}/v3/user/scheduled_sends'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7038,9 +6539,9 @@ class SendgridApp(APIApplication):
         """
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'")
-        url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
+        url = f'{self.base_url}/v3/user/scheduled_sends/{batch_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7059,9 +6560,9 @@ class SendgridApp(APIApplication):
         """
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'")
-        url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
+        url = f'{self.base_url}/v3/user/scheduled_sends/{batch_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7081,9 +6582,9 @@ class SendgridApp(APIApplication):
         """
         if batch_id is None:
             raise ValueError("Missing required parameter 'batch_id'")
-        request_body = {"status": status}
+        request_body = {'status': status}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/scheduled_sends/{batch_id}"
+        url = f'{self.base_url}/v3/user/scheduled_sends/{batch_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -7099,9 +6600,9 @@ class SendgridApp(APIApplication):
         Tags:
             Enforced TLS
         """
-        url = f"{self.base_url}/v3/user/settings/enforced_tls"
+        url = f'{self.base_url}/v3/user/settings/enforced_tls'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7120,9 +6621,9 @@ class SendgridApp(APIApplication):
         Tags:
             Enforced TLS
         """
-        request_body = {"require_tls": require_tls, "require_valid_cert": require_valid_cert, "version": version}
+        request_body = {'require_tls': require_tls, 'require_valid_cert': require_valid_cert, 'version': version}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/settings/enforced_tls"
+        url = f'{self.base_url}/v3/user/settings/enforced_tls'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -7138,9 +6639,9 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        url = f"{self.base_url}/v3/user/username"
+        url = f'{self.base_url}/v3/user/username'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7157,34 +6658,15 @@ class SendgridApp(APIApplication):
         Tags:
             Users API
         """
-        request_body = {"username": username}
+        request_body = {'username': username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/username"
+        url = f'{self.base_url}/v3/user/username'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_event_webhook(
-        self,
-        bounce=None,
-        click=None,
-        deferred=None,
-        delivered=None,
-        dropped=None,
-        enabled=None,
-        friendly_name=None,
-        group_resubscribe=None,
-        group_unsubscribe=None,
-        oauth_client_id=None,
-        oauth_client_secret=None,
-        oauth_token_url=None,
-        open=None,
-        processed=None,
-        spam_report=None,
-        unsubscribe=None,
-        url=None,
-    ) -> dict[str, Any]:
+    async def create_event_webhook(self, bounce=None, click=None, deferred=None, delivered=None, dropped=None, enabled=None, friendly_name=None, group_resubscribe=None, group_unsubscribe=None, oauth_client_id=None, oauth_client_secret=None, oauth_token_url=None, open=None, processed=None, spam_report=None, unsubscribe=None, url=None) -> dict[str, Any]:
         """
         Configures event settings for user webhooks using the POST method, accepting JSON data in the request body.
 
@@ -7235,29 +6717,11 @@ class SendgridApp(APIApplication):
         Tags:
             Event Webhook
         """
-        request_body = {
-            "bounce": bounce,
-            "click": click,
-            "deferred": deferred,
-            "delivered": delivered,
-            "dropped": dropped,
-            "enabled": enabled,
-            "friendly_name": friendly_name,
-            "group_resubscribe": group_resubscribe,
-            "group_unsubscribe": group_unsubscribe,
-            "oauth_client_id": oauth_client_id,
-            "oauth_client_secret": oauth_client_secret,
-            "oauth_token_url": oauth_token_url,
-            "open": open,
-            "processed": processed,
-            "spam_report": spam_report,
-            "unsubscribe": unsubscribe,
-            "url": url,
-        }
+        request_body = {'bounce': bounce, 'click': click, 'deferred': deferred, 'delivered': delivered, 'dropped': dropped, 'enabled': enabled, 'friendly_name': friendly_name, 'group_resubscribe': group_resubscribe, 'group_unsubscribe': group_unsubscribe, 'oauth_client_id': oauth_client_id, 'oauth_client_secret': oauth_client_secret, 'oauth_token_url': oauth_token_url, 'open': open, 'processed': processed, 'spam_report': spam_report, 'unsubscribe': unsubscribe, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/webhooks/event/settings"
+        url = f'{self.base_url}/v3/user/webhooks/event/settings'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7274,9 +6738,9 @@ class SendgridApp(APIApplication):
         Tags:
             Event Webhook
         """
-        url = f"{self.base_url}/v3/user/webhooks/event/settings/all"
-        query_params = {k: v for k, v in [("include", include)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/user/webhooks/event/settings/all'
+        query_params = {k: v for k, v in [('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7295,9 +6759,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/user/webhooks/event/settings/signed/{id}"
+        url = f'{self.base_url}/v3/user/webhooks/event/settings/signed/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7323,9 +6787,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"enabled": enabled}
+        request_body = {'enabled': enabled}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/webhooks/event/settings/signed/{id}"
+        url = f'{self.base_url}/v3/user/webhooks/event/settings/signed/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -7346,9 +6810,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/user/webhooks/event/settings/{id}"
+        url = f'{self.base_url}/v3/user/webhooks/event/settings/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7368,34 +6832,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/user/webhooks/event/settings/{id}"
-        query_params = {k: v for k, v in [("include", include)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/user/webhooks/event/settings/{id}'
+        query_params = {k: v for k, v in [('include', include)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_event_webhook(
-        self,
-        id,
-        include=None,
-        bounce=None,
-        click=None,
-        deferred=None,
-        delivered=None,
-        dropped=None,
-        enabled=None,
-        friendly_name=None,
-        group_resubscribe=None,
-        group_unsubscribe=None,
-        oauth_client_id=None,
-        oauth_client_secret=None,
-        oauth_token_url=None,
-        open=None,
-        processed=None,
-        spam_report=None,
-        unsubscribe=None,
-        url=None,
-    ) -> dict[str, Any]:
+    async def update_event_webhook(self, id, include=None, bounce=None, click=None, deferred=None, delivered=None, dropped=None, enabled=None, friendly_name=None, group_resubscribe=None, group_unsubscribe=None, oauth_client_id=None, oauth_client_secret=None, oauth_token_url=None, open=None, processed=None, spam_report=None, unsubscribe=None, url=None) -> dict[str, Any]:
         """
         Updates the configuration for a specific user webhook event setting using the PATCH method and the provided JSON data.
 
@@ -7428,28 +6871,10 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "bounce": bounce,
-            "click": click,
-            "deferred": deferred,
-            "delivered": delivered,
-            "dropped": dropped,
-            "enabled": enabled,
-            "friendly_name": friendly_name,
-            "group_resubscribe": group_resubscribe,
-            "group_unsubscribe": group_unsubscribe,
-            "oauth_client_id": oauth_client_id,
-            "oauth_client_secret": oauth_client_secret,
-            "oauth_token_url": oauth_token_url,
-            "open": open,
-            "processed": processed,
-            "spam_report": spam_report,
-            "unsubscribe": unsubscribe,
-            "url": url,
-        }
+        request_body = {'bounce': bounce, 'click': click, 'deferred': deferred, 'delivered': delivered, 'dropped': dropped, 'enabled': enabled, 'friendly_name': friendly_name, 'group_resubscribe': group_resubscribe, 'group_unsubscribe': group_unsubscribe, 'oauth_client_id': oauth_client_id, 'oauth_client_secret': oauth_client_secret, 'oauth_token_url': oauth_token_url, 'open': open, 'processed': processed, 'spam_report': spam_report, 'unsubscribe': unsubscribe, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/webhooks/event/settings/{id}"
-        query_params = {k: v for k, v in [("include", include)] if v is not None}
+        url = f'{self.base_url}/v3/user/webhooks/event/settings/{id}'
+        query_params = {k: v for k, v in [('include', include)] if v is not None}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
@@ -7471,17 +6896,11 @@ class SendgridApp(APIApplication):
         Tags:
             Event Webhook
         """
-        request_body = {
-            "id": id,
-            "oauth_client_id": oauth_client_id,
-            "oauth_client_secret": oauth_client_secret,
-            "oauth_token_url": oauth_token_url,
-            "url": url,
-        }
+        request_body = {'id': id, 'oauth_client_id': oauth_client_id, 'oauth_client_secret': oauth_client_secret, 'oauth_token_url': oauth_token_url, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/webhooks/event/test"
+        url = f'{self.base_url}/v3/user/webhooks/event/test'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7495,9 +6914,9 @@ class SendgridApp(APIApplication):
         Tags:
             Parse Webhook
         """
-        url = f"{self.base_url}/v3/user/webhooks/parse/settings"
+        url = f'{self.base_url}/v3/user/webhooks/parse/settings'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7517,11 +6936,11 @@ class SendgridApp(APIApplication):
         Tags:
             Parse Webhook
         """
-        request_body = {"hostname": hostname, "send_raw": send_raw, "spam_check": spam_check, "url": url}
+        request_body = {'hostname': hostname, 'send_raw': send_raw, 'spam_check': spam_check, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/webhooks/parse/settings"
+        url = f'{self.base_url}/v3/user/webhooks/parse/settings'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7540,9 +6959,9 @@ class SendgridApp(APIApplication):
         """
         if hostname is None:
             raise ValueError("Missing required parameter 'hostname'")
-        url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
+        url = f'{self.base_url}/v3/user/webhooks/parse/settings/{hostname}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7561,9 +6980,9 @@ class SendgridApp(APIApplication):
         """
         if hostname is None:
             raise ValueError("Missing required parameter 'hostname'")
-        url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
+        url = f'{self.base_url}/v3/user/webhooks/parse/settings/{hostname}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7586,9 +7005,9 @@ class SendgridApp(APIApplication):
         """
         if hostname is None:
             raise ValueError("Missing required parameter 'hostname'")
-        request_body = {"hostname": hostname_body, "send_raw": send_raw, "spam_check": spam_check, "url": url}
+        request_body = {'hostname': hostname_body, 'send_raw': send_raw, 'spam_check': spam_check, 'url': url}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/user/webhooks/parse/settings/{hostname}"
+        url = f'{self.base_url}/v3/user/webhooks/parse/settings/{hostname}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -7611,19 +7030,9 @@ class SendgridApp(APIApplication):
         Tags:
             Parse Webhook
         """
-        url = f"{self.base_url}/v3/user/webhooks/parse/stats"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("aggregated_by", aggregated_by),
-                ("start_date", start_date),
-                ("end_date", end_date),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/user/webhooks/parse/stats'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('aggregated_by', aggregated_by), ('start_date', start_date), ('end_date', end_date)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7641,11 +7050,11 @@ class SendgridApp(APIApplication):
         Tags:
             Email Address Validation
         """
-        request_body = {"email": email, "source": source}
+        request_body = {'email': email, 'source': source}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/validations/email"
+        url = f'{self.base_url}/v3/validations/email'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7659,9 +7068,9 @@ class SendgridApp(APIApplication):
         Tags:
             Bulk Email Address Validation
         """
-        url = f"{self.base_url}/v3/validations/email/jobs"
+        url = f'{self.base_url}/v3/validations/email/jobs'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7678,11 +7087,11 @@ class SendgridApp(APIApplication):
         Tags:
             Bulk Email Address Validation
         """
-        request_body = {"file_type": file_type}
+        request_body = {'file_type': file_type}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/validations/email/jobs"
+        url = f'{self.base_url}/v3/validations/email/jobs'
         query_params = {}
-        response = self._put(url, data=request_body, params=query_params)
+        response = await self._aput(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7701,9 +7110,9 @@ class SendgridApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        url = f"{self.base_url}/v3/validations/email/jobs/{job_id}"
+        url = f'{self.base_url}/v3/validations/email/jobs/{job_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7722,26 +7131,13 @@ class SendgridApp(APIApplication):
         Tags:
             Sender Verification
         """
-        url = f"{self.base_url}/v3/verified_senders"
-        query_params = {k: v for k, v in [("limit", limit), ("lastSeenID", lastSeenID), ("id", id)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/verified_senders'
+        query_params = {k: v for k, v in [('limit', limit), ('lastSeenID', lastSeenID), ('id', id)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def create_verified_sender(
-        self,
-        address=None,
-        address2=None,
-        city=None,
-        country=None,
-        from_email=None,
-        from_name=None,
-        nickname=None,
-        reply_to=None,
-        reply_to_name=None,
-        state=None,
-        zip=None,
-    ) -> dict[str, Any]:
+    async def create_verified_sender(self, address=None, address2=None, city=None, country=None, from_email=None, from_name=None, nickname=None, reply_to=None, reply_to_name=None, state=None, zip=None) -> dict[str, Any]:
         """
         Creates a new verified sender using the provided details and returns a successful response upon creation.
 
@@ -7764,23 +7160,11 @@ class SendgridApp(APIApplication):
         Tags:
             Sender Verification
         """
-        request_body = {
-            "address": address,
-            "address2": address2,
-            "city": city,
-            "country": country,
-            "from_email": from_email,
-            "from_name": from_name,
-            "nickname": nickname,
-            "reply_to": reply_to,
-            "reply_to_name": reply_to_name,
-            "state": state,
-            "zip": zip,
-        }
+        request_body = {'address': address, 'address2': address2, 'city': city, 'country': country, 'from_email': from_email, 'from_name': from_name, 'nickname': nickname, 'reply_to': reply_to, 'reply_to_name': reply_to_name, 'state': state, 'zip': zip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/verified_senders"
+        url = f'{self.base_url}/v3/verified_senders'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7794,9 +7178,9 @@ class SendgridApp(APIApplication):
         Tags:
             Sender Verification
         """
-        url = f"{self.base_url}/v3/verified_senders/domains"
+        url = f'{self.base_url}/v3/verified_senders/domains'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7815,9 +7199,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/verified_senders/resend/{id}"
+        url = f'{self.base_url}/v3/verified_senders/resend/{id}'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7831,9 +7215,9 @@ class SendgridApp(APIApplication):
         Tags:
             Sender Verification
         """
-        url = f"{self.base_url}/v3/verified_senders/steps_completed"
+        url = f'{self.base_url}/v3/verified_senders/steps_completed'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7852,9 +7236,9 @@ class SendgridApp(APIApplication):
         """
         if token is None:
             raise ValueError("Missing required parameter 'token'")
-        url = f"{self.base_url}/v3/verified_senders/verify/{token}"
+        url = f'{self.base_url}/v3/verified_senders/verify/{token}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7873,27 +7257,13 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/verified_senders/{id}"
+        url = f'{self.base_url}/v3/verified_senders/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def update_verified_sender(
-        self,
-        id,
-        address=None,
-        address2=None,
-        city=None,
-        country=None,
-        from_email=None,
-        from_name=None,
-        nickname=None,
-        reply_to=None,
-        reply_to_name=None,
-        state=None,
-        zip=None,
-    ) -> dict[str, Any]:
+    async def update_verified_sender(self, id, address=None, address2=None, city=None, country=None, from_email=None, from_name=None, nickname=None, reply_to=None, reply_to_name=None, state=None, zip=None) -> dict[str, Any]:
         """
         Updates specific details of a verified sender identified by \\{id\\} using partial modifications.
 
@@ -7919,21 +7289,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {
-            "address": address,
-            "address2": address2,
-            "city": city,
-            "country": country,
-            "from_email": from_email,
-            "from_name": from_name,
-            "nickname": nickname,
-            "reply_to": reply_to,
-            "reply_to_name": reply_to_name,
-            "state": state,
-            "zip": zip,
-        }
+        request_body = {'address': address, 'address2': address2, 'city': city, 'country': country, 'from_email': from_email, 'from_name': from_name, 'nickname': nickname, 'reply_to': reply_to, 'reply_to_name': reply_to_name, 'state': state, 'zip': zip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/verified_senders/{id}"
+        url = f'{self.base_url}/v3/verified_senders/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -7955,11 +7313,11 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        request_body = {"domain_id": domain_id, "email": email, "link_id": link_id, "message": message}
+        request_body = {'domain_id': domain_id, 'email': email, 'link_id': link_id, 'message': message}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/dns/email"
+        url = f'{self.base_url}/v3/whitelabel/dns/email'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -7980,34 +7338,13 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        url = f"{self.base_url}/v3/whitelabel/domains"
-        query_params = {
-            k: v
-            for k, v in [
-                ("limit", limit),
-                ("offset", offset),
-                ("exclude_subusers", exclude_subusers),
-                ("username", username),
-                ("domain", domain),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/domains'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('exclude_subusers', exclude_subusers), ('username', username), ('domain', domain)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
-    async def authenticate_domain(
-        self,
-        automatic_security=None,
-        custom_dkim_selector=None,
-        custom_spf=None,
-        default=None,
-        domain=None,
-        ips=None,
-        region=None,
-        subdomain=None,
-        username=None,
-    ) -> dict[str, Any]:
+    async def authenticate_domain(self, automatic_security=None, custom_dkim_selector=None, custom_spf=None, default=None, domain=None, ips=None, region=None, subdomain=None, username=None) -> dict[str, Any]:
         """
         Creates a new whitelabeled domain using the provided JSON content in the request body, allowing for customized domain configurations.
 
@@ -8028,21 +7365,11 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        request_body = {
-            "automatic_security": automatic_security,
-            "custom_dkim_selector": custom_dkim_selector,
-            "custom_spf": custom_spf,
-            "default": default,
-            "domain": domain,
-            "ips": ips,
-            "region": region,
-            "subdomain": subdomain,
-            "username": username,
-        }
+        request_body = {'automatic_security': automatic_security, 'custom_dkim_selector': custom_dkim_selector, 'custom_spf': custom_spf, 'default': default, 'domain': domain, 'ips': ips, 'region': region, 'subdomain': subdomain, 'username': username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/domains"
+        url = f'{self.base_url}/v3/whitelabel/domains'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8059,9 +7386,9 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        url = f"{self.base_url}/v3/whitelabel/domains/default"
-        query_params = {k: v for k, v in [("domain", domain)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/domains/default'
+        query_params = {k: v for k, v in [('domain', domain)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8078,9 +7405,9 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        url = f"{self.base_url}/v3/whitelabel/domains/subuser"
-        query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/domains/subuser'
+        query_params = {k: v for k, v in [('username', username)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8097,9 +7424,9 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        url = f"{self.base_url}/v3/whitelabel/domains/subuser"
-        query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/domains/subuser'
+        query_params = {k: v for k, v in [('username', username)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8116,9 +7443,9 @@ class SendgridApp(APIApplication):
         Tags:
             Domain Authentication
         """
-        url = f"{self.base_url}/v3/whitelabel/domains/subuser/all"
-        query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/domains/subuser/all'
+        query_params = {k: v for k, v in [('username', username)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8137,9 +7464,9 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
+        url = f'{self.base_url}/v3/whitelabel/domains/{domain_id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8158,9 +7485,9 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
+        url = f'{self.base_url}/v3/whitelabel/domains/{domain_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8181,9 +7508,9 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        request_body = {"custom_spf": custom_spf, "default": default}
+        request_body = {'custom_spf': custom_spf, 'default': default}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}"
+        url = f'{self.base_url}/v3/whitelabel/domains/{domain_id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -8205,9 +7532,9 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser"
-        query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser'
+        query_params = {k: v for k, v in [('username', username)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8227,11 +7554,11 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        request_body = {"username": username}
+        request_body = {'username': username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser"
+        url = f'{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8251,11 +7578,11 @@ class SendgridApp(APIApplication):
         """
         if domain_id is None:
             raise ValueError("Missing required parameter 'domain_id'")
-        request_body = {"username": username}
+        request_body = {'username': username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser:add"
+        url = f'{self.base_url}/v3/whitelabel/domains/{domain_id}/subuser:add'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8275,11 +7602,11 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"ip": ip}
+        request_body = {'ip': ip}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/domains/{id}/ips"
+        url = f'{self.base_url}/v3/whitelabel/domains/{id}/ips'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8301,9 +7628,9 @@ class SendgridApp(APIApplication):
             raise ValueError("Missing required parameter 'id'")
         if ip is None:
             raise ValueError("Missing required parameter 'ip'")
-        url = f"{self.base_url}/v3/whitelabel/domains/{id}/ips/{ip}"
+        url = f'{self.base_url}/v3/whitelabel/domains/{id}/ips/{ip}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8322,9 +7649,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/domains/{id}/validate"
+        url = f'{self.base_url}/v3/whitelabel/domains/{id}/validate'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8343,9 +7670,9 @@ class SendgridApp(APIApplication):
         Tags:
             Reverse DNS
         """
-        url = f"{self.base_url}/v3/whitelabel/ips"
-        query_params = {k: v for k, v in [("limit", limit), ("offset", offset), ("ip", ip)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/ips'
+        query_params = {k: v for k, v in [('limit', limit), ('offset', offset), ('ip', ip)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8364,11 +7691,11 @@ class SendgridApp(APIApplication):
         Tags:
             Reverse DNS
         """
-        request_body = {"domain": domain, "ip": ip, "subdomain": subdomain}
+        request_body = {'domain': domain, 'ip': ip, 'subdomain': subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/ips"
+        url = f'{self.base_url}/v3/whitelabel/ips'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8387,9 +7714,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/ips/{id}"
+        url = f'{self.base_url}/v3/whitelabel/ips/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8408,9 +7735,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/ips/{id}"
+        url = f'{self.base_url}/v3/whitelabel/ips/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8429,9 +7756,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/ips/{id}/validate"
+        url = f'{self.base_url}/v3/whitelabel/ips/{id}/validate'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8448,9 +7775,9 @@ class SendgridApp(APIApplication):
         Tags:
             Link Branding
         """
-        url = f"{self.base_url}/v3/whitelabel/links"
-        query_params = {k: v for k, v in [("limit", limit)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/links'
+        query_params = {k: v for k, v in [('limit', limit)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8470,11 +7797,11 @@ class SendgridApp(APIApplication):
         Tags:
             Link Branding
         """
-        request_body = {"default": default, "domain": domain, "region": region, "subdomain": subdomain}
+        request_body = {'default': default, 'domain': domain, 'region': region, 'subdomain': subdomain}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/links"
+        url = f'{self.base_url}/v3/whitelabel/links'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8491,9 +7818,9 @@ class SendgridApp(APIApplication):
         Tags:
             Link Branding
         """
-        url = f"{self.base_url}/v3/whitelabel/links/default"
-        query_params = {k: v for k, v in [("domain", domain)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/links/default'
+        query_params = {k: v for k, v in [('domain', domain)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8510,9 +7837,9 @@ class SendgridApp(APIApplication):
         Tags:
             Link Branding
         """
-        url = f"{self.base_url}/v3/whitelabel/links/subuser"
-        query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._delete(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/links/subuser'
+        query_params = {k: v for k, v in [('username', username)] if v is not None}
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8529,9 +7856,9 @@ class SendgridApp(APIApplication):
         Tags:
             Link Branding
         """
-        url = f"{self.base_url}/v3/whitelabel/links/subuser"
-        query_params = {k: v for k, v in [("username", username)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/v3/whitelabel/links/subuser'
+        query_params = {k: v for k, v in [('username', username)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8550,9 +7877,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/links/{id}"
+        url = f'{self.base_url}/v3/whitelabel/links/{id}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8571,9 +7898,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/links/{id}"
+        url = f'{self.base_url}/v3/whitelabel/links/{id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8593,9 +7920,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        request_body = {"default": default}
+        request_body = {'default': default}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/links/{id}"
+        url = f'{self.base_url}/v3/whitelabel/links/{id}'
         query_params = {}
         response = self._patch(url, data=request_body, params=query_params)
         response.raise_for_status()
@@ -8616,9 +7943,9 @@ class SendgridApp(APIApplication):
         """
         if id is None:
             raise ValueError("Missing required parameter 'id'")
-        url = f"{self.base_url}/v3/whitelabel/links/{id}/validate"
+        url = f'{self.base_url}/v3/whitelabel/links/{id}/validate'
         query_params = {}
-        response = self._post(url, data={}, params=query_params)
+        response = await self._apost(url, data={}, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -8638,365 +7965,13 @@ class SendgridApp(APIApplication):
         """
         if link_id is None:
             raise ValueError("Missing required parameter 'link_id'")
-        request_body = {"username": username}
+        request_body = {'username': username}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/v3/whitelabel/links/{link_id}/subuser"
+        url = f'{self.base_url}/v3/whitelabel/links/{link_id}/subuser'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.list_access_activity,
-            self.delete_allowed_ips,
-            self.list_allowed_ip,
-            self.add_ip_to_allow_list,
-            self.delete_allowed_ip,
-            self.get_allowed_ip,
-            self.list_alert,
-            self.create_alert,
-            self.delete_alert,
-            self.get_alert,
-            self.update_alert,
-            self.list_api_key,
-            self.create_api_key,
-            self.delete_api_key,
-            self.get_api_key,
-            self.update_api_key_name,
-            self.update_api_key,
-            self.list_asm_group,
-            self.creat_asm_group,
-            self.delete_asm_group,
-            self.get_asm_group,
-            self.update_asm_group,
-            self.list_suppression_from_asm_group,
-            self.add_suppression_to_asm_group,
-            self.search_suppression_from_asm_group,
-            self.delete_suppression_from_asm_group,
-            self.list_asm_suppression,
-            self.create_global_suppression,
-            self.delete_global_suppression,
-            self.get_global_suppression,
-            self.get_asm_suppression,
-            self.list_browser_stat,
-            self.list_campaign,
-            self.create_campaign,
-            self.delete_campaign,
-            self.get_campaign,
-            self.update_campaign,
-            self.un_schedule_campaign,
-            self.get_scheduled_campaign,
-            self.update_scheduled_campaign,
-            self.schedule_campaign,
-            self.send_campaign,
-            self.send_test_campaign,
-            self.list_category,
-            self.list_category_stat,
-            self.list_category_stat_sum,
-            self.list_client_stat,
-            self.get_client_stat,
-            self.list_custom_field,
-            self.create_custom_field,
-            self.delete_custom_field,
-            self.get_custom_field,
-            self.delete_contact_db_lists,
-            self.list_contact_db_list,
-            self.create_contact_db_list,
-            self.delete_contact_db_list,
-            self.get_contact_db_list,
-            self.update_contact_db_list,
-            self.list_recipients_from_contact_db_list,
-            self.add_recipients_to_contact_db_list,
-            self.delete_recipient_from_contact_db_list,
-            self.add_recipient_to_contact_db_list,
-            self.delete_recipients,
-            self.list_recipient,
-            self.update_recipient,
-            self.add_recipient,
-            self.get_billable,
-            self.list_recipient_count,
-            self.list_search_recipient,
-            self.search_recipient,
-            self.delete_recipient,
-            self.get_recipient,
-            self.get_recipient_list,
-            self.list_reserved_field,
-            self.list_segment,
-            self.delete_segment,
-            self.list_recipient_for_segment,
-            self.list_status,
-            self.list_design,
-            self.create_design,
-            self.list_pre_built_design,
-            self.get_pre_built_design,
-            self.duplicate_pre_built_design,
-            self.delete_design,
-            self.get_design,
-            self.update_design,
-            self.duplicate_design,
-            self.list_device_stat,
-            self.list_engagement_quality_score,
-            self.list_subuser_engagement_quality_score,
-            self.list_geo_stat,
-            self.list_ip,
-            self.list_assigned_ip,
-            self.add_ip_to_ip_pool,
-            self.delete_ip_from_ip_pool,
-            self.list_remaining_ip_count,
-            self.list_warm_up_ip,
-            self.warm_up_ip,
-            self.stop_ip_warm_up,
-            self.get_warm_up_ip,
-            self.create_mail_batch,
-            self.get_mail_batch,
-            self.send_mail,
-            self.list_mail_setting,
-            self.list_address_whitelist,
-            self.update_address_whitelist,
-            self.list_bounce_purge,
-            self.update_bounce_purge,
-            self.list_footer,
-            self.update_footer,
-            self.list_forward_bounce,
-            self.update_forward_bounce,
-            self.list_forward_spam,
-            self.update_forward_spam,
-            self.list_mailbox_provider_stat,
-            self.list_contact,
-            self.update_contact,
-            self.list_batched_contact,
-            self.list_export_contact,
-            self.export_contact,
-            self.get_export_contact,
-            self.import_contact,
-            self.get_import_contact,
-            self.search_contact,
-            self.list_contact_by_email,
-            self.get_contact_by_identifiers,
-            self.delete_contact_identifier,
-            self.get_contact,
-            self.list_field_definition,
-            self.create_field_definition,
-            self.delete_field_definition,
-            self.update_field_definition,
-            self.delete_integration,
-            self.get_integrations_by_user,
-            self.add_integration,
-            self.find_integration_by_id,
-            self.update_integration,
-            self.create_marketing_list,
-            self.delete_marketing_list,
-            self.get_marketing_list,
-            self.update_marketing_list,
-            self.delete_contact,
-            self.list_contact_count,
-            self.list_marketing_segment,
-            self.create_segment,
-            self.refresh_segment,
-            self.update_segment,
-            self.get_segment,
-            self.list_sender,
-            self.delete_sender,
-            self.update_sender,
-            self.delete_single_sends,
-            self.list_single_send,
-            self.create_single_send,
-            self.search_single_send,
-            self.delete_single_send,
-            self.get_single_send,
-            self.update_single_send,
-            self.duplicate_single_send,
-            self.delete_scheduled_single_send,
-            self.schedule_single_send,
-            self.list_automation_stat,
-            self.export_automation_stat,
-            self.get_automation_stat,
-            self.list_click_tracking_stat,
-            self.list_single_send_stat,
-            self.export_single_send_stat,
-            self.get_single_send_stat,
-            self.list_single_send_tracking_stat,
-            self.send_test_marketing_email,
-            self.list_message,
-            self.request_csv,
-            self.download_csv,
-            self.get_message,
-            self.list_partner_setting,
-            self.create_account,
-            self.delete_account,
-            self.list_account_offering,
-            self.update_account_offering,
-            self.authenticate_account,
-            self.get_account_state,
-            self.update_account_state,
-            self.list_offering,
-            self.erase_recipient_email_data,
-            self.list_scope,
-            self.list_scope_request,
-            self.deny_scope_request,
-            self.approve_scope_request,
-            self.add_ip,
-            self.get_ip,
-            self.update_ip,
-            self.list_sub_user_assigned_to_ip,
-            self.add_sub_users_to_ip,
-            self.delete_sub_users_from_ip,
-            self.list_ip_pool,
-            self.create_ip_pool,
-            self.delete_ip_pool,
-            self.get_ip_pool,
-            self.update_ip_pool,
-            self.list_ip_assigned_to_ip_pool,
-            self.add_ips_to_ip_pool,
-            self.delete_ips_from_ip_pool,
-            self.create_sender,
-            self.get_sender,
-            self.reset_sender_verification,
-            self.create_sso_certificate,
-            self.delete_sso_certificate,
-            self.get_sso_certificate,
-            self.update_sso_certificate,
-            self.list_sso_integration,
-            self.create_sso_integration,
-            self.delete_sso_integration,
-            self.get_sso_integration,
-            self.update_sso_integration,
-            self.list_sso_integration_certificate,
-            self.create_sso_teammate,
-            self.update_sso_teammate,
-            self.list_subuser,
-            self.create_subuser,
-            self.list_reputation,
-            self.list_stat,
-            self.list_monthly_stat,
-            self.list_stat_sum,
-            self.delete_subuser,
-            self.update_subuser,
-            self.get_subuser_credit,
-            self.update_subuser_credit,
-            self.update_subuser_remaining_credit,
-            self.update_subuser_ip,
-            self.list_subuser_monthly_stat,
-            self.update_subuser_website_access,
-            self.delete_suppression_blocks,
-            self.list_suppression_block,
-            self.delete_suppression_block,
-            self.get_suppression_block,
-            self.delete_suppression_bounces,
-            self.list_suppression_bounces,
-            self.list_suppression_bounces_classifications,
-            self.get_suppression_bounces_classifications,
-            self.delete_suppression_bounce,
-            self.get_suppression_bounces,
-            self.delete_invalid_emails,
-            self.list_invalid_email,
-            self.delete_invalid_email,
-            self.get_invalid_email,
-            self.delete_spam_reports,
-            self.list_spam_report,
-            self.delete_spam_report,
-            self.get_spam_report,
-            self.list_global_suppression,
-            self.list_teammate,
-            self.invite_teammate,
-            self.list_pending_teammate,
-            self.delete_pending_teammate,
-            self.resend_teammate_invite,
-            self.list_subuser_by_template,
-            self.delete_teammate,
-            self.get_teammate,
-            self.update_teammate,
-            self.list_template,
-            self.create_template,
-            self.delete_template,
-            self.get_template,
-            self.update_template,
-            self.duplicate_template,
-            self.create_template_version,
-            self.delete_template_version,
-            self.get_template_version,
-            self.activate_template_version,
-            self.list_tracking_setting,
-            self.list_click_tracking_setting,
-            self.update_click_tracking_setting,
-            self.list_google_analytics_tracking_setting,
-            self.update_google_analytics_tracking_setting,
-            self.list_open_tracking_setting,
-            self.update_open_tracking_setting,
-            self.list_subscription_tracking_setting,
-            self.update_subscription_tracking_setting,
-            self.list_account,
-            self.list_credit,
-            self.list_email,
-            self.update_email,
-            self.update_password,
-            self.list_profile,
-            self.update_profile,
-            self.list_scheduled_send,
-            self.create_scheduled_send,
-            self.delete_scheduled_send,
-            self.get_scheduled_send,
-            self.update_scheduled_send,
-            self.list_enforced_tls_setting,
-            self.update_enforced_tls_setting,
-            self.list_username,
-            self.update_username,
-            self.create_event_webhook,
-            self.list_event_webhook,
-            self.get_signed_event_webhook,
-            self.update_signed_event_webhook,
-            self.delete_event_webhook,
-            self.get_event_webhook,
-            self.update_event_webhook,
-            self.test_event_webhook,
-            self.list_parse_setting,
-            self.create_parse_setting,
-            self.delete_parse_setting,
-            self.get_parse_setting,
-            self.update_parse_setting,
-            self.list_parse_static,
-            self.validate_email,
-            self.get_validations_email_jobs,
-            self.list_email_job_for_verification,
-            self.get_email_job_for_verification,
-            self.list_verified_sender,
-            self.create_verified_sender,
-            self.list_verified_sender_domain,
-            self.resend_verified_sender,
-            self.list_verified_sender_steps_completed,
-            self.verify_sender_token,
-            self.delete_verified_sender,
-            self.update_verified_sender,
-            self.email_dns_record,
-            self.list_authenticated_domain,
-            self.authenticate_domain,
-            self.list_default_authenticated_domain,
-            self.disassociate_authenticated_domain_from_user,
-            self.list_authenticated_domain_with_user,
-            self.list_all_authenticated_domain_with_user,
-            self.delete_authenticated_domain,
-            self.get_authenticated_domain,
-            self.update_authenticated_domain,
-            self.disassociate_subuser_from_domain,
-            self.associate_subuser_with_domain,
-            self.associate_subuser_with_domain_multiple,
-            self.add_ip_to_authenticated_domain,
-            self.delete_ip_from_authenticated_domain,
-            self.validate_authenticated_domain,
-            self.list_reverse_dns,
-            self.set_up_reverse_dns,
-            self.delete_reverse_dns,
-            self.get_reverse_dns,
-            self.validate_reverse_dns,
-            self.list_branded_link,
-            self.create_branded_link,
-            self.list_default_branded_link,
-            self.disassociate_branded_link_from_subuser,
-            self.list_subuser_branded_link,
-            self.delete_branded_link,
-            self.get_branded_link,
-            self.update_branded_link,
-            self.validate_branded_link,
-            self.associate_branded_link_with_subuser,
-        ]
+        return [self.list_access_activity, self.delete_allowed_ips, self.list_allowed_ip, self.add_ip_to_allow_list, self.delete_allowed_ip, self.get_allowed_ip, self.list_alert, self.create_alert, self.delete_alert, self.get_alert, self.update_alert, self.list_api_key, self.create_api_key, self.delete_api_key, self.get_api_key, self.update_api_key_name, self.update_api_key, self.list_asm_group, self.creat_asm_group, self.delete_asm_group, self.get_asm_group, self.update_asm_group, self.list_suppression_from_asm_group, self.add_suppression_to_asm_group, self.search_suppression_from_asm_group, self.delete_suppression_from_asm_group, self.list_asm_suppression, self.create_global_suppression, self.delete_global_suppression, self.get_global_suppression, self.get_asm_suppression, self.list_browser_stat, self.list_campaign, self.create_campaign, self.delete_campaign, self.get_campaign, self.update_campaign, self.un_schedule_campaign, self.get_scheduled_campaign, self.update_scheduled_campaign, self.schedule_campaign, self.send_campaign, self.send_test_campaign, self.list_category, self.list_category_stat, self.list_category_stat_sum, self.list_client_stat, self.get_client_stat, self.list_custom_field, self.create_custom_field, self.delete_custom_field, self.get_custom_field, self.delete_contact_db_lists, self.list_contact_db_list, self.create_contact_db_list, self.delete_contact_db_list, self.get_contact_db_list, self.update_contact_db_list, self.list_recipients_from_contact_db_list, self.add_recipients_to_contact_db_list, self.delete_recipient_from_contact_db_list, self.add_recipient_to_contact_db_list, self.delete_recipients, self.list_recipient, self.update_recipient, self.add_recipient, self.get_billable, self.list_recipient_count, self.list_search_recipient, self.search_recipient, self.delete_recipient, self.get_recipient, self.get_recipient_list, self.list_reserved_field, self.list_segment, self.delete_segment, self.list_recipient_for_segment, self.list_status, self.list_design, self.create_design, self.list_pre_built_design, self.get_pre_built_design, self.duplicate_pre_built_design, self.delete_design, self.get_design, self.update_design, self.duplicate_design, self.list_device_stat, self.list_engagement_quality_score, self.list_subuser_engagement_quality_score, self.list_geo_stat, self.list_ip, self.list_assigned_ip, self.add_ip_to_ip_pool, self.delete_ip_from_ip_pool, self.list_remaining_ip_count, self.list_warm_up_ip, self.warm_up_ip, self.stop_ip_warm_up, self.get_warm_up_ip, self.create_mail_batch, self.get_mail_batch, self.send_mail, self.list_mail_setting, self.list_address_whitelist, self.update_address_whitelist, self.list_bounce_purge, self.update_bounce_purge, self.list_footer, self.update_footer, self.list_forward_bounce, self.update_forward_bounce, self.list_forward_spam, self.update_forward_spam, self.list_mailbox_provider_stat, self.list_contact, self.update_contact, self.list_batched_contact, self.list_export_contact, self.export_contact, self.get_export_contact, self.import_contact, self.get_import_contact, self.search_contact, self.list_contact_by_email, self.get_contact_by_identifiers, self.delete_contact_identifier, self.get_contact, self.list_field_definition, self.create_field_definition, self.delete_field_definition, self.update_field_definition, self.delete_integration, self.get_integrations_by_user, self.add_integration, self.find_integration_by_id, self.update_integration, self.create_marketing_list, self.delete_marketing_list, self.get_marketing_list, self.update_marketing_list, self.delete_contact, self.list_contact_count, self.list_marketing_segment, self.create_segment, self.refresh_segment, self.update_segment, self.get_segment, self.list_sender, self.delete_sender, self.update_sender, self.delete_single_sends, self.list_single_send, self.create_single_send, self.search_single_send, self.delete_single_send, self.get_single_send, self.update_single_send, self.duplicate_single_send, self.delete_scheduled_single_send, self.schedule_single_send, self.list_automation_stat, self.export_automation_stat, self.get_automation_stat, self.list_click_tracking_stat, self.list_single_send_stat, self.export_single_send_stat, self.get_single_send_stat, self.list_single_send_tracking_stat, self.send_test_marketing_email, self.list_message, self.request_csv, self.download_csv, self.get_message, self.list_partner_setting, self.create_account, self.delete_account, self.list_account_offering, self.update_account_offering, self.authenticate_account, self.get_account_state, self.update_account_state, self.list_offering, self.erase_recipient_email_data, self.list_scope, self.list_scope_request, self.deny_scope_request, self.approve_scope_request, self.add_ip, self.get_ip, self.update_ip, self.list_sub_user_assigned_to_ip, self.add_sub_users_to_ip, self.delete_sub_users_from_ip, self.list_ip_pool, self.create_ip_pool, self.delete_ip_pool, self.get_ip_pool, self.update_ip_pool, self.list_ip_assigned_to_ip_pool, self.add_ips_to_ip_pool, self.delete_ips_from_ip_pool, self.create_sender, self.get_sender, self.reset_sender_verification, self.create_sso_certificate, self.delete_sso_certificate, self.get_sso_certificate, self.update_sso_certificate, self.list_sso_integration, self.create_sso_integration, self.delete_sso_integration, self.get_sso_integration, self.update_sso_integration, self.list_sso_integration_certificate, self.create_sso_teammate, self.update_sso_teammate, self.list_subuser, self.create_subuser, self.list_reputation, self.list_stat, self.list_monthly_stat, self.list_stat_sum, self.delete_subuser, self.update_subuser, self.get_subuser_credit, self.update_subuser_credit, self.update_subuser_remaining_credit, self.update_subuser_ip, self.list_subuser_monthly_stat, self.update_subuser_website_access, self.delete_suppression_blocks, self.list_suppression_block, self.delete_suppression_block, self.get_suppression_block, self.delete_suppression_bounces, self.list_suppression_bounces, self.list_suppression_bounces_classifications, self.get_suppression_bounces_classifications, self.delete_suppression_bounce, self.get_suppression_bounces, self.delete_invalid_emails, self.list_invalid_email, self.delete_invalid_email, self.get_invalid_email, self.delete_spam_reports, self.list_spam_report, self.delete_spam_report, self.get_spam_report, self.list_global_suppression, self.list_teammate, self.invite_teammate, self.list_pending_teammate, self.delete_pending_teammate, self.resend_teammate_invite, self.list_subuser_by_template, self.delete_teammate, self.get_teammate, self.update_teammate, self.list_template, self.create_template, self.delete_template, self.get_template, self.update_template, self.duplicate_template, self.create_template_version, self.delete_template_version, self.get_template_version, self.activate_template_version, self.list_tracking_setting, self.list_click_tracking_setting, self.update_click_tracking_setting, self.list_google_analytics_tracking_setting, self.update_google_analytics_tracking_setting, self.list_open_tracking_setting, self.update_open_tracking_setting, self.list_subscription_tracking_setting, self.update_subscription_tracking_setting, self.list_account, self.list_credit, self.list_email, self.update_email, self.update_password, self.list_profile, self.update_profile, self.list_scheduled_send, self.create_scheduled_send, self.delete_scheduled_send, self.get_scheduled_send, self.update_scheduled_send, self.list_enforced_tls_setting, self.update_enforced_tls_setting, self.list_username, self.update_username, self.create_event_webhook, self.list_event_webhook, self.get_signed_event_webhook, self.update_signed_event_webhook, self.delete_event_webhook, self.get_event_webhook, self.update_event_webhook, self.test_event_webhook, self.list_parse_setting, self.create_parse_setting, self.delete_parse_setting, self.get_parse_setting, self.update_parse_setting, self.list_parse_static, self.validate_email, self.get_validations_email_jobs, self.list_email_job_for_verification, self.get_email_job_for_verification, self.list_verified_sender, self.create_verified_sender, self.list_verified_sender_domain, self.resend_verified_sender, self.list_verified_sender_steps_completed, self.verify_sender_token, self.delete_verified_sender, self.update_verified_sender, self.email_dns_record, self.list_authenticated_domain, self.authenticate_domain, self.list_default_authenticated_domain, self.disassociate_authenticated_domain_from_user, self.list_authenticated_domain_with_user, self.list_all_authenticated_domain_with_user, self.delete_authenticated_domain, self.get_authenticated_domain, self.update_authenticated_domain, self.disassociate_subuser_from_domain, self.associate_subuser_with_domain, self.associate_subuser_with_domain_multiple, self.add_ip_to_authenticated_domain, self.delete_ip_from_authenticated_domain, self.validate_authenticated_domain, self.list_reverse_dns, self.set_up_reverse_dns, self.delete_reverse_dns, self.get_reverse_dns, self.validate_reverse_dns, self.list_branded_link, self.create_branded_link, self.list_default_branded_link, self.disassociate_branded_link_from_subuser, self.list_subuser_branded_link, self.delete_branded_link, self.get_branded_link, self.update_branded_link, self.validate_branded_link, self.associate_branded_link_with_subuser]

@@ -3,15 +3,13 @@ from urllib.parse import parse_qs, urlparse
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class OutlookApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="outlook", integration=integration, **kwargs)
-        self.base_url = "https://graph.microsoft.com/v1.0"
 
-    async def reply_to_email(
-        self, message_id: str, comment: str, user_id: str | None = None, attachments: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='outlook', integration=integration, **kwargs)
+        self.base_url = 'https://graph.microsoft.com/v1.0'
+
+    async def reply_to_email(self, message_id: str, comment: str, user_id: str | None=None, attachments: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Replies to a specific email message.
 
@@ -43,30 +41,19 @@ class OutlookApp(APIApplication):
         """
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-        request_body_data = {"comment": comment}
+        request_body_data = {'comment': comment}
         if attachments:
-            request_body_data["message"] = {"attachments": attachments}
-        url = f"{self.base_url}/users/{user_id}/messages/{message_id}/reply"
-        response = self._post(url, data=request_body_data, params={}, content_type="application/json")
+            request_body_data['message'] = {'attachments': attachments}
+        url = f'{self.base_url}/users/{user_id}/messages/{message_id}/reply'
+        response = await self._apost(url, data=request_body_data, params={}, content_type='application/json')
         return self._handle_response(response)
 
-    async def send_email(
-        self,
-        subject: str,
-        body: str,
-        to_recipients: list[str],
-        user_id: str | None = None,
-        cc_recipients: list[str] | None = None,
-        bcc_recipients: list[str] | None = None,
-        attachments: list[dict[str, Any]] | None = None,
-        body_content_type: str = "Text",
-        save_to_sent_items: bool = True,
-    ) -> dict[str, Any]:
+    async def send_email(self, subject: str, body: str, to_recipients: list[str], user_id: str | None=None, cc_recipients: list[str] | None=None, bcc_recipients: list[str] | None=None, attachments: list[dict[str, Any]] | None=None, body_content_type: str='Text', save_to_sent_items: bool=True) -> dict[str, Any]:
         """
         Sends a new email.
 
@@ -93,33 +80,22 @@ class OutlookApp(APIApplication):
         """
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
-        message = {
-            "subject": subject,
-            "body": {"contentType": body_content_type, "content": body},
-            "toRecipients": [{"emailAddress": {"address": email}} for email in to_recipients],
-        }
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
+        message = {'subject': subject, 'body': {'contentType': body_content_type, 'content': body}, 'toRecipients': [{'emailAddress': {'address': email}} for email in to_recipients]}
         if cc_recipients:
-            message["ccRecipients"] = [{"emailAddress": {"address": email}} for email in cc_recipients]
+            message['ccRecipients'] = [{'emailAddress': {'address': email}} for email in cc_recipients]
         if bcc_recipients:
-            message["bccRecipients"] = [{"emailAddress": {"address": email}} for email in bcc_recipients]
+            message['bccRecipients'] = [{'emailAddress': {'address': email}} for email in bcc_recipients]
         if attachments:
-            message["attachments"] = attachments
-        request_body_data = {"message": message, "saveToSentItems": save_to_sent_items}
-        url = f"{self.base_url}/users/{user_id}/sendMail"
-        response = self._post(url, data=request_body_data, params={}, content_type="application/json")
+            message['attachments'] = attachments
+        request_body_data = {'message': message, 'saveToSentItems': save_to_sent_items}
+        url = f'{self.base_url}/users/{user_id}/sendMail'
+        response = await self._apost(url, data=request_body_data, params={}, content_type='application/json')
         return self._handle_response(response)
 
-    async def get_email_folder(
-        self,
-        folder_id: str,
-        user_id: str | None = None,
-        include_hidden: bool | None = None,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def get_email_folder(self, folder_id: str, user_id: str | None=None, include_hidden: bool | None=None, select: list[str] | None=None, expand: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a specific email folder's metadata by its ID.
 
@@ -141,33 +117,19 @@ class OutlookApp(APIApplication):
         """
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
         if not folder_id:
             raise ValueError("Missing required parameter 'folder_id'.")
-        url = f"{self.base_url}/users/{user_id}/mailFolders/{folder_id}"
-        select_str = ",".join(select) if select else None
-        expand_str = ",".join(expand) if expand else None
-        query_params = {
-            k: v for k, v in [("includeHiddenFolders", include_hidden), ("$select", select_str), ("$expand", expand_str)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/users/{user_id}/mailFolders/{folder_id}'
+        select_str = ','.join(select) if select else None
+        expand_str = ','.join(expand) if expand else None
+        query_params = {k: v for k, v in [('includeHiddenFolders', include_hidden), ('$select', select_str), ('$expand', expand_str)] if v is not None}
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def list_emails(
-        self,
-        user_id: str | None = None,
-        select: list[str] = ["bodyPreview"],
-        include_hidden: bool | None = None,
-        top: int | None = None,
-        skip: int | None = None,
-        search: str | None = None,
-        filter: str | None = None,
-        count: bool | None = None,
-        orderby: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def list_emails(self, user_id: str | None=None, select: list[str]=['bodyPreview'], include_hidden: bool | None=None, top: int | None=None, skip: int | None=None, search: str | None=None, filter: str | None=None, count: bool | None=None, orderby: list[str] | None=None, expand: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a list of emails from a user's mailbox.
 
@@ -201,39 +163,18 @@ class OutlookApp(APIApplication):
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
-        url = f"{self.base_url}/users/{user_id}/messages"
-        select_str = ",".join(select) if select else None
-        orderby_str = ",".join(orderby) if orderby else None
-        expand_str = ",".join(expand) if expand else None
-        query_params = {
-            k: v
-            for k, v in [
-                ("includeHiddenMessages", include_hidden),
-                ("$top", top),
-                ("$skip", skip),
-                ("$search", search),
-                ("$filter", filter),
-                ("$count", count),
-                ("$orderby", orderby_str),
-                ("$select", select_str),
-                ("$expand", expand_str),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
+        url = f'{self.base_url}/users/{user_id}/messages'
+        select_str = ','.join(select) if select else None
+        orderby_str = ','.join(orderby) if orderby else None
+        expand_str = ','.join(expand) if expand else None
+        query_params = {k: v for k, v in [('includeHiddenMessages', include_hidden), ('$top', top), ('$skip', skip), ('$search', search), ('$filter', filter), ('$count', count), ('$orderby', orderby_str), ('$select', select_str), ('$expand', expand_str)] if v is not None}
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def get_email(
-        self,
-        message_id: str,
-        user_id: str | None = None,
-        include_hidden: bool | None = None,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def get_email(self, message_id: str, user_id: str | None=None, include_hidden: bool | None=None, select: list[str] | None=None, expand: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves a specific email by its ID.
 
@@ -255,21 +196,19 @@ class OutlookApp(APIApplication):
         """
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-        url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
-        select_str = ",".join(select) if select else None
-        expand_str = ",".join(expand) if expand else None
-        query_params = {
-            k: v for k, v in [("includeHiddenMessages", include_hidden), ("$select", select_str), ("$expand", expand_str)] if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/users/{user_id}/messages/{message_id}'
+        select_str = ','.join(select) if select else None
+        expand_str = ','.join(expand) if expand else None
+        query_params = {k: v for k, v in [('includeHiddenMessages', include_hidden), ('$select', select_str), ('$expand', expand_str)] if v is not None}
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def delete_email(self, message_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def delete_email(self, message_id: str, user_id: str | None=None) -> dict[str, Any]:
         """
         Permanently deletes a specific email by its ID.
 
@@ -288,28 +227,16 @@ class OutlookApp(APIApplication):
         """
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-        url = f"{self.base_url}/users/{user_id}/messages/{message_id}"
-        response = self._delete(url, params={})
+        url = f'{self.base_url}/users/{user_id}/messages/{message_id}'
+        response = await self._adelete(url, params={})
         return self._handle_response(response)
 
-    async def list_email_attachments(
-        self,
-        message_id: str,
-        user_id: str | None = None,
-        top: int | None = None,
-        skip: int | None = None,
-        search: str | None = None,
-        filter: str | None = None,
-        count: bool | None = None,
-        orderby: list[str] | None = None,
-        select: list[str] | None = None,
-        expand: list[str] | None = None,
-    ) -> dict[str, Any]:
+    async def list_email_attachments(self, message_id: str, user_id: str | None=None, top: int | None=None, skip: int | None=None, search: str | None=None, filter: str | None=None, count: bool | None=None, orderby: list[str] | None=None, select: list[str] | None=None, expand: list[str] | None=None) -> dict[str, Any]:
         """
         Retrieves attachments for a specific email.
 
@@ -343,33 +270,20 @@ class OutlookApp(APIApplication):
                 raise ValueError("The 'search' parameter cannot be used with 'skip'. Use pagination via @odata.nextLink instead.")
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID from get_my_profile response.")
+                raise ValueError('Could not retrieve user ID from get_my_profile response.')
         if not message_id:
             raise ValueError("Missing required parameter 'message_id'.")
-        url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments"
-        orderby_str = ",".join(orderby) if orderby else None
-        select_str = ",".join(select) if select else None
-        expand_str = ",".join(expand) if expand else None
-        query_params = {
-            k: v
-            for k, v in [
-                ("$top", top),
-                ("$skip", skip),
-                ("$search", search),
-                ("$filter", filter),
-                ("$count", count),
-                ("$orderby", orderby_str),
-                ("$select", select_str),
-                ("$expand", expand_str),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/users/{user_id}/messages/{message_id}/attachments'
+        orderby_str = ','.join(orderby) if orderby else None
+        select_str = ','.join(select) if select else None
+        expand_str = ','.join(expand) if expand else None
+        query_params = {k: v for k, v in [('$top', top), ('$skip', skip), ('$search', search), ('$filter', filter), ('$count', count), ('$orderby', orderby_str), ('$select', select_str), ('$expand', expand_str)] if v is not None}
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
-    async def get_attachment(self, message_id: str, attachment_id: str, user_id: str | None = None) -> dict[str, Any]:
+    async def get_attachment(self, message_id: str, attachment_id: str, user_id: str | None=None) -> dict[str, Any]:
         """
         Retrieves a specific attachment from an email message and formats it as a dictionary.
 
@@ -389,24 +303,19 @@ class OutlookApp(APIApplication):
         """
         if user_id is None:
             user_info = await self.get_my_profile()
-            user_id = user_info.get("userPrincipalName")
+            user_id = user_info.get('userPrincipalName')
             if not user_id:
-                raise ValueError("Could not retrieve user ID.")
+                raise ValueError('Could not retrieve user ID.')
         if not message_id or not attachment_id:
             raise ValueError("Missing required parameter 'message_id' or 'attachment_id'.")
-        url = f"{self.base_url}/users/{user_id}/messages/{message_id}/attachments/{attachment_id}"
-        response = self._get(url, params={})
+        url = f'{self.base_url}/users/{user_id}/messages/{message_id}/attachments/{attachment_id}'
+        response = await self._aget(url, params={})
         attachment_data = self._handle_response(response)
-        content_type = attachment_data.get("contentType", "application/octet-stream")
-        attachment_type = content_type.split("/")[0] if "/" in content_type else "file"
-        if attachment_type not in ["image", "audio", "video", "text"]:
-            attachment_type = "file"
-        return {
-            "type": attachment_type,
-            "data": attachment_data.get("contentBytes"),
-            "mime_type": content_type,
-            "file_name": attachment_data.get("name"),
-        }
+        content_type = attachment_data.get('contentType', 'application/octet-stream')
+        attachment_type = content_type.split('/')[0] if '/' in content_type else 'file'
+        if attachment_type not in ['image', 'audio', 'video', 'text']:
+            attachment_type = 'file'
+        return {'type': attachment_type, 'data': attachment_data.get('contentBytes'), 'mime_type': content_type, 'file_name': attachment_data.get('name')}
 
     async def get_my_profile(self) -> dict[str, Any]:
         """
@@ -418,9 +327,9 @@ class OutlookApp(APIApplication):
         Raises:
             HTTPStatusError: If the API request fails.
         """
-        url = f"{self.base_url}/me"
-        query_params = {"$select": "userPrincipalName"}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/me'
+        query_params = {'$select': 'userPrincipalName'}
+        response = await self._aget(url, params=query_params)
         return self._handle_response(response)
 
     async def get_next_page_results(self, url: str) -> dict[str, Any]:
@@ -442,23 +351,12 @@ class OutlookApp(APIApplication):
             raise ValueError("Missing required parameter 'url'.")
         if not url.startswith(self.base_url):
             raise ValueError(f"The provided URL must start with '{self.base_url}'.")
-        relative_part = url[len(self.base_url) :]
+        relative_part = url[len(self.base_url):]
         parsed_relative = urlparse(relative_part)
         path_only = parsed_relative.path
         params = {k: v[0] for k, v in parse_qs(parsed_relative.query).items()}
-        response = self._get(path_only, params=params)
+        response = await self._aget(path_only, params=params)
         return self._handle_response(response)
 
     def list_tools(self):
-        return [
-            self.reply_to_email,
-            self.send_email,
-            self.get_email_folder,
-            self.list_emails,
-            self.get_email,
-            self.delete_email,
-            self.list_email_attachments,
-            self.get_attachment,
-            self.get_my_profile,
-            self.get_next_page_results,
-        ]
+        return [self.reply_to_email, self.send_email, self.get_email_folder, self.list_emails, self.get_email, self.delete_email, self.list_email_attachments, self.get_attachment, self.get_my_profile, self.get_next_page_results]

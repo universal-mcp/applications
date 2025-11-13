@@ -10,10 +10,10 @@ from PIL import Image
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class GoogleGeminiApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="google_gemini", integration=integration, **kwargs)
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='google_gemini', integration=integration, **kwargs)
         self._genai_client = None
 
     @property
@@ -21,13 +21,13 @@ class GoogleGeminiApp(APIApplication):
         if self._genai_client is not None:
             return self._genai_client
         credentials = self.integration.get_credentials()
-        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        api_key = credentials.get('api_key') or credentials.get('API_KEY') or credentials.get('apiKey')
         if not api_key:
-            raise ValueError("API key not found in integration credentials")
+            raise ValueError('API key not found in integration credentials')
         self._genai_client = genai.Client(api_key=api_key)
         return self._genai_client
 
-    async def generate_text(self, prompt: Annotated[str, "The prompt to generate text from"], model: str = "gemini-2.5-flash") -> str:
+    async def generate_text(self, prompt: Annotated[str, 'The prompt to generate text from'], model: str='gemini-2.5-flash') -> str:
         """Generates text using the Google Gemini model based on a given prompt.
         This tool is suitable for various natural language processing tasks such as content generation, summarization, translation, and question answering.
 
@@ -48,12 +48,7 @@ class GoogleGeminiApp(APIApplication):
         response = self.genai_client.models.generate_content(contents=prompt, model=model)
         return response.text
 
-    async def generate_image(
-        self,
-        prompt: Annotated[str, "The prompt to generate image from"],
-        images: Annotated[list[str], "The reference image URLs"] | None = None,
-        model: str = "gemini-2.5-flash-image-preview",
-    ) -> dict:
+    async def generate_image(self, prompt: Annotated[str, 'The prompt to generate image from'], images: Annotated[list[str], 'The reference image URLs'] | None=None, model: str='gemini-2.5-flash-image-preview') -> dict:
         """
         Generates an image based on a text prompt and an optional reference image using the Google Gemini model.
         This tool is ideal for creating visual content or modifying existing images based on natural language descriptions.
@@ -83,9 +78,8 @@ class GoogleGeminiApp(APIApplication):
         contents = [prompt]
         if images:
             for image in images:
-                if image.startswith(("http://", "https://")):
+                if image.startswith(('http://', 'https://')):
                     import requests
-
                     response = requests.get(image)
                     response.raise_for_status()
                     image = Image.open(io.BytesIO(response.content))
@@ -94,19 +88,17 @@ class GoogleGeminiApp(APIApplication):
                 contents.append(image)
         response = self.genai_client.models.generate_content(model=model, contents=contents)
         candidate = response.candidates[0]
-        text = ""
+        text = ''
         for part in candidate.content.parts:
             if part.text is not None:
                 text += part.text
             elif part.inline_data is not None:
                 image_bytes = part.inline_data.data
-                img_base64 = base64.b64encode(image_bytes).decode("utf-8")
-                file_name = f"{uuid.uuid4()}.png"
-                return {"type": "image", "data": img_base64, "mime_type": "image/png", "file_name": file_name, "text": text}
+                img_base64 = base64.b64encode(image_bytes).decode('utf-8')
+                file_name = f'{uuid.uuid4()}.png'
+                return {'type': 'image', 'data': img_base64, 'mime_type': 'image/png', 'file_name': file_name, 'text': text}
 
-    async def generate_audio(
-        self, prompt: Annotated[str, "The prompt to generate audio from"], model: str = "gemini-2.5-flash-preview-tts"
-    ) -> str:
+    async def generate_audio(self, prompt: Annotated[str, 'The prompt to generate audio from'], model: str='gemini-2.5-flash-preview-tts') -> str:
         """Generates audio from a given text prompt using the Google Gemini model's Text-to-Speech (TTS) capabilities.
         This tool is useful for converting text into spoken audio, which can be used for voiceovers, accessibility features, or interactive applications.
         It returns a dictionary containing the generated audio data (base64 encoded), its MIME type, and a suggested file name.
@@ -130,43 +122,28 @@ class GoogleGeminiApp(APIApplication):
         """
 
         def wave_file(filename, pcm, channels=1, rate=24000, sample_width=2):
-            with wave.open(filename, "wb") as wf:
+            with wave.open(filename, 'wb') as wf:
                 wf.setnchannels(channels)
                 wf.setsampwidth(sample_width)
                 wf.setframerate(rate)
                 wf.writeframes(pcm)
-
-        response = self.genai_client.models.generate_content(
-            model=model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                response_modalities=["AUDIO"],
-                speech_config=types.SpeechConfig(
-                    voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Kore"))
-                ),
-            ),
-        )
+        response = self.genai_client.models.generate_content(model=model, contents=prompt, config=types.GenerateContentConfig(response_modalities=['AUDIO'], speech_config=types.SpeechConfig(voice_config=types.VoiceConfig(prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name='Kore')))))
         data = response.candidates[0].content.parts[0].inline_data.data
-        file_name = f"{uuid.uuid4()}.wav"
+        file_name = f'{uuid.uuid4()}.wav'
         wave_file(file_name, data)
-        with open(file_name, "rb") as f:
+        with open(file_name, 'rb') as f:
             data = f.read()
         os.remove(file_name)
         import base64
-
-        audio_base64 = base64.b64encode(data).decode("utf-8")
-        return {"type": "audio", "data": audio_base64, "mime_type": "audio/wav", "file_name": file_name}
+        audio_base64 = base64.b64encode(data).decode('utf-8')
+        return {'type': 'audio', 'data': audio_base64, 'mime_type': 'audio/wav', 'file_name': file_name}
 
     def list_tools(self):
         return [self.generate_text, self.generate_image, self.generate_audio]
 
-
 async def test_google_gemini():
     app = GoogleGeminiApp()
-    await app.generate_image("A beautiful women potrait with red green hair color")
-
-
-if __name__ == "__main__":
+    await app.generate_image('A beautiful women potrait with red green hair color')
+if __name__ == '__main__':
     import asyncio
-
     asyncio.run(test_google_gemini())

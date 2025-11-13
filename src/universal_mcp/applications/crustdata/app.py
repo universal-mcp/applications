@@ -2,15 +2,15 @@ from typing import Any
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class CrustdataApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="crustdata", integration=integration, **kwargs)
-        self.base_url = "https://api.crustdata.com"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='crustdata', integration=integration, **kwargs)
+        self.base_url = 'https://api.crustdata.com'
 
     def _get_headers(self) -> dict[str, Any]:
-        api_key = self.integration.get_credentials().get("api_key")
-        return {"Authorization": f"Token {api_key}", "Content-Type": "application/json", "Accept": "application/json"}
+        api_key = self.integration.get_credentials().get('api_key')
+        return {'Authorization': f'Token {api_key}', 'Content-Type': 'application/json', 'Accept': 'application/json'}
 
     async def screen_companies(self, metrics, filters, offset, count, sorts) -> dict[str, Any]:
         """
@@ -43,11 +43,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {"metrics": metrics, "filters": filters, "offset": offset, "count": count, "sorts": sorts}
+        request_body = {'metrics': metrics, 'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/screener/screen/"
+        url = f'{self.base_url}/screener/screen/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -79,11 +79,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
+        request_body = {'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_lab/headcount_timeseries/"
+        url = f'{self.base_url}/data_lab/headcount_timeseries/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -115,11 +115,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
+        request_body = {'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_lab/headcount_by_facet_timeseries/"
+        url = f'{self.base_url}/data_lab/headcount_by_facet_timeseries/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -151,11 +151,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
+        request_body = {'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_lab/funding_milestone_timeseries/"
+        url = f'{self.base_url}/data_lab/funding_milestone_timeseries/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -190,17 +190,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'sorts'")
         if decision_maker_titles is None:
             raise ValueError("Missing required parameter 'decision_maker_titles'")
-        request_body = {
-            "filters": filters,
-            "offset": offset,
-            "count": count,
-            "sorts": sorts,
-            "decision_maker_titles": decision_maker_titles,
-        }
+        request_body = {'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts, 'decision_maker_titles': decision_maker_titles}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_lab/decision_makers/"
+        url = f'{self.base_url}/data_lab/decision_makers/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -232,11 +226,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {"filters": filters, "offset": offset, "count": count, "sorts": sorts}
+        request_body = {'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_lab/webtraffic/"
+        url = f'{self.base_url}/data_lab/webtraffic/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -259,9 +253,9 @@ class CrustdataApp(APIApplication):
         """
         if investor_name is None:
             raise ValueError("Missing required parameter 'investor_name'")
-        url = f"{self.base_url}/data_lab/investor_portfolio"
-        query_params = {k: v for k, v in [("investor_name", investor_name)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/data_lab/investor_portfolio'
+        query_params = {k: v for k, v in [('investor_name', investor_name)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -299,11 +293,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'count'")
         if sorts is None:
             raise ValueError("Missing required parameter 'sorts'")
-        request_body = {"tickers": tickers, "dataset": dataset, "filters": filters, "offset": offset, "count": count, "sorts": sorts}
+        request_body = {'tickers': tickers, 'dataset': dataset, 'filters': filters, 'offset': offset, 'count': count, 'sorts': sorts}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/data_lab/job_listings/Table/"
+        url = f'{self.base_url}/data_lab/job_listings/Table/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -326,11 +320,11 @@ class CrustdataApp(APIApplication):
         """
         if job_id is None:
             raise ValueError("Missing required parameter 'job_id'")
-        request_body = {"job_id": job_id}
+        request_body = {'job_id': job_id}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/screener/person/search"
+        url = f'{self.base_url}/screener/person/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -356,11 +350,11 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'filters'")
         if page is None:
             raise ValueError("Missing required parameter 'page'")
-        request_body = {"filters": filters, "page": page}
+        request_body = {'filters': filters, 'page': page}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/screener/company/search"
+        url = f'{self.base_url}/screener/company/search'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -389,13 +383,9 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'enrich_realtime'")
         if fields is None:
             raise ValueError("Missing required parameter 'fields'")
-        url = f"{self.base_url}/screener/person/enrich"
-        query_params = {
-            k: v
-            for k, v in [("linkedin_profile_url", linkedin_profile_url), ("enrich_realtime", enrich_realtime), ("fields", fields)]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/screener/person/enrich'
+        query_params = {k: v for k, v in [('linkedin_profile_url', linkedin_profile_url), ('enrich_realtime', enrich_realtime), ('fields', fields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -421,9 +411,9 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'company_domain'")
         if enrich_realtime is None:
             raise ValueError("Missing required parameter 'enrich_realtime'")
-        url = f"{self.base_url}/screener/company"
-        query_params = {k: v for k, v in [("company_domain", company_domain), ("enrich_realtime", enrich_realtime)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/screener/company'
+        query_params = {k: v for k, v in [('company_domain', company_domain), ('enrich_realtime', enrich_realtime)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -446,9 +436,9 @@ class CrustdataApp(APIApplication):
         """
         if company_linkedin_url is None:
             raise ValueError("Missing required parameter 'company_linkedin_url'")
-        url = f"{self.base_url}/screener/linkedin_posts"
-        query_params = {k: v for k, v in [("company_linkedin_url", company_linkedin_url)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/screener/linkedin_posts'
+        query_params = {k: v for k, v in [('company_linkedin_url', company_linkedin_url)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         return response.json()
 
@@ -480,28 +470,13 @@ class CrustdataApp(APIApplication):
             raise ValueError("Missing required parameter 'sort_by'")
         if date_posted is None:
             raise ValueError("Missing required parameter 'date_posted'")
-        request_body = {"keyword": keyword, "page": page, "sort_by": sort_by, "date_posted": date_posted}
+        request_body = {'keyword': keyword, 'page': page, 'sort_by': sort_by, 'date_posted': date_posted}
         request_body = {k: v for k, v in request_body.items() if v is not None}
-        url = f"{self.base_url}/screener/linkedin_posts/keyword_search/"
+        url = f'{self.base_url}/screener/linkedin_posts/keyword_search/'
         query_params = {}
-        response = self._post(url, data=request_body, params=query_params)
+        response = await self._apost(url, data=request_body, params=query_params)
         response.raise_for_status()
         return response.json()
 
     def list_tools(self):
-        return [
-            self.screen_companies,
-            self.get_headcount_timeseries,
-            self.get_headcount_by_facet_timeseries,
-            self.get_funding_milestone_timeseries,
-            self.get_decision_makers,
-            self.get_web_traffic,
-            self.get_investor_portfolio,
-            self.get_job_listings,
-            self.search_persons,
-            self.search_companies,
-            self.enrich_person,
-            self.enrich_company,
-            self.get_linked_in_posts,
-            self.search_linked_in_posts,
-        ]
+        return [self.screen_companies, self.get_headcount_timeseries, self.get_headcount_by_facet_timeseries, self.get_funding_milestone_timeseries, self.get_decision_makers, self.get_web_traffic, self.get_investor_portfolio, self.get_job_listings, self.search_persons, self.search_companies, self.enrich_person, self.enrich_company, self.get_linked_in_posts, self.search_linked_in_posts]

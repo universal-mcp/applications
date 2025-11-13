@@ -3,11 +3,11 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class ApolloApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="apollo", integration=integration, **kwargs)
-        self.base_url = "https://api.apollo.io/api/v1"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='apollo', integration=integration, **kwargs)
+        self.base_url = 'https://api.apollo.io/api/v1'
 
     def _get_headers(self) -> dict[str, str]:
         """
@@ -15,31 +15,17 @@ class ApolloApp(APIApplication):
         Overrides the base class method to use X-Api-Key.
         """
         if not self.integration:
-            logger.warning("ApolloApp: No integration configured, returning empty headers.")
+            logger.warning('ApolloApp: No integration configured, returning empty headers.')
             return {}
         credentials = self.integration.get_credentials()
-        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        api_key = credentials.get('api_key') or credentials.get('API_KEY') or credentials.get('apiKey')
         if not api_key:
-            logger.error("ApolloApp: API key not found in integration credentials for Apollo.")
-            return {"Content-Type": "application/json", "Cache-Control": "no-cache"}
-        logger.debug("ApolloApp: Using X-Api-Key for authentication.")
-        return {"X-Api-Key": api_key, "Content-Type": "application/json", "Cache-Control": "no-cache"}
+            logger.error('ApolloApp: API key not found in integration credentials for Apollo.')
+            return {'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
+        logger.debug('ApolloApp: Using X-Api-Key for authentication.')
+        return {'X-Api-Key': api_key, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
 
-    async def people_enrichment(
-        self,
-        first_name: str | None = None,
-        last_name: str | None = None,
-        name: str | None = None,
-        email: str | None = None,
-        hashed_email: str | None = None,
-        organization_name: str | None = None,
-        domain: str | None = None,
-        id: str | None = None,
-        linkedin_url: str | None = None,
-        reveal_personal_emails: bool | None = None,
-        reveal_phone_number: bool | None = None,
-        webhook_url: str | None = None,
-    ) -> dict[str, Any]:
+    async def people_enrichment(self, first_name: str | None=None, last_name: str | None=None, name: str | None=None, email: str | None=None, hashed_email: str | None=None, organization_name: str | None=None, domain: str | None=None, id: str | None=None, linkedin_url: str | None=None, reveal_personal_emails: bool | None=None, reveal_phone_number: bool | None=None, webhook_url: str | None=None) -> dict[str, Any]:
         """
         Matches a person based on provided identifying information such as name, email, organization, or LinkedIn URL, with options to reveal personal emails and phone numbers.
 
@@ -68,26 +54,9 @@ class ApolloApp(APIApplication):
             People, important
         """
         request_body_data = None
-        url = f"{self.base_url}/people/match"
-        query_params = {
-            k: v
-            for k, v in [
-                ("first_name", first_name),
-                ("last_name", last_name),
-                ("name", name),
-                ("email", email),
-                ("hashed_email", hashed_email),
-                ("organization_name", organization_name),
-                ("domain", domain),
-                ("id", id),
-                ("linkedin_url", linkedin_url),
-                ("reveal_personal_emails", reveal_personal_emails),
-                ("reveal_phone_number", reveal_phone_number),
-                ("webhook_url", webhook_url),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/people/match'
+        query_params = {k: v for k, v in [('first_name', first_name), ('last_name', last_name), ('name', name), ('email', email), ('hashed_email', hashed_email), ('organization_name', organization_name), ('domain', domain), ('id', id), ('linkedin_url', linkedin_url), ('reveal_personal_emails', reveal_personal_emails), ('reveal_phone_number', reveal_phone_number), ('webhook_url', webhook_url)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -96,13 +65,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def bulk_people_enrichment(
-        self,
-        reveal_personal_emails: bool | None = None,
-        reveal_phone_number: bool | None = None,
-        webhook_url: str | None = None,
-        details: list[dict[str, Any]] | None = None,
-    ) -> dict[str, Any]:
+    async def bulk_people_enrichment(self, reveal_personal_emails: bool | None=None, reveal_phone_number: bool | None=None, webhook_url: str | None=None, details: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Performs a bulk match operation on people data using a POST request to the "/people/bulk_match" endpoint, accepting query parameters to control the reveal of personal emails and phone numbers, and optionally specifying a webhook URL, with the request body containing JSON data.
 
@@ -123,19 +86,11 @@ class ApolloApp(APIApplication):
             People
         """
         request_body_data = None
-        request_body_data = {"details": details}
+        request_body_data = {'details': details}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/people/bulk_match"
-        query_params = {
-            k: v
-            for k, v in [
-                ("reveal_personal_emails", reveal_personal_emails),
-                ("reveal_phone_number", reveal_phone_number),
-                ("webhook_url", webhook_url),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/people/bulk_match'
+        query_params = {k: v for k, v in [('reveal_personal_emails', reveal_personal_emails), ('reveal_phone_number', reveal_phone_number), ('webhook_url', webhook_url)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -161,9 +116,9 @@ class ApolloApp(APIApplication):
         Tags:
             Organizations
         """
-        url = f"{self.base_url}/organizations/enrich"
-        query_params = {k: v for k, v in [("domain", domain)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/organizations/enrich'
+        query_params = {k: v for k, v in [('domain', domain)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -190,9 +145,9 @@ class ApolloApp(APIApplication):
             Organizations
         """
         request_body_data = None
-        url = f"{self.base_url}/organizations/bulk_enrich"
-        query_params = {k: v for k, v in [("domains[]", domains_)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/organizations/bulk_enrich'
+        query_params = {k: v for k, v in [('domains[]', domains_)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -201,21 +156,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def people_search(
-        self,
-        person_titles_: list[str] | None = None,
-        include_similar_titles: bool | None = None,
-        person_locations_: list[str] | None = None,
-        person_seniorities_: list[str] | None = None,
-        organization_locations_: list[str] | None = None,
-        q_organization_domains_list_: list[str] | None = None,
-        contact_email_status_: list[str] | None = None,
-        organization_ids_: list[str] | None = None,
-        organization_num_employees_ranges_: list[str] | None = None,
-        q_keywords: str | None = None,
-        page: int | None = None,
-        per_page: int | None = None,
-    ) -> dict[str, Any]:
+    async def people_search(self, person_titles_: list[str] | None=None, include_similar_titles: bool | None=None, person_locations_: list[str] | None=None, person_seniorities_: list[str] | None=None, organization_locations_: list[str] | None=None, q_organization_domains_list_: list[str] | None=None, contact_email_status_: list[str] | None=None, organization_ids_: list[str] | None=None, organization_num_employees_ranges_: list[str] | None=None, q_keywords: str | None=None, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Searches for people matching specified criteria including titles, locations, seniorities, organization details, and keywords, returning paginated results.
 
@@ -244,26 +185,9 @@ class ApolloApp(APIApplication):
             People
         """
         request_body_data = None
-        url = f"{self.base_url}/mixed_people/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("person_titles[]", person_titles_),
-                ("include_similar_titles", include_similar_titles),
-                ("person_locations[]", person_locations_),
-                ("person_seniorities[]", person_seniorities_),
-                ("organization_locations[]", organization_locations_),
-                ("q_organization_domains_list[]", q_organization_domains_list_),
-                ("contact_email_status[]", contact_email_status_),
-                ("organization_ids[]", organization_ids_),
-                ("organization_num_employees_ranges[]", organization_num_employees_ranges_),
-                ("q_keywords", q_keywords),
-                ("page", page),
-                ("per_page", per_page),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/mixed_people/search'
+        query_params = {k: v for k, v in [('person_titles[]', person_titles_), ('include_similar_titles', include_similar_titles), ('person_locations[]', person_locations_), ('person_seniorities[]', person_seniorities_), ('organization_locations[]', organization_locations_), ('q_organization_domains_list[]', q_organization_domains_list_), ('contact_email_status[]', contact_email_status_), ('organization_ids[]', organization_ids_), ('organization_num_employees_ranges[]', organization_num_employees_ranges_), ('q_keywords', q_keywords), ('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -272,20 +196,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def organization_search(
-        self,
-        organization_num_employees_ranges_: list[str] | None = None,
-        organization_locations_: list[str] | None = None,
-        organization_not_locations_: list[str] | None = None,
-        revenue_range_min: int | None = None,
-        revenue_range_max: int | None = None,
-        currently_using_any_of_technology_uids_: list[str] | None = None,
-        q_organization_keyword_tags_: list[str] | None = None,
-        q_organization_name: str | None = None,
-        organization_ids_: list[str] | None = None,
-        page: int | None = None,
-        per_page: int | None = None,
-    ) -> dict[str, Any]:
+    async def organization_search(self, organization_num_employees_ranges_: list[str] | None=None, organization_locations_: list[str] | None=None, organization_not_locations_: list[str] | None=None, revenue_range_min: int | None=None, revenue_range_max: int | None=None, currently_using_any_of_technology_uids_: list[str] | None=None, q_organization_keyword_tags_: list[str] | None=None, q_organization_name: str | None=None, organization_ids_: list[str] | None=None, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Searches mixed companies based on various criteria such as employee ranges, locations, revenue range, technology usage, keyword tags, organization names, and IDs, supporting pagination.
 
@@ -313,25 +224,9 @@ class ApolloApp(APIApplication):
             Organizations
         """
         request_body_data = None
-        url = f"{self.base_url}/mixed_companies/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("organization_num_employees_ranges[]", organization_num_employees_ranges_),
-                ("organization_locations[]", organization_locations_),
-                ("organization_not_locations[]", organization_not_locations_),
-                ("revenue_range[min]", revenue_range_min),
-                ("revenue_range[max]", revenue_range_max),
-                ("currently_using_any_of_technology_uids[]", currently_using_any_of_technology_uids_),
-                ("q_organization_keyword_tags[]", q_organization_keyword_tags_),
-                ("q_organization_name", q_organization_name),
-                ("organization_ids[]", organization_ids_),
-                ("page", page),
-                ("per_page", per_page),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/mixed_companies/search'
+        query_params = {k: v for k, v in [('organization_num_employees_ranges[]', organization_num_employees_ranges_), ('organization_locations[]', organization_locations_), ('organization_not_locations[]', organization_not_locations_), ('revenue_range[min]', revenue_range_min), ('revenue_range[max]', revenue_range_max), ('currently_using_any_of_technology_uids[]', currently_using_any_of_technology_uids_), ('q_organization_keyword_tags[]', q_organization_keyword_tags_), ('q_organization_name', q_organization_name), ('organization_ids[]', organization_ids_), ('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -340,9 +235,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def organization_jobs_postings(
-        self, organization_id: str, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def organization_jobs_postings(self, organization_id: str, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Retrieves a paginated list of job postings for a specified organization using the "GET" method, allowing optional pagination parameters for page and items per page.
 
@@ -363,9 +256,9 @@ class ApolloApp(APIApplication):
         """
         if organization_id is None:
             raise ValueError("Missing required parameter 'organization_id'.")
-        url = f"{self.base_url}/organizations/{organization_id}/job_postings"
-        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/organizations/{organization_id}/job_postings'
+        query_params = {k: v for k, v in [('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -374,15 +267,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_an_account(
-        self,
-        name: str | None = None,
-        domain: str | None = None,
-        owner_id: str | None = None,
-        account_stage_id: str | None = None,
-        phone: str | None = None,
-        raw_address: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_an_account(self, name: str | None=None, domain: str | None=None, owner_id: str | None=None, account_stage_id: str | None=None, phone: str | None=None, raw_address: str | None=None) -> dict[str, Any]:
         """
         Creates a new account resource using the provided query parameters such as name, domain, owner ID, account stage ID, phone, and raw address.
 
@@ -405,20 +290,9 @@ class ApolloApp(APIApplication):
             Accounts
         """
         request_body_data = None
-        url = f"{self.base_url}/accounts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("name", name),
-                ("domain", domain),
-                ("owner_id", owner_id),
-                ("account_stage_id", account_stage_id),
-                ("phone", phone),
-                ("raw_address", raw_address),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/accounts'
+        query_params = {k: v for k, v in [('name', name), ('domain', domain), ('owner_id', owner_id), ('account_stage_id', account_stage_id), ('phone', phone), ('raw_address', raw_address)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -427,16 +301,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_an_account(
-        self,
-        account_id: str,
-        name: str | None = None,
-        domain: str | None = None,
-        owner_id: str | None = None,
-        account_stage_id: str | None = None,
-        raw_address: str | None = None,
-        phone: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_an_account(self, account_id: str, name: str | None=None, domain: str | None=None, owner_id: str | None=None, account_stage_id: str | None=None, raw_address: str | None=None, phone: str | None=None) -> dict[str, Any]:
         """
         Updates an account identified by `{account_id}` with specified parameters such as `name`, `domain`, `owner_id`, `account_stage_id`, `raw_address`, and `phone`, returning a status message upon successful modification.
 
@@ -462,20 +327,9 @@ class ApolloApp(APIApplication):
         if account_id is None:
             raise ValueError("Missing required parameter 'account_id'.")
         request_body_data = None
-        url = f"{self.base_url}/accounts/{account_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("name", name),
-                ("domain", domain),
-                ("owner_id", owner_id),
-                ("account_stage_id", account_stage_id),
-                ("raw_address", raw_address),
-                ("phone", phone),
-            ]
-            if v is not None
-        }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/accounts/{account_id}'
+        query_params = {k: v for k, v in [('name', name), ('domain', domain), ('owner_id', owner_id), ('account_stage_id', account_stage_id), ('raw_address', raw_address), ('phone', phone)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -484,15 +338,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_for_accounts(
-        self,
-        q_organization_name: str | None = None,
-        account_stage_ids_: list[str] | None = None,
-        sort_by_field: str | None = None,
-        sort_ascending: bool | None = None,
-        page: int | None = None,
-        per_page: int | None = None,
-    ) -> dict[str, Any]:
+    async def search_for_accounts(self, q_organization_name: str | None=None, account_stage_ids_: list[str] | None=None, sort_by_field: str | None=None, sort_ascending: bool | None=None, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Searches for accounts based on organization name, account stage IDs, sorting, and pagination parameters, returning matching results.
 
@@ -515,20 +361,9 @@ class ApolloApp(APIApplication):
             Accounts
         """
         request_body_data = None
-        url = f"{self.base_url}/accounts/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("q_organization_name", q_organization_name),
-                ("account_stage_ids[]", account_stage_ids_),
-                ("sort_by_field", sort_by_field),
-                ("sort_ascending", sort_ascending),
-                ("page", page),
-                ("per_page", per_page),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/accounts/search'
+        query_params = {k: v for k, v in [('q_organization_name', q_organization_name), ('account_stage_ids[]', account_stage_ids_), ('sort_by_field', sort_by_field), ('sort_ascending', sort_ascending), ('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -556,9 +391,9 @@ class ApolloApp(APIApplication):
             Accounts
         """
         request_body_data = None
-        url = f"{self.base_url}/accounts/bulk_update"
-        query_params = {k: v for k, v in [("account_ids[]", account_ids_), ("account_stage_id", account_stage_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/accounts/bulk_update'
+        query_params = {k: v for k, v in [('account_ids[]', account_ids_), ('account_stage_id', account_stage_id)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -586,9 +421,9 @@ class ApolloApp(APIApplication):
             Accounts
         """
         request_body_data = None
-        url = f"{self.base_url}/accounts/update_owners"
-        query_params = {k: v for k, v in [("account_ids[]", account_ids_), ("owner_id", owner_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/accounts/update_owners'
+        query_params = {k: v for k, v in [('account_ids[]', account_ids_), ('owner_id', owner_id)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -611,9 +446,9 @@ class ApolloApp(APIApplication):
         Tags:
             Accounts
         """
-        url = f"{self.base_url}/account_stages"
+        url = f'{self.base_url}/account_stages'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -622,24 +457,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_a_contact(
-        self,
-        first_name: str | None = None,
-        last_name: str | None = None,
-        organization_name: str | None = None,
-        title: str | None = None,
-        account_id: str | None = None,
-        email: str | None = None,
-        website_url: str | None = None,
-        label_names_: list[str] | None = None,
-        contact_stage_id: str | None = None,
-        present_raw_address: str | None = None,
-        direct_phone: str | None = None,
-        corporate_phone: str | None = None,
-        mobile_phone: str | None = None,
-        home_phone: str | None = None,
-        other_phone: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_a_contact(self, first_name: str | None=None, last_name: str | None=None, organization_name: str | None=None, title: str | None=None, account_id: str | None=None, email: str | None=None, website_url: str | None=None, label_names_: list[str] | None=None, contact_stage_id: str | None=None, present_raw_address: str | None=None, direct_phone: str | None=None, corporate_phone: str | None=None, mobile_phone: str | None=None, home_phone: str | None=None, other_phone: str | None=None) -> dict[str, Any]:
         """
         Creates a new contact with specified details such as name, organization, contact information, and labels.
 
@@ -671,29 +489,9 @@ class ApolloApp(APIApplication):
             Contacts, important
         """
         request_body_data = None
-        url = f"{self.base_url}/contacts"
-        query_params = {
-            k: v
-            for k, v in [
-                ("first_name", first_name),
-                ("last_name", last_name),
-                ("organization_name", organization_name),
-                ("title", title),
-                ("account_id", account_id),
-                ("email", email),
-                ("website_url", website_url),
-                ("label_names[]", label_names_),
-                ("contact_stage_id", contact_stage_id),
-                ("present_raw_address", present_raw_address),
-                ("direct_phone", direct_phone),
-                ("corporate_phone", corporate_phone),
-                ("mobile_phone", mobile_phone),
-                ("home_phone", home_phone),
-                ("other_phone", other_phone),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/contacts'
+        query_params = {k: v for k, v in [('first_name', first_name), ('last_name', last_name), ('organization_name', organization_name), ('title', title), ('account_id', account_id), ('email', email), ('website_url', website_url), ('label_names[]', label_names_), ('contact_stage_id', contact_stage_id), ('present_raw_address', present_raw_address), ('direct_phone', direct_phone), ('corporate_phone', corporate_phone), ('mobile_phone', mobile_phone), ('home_phone', home_phone), ('other_phone', other_phone)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -702,25 +500,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_a_contact(
-        self,
-        contact_id: str,
-        first_name: str | None = None,
-        last_name: str | None = None,
-        organization_name: str | None = None,
-        title: str | None = None,
-        account_id: str | None = None,
-        email: str | None = None,
-        website_url: str | None = None,
-        label_names_: list[str] | None = None,
-        contact_stage_id: str | None = None,
-        present_raw_address: str | None = None,
-        direct_phone: str | None = None,
-        corporate_phone: str | None = None,
-        mobile_phone: str | None = None,
-        home_phone: str | None = None,
-        other_phone: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_a_contact(self, contact_id: str, first_name: str | None=None, last_name: str | None=None, organization_name: str | None=None, title: str | None=None, account_id: str | None=None, email: str | None=None, website_url: str | None=None, label_names_: list[str] | None=None, contact_stage_id: str | None=None, present_raw_address: str | None=None, direct_phone: str | None=None, corporate_phone: str | None=None, mobile_phone: str | None=None, home_phone: str | None=None, other_phone: str | None=None) -> dict[str, Any]:
         """
         Updates or replaces the details of a specific contact identified by contact_id using the provided parameters as new values for the contact record.
 
@@ -755,29 +535,9 @@ class ApolloApp(APIApplication):
         if contact_id is None:
             raise ValueError("Missing required parameter 'contact_id'.")
         request_body_data = None
-        url = f"{self.base_url}/contacts/{contact_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("first_name", first_name),
-                ("last_name", last_name),
-                ("organization_name", organization_name),
-                ("title", title),
-                ("account_id", account_id),
-                ("email", email),
-                ("website_url", website_url),
-                ("label_names[]", label_names_),
-                ("contact_stage_id", contact_stage_id),
-                ("present_raw_address", present_raw_address),
-                ("direct_phone", direct_phone),
-                ("corporate_phone", corporate_phone),
-                ("mobile_phone", mobile_phone),
-                ("home_phone", home_phone),
-                ("other_phone", other_phone),
-            ]
-            if v is not None
-        }
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/contacts/{contact_id}'
+        query_params = {k: v for k, v in [('first_name', first_name), ('last_name', last_name), ('organization_name', organization_name), ('title', title), ('account_id', account_id), ('email', email), ('website_url', website_url), ('label_names[]', label_names_), ('contact_stage_id', contact_stage_id), ('present_raw_address', present_raw_address), ('direct_phone', direct_phone), ('corporate_phone', corporate_phone), ('mobile_phone', mobile_phone), ('home_phone', home_phone), ('other_phone', other_phone)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -786,15 +546,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_for_contacts(
-        self,
-        q_keywords: str | None = None,
-        contact_stage_ids_: list[str] | None = None,
-        sort_by_field: str | None = None,
-        sort_ascending: bool | None = None,
-        per_page: int | None = None,
-        page: int | None = None,
-    ) -> dict[str, Any]:
+    async def search_for_contacts(self, q_keywords: str | None=None, contact_stage_ids_: list[str] | None=None, sort_by_field: str | None=None, sort_ascending: bool | None=None, per_page: int | None=None, page: int | None=None) -> dict[str, Any]:
         """
         Searches contacts based on keywords, contact stage IDs, sorting, and pagination parameters, returning a filtered and sorted list of contacts.
 
@@ -817,20 +569,9 @@ class ApolloApp(APIApplication):
             Contacts, important
         """
         request_body_data = None
-        url = f"{self.base_url}/contacts/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("q_keywords", q_keywords),
-                ("contact_stage_ids[]", contact_stage_ids_),
-                ("sort_by_field", sort_by_field),
-                ("sort_ascending", sort_ascending),
-                ("per_page", per_page),
-                ("page", page),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/contacts/search'
+        query_params = {k: v for k, v in [('q_keywords', q_keywords), ('contact_stage_ids[]', contact_stage_ids_), ('sort_by_field', sort_by_field), ('sort_ascending', sort_ascending), ('per_page', per_page), ('page', page)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -858,9 +599,9 @@ class ApolloApp(APIApplication):
             Contacts
         """
         request_body_data = None
-        url = f"{self.base_url}/contacts/update_stages"
-        query_params = {k: v for k, v in [("contact_ids[]", contact_ids_), ("contact_stage_id", contact_stage_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/contacts/update_stages'
+        query_params = {k: v for k, v in [('contact_ids[]', contact_ids_), ('contact_stage_id', contact_stage_id)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -888,9 +629,9 @@ class ApolloApp(APIApplication):
             Contacts
         """
         request_body_data = None
-        url = f"{self.base_url}/contacts/update_owners"
-        query_params = {k: v for k, v in [("contact_ids[]", contact_ids_), ("owner_id", owner_id)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/contacts/update_owners'
+        query_params = {k: v for k, v in [('contact_ids[]', contact_ids_), ('owner_id', owner_id)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -913,9 +654,9 @@ class ApolloApp(APIApplication):
         Tags:
             Contacts
         """
-        url = f"{self.base_url}/contact_stages"
+        url = f'{self.base_url}/contact_stages'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -924,15 +665,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_deal(
-        self,
-        name: str,
-        owner_id: str | None = None,
-        account_id: str | None = None,
-        amount: str | None = None,
-        opportunity_stage_id: str | None = None,
-        closed_date: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_deal(self, name: str, owner_id: str | None=None, account_id: str | None=None, amount: str | None=None, opportunity_stage_id: str | None=None, closed_date: str | None=None) -> dict[str, Any]:
         """
         Creates a new opportunity with specified details such as name, owner, account, amount, stage, and closed date.
 
@@ -955,20 +688,9 @@ class ApolloApp(APIApplication):
             Deals
         """
         request_body_data = None
-        url = f"{self.base_url}/opportunities"
-        query_params = {
-            k: v
-            for k, v in [
-                ("name", name),
-                ("owner_id", owner_id),
-                ("account_id", account_id),
-                ("amount", amount),
-                ("opportunity_stage_id", opportunity_stage_id),
-                ("closed_date", closed_date),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/opportunities'
+        query_params = {k: v for k, v in [('name', name), ('owner_id', owner_id), ('account_id', account_id), ('amount', amount), ('opportunity_stage_id', opportunity_stage_id), ('closed_date', closed_date)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -977,9 +699,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def list_all_deals(
-        self, sort_by_field: str | None = None, page: int | None = None, per_page: int | None = None
-    ) -> dict[str, Any]:
+    async def list_all_deals(self, sort_by_field: str | None=None, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Searches and retrieves a paginated list of opportunities with optional sorting by a specified field.
 
@@ -998,9 +718,9 @@ class ApolloApp(APIApplication):
         Tags:
             Deals, important
         """
-        url = f"{self.base_url}/opportunities/search"
-        query_params = {k: v for k, v in [("sort_by_field", sort_by_field), ("page", page), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/opportunities/search'
+        query_params = {k: v for k, v in [('sort_by_field', sort_by_field), ('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1009,19 +729,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_deal(
-        self,
-        opportunity_id: str,
-        owner_id: str | None = None,
-        name: str | None = None,
-        amount: str | None = None,
-        opportunity_stage_id: str | None = None,
-        closed_date: str | None = None,
-        is_closed: bool | None = None,
-        is_won: bool | None = None,
-        source: str | None = None,
-        account_id: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_deal(self, opportunity_id: str, owner_id: str | None=None, name: str | None=None, amount: str | None=None, opportunity_stage_id: str | None=None, closed_date: str | None=None, is_closed: bool | None=None, is_won: bool | None=None, source: str | None=None, account_id: str | None=None) -> dict[str, Any]:
         """
         Updates specific fields of an opportunity resource identified by opportunity_id using a PATCH request[2][4][5].
 
@@ -1050,22 +758,8 @@ class ApolloApp(APIApplication):
         if opportunity_id is None:
             raise ValueError("Missing required parameter 'opportunity_id'.")
         request_body_data = None
-        url = f"{self.base_url}/opportunities/{opportunity_id}"
-        query_params = {
-            k: v
-            for k, v in [
-                ("owner_id", owner_id),
-                ("name", name),
-                ("amount", amount),
-                ("opportunity_stage_id", opportunity_stage_id),
-                ("closed_date", closed_date),
-                ("is_closed", is_closed),
-                ("is_won", is_won),
-                ("source", source),
-                ("account_id", account_id),
-            ]
-            if v is not None
-        }
+        url = f'{self.base_url}/opportunities/{opportunity_id}'
+        query_params = {k: v for k, v in [('owner_id', owner_id), ('name', name), ('amount', amount), ('opportunity_stage_id', opportunity_stage_id), ('closed_date', closed_date), ('is_closed', is_closed), ('is_won', is_won), ('source', source), ('account_id', account_id)] if v is not None}
         response = self._patch(url, data=request_body_data, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
@@ -1089,9 +783,9 @@ class ApolloApp(APIApplication):
         Tags:
             Deals
         """
-        url = f"{self.base_url}/opportunity_stages"
+        url = f'{self.base_url}/opportunity_stages'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1100,19 +794,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_contacts_to_sequence(
-        self,
-        sequence_id: str,
-        emailer_campaign_id: str,
-        contact_ids_: list[str],
-        send_email_from_email_account_id: str,
-        sequence_no_email: bool | None = None,
-        sequence_unverified_email: bool | None = None,
-        sequence_job_change: bool | None = None,
-        sequence_active_in_other_campaigns: bool | None = None,
-        sequence_finished_in_other_campaigns: bool | None = None,
-        user_id: str | None = None,
-    ) -> dict[str, Any]:
+    async def add_contacts_to_sequence(self, sequence_id: str, emailer_campaign_id: str, contact_ids_: list[str], send_email_from_email_account_id: str, sequence_no_email: bool | None=None, sequence_unverified_email: bool | None=None, sequence_job_change: bool | None=None, sequence_active_in_other_campaigns: bool | None=None, sequence_finished_in_other_campaigns: bool | None=None, user_id: str | None=None) -> dict[str, Any]:
         """
         Adds specified contact IDs to an email campaign sequence, configuring how and when emails are sent to each contact and supporting various filtering options.
 
@@ -1141,23 +823,9 @@ class ApolloApp(APIApplication):
         if sequence_id is None:
             raise ValueError("Missing required parameter 'sequence_id'.")
         request_body_data = None
-        url = f"{self.base_url}/emailer_campaigns/{sequence_id}/add_contact_ids"
-        query_params = {
-            k: v
-            for k, v in [
-                ("emailer_campaign_id", emailer_campaign_id),
-                ("contact_ids[]", contact_ids_),
-                ("send_email_from_email_account_id", send_email_from_email_account_id),
-                ("sequence_no_email", sequence_no_email),
-                ("sequence_unverified_email", sequence_unverified_email),
-                ("sequence_job_change", sequence_job_change),
-                ("sequence_active_in_other_campaigns", sequence_active_in_other_campaigns),
-                ("sequence_finished_in_other_campaigns", sequence_finished_in_other_campaigns),
-                ("user_id", user_id),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/emailer_campaigns/{sequence_id}/add_contact_ids'
+        query_params = {k: v for k, v in [('emailer_campaign_id', emailer_campaign_id), ('contact_ids[]', contact_ids_), ('send_email_from_email_account_id', send_email_from_email_account_id), ('sequence_no_email', sequence_no_email), ('sequence_unverified_email', sequence_unverified_email), ('sequence_job_change', sequence_job_change), ('sequence_active_in_other_campaigns', sequence_active_in_other_campaigns), ('sequence_finished_in_other_campaigns', sequence_finished_in_other_campaigns), ('user_id', user_id)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1186,13 +854,9 @@ class ApolloApp(APIApplication):
             Contacts
         """
         request_body_data = None
-        url = f"{self.base_url}/emailer_campaigns/remove_or_stop_contact_ids"
-        query_params = {
-            k: v
-            for k, v in [("emailer_campaign_ids[]", emailer_campaign_ids_), ("contact_ids[]", contact_ids_), ("mode", mode)]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/emailer_campaigns/remove_or_stop_contact_ids'
+        query_params = {k: v for k, v in [('emailer_campaign_ids[]', emailer_campaign_ids_), ('contact_ids[]', contact_ids_), ('mode', mode)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1201,9 +865,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_task(
-        self, user_id: str, contact_ids_: list[str], priority: str, due_at: str, type: str, status: str, note: str | None = None
-    ) -> Any:
+    async def create_task(self, user_id: str, contact_ids_: list[str], priority: str, due_at: str, type: str, status: str, note: str | None=None) -> Any:
         """
         Creates multiple tasks in bulk with specified user, contact IDs, priority, due date, type, status, and optional note parameters.
 
@@ -1227,21 +889,9 @@ class ApolloApp(APIApplication):
             Tasks
         """
         request_body_data = None
-        url = f"{self.base_url}/tasks/bulk_create"
-        query_params = {
-            k: v
-            for k, v in [
-                ("user_id", user_id),
-                ("contact_ids[]", contact_ids_),
-                ("priority", priority),
-                ("due_at", due_at),
-                ("type", type),
-                ("status", status),
-                ("note", note),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/tasks/bulk_create'
+        query_params = {k: v for k, v in [('user_id', user_id), ('contact_ids[]', contact_ids_), ('priority', priority), ('due_at', due_at), ('type', type), ('status', status), ('note', note)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1250,13 +900,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_tasks(
-        self,
-        sort_by_field: str | None = None,
-        open_factor_names_: list[str] | None = None,
-        page: int | None = None,
-        per_page: int | None = None,
-    ) -> dict[str, Any]:
+    async def search_tasks(self, sort_by_field: str | None=None, open_factor_names_: list[str] | None=None, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Searches for tasks using specified parameters and returns a paginated list of results, allowing users to sort by a field and filter by open factor names.
 
@@ -1277,18 +921,9 @@ class ApolloApp(APIApplication):
             Tasks
         """
         request_body_data = None
-        url = f"{self.base_url}/tasks/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("sort_by_field", sort_by_field),
-                ("open_factor_names[]", open_factor_names_),
-                ("page", page),
-                ("per_page", per_page),
-            ]
-            if v is not None
-        }
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/tasks/search'
+        query_params = {k: v for k, v in [('sort_by_field', sort_by_field), ('open_factor_names[]', open_factor_names_), ('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1297,7 +932,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_a_list_of_users(self, page: int | None = None, per_page: int | None = None) -> dict[str, Any]:
+    async def get_a_list_of_users(self, page: int | None=None, per_page: int | None=None) -> dict[str, Any]:
         """
         Searches for users with optional pagination parameters to specify the page number and number of results per page.
 
@@ -1315,9 +950,9 @@ class ApolloApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/users/search"
-        query_params = {k: v for k, v in [("page", page), ("per_page", per_page)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/users/search'
+        query_params = {k: v for k, v in [('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1340,9 +975,9 @@ class ApolloApp(APIApplication):
         Tags:
             Email Accounts
         """
-        url = f"{self.base_url}/email_accounts"
+        url = f'{self.base_url}/email_accounts'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1365,9 +1000,9 @@ class ApolloApp(APIApplication):
         Tags:
             Labels
         """
-        url = f"{self.base_url}/labels"
+        url = f'{self.base_url}/labels'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1390,9 +1025,9 @@ class ApolloApp(APIApplication):
         Tags:
             Custom Fields
         """
-        url = f"{self.base_url}/typed_custom_fields"
+        url = f'{self.base_url}/typed_custom_fields'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1417,9 +1052,9 @@ class ApolloApp(APIApplication):
         """
         if opportunity_id is None:
             raise ValueError("Missing required parameter 'opportunity_id'.")
-        url = f"{self.base_url}/opportunities/{opportunity_id}"
+        url = f'{self.base_url}/opportunities/{opportunity_id}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1428,7 +1063,7 @@ class ApolloApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_for_sequences(self, q_name: str | None = None, page: str | None = None, per_page: str | None = None) -> dict[str, Any]:
+    async def search_for_sequences(self, q_name: str | None=None, page: str | None=None, per_page: str | None=None) -> dict[str, Any]:
         """
         Search for Sequences by name
 
@@ -1445,9 +1080,9 @@ class ApolloApp(APIApplication):
             JSONDecodeError: Raised if the response body cannot be parsed as JSON.
         """
         request_body_data = None
-        url = f"{self.base_url}/emailer_campaigns/search"
-        query_params = {k: v for k, v in [("q_name", q_name), ("page", page), ("per_page", per_page)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/emailer_campaigns/search'
+        query_params = {k: v for k, v in [('q_name', q_name), ('page', page), ('per_page', per_page)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1457,38 +1092,4 @@ class ApolloApp(APIApplication):
             return None
 
     def list_tools(self):
-        return [
-            self.people_enrichment,
-            self.bulk_people_enrichment,
-            self.organization_enrichment,
-            self.bulk_organization_enrichment,
-            self.people_search,
-            self.organization_search,
-            self.organization_jobs_postings,
-            self.create_an_account,
-            self.update_an_account,
-            self.search_for_accounts,
-            self.update_account_stage,
-            self.update_account_ownership,
-            self.list_account_stages,
-            self.create_a_contact,
-            self.update_a_contact,
-            self.search_for_contacts,
-            self.update_contact_stage,
-            self.update_contact_ownership,
-            self.list_contact_stages,
-            self.create_deal,
-            self.list_all_deals,
-            self.update_deal,
-            self.list_deal_stages,
-            self.add_contacts_to_sequence,
-            self.update_contact_status_sequence,
-            self.create_task,
-            self.search_tasks,
-            self.get_a_list_of_users,
-            self.get_a_list_of_email_accounts,
-            self.get_a_list_of_all_liststags,
-            self.get_a_list_of_all_custom_fields,
-            self.view_deal,
-            self.search_for_sequences,
-        ]
+        return [self.people_enrichment, self.bulk_people_enrichment, self.organization_enrichment, self.bulk_organization_enrichment, self.people_search, self.organization_search, self.organization_jobs_postings, self.create_an_account, self.update_an_account, self.search_for_accounts, self.update_account_stage, self.update_account_ownership, self.list_account_stages, self.create_a_contact, self.update_a_contact, self.search_for_contacts, self.update_contact_stage, self.update_contact_ownership, self.list_contact_stages, self.create_deal, self.list_all_deals, self.update_deal, self.list_deal_stages, self.add_contacts_to_sequence, self.update_contact_status_sequence, self.create_task, self.search_tasks, self.get_a_list_of_users, self.get_a_list_of_email_accounts, self.get_a_list_of_all_liststags, self.get_a_list_of_all_custom_fields, self.view_deal, self.search_for_sequences]

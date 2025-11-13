@@ -3,11 +3,11 @@ from loguru import logger
 from universal_mcp.applications.application import APIApplication
 from universal_mcp.integrations import Integration
 
-
 class RocketlaneApp(APIApplication):
-    def __init__(self, integration: Integration = None, **kwargs) -> None:
-        super().__init__(name="rocketlane", integration=integration, **kwargs)
-        self.base_url = "https://api.rocketlane.com/api"
+
+    def __init__(self, integration: Integration=None, **kwargs) -> None:
+        super().__init__(name='rocketlane', integration=integration, **kwargs)
+        self.base_url = 'https://api.rocketlane.com/api'
 
     def _get_headers(self) -> dict[str, str]:
         """
@@ -15,19 +15,17 @@ class RocketlaneApp(APIApplication):
         Overrides the base class method to use 'api-key'.
         """
         if not self.integration:
-            logger.warning("RocketlaneApp: No integration configured, returning empty headers.")
+            logger.warning('RocketlaneApp: No integration configured, returning empty headers.')
             return {}
         credentials = self.integration.get_credentials()
-        api_key = credentials.get("api_key") or credentials.get("API_KEY") or credentials.get("apiKey")
+        api_key = credentials.get('api_key') or credentials.get('API_KEY') or credentials.get('apiKey')
         if not api_key:
-            logger.error("RocketlaneApp: API key not found in integration credentials.")
-            return {"Content-Type": "application/json", "Cache-Control": "no-cache"}
+            logger.error('RocketlaneApp: API key not found in integration credentials.')
+            return {'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
         logger.debug("RocketlaneApp: Using 'api-key' for authentication.")
-        return {"api-key": api_key, "Content-Type": "application/json", "Cache-Control": "no-cache"}
+        return {'api-key': api_key, 'Content-Type': 'application/json', 'Cache-Control': 'no-cache'}
 
-    async def get_time_entry(
-        self, timeEntryId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None
-    ) -> dict[str, Any]:
+    async def get_time_entry(self, timeEntryId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get a time entry
 
@@ -48,9 +46,9 @@ class RocketlaneApp(APIApplication):
         """
         if timeEntryId is None:
             raise ValueError("Missing required parameter 'timeEntryId'.")
-        url = f"{self.base_url}/1.0/time-entries/{timeEntryId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/time-entries/{timeEntryId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -59,19 +57,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_time_entry(
-        self,
-        timeEntryId: str,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        timeEntryId_body: int | None = None,
-        date: str | None = None,
-        minutes: int | None = None,
-        activityName: str | None = None,
-        notes: str | None = None,
-        category: dict[str, Any] | None = None,
-        billable: bool | None = None,
-    ) -> dict[str, Any]:
+    async def update_time_entry(self, timeEntryId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None, timeEntryId_body: int | None=None, date: str | None=None, minutes: int | None=None, activityName: str | None=None, notes: str | None=None, category: dict[str, Any] | None=None, billable: bool | None=None) -> dict[str, Any]:
         """
         Update a time entry
 
@@ -100,19 +86,11 @@ class RocketlaneApp(APIApplication):
         if timeEntryId is None:
             raise ValueError("Missing required parameter 'timeEntryId'.")
         request_body_data = None
-        request_body_data = {
-            "timeEntryId": timeEntryId_body,
-            "date": date,
-            "minutes": minutes,
-            "activityName": activityName,
-            "notes": notes,
-            "category": category,
-            "billable": billable,
-        }
+        request_body_data = {'timeEntryId': timeEntryId_body, 'date': date, 'minutes': minutes, 'activityName': activityName, 'notes': notes, 'category': category, 'billable': billable}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/time-entries/{timeEntryId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/time-entries/{timeEntryId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -140,9 +118,9 @@ class RocketlaneApp(APIApplication):
         """
         if timeEntryId is None:
             raise ValueError("Missing required parameter 'timeEntryId'.")
-        url = f"{self.base_url}/1.0/time-entries/{timeEntryId}"
+        url = f'{self.base_url}/1.0/time-entries/{timeEntryId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -151,7 +129,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_task(self, taskId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None) -> dict[str, Any]:
+    async def get_task(self, taskId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get task by Id
 
@@ -172,9 +150,9 @@ class RocketlaneApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
-        url = f"{self.base_url}/1.0/tasks/{taskId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/tasks/{taskId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -183,26 +161,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_task(
-        self,
-        taskId: str,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        taskId_body: int | None = None,
-        taskName: str | None = None,
-        taskDescription: str | None = None,
-        taskPrivateNote: str | None = None,
-        startDate: str | None = None,
-        dueDate: str | None = None,
-        effortInMinutes: int | None = None,
-        progress: int | None = None,
-        atRisk: bool | None = None,
-        type: str | None = None,
-        fields: list[dict[str, Any]] | None = None,
-        status: dict[str, Any] | None = None,
-        externalReferenceId: str | None = None,
-        private: bool | None = None,
-    ) -> dict[str, Any]:
+    async def update_task(self, taskId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None, taskId_body: int | None=None, taskName: str | None=None, taskDescription: str | None=None, taskPrivateNote: str | None=None, startDate: str | None=None, dueDate: str | None=None, effortInMinutes: int | None=None, progress: int | None=None, atRisk: bool | None=None, type: str | None=None, fields: list[dict[str, Any]] | None=None, status: dict[str, Any] | None=None, externalReferenceId: str | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Update task by Id
 
@@ -238,26 +197,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {
-            "taskId": taskId_body,
-            "taskName": taskName,
-            "taskDescription": taskDescription,
-            "taskPrivateNote": taskPrivateNote,
-            "startDate": startDate,
-            "dueDate": dueDate,
-            "effortInMinutes": effortInMinutes,
-            "progress": progress,
-            "atRisk": atRisk,
-            "type": type,
-            "fields": fields,
-            "status": status,
-            "externalReferenceId": externalReferenceId,
-            "private": private,
-        }
+        request_body_data = {'taskId': taskId_body, 'taskName': taskName, 'taskDescription': taskDescription, 'taskPrivateNote': taskPrivateNote, 'startDate': startDate, 'dueDate': dueDate, 'effortInMinutes': effortInMinutes, 'progress': progress, 'atRisk': atRisk, 'type': type, 'fields': fields, 'status': status, 'externalReferenceId': externalReferenceId, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/tasks/{taskId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -285,9 +229,9 @@ class RocketlaneApp(APIApplication):
         """
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
-        url = f"{self.base_url}/1.0/tasks/{taskId}"
+        url = f'{self.base_url}/1.0/tasks/{taskId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -315,9 +259,9 @@ class RocketlaneApp(APIApplication):
         """
         if spaceId is None:
             raise ValueError("Missing required parameter 'spaceId'.")
-        url = f"{self.base_url}/1.0/spaces/{spaceId}"
+        url = f'{self.base_url}/1.0/spaces/{spaceId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -326,7 +270,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_space(self, spaceId: str, spaceName: str | None = None) -> dict[str, Any]:
+    async def update_space(self, spaceId: str, spaceName: str | None=None) -> dict[str, Any]:
         """
         Update space by Id
 
@@ -347,11 +291,11 @@ class RocketlaneApp(APIApplication):
         if spaceId is None:
             raise ValueError("Missing required parameter 'spaceId'.")
         request_body_data = None
-        request_body_data = {"spaceName": spaceName}
+        request_body_data = {'spaceName': spaceName}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/spaces/{spaceId}"
+        url = f'{self.base_url}/1.0/spaces/{spaceId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -379,9 +323,9 @@ class RocketlaneApp(APIApplication):
         """
         if spaceId is None:
             raise ValueError("Missing required parameter 'spaceId'.")
-        url = f"{self.base_url}/1.0/spaces/{spaceId}"
+        url = f'{self.base_url}/1.0/spaces/{spaceId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -409,9 +353,9 @@ class RocketlaneApp(APIApplication):
         """
         if spaceDocumentId is None:
             raise ValueError("Missing required parameter 'spaceDocumentId'.")
-        url = f"{self.base_url}/1.0/space-documents/{spaceDocumentId}"
+        url = f'{self.base_url}/1.0/space-documents/{spaceDocumentId}'
         query_params = {}
-        response = self._get(url, params=query_params)
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -420,9 +364,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_space_document(
-        self, spaceDocumentId: str, spaceDocumentId_body: int | None = None, spaceDocumentName: str | None = None, url: str | None = None
-    ) -> dict[str, Any]:
+    async def update_space_document(self, spaceDocumentId: str, spaceDocumentId_body: int | None=None, spaceDocumentName: str | None=None, url: str | None=None) -> dict[str, Any]:
         """
         Update space document by Id
 
@@ -445,11 +387,11 @@ class RocketlaneApp(APIApplication):
         if spaceDocumentId is None:
             raise ValueError("Missing required parameter 'spaceDocumentId'.")
         request_body_data = None
-        request_body_data = {"spaceDocumentId": spaceDocumentId_body, "spaceDocumentName": spaceDocumentName, "url": url}
+        request_body_data = {'spaceDocumentId': spaceDocumentId_body, 'spaceDocumentName': spaceDocumentName, 'url': url}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/space-documents/{spaceDocumentId}"
+        url = f'{self.base_url}/1.0/space-documents/{spaceDocumentId}'
         query_params = {}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -477,9 +419,9 @@ class RocketlaneApp(APIApplication):
         """
         if spaceDocumentId is None:
             raise ValueError("Missing required parameter 'spaceDocumentId'.")
-        url = f"{self.base_url}/1.0/space-documents/{spaceDocumentId}"
+        url = f'{self.base_url}/1.0/space-documents/{spaceDocumentId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -488,9 +430,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_project(
-        self, projectId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None
-    ) -> dict[str, Any]:
+    async def get_project(self, projectId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get project by Id
 
@@ -511,9 +451,9 @@ class RocketlaneApp(APIApplication):
         """
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
-        url = f"{self.base_url}/1.0/projects/{projectId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/projects/{projectId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -522,24 +462,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_project(
-        self,
-        projectId: str,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        projectName: str | None = None,
-        startDate: str | None = None,
-        dueDate: str | None = None,
-        visibility: str | None = None,
-        owner: dict[str, Any] | None = None,
-        status: dict[str, Any] | None = None,
-        fields: list[dict[str, Any]] | None = None,
-        annualizedRecurringRevenue: int | None = None,
-        projectFee: int | None = None,
-        autoAllocation: bool | None = None,
-        budgetedHours: float | None = None,
-        externalReferenceId: str | None = None,
-    ) -> dict[str, Any]:
+    async def update_project(self, projectId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None, projectName: str | None=None, startDate: str | None=None, dueDate: str | None=None, visibility: str | None=None, owner: dict[str, Any] | None=None, status: dict[str, Any] | None=None, fields: list[dict[str, Any]] | None=None, annualizedRecurringRevenue: int | None=None, projectFee: int | None=None, autoAllocation: bool | None=None, budgetedHours: float | None=None, externalReferenceId: str | None=None) -> dict[str, Any]:
         """
         Update project by Id
 
@@ -573,24 +496,11 @@ class RocketlaneApp(APIApplication):
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
-        request_body_data = {
-            "projectName": projectName,
-            "startDate": startDate,
-            "dueDate": dueDate,
-            "visibility": visibility,
-            "owner": owner,
-            "status": status,
-            "fields": fields,
-            "annualizedRecurringRevenue": annualizedRecurringRevenue,
-            "projectFee": projectFee,
-            "autoAllocation": autoAllocation,
-            "budgetedHours": budgetedHours,
-            "externalReferenceId": externalReferenceId,
-        }
+        request_body_data = {'projectName': projectName, 'startDate': startDate, 'dueDate': dueDate, 'visibility': visibility, 'owner': owner, 'status': status, 'fields': fields, 'annualizedRecurringRevenue': annualizedRecurringRevenue, 'projectFee': projectFee, 'autoAllocation': autoAllocation, 'budgetedHours': budgetedHours, 'externalReferenceId': externalReferenceId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/projects/{projectId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/projects/{projectId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -618,9 +528,9 @@ class RocketlaneApp(APIApplication):
         """
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
-        url = f"{self.base_url}/1.0/projects/{projectId}"
+        url = f'{self.base_url}/1.0/projects/{projectId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -629,7 +539,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_phase(self, phaseId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None) -> dict[str, Any]:
+    async def get_phase(self, phaseId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get phase by Id
 
@@ -650,9 +560,9 @@ class RocketlaneApp(APIApplication):
         """
         if phaseId is None:
             raise ValueError("Missing required parameter 'phaseId'.")
-        url = f"{self.base_url}/1.0/phases/{phaseId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/phases/{phaseId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -661,17 +571,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_phase(
-        self,
-        phaseId: str,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        phaseName: str | None = None,
-        startDate: str | None = None,
-        dueDate: str | None = None,
-        status: dict[str, Any] | None = None,
-        private: bool | None = None,
-    ) -> dict[str, Any]:
+    async def update_phase(self, phaseId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None, phaseName: str | None=None, startDate: str | None=None, dueDate: str | None=None, status: dict[str, Any] | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Update phase by Id
 
@@ -698,11 +598,11 @@ class RocketlaneApp(APIApplication):
         if phaseId is None:
             raise ValueError("Missing required parameter 'phaseId'.")
         request_body_data = None
-        request_body_data = {"phaseName": phaseName, "startDate": startDate, "dueDate": dueDate, "status": status, "private": private}
+        request_body_data = {'phaseName': phaseName, 'startDate': startDate, 'dueDate': dueDate, 'status': status, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/phases/{phaseId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/phases/{phaseId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -730,9 +630,9 @@ class RocketlaneApp(APIApplication):
         """
         if phaseId is None:
             raise ValueError("Missing required parameter 'phaseId'.")
-        url = f"{self.base_url}/1.0/phases/{phaseId}"
+        url = f'{self.base_url}/1.0/phases/{phaseId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -741,7 +641,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_field(self, fieldId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None) -> dict[str, Any]:
+    async def get_field(self, fieldId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get field by Id
 
@@ -762,9 +662,9 @@ class RocketlaneApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/1.0/fields/{fieldId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/fields/{fieldId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -773,16 +673,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_field(
-        self,
-        fieldId: str,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        fieldLabel: str | None = None,
-        fieldDescription: str | None = None,
-        enabled: bool | None = None,
-        private: bool | None = None,
-    ) -> dict[str, Any]:
+    async def update_field(self, fieldId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None, fieldLabel: str | None=None, fieldDescription: str | None=None, enabled: bool | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Update field by Id
 
@@ -808,11 +699,11 @@ class RocketlaneApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"fieldLabel": fieldLabel, "fieldDescription": fieldDescription, "enabled": enabled, "private": private}
+        request_body_data = {'fieldLabel': fieldLabel, 'fieldDescription': fieldDescription, 'enabled': enabled, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/fields/{fieldId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._put(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/fields/{fieldId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aput(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -840,9 +731,9 @@ class RocketlaneApp(APIApplication):
         """
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
-        url = f"{self.base_url}/1.0/fields/{fieldId}"
+        url = f'{self.base_url}/1.0/fields/{fieldId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -851,32 +742,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_timeoffs(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        startDate_gt: str | None = None,
-        startDate_eq: str | None = None,
-        startDate_lt: str | None = None,
-        startDate_ge: str | None = None,
-        startDate_le: str | None = None,
-        endDate_gt: str | None = None,
-        endDate_eq: str | None = None,
-        endDate_lt: str | None = None,
-        endDate_ge: str | None = None,
-        endDate_le: str | None = None,
-        type_eq: list[str] | None = None,
-        type_oneOf: list[str] | None = None,
-        type_noneOf: list[str] | None = None,
-        userId_eq: str | None = None,
-        userId_oneOf: str | None = None,
-        userId_noneOf: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_timeoffs(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, startDate_gt: str | None=None, startDate_eq: str | None=None, startDate_lt: str | None=None, startDate_ge: str | None=None, startDate_le: str | None=None, endDate_gt: str | None=None, endDate_eq: str | None=None, endDate_lt: str | None=None, endDate_ge: str | None=None, endDate_le: str | None=None, type_eq: list[str] | None=None, type_oneOf: list[str] | None=None, type_noneOf: list[str] | None=None, userId_eq: str | None=None, userId_oneOf: str | None=None, userId_noneOf: str | None=None) -> dict[str, Any]:
         """
         Get all time-offs
 
@@ -915,37 +781,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Time-Offs
         """
-        url = f"{self.base_url}/1.0/time-offs"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("startDate.gt", startDate_gt),
-                ("startDate.eq", startDate_eq),
-                ("startDate.lt", startDate_lt),
-                ("startDate.ge", startDate_ge),
-                ("startDate.le", startDate_le),
-                ("endDate.gt", endDate_gt),
-                ("endDate.eq", endDate_eq),
-                ("endDate.lt", endDate_lt),
-                ("endDate.ge", endDate_ge),
-                ("endDate.le", endDate_le),
-                ("type.eq", type_eq),
-                ("type.oneOf", type_oneOf),
-                ("type.noneOf", type_noneOf),
-                ("userId.eq", userId_eq),
-                ("userId.oneOf", userId_oneOf),
-                ("userId.noneOf", userId_noneOf),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/time-offs'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('startDate.gt', startDate_gt), ('startDate.eq', startDate_eq), ('startDate.lt', startDate_lt), ('startDate.ge', startDate_ge), ('startDate.le', startDate_le), ('endDate.gt', endDate_gt), ('endDate.eq', endDate_eq), ('endDate.lt', endDate_lt), ('endDate.ge', endDate_ge), ('endDate.le', endDate_le), ('type.eq', type_eq), ('type.oneOf', type_oneOf), ('type.noneOf', type_noneOf), ('userId.eq', userId_eq), ('userId.oneOf', userId_oneOf), ('userId.noneOf', userId_noneOf)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -954,19 +792,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_timeoff(
-        self,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        timeOffId: int | None = None,
-        user: dict[str, Any] | None = None,
-        note: str | None = None,
-        startDate: str | None = None,
-        endDate: str | None = None,
-        type: str | None = None,
-        notifyUsers: dict[str, Any] | None = None,
-        durationInMinutes: int | None = None,
-    ) -> dict[str, Any]:
+    async def create_timeoff(self, includeFields: list[str] | None=None, includeAllFields: bool | None=None, timeOffId: int | None=None, user: dict[str, Any] | None=None, note: str | None=None, startDate: str | None=None, endDate: str | None=None, type: str | None=None, notifyUsers: dict[str, Any] | None=None, durationInMinutes: int | None=None) -> dict[str, Any]:
         """
         Create a time-off
 
@@ -993,20 +819,11 @@ class RocketlaneApp(APIApplication):
             Time-Offs
         """
         request_body_data = None
-        request_body_data = {
-            "timeOffId": timeOffId,
-            "user": user,
-            "note": note,
-            "startDate": startDate,
-            "endDate": endDate,
-            "type": type,
-            "notifyUsers": notifyUsers,
-            "durationInMinutes": durationInMinutes,
-        }
+        request_body_data = {'timeOffId': timeOffId, 'user': user, 'note': note, 'startDate': startDate, 'endDate': endDate, 'type': type, 'notifyUsers': notifyUsers, 'durationInMinutes': durationInMinutes}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/time-offs"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/time-offs'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1015,52 +832,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_time_entries(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        date_gt: str | None = None,
-        date_eq: str | None = None,
-        date_lt: str | None = None,
-        date_ge: str | None = None,
-        date_le: str | None = None,
-        project_eq: float | None = None,
-        projectId_eq: float | None = None,
-        task_eq: float | None = None,
-        taskId_eq: float | None = None,
-        taskId_oneOf: float | None = None,
-        taskId_noneOf: float | None = None,
-        projectPhase_eq: float | None = None,
-        category_eq: float | None = None,
-        user_eq: float | None = None,
-        sourceType_eq: str | None = None,
-        activityName_eq: str | None = None,
-        activityName_cn: str | None = None,
-        activityName_nc: str | None = None,
-        approvalStatus_eq: str | None = None,
-        approvedBy_eq: float | None = None,
-        approvedAt_eq: int | None = None,
-        approvedAt_gt: int | None = None,
-        approvedAt_ge: int | None = None,
-        approvedAt_lt: int | None = None,
-        approvedAt_le: int | None = None,
-        billable_eq: bool | None = None,
-        includeDeleted_eq: bool | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_time_entries(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, date_gt: str | None=None, date_eq: str | None=None, date_lt: str | None=None, date_ge: str | None=None, date_le: str | None=None, project_eq: float | None=None, projectId_eq: float | None=None, task_eq: float | None=None, taskId_eq: float | None=None, taskId_oneOf: float | None=None, taskId_noneOf: float | None=None, projectPhase_eq: float | None=None, category_eq: float | None=None, user_eq: float | None=None, sourceType_eq: str | None=None, activityName_eq: str | None=None, activityName_cn: str | None=None, activityName_nc: str | None=None, approvalStatus_eq: str | None=None, approvedBy_eq: float | None=None, approvedAt_eq: int | None=None, approvedAt_gt: int | None=None, approvedAt_ge: int | None=None, approvedAt_lt: int | None=None, approvedAt_le: int | None=None, billable_eq: bool | None=None, includeDeleted_eq: bool | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None) -> dict[str, Any]:
         """
         Get all time entries
 
@@ -1119,57 +891,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Time Tracking
         """
-        url = f"{self.base_url}/1.0/time-entries"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("date.gt", date_gt),
-                ("date.eq", date_eq),
-                ("date.lt", date_lt),
-                ("date.ge", date_ge),
-                ("date.le", date_le),
-                ("project.eq", project_eq),
-                ("projectId.eq", projectId_eq),
-                ("task.eq", task_eq),
-                ("taskId.eq", taskId_eq),
-                ("taskId.oneOf", taskId_oneOf),
-                ("taskId.noneOf", taskId_noneOf),
-                ("projectPhase.eq", projectPhase_eq),
-                ("category.eq", category_eq),
-                ("user.eq", user_eq),
-                ("sourceType.eq", sourceType_eq),
-                ("activityName.eq", activityName_eq),
-                ("activityName.cn", activityName_cn),
-                ("activityName.nc", activityName_nc),
-                ("approvalStatus.eq", approvalStatus_eq),
-                ("approvedBy.eq", approvedBy_eq),
-                ("approvedAt.eq", approvedAt_eq),
-                ("approvedAt.gt", approvedAt_gt),
-                ("approvedAt.ge", approvedAt_ge),
-                ("approvedAt.lt", approvedAt_lt),
-                ("approvedAt.le", approvedAt_le),
-                ("billable.eq", billable_eq),
-                ("includeDeleted.eq", includeDeleted_eq),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/time-entries'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('date.gt', date_gt), ('date.eq', date_eq), ('date.lt', date_lt), ('date.ge', date_ge), ('date.le', date_le), ('project.eq', project_eq), ('projectId.eq', projectId_eq), ('task.eq', task_eq), ('taskId.eq', taskId_eq), ('taskId.oneOf', taskId_oneOf), ('taskId.noneOf', taskId_noneOf), ('projectPhase.eq', projectPhase_eq), ('category.eq', category_eq), ('user.eq', user_eq), ('sourceType.eq', sourceType_eq), ('activityName.eq', activityName_eq), ('activityName.cn', activityName_cn), ('activityName.nc', activityName_nc), ('approvalStatus.eq', approvalStatus_eq), ('approvedBy.eq', approvedBy_eq), ('approvedAt.eq', approvedAt_eq), ('approvedAt.gt', approvedAt_gt), ('approvedAt.ge', approvedAt_ge), ('approvedAt.lt', approvedAt_lt), ('approvedAt.le', approvedAt_le), ('billable.eq', billable_eq), ('includeDeleted.eq', includeDeleted_eq), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1178,22 +902,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_time_entry(
-        self,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        timeEntryId: int | None = None,
-        date: str | None = None,
-        minutes: int | None = None,
-        activityName: str | None = None,
-        project: dict[str, Any] | None = None,
-        task: dict[str, Any] | None = None,
-        projectPhase: dict[str, Any] | None = None,
-        billable: bool | None = None,
-        user: dict[str, Any] | None = None,
-        notes: str | None = None,
-        category: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def create_time_entry(self, includeFields: list[str] | None=None, includeAllFields: bool | None=None, timeEntryId: int | None=None, date: str | None=None, minutes: int | None=None, activityName: str | None=None, project: dict[str, Any] | None=None, task: dict[str, Any] | None=None, projectPhase: dict[str, Any] | None=None, billable: bool | None=None, user: dict[str, Any] | None=None, notes: str | None=None, category: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Create a time entry
 
@@ -1223,23 +932,11 @@ class RocketlaneApp(APIApplication):
             Time Tracking
         """
         request_body_data = None
-        request_body_data = {
-            "timeEntryId": timeEntryId,
-            "date": date,
-            "minutes": minutes,
-            "activityName": activityName,
-            "project": project,
-            "task": task,
-            "projectPhase": projectPhase,
-            "billable": billable,
-            "user": user,
-            "notes": notes,
-            "category": category,
-        }
+        request_body_data = {'timeEntryId': timeEntryId, 'date': date, 'minutes': minutes, 'activityName': activityName, 'project': project, 'task': task, 'projectPhase': projectPhase, 'billable': billable, 'user': user, 'notes': notes, 'category': category}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/time-entries"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/time-entries'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1248,7 +945,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_followers_from_task(self, taskId: str, members: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def remove_followers_from_task(self, taskId: str, members: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Remove followers from a task by Id
 
@@ -1269,11 +966,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"members": members}
+        request_body_data = {'members': members}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/remove-followers"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/remove-followers'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1282,7 +979,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_dependencies_from_task(self, taskId: str, dependencies: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def remove_dependencies_from_task(self, taskId: str, dependencies: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Remove dependencies from a task by Id
 
@@ -1303,11 +1000,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"dependencies": dependencies}
+        request_body_data = {'dependencies': dependencies}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/remove-dependencies"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/remove-dependencies'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1316,9 +1013,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def remove_assignees_from_task(
-        self, taskId: str, members: list[dict[str, Any]] | None = None, placeholders: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def remove_assignees_from_task(self, taskId: str, members: list[dict[str, Any]] | None=None, placeholders: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Remove assignees from a task by Id
 
@@ -1341,11 +1036,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"members": members, "placeholders": placeholders}
+        request_body_data = {'members': members, 'placeholders': placeholders}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/remove-assignees"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/remove-assignees'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1354,7 +1049,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def move_task_to_given_phase(self, taskId: str, phase: dict[str, Any] | None = None) -> dict[str, Any]:
+    async def move_task_to_given_phase(self, taskId: str, phase: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Move a task to the phase by Id
 
@@ -1375,11 +1070,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"phase": phase}
+        request_body_data = {'phase': phase}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/move-phase"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/move-phase'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1388,7 +1083,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_followers_to_task(self, taskId: str, members: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def add_followers_to_task(self, taskId: str, members: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Add followers to a task by Id
 
@@ -1409,11 +1104,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"members": members}
+        request_body_data = {'members': members}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/add-followers"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/add-followers'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1422,7 +1117,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_dependencies_to_task(self, taskId: str, dependencies: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    async def add_dependencies_to_task(self, taskId: str, dependencies: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Add dependencies to a task by Id
 
@@ -1443,11 +1138,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"dependencies": dependencies}
+        request_body_data = {'dependencies': dependencies}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/add-dependencies"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/add-dependencies'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1456,9 +1151,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_assignee_to_task(
-        self, taskId: str, members: list[dict[str, Any]] | None = None, placeholders: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def add_assignee_to_task(self, taskId: str, members: list[dict[str, Any]] | None=None, placeholders: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Add assignees to a task by Id
 
@@ -1481,11 +1174,11 @@ class RocketlaneApp(APIApplication):
         if taskId is None:
             raise ValueError("Missing required parameter 'taskId'.")
         request_body_data = None
-        request_body_data = {"members": members, "placeholders": placeholders}
+        request_body_data = {'members': members, 'placeholders': placeholders}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks/{taskId}/add-assignees"
+        url = f'{self.base_url}/1.0/tasks/{taskId}/add-assignees'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1494,65 +1187,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_tasks(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        startDate_gt: str | None = None,
-        startDate_eq: str | None = None,
-        startDate_lt: str | None = None,
-        startDate_ge: str | None = None,
-        startDate_le: str | None = None,
-        dueDate_gt: str | None = None,
-        dueDate_eq: str | None = None,
-        dueDate_lt: str | None = None,
-        dueDate_ge: str | None = None,
-        dueDate_le: str | None = None,
-        startDateActual_gt: str | None = None,
-        startDateActual_eq: str | None = None,
-        startDateActual_lt: str | None = None,
-        startDateActual_ge: str | None = None,
-        startDateActual_le: str | None = None,
-        dueDateActual_gt: str | None = None,
-        dueDateActual_eq: str | None = None,
-        dueDateActual_lt: str | None = None,
-        dueDateActual_ge: str | None = None,
-        dueDateActual_le: str | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-        projectId_eq: float | None = None,
-        phaseId_eq: float | None = None,
-        taskName_eq: str | None = None,
-        taskName_cn: str | None = None,
-        taskName_nc: str | None = None,
-        effortInMinutes_eq: float | None = None,
-        effortInMinutes_gt: float | None = None,
-        effortInMinutes_lt: float | None = None,
-        progress_eq: float | None = None,
-        progress_gt: float | None = None,
-        progress_lt: float | None = None,
-        includeArchive_eq: bool | None = None,
-        task_status_eq: str | None = None,
-        task_status_oneOf: str | None = None,
-        task_status_noneOf: str | None = None,
-        project_status_eq: str | None = None,
-        project_status_oneOf: str | None = None,
-        project_status_noneOf: str | None = None,
-        externalReferenceId_eq: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_tasks(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, startDate_gt: str | None=None, startDate_eq: str | None=None, startDate_lt: str | None=None, startDate_ge: str | None=None, startDate_le: str | None=None, dueDate_gt: str | None=None, dueDate_eq: str | None=None, dueDate_lt: str | None=None, dueDate_ge: str | None=None, dueDate_le: str | None=None, startDateActual_gt: str | None=None, startDateActual_eq: str | None=None, startDateActual_lt: str | None=None, startDateActual_ge: str | None=None, startDateActual_le: str | None=None, dueDateActual_gt: str | None=None, dueDateActual_eq: str | None=None, dueDateActual_lt: str | None=None, dueDateActual_ge: str | None=None, dueDateActual_le: str | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None, projectId_eq: float | None=None, phaseId_eq: float | None=None, taskName_eq: str | None=None, taskName_cn: str | None=None, taskName_nc: str | None=None, effortInMinutes_eq: float | None=None, effortInMinutes_gt: float | None=None, effortInMinutes_lt: float | None=None, progress_eq: float | None=None, progress_gt: float | None=None, progress_lt: float | None=None, includeArchive_eq: bool | None=None, task_status_eq: str | None=None, task_status_oneOf: str | None=None, task_status_noneOf: str | None=None, project_status_eq: str | None=None, project_status_oneOf: str | None=None, project_status_noneOf: str | None=None, externalReferenceId_eq: str | None=None) -> dict[str, Any]:
         """
         Get all tasks
 
@@ -1624,70 +1259,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Tasks
         """
-        url = f"{self.base_url}/1.0/tasks"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("startDate.gt", startDate_gt),
-                ("startDate.eq", startDate_eq),
-                ("startDate.lt", startDate_lt),
-                ("startDate.ge", startDate_ge),
-                ("startDate.le", startDate_le),
-                ("dueDate.gt", dueDate_gt),
-                ("dueDate.eq", dueDate_eq),
-                ("dueDate.lt", dueDate_lt),
-                ("dueDate.ge", dueDate_ge),
-                ("dueDate.le", dueDate_le),
-                ("startDateActual.gt", startDateActual_gt),
-                ("startDateActual.eq", startDateActual_eq),
-                ("startDateActual.lt", startDateActual_lt),
-                ("startDateActual.ge", startDateActual_ge),
-                ("startDateActual.le", startDateActual_le),
-                ("dueDateActual.gt", dueDateActual_gt),
-                ("dueDateActual.eq", dueDateActual_eq),
-                ("dueDateActual.lt", dueDateActual_lt),
-                ("dueDateActual.ge", dueDateActual_ge),
-                ("dueDateActual.le", dueDateActual_le),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-                ("projectId.eq", projectId_eq),
-                ("phaseId.eq", phaseId_eq),
-                ("taskName.eq", taskName_eq),
-                ("taskName.cn", taskName_cn),
-                ("taskName.nc", taskName_nc),
-                ("effortInMinutes.eq", effortInMinutes_eq),
-                ("effortInMinutes.gt", effortInMinutes_gt),
-                ("effortInMinutes.lt", effortInMinutes_lt),
-                ("progress.eq", progress_eq),
-                ("progress.gt", progress_gt),
-                ("progress.lt", progress_lt),
-                ("includeArchive.eq", includeArchive_eq),
-                ("task.status.eq", task_status_eq),
-                ("task.status.oneOf", task_status_oneOf),
-                ("task.status.noneOf", task_status_noneOf),
-                ("project.status.eq", project_status_eq),
-                ("project.status.oneOf", project_status_oneOf),
-                ("project.status.noneOf", project_status_noneOf),
-                ("externalReferenceId.eq", externalReferenceId_eq),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/tasks'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('startDate.gt', startDate_gt), ('startDate.eq', startDate_eq), ('startDate.lt', startDate_lt), ('startDate.ge', startDate_ge), ('startDate.le', startDate_le), ('dueDate.gt', dueDate_gt), ('dueDate.eq', dueDate_eq), ('dueDate.lt', dueDate_lt), ('dueDate.ge', dueDate_ge), ('dueDate.le', dueDate_le), ('startDateActual.gt', startDateActual_gt), ('startDateActual.eq', startDateActual_eq), ('startDateActual.lt', startDateActual_lt), ('startDateActual.ge', startDateActual_ge), ('startDateActual.le', startDateActual_le), ('dueDateActual.gt', dueDateActual_gt), ('dueDateActual.eq', dueDateActual_eq), ('dueDateActual.lt', dueDateActual_lt), ('dueDateActual.ge', dueDateActual_ge), ('dueDateActual.le', dueDateActual_le), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le), ('projectId.eq', projectId_eq), ('phaseId.eq', phaseId_eq), ('taskName.eq', taskName_eq), ('taskName.cn', taskName_cn), ('taskName.nc', taskName_nc), ('effortInMinutes.eq', effortInMinutes_eq), ('effortInMinutes.gt', effortInMinutes_gt), ('effortInMinutes.lt', effortInMinutes_lt), ('progress.eq', progress_eq), ('progress.gt', progress_gt), ('progress.lt', progress_lt), ('includeArchive.eq', includeArchive_eq), ('task.status.eq', task_status_eq), ('task.status.oneOf', task_status_oneOf), ('task.status.noneOf', task_status_noneOf), ('project.status.eq', project_status_eq), ('project.status.oneOf', project_status_oneOf), ('project.status.noneOf', project_status_noneOf), ('externalReferenceId.eq', externalReferenceId_eq)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1696,30 +1270,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_task(
-        self,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        taskId: int | None = None,
-        taskName: str | None = None,
-        taskDescription: str | None = None,
-        taskPrivateNote: str | None = None,
-        startDate: str | None = None,
-        dueDate: str | None = None,
-        effortInMinutes: int | None = None,
-        progress: int | None = None,
-        atRisk: bool | None = None,
-        type: str | None = None,
-        project: dict[str, Any] | None = None,
-        phase: dict[str, Any] | None = None,
-        status: dict[str, Any] | None = None,
-        fields: list[dict[str, Any]] | None = None,
-        assignees: dict[str, Any] | None = None,
-        followers: dict[str, Any] | None = None,
-        parent: dict[str, Any] | None = None,
-        externalReferenceId: str | None = None,
-        private: bool | None = None,
-    ) -> dict[str, Any]:
+    async def create_task(self, includeFields: list[str] | None=None, includeAllFields: bool | None=None, taskId: int | None=None, taskName: str | None=None, taskDescription: str | None=None, taskPrivateNote: str | None=None, startDate: str | None=None, dueDate: str | None=None, effortInMinutes: int | None=None, progress: int | None=None, atRisk: bool | None=None, type: str | None=None, project: dict[str, Any] | None=None, phase: dict[str, Any] | None=None, status: dict[str, Any] | None=None, fields: list[dict[str, Any]] | None=None, assignees: dict[str, Any] | None=None, followers: dict[str, Any] | None=None, parent: dict[str, Any] | None=None, externalReferenceId: str | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Create a task
 
@@ -1757,31 +1308,11 @@ class RocketlaneApp(APIApplication):
             Tasks
         """
         request_body_data = None
-        request_body_data = {
-            "taskId": taskId,
-            "taskName": taskName,
-            "taskDescription": taskDescription,
-            "taskPrivateNote": taskPrivateNote,
-            "startDate": startDate,
-            "dueDate": dueDate,
-            "effortInMinutes": effortInMinutes,
-            "progress": progress,
-            "atRisk": atRisk,
-            "type": type,
-            "project": project,
-            "phase": phase,
-            "status": status,
-            "fields": fields,
-            "assignees": assignees,
-            "followers": followers,
-            "parent": parent,
-            "externalReferenceId": externalReferenceId,
-            "private": private,
-        }
+        request_body_data = {'taskId': taskId, 'taskName': taskName, 'taskDescription': taskDescription, 'taskPrivateNote': taskPrivateNote, 'startDate': startDate, 'dueDate': dueDate, 'effortInMinutes': effortInMinutes, 'progress': progress, 'atRisk': atRisk, 'type': type, 'project': project, 'phase': phase, 'status': status, 'fields': fields, 'assignees': assignees, 'followers': followers, 'parent': parent, 'externalReferenceId': externalReferenceId, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/tasks"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/tasks'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1790,28 +1321,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_spaces(
-        self,
-        projectId: int,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        spaceName_eq: str | None = None,
-        spaceName_cn: str | None = None,
-        spaceName_nc: str | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_spaces(self, projectId: int, pageSize: float | None=None, pageToken: str | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, spaceName_eq: str | None=None, spaceName_cn: str | None=None, spaceName_nc: str | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None) -> dict[str, Any]:
         """
         Get all spaces
 
@@ -1846,33 +1356,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Spaces
         """
-        url = f"{self.base_url}/1.0/spaces"
-        query_params = {
-            k: v
-            for k, v in [
-                ("projectId", projectId),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("spaceName.eq", spaceName_eq),
-                ("spaceName.cn", spaceName_cn),
-                ("spaceName.nc", spaceName_nc),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/spaces'
+        query_params = {k: v for k, v in [('projectId', projectId), ('pageSize', pageSize), ('pageToken', pageToken), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('spaceName.eq', spaceName_eq), ('spaceName.cn', spaceName_cn), ('spaceName.nc', spaceName_nc), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1881,9 +1367,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_space(
-        self, spaceId: int | None = None, spaceName: str | None = None, project: dict[str, Any] | None = None, private: bool | None = None
-    ) -> dict[str, Any]:
+    async def create_space(self, spaceId: int | None=None, spaceName: str | None=None, project: dict[str, Any] | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Create a space
 
@@ -1904,11 +1388,11 @@ class RocketlaneApp(APIApplication):
             Spaces
         """
         request_body_data = None
-        request_body_data = {"spaceId": spaceId, "spaceName": spaceName, "project": project, "private": private}
+        request_body_data = {'spaceId': spaceId, 'spaceName': spaceName, 'project': project, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/spaces"
+        url = f'{self.base_url}/1.0/spaces'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -1917,29 +1401,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_space_documents(
-        self,
-        projectId: int,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        spaceDocumentName_eq: str | None = None,
-        spaceDocumentName_cn: str | None = None,
-        spaceDocumentName_nc: str | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-        spaceId_eq: float | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_space_documents(self, projectId: int, pageSize: float | None=None, pageToken: str | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, spaceDocumentName_eq: str | None=None, spaceDocumentName_cn: str | None=None, spaceDocumentName_nc: str | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None, spaceId_eq: float | None=None) -> dict[str, Any]:
         """
         Get all space documents
 
@@ -1975,34 +1437,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Space Documents
         """
-        url = f"{self.base_url}/1.0/space-documents"
-        query_params = {
-            k: v
-            for k, v in [
-                ("projectId", projectId),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("spaceDocumentName.eq", spaceDocumentName_eq),
-                ("spaceDocumentName.cn", spaceDocumentName_cn),
-                ("spaceDocumentName.nc", spaceDocumentName_nc),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-                ("spaceId.eq", spaceId_eq),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/space-documents'
+        query_params = {k: v for k, v in [('projectId', projectId), ('pageSize', pageSize), ('pageToken', pageToken), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('spaceDocumentName.eq', spaceDocumentName_eq), ('spaceDocumentName.cn', spaceDocumentName_cn), ('spaceDocumentName.nc', spaceDocumentName_nc), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le), ('spaceId.eq', spaceId_eq)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2011,15 +1448,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_space_document(
-        self,
-        spaceDocumentId: int | None = None,
-        spaceDocumentName: str | None = None,
-        space: dict[str, Any] | None = None,
-        spaceDocumentType: str | None = None,
-        url: str | None = None,
-        source: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    async def create_space_document(self, spaceDocumentId: int | None=None, spaceDocumentName: str | None=None, space: dict[str, Any] | None=None, spaceDocumentType: str | None=None, url: str | None=None, source: dict[str, Any] | None=None) -> dict[str, Any]:
         """
         Create a space document
 
@@ -2042,18 +1471,11 @@ class RocketlaneApp(APIApplication):
             Space Documents
         """
         request_body_data = None
-        request_body_data = {
-            "spaceDocumentId": spaceDocumentId,
-            "spaceDocumentName": spaceDocumentName,
-            "space": space,
-            "spaceDocumentType": spaceDocumentType,
-            "url": url,
-            "source": source,
-        }
+        request_body_data = {'spaceDocumentId': spaceDocumentId, 'spaceDocumentName': spaceDocumentName, 'space': space, 'spaceDocumentType': spaceDocumentType, 'url': url, 'source': source}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/space-documents"
+        url = f'{self.base_url}/1.0/space-documents'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2083,9 +1505,9 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
         request_body_data = items
-        url = f"{self.base_url}/1.0/projects/{projectId}/unassign-placeholders"
+        url = f'{self.base_url}/1.0/projects/{projectId}/unassign-placeholders'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2115,11 +1537,11 @@ class RocketlaneApp(APIApplication):
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
-        request_body_data = {"members": members}
+        request_body_data = {'members': members}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/projects/{projectId}/remove-members"
+        url = f'{self.base_url}/1.0/projects/{projectId}/remove-members'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2149,9 +1571,9 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
         request_body_data = items
-        url = f"{self.base_url}/1.0/projects/{projectId}/import-template"
+        url = f'{self.base_url}/1.0/projects/{projectId}/import-template'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2181,9 +1603,9 @@ class RocketlaneApp(APIApplication):
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
         request_body_data = items
-        url = f"{self.base_url}/1.0/projects/{projectId}/assign-placeholders"
+        url = f'{self.base_url}/1.0/projects/{projectId}/assign-placeholders'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2212,9 +1634,9 @@ class RocketlaneApp(APIApplication):
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
-        url = f"{self.base_url}/1.0/projects/{projectId}/archive"
+        url = f'{self.base_url}/1.0/projects/{projectId}/archive'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2223,9 +1645,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_members(
-        self, projectId: str, members: list[dict[str, Any]] | None = None, customers: list[dict[str, Any]] | None = None
-    ) -> dict[str, Any]:
+    async def add_members(self, projectId: str, members: list[dict[str, Any]] | None=None, customers: list[dict[str, Any]] | None=None) -> dict[str, Any]:
         """
         Add members to a project
 
@@ -2247,11 +1667,11 @@ class RocketlaneApp(APIApplication):
         if projectId is None:
             raise ValueError("Missing required parameter 'projectId'.")
         request_body_data = None
-        request_body_data = {"members": members, "customers": customers}
+        request_body_data = {'members': members, 'customers': customers}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/projects/{projectId}/add-members"
+        url = f'{self.base_url}/1.0/projects/{projectId}/add-members'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2260,92 +1680,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_projects(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        startDate_gt: str | None = None,
-        startDate_eq: str | None = None,
-        startDate_lt: str | None = None,
-        startDate_ge: str | None = None,
-        startDate_le: str | None = None,
-        dueDate_gt: str | None = None,
-        dueDate_eq: str | None = None,
-        dueDate_lt: str | None = None,
-        dueDate_ge: str | None = None,
-        dueDate_le: str | None = None,
-        startDateActual_gt: str | None = None,
-        startDateActual_eq: str | None = None,
-        startDateActual_lt: str | None = None,
-        startDateActual_ge: str | None = None,
-        startDateActual_le: str | None = None,
-        dueDateActual_gt: str | None = None,
-        dueDateActual_eq: str | None = None,
-        dueDateActual_lt: str | None = None,
-        dueDateActual_ge: str | None = None,
-        dueDateActual_le: str | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-        annualizedRecurringRevenue_eq: float | None = None,
-        annualizedRecurringRevenue_gt: float | None = None,
-        annualizedRecurringRevenue_lt: float | None = None,
-        projectFee_eq: float | None = None,
-        projectFee_gt: float | None = None,
-        projectFee_lt: float | None = None,
-        customerId_eq: str | None = None,
-        customerId_oneOf: str | None = None,
-        customerId_noneOf: str | None = None,
-        teamMemberId_eq: str | None = None,
-        teamMemberId_oneOf: str | None = None,
-        teamMemberId_noneOf: str | None = None,
-        companyId_eq: str | None = None,
-        companyId_oneOf: str | None = None,
-        companyId_noneOf: str | None = None,
-        projectName_eq: str | None = None,
-        projectName_cn: str | None = None,
-        projectName_nc: str | None = None,
-        inferredProgress_eq: list[str] | None = None,
-        contractType_eq: list[str] | None = None,
-        contractType_oneOf: list[str] | None = None,
-        contractType_noneOf: list[str] | None = None,
-        budgetedHours_gt: str | None = None,
-        budgetedHours_eq: str | None = None,
-        budgetedHours_lt: str | None = None,
-        budgetedHours_ge: str | None = None,
-        allocatedHours_le: str | None = None,
-        allocatedHours_gt: str | None = None,
-        allocatedHours_eq: str | None = None,
-        allocatedHours_lt: str | None = None,
-        allocatedHours_ge: str | None = None,
-        customersInvited_gt: str | None = None,
-        customersInvited_eq: str | None = None,
-        customersInvited_lt: str | None = None,
-        customersInvited_ge: str | None = None,
-        customersInvited_le: str | None = None,
-        customersJoined_gt: str | None = None,
-        customersJoined_eq: str | None = None,
-        customersJoined_lt: str | None = None,
-        customersJoined_ge: str | None = None,
-        customersJoined_le: str | None = None,
-        includeArchive_eq: bool | None = None,
-        status_eq: str | None = None,
-        status_oneOf: str | None = None,
-        status_noneOf: str | None = None,
-        externalReferenceId_eq: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_projects(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, startDate_gt: str | None=None, startDate_eq: str | None=None, startDate_lt: str | None=None, startDate_ge: str | None=None, startDate_le: str | None=None, dueDate_gt: str | None=None, dueDate_eq: str | None=None, dueDate_lt: str | None=None, dueDate_ge: str | None=None, dueDate_le: str | None=None, startDateActual_gt: str | None=None, startDateActual_eq: str | None=None, startDateActual_lt: str | None=None, startDateActual_ge: str | None=None, startDateActual_le: str | None=None, dueDateActual_gt: str | None=None, dueDateActual_eq: str | None=None, dueDateActual_lt: str | None=None, dueDateActual_ge: str | None=None, dueDateActual_le: str | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None, annualizedRecurringRevenue_eq: float | None=None, annualizedRecurringRevenue_gt: float | None=None, annualizedRecurringRevenue_lt: float | None=None, projectFee_eq: float | None=None, projectFee_gt: float | None=None, projectFee_lt: float | None=None, customerId_eq: str | None=None, customerId_oneOf: str | None=None, customerId_noneOf: str | None=None, teamMemberId_eq: str | None=None, teamMemberId_oneOf: str | None=None, teamMemberId_noneOf: str | None=None, companyId_eq: str | None=None, companyId_oneOf: str | None=None, companyId_noneOf: str | None=None, projectName_eq: str | None=None, projectName_cn: str | None=None, projectName_nc: str | None=None, inferredProgress_eq: list[str] | None=None, contractType_eq: list[str] | None=None, contractType_oneOf: list[str] | None=None, contractType_noneOf: list[str] | None=None, budgetedHours_gt: str | None=None, budgetedHours_eq: str | None=None, budgetedHours_lt: str | None=None, budgetedHours_ge: str | None=None, allocatedHours_le: str | None=None, allocatedHours_gt: str | None=None, allocatedHours_eq: str | None=None, allocatedHours_lt: str | None=None, allocatedHours_ge: str | None=None, customersInvited_gt: str | None=None, customersInvited_eq: str | None=None, customersInvited_lt: str | None=None, customersInvited_ge: str | None=None, customersInvited_le: str | None=None, customersJoined_gt: str | None=None, customersJoined_eq: str | None=None, customersJoined_lt: str | None=None, customersJoined_ge: str | None=None, customersJoined_le: str | None=None, includeArchive_eq: bool | None=None, status_eq: str | None=None, status_oneOf: str | None=None, status_noneOf: str | None=None, externalReferenceId_eq: str | None=None) -> dict[str, Any]:
         """
         Get all projects
 
@@ -2444,97 +1779,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Projects
         """
-        url = f"{self.base_url}/1.0/projects"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("startDate.gt", startDate_gt),
-                ("startDate.eq", startDate_eq),
-                ("startDate.lt", startDate_lt),
-                ("startDate.ge", startDate_ge),
-                ("startDate.le", startDate_le),
-                ("dueDate.gt", dueDate_gt),
-                ("dueDate.eq", dueDate_eq),
-                ("dueDate.lt", dueDate_lt),
-                ("dueDate.ge", dueDate_ge),
-                ("dueDate.le", dueDate_le),
-                ("startDateActual.gt", startDateActual_gt),
-                ("startDateActual.eq", startDateActual_eq),
-                ("startDateActual.lt", startDateActual_lt),
-                ("startDateActual.ge", startDateActual_ge),
-                ("startDateActual.le", startDateActual_le),
-                ("dueDateActual.gt", dueDateActual_gt),
-                ("dueDateActual.eq", dueDateActual_eq),
-                ("dueDateActual.lt", dueDateActual_lt),
-                ("dueDateActual.ge", dueDateActual_ge),
-                ("dueDateActual.le", dueDateActual_le),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-                ("annualizedRecurringRevenue.eq", annualizedRecurringRevenue_eq),
-                ("annualizedRecurringRevenue.gt", annualizedRecurringRevenue_gt),
-                ("annualizedRecurringRevenue.lt", annualizedRecurringRevenue_lt),
-                ("projectFee.eq", projectFee_eq),
-                ("projectFee.gt", projectFee_gt),
-                ("projectFee.lt", projectFee_lt),
-                ("customerId.eq", customerId_eq),
-                ("customerId.oneOf", customerId_oneOf),
-                ("customerId.noneOf", customerId_noneOf),
-                ("teamMemberId.eq", teamMemberId_eq),
-                ("teamMemberId.oneOf", teamMemberId_oneOf),
-                ("teamMemberId.noneOf", teamMemberId_noneOf),
-                ("companyId.eq", companyId_eq),
-                ("companyId.oneOf", companyId_oneOf),
-                ("companyId.noneOf", companyId_noneOf),
-                ("projectName.eq", projectName_eq),
-                ("projectName.cn", projectName_cn),
-                ("projectName.nc", projectName_nc),
-                ("inferredProgress.eq", inferredProgress_eq),
-                ("contractType.eq", contractType_eq),
-                ("contractType.oneOf", contractType_oneOf),
-                ("contractType.noneOf", contractType_noneOf),
-                ("budgetedHours.gt", budgetedHours_gt),
-                ("budgetedHours.eq", budgetedHours_eq),
-                ("budgetedHours.lt", budgetedHours_lt),
-                ("budgetedHours.ge", budgetedHours_ge),
-                ("allocatedHours.le", allocatedHours_le),
-                ("allocatedHours.gt", allocatedHours_gt),
-                ("allocatedHours.eq", allocatedHours_eq),
-                ("allocatedHours.lt", allocatedHours_lt),
-                ("allocatedHours.ge", allocatedHours_ge),
-                ("customersInvited.gt", customersInvited_gt),
-                ("customersInvited.eq", customersInvited_eq),
-                ("customersInvited.lt", customersInvited_lt),
-                ("customersInvited.ge", customersInvited_ge),
-                ("customersInvited.le", customersInvited_le),
-                ("customersJoined.gt", customersJoined_gt),
-                ("customersJoined.eq", customersJoined_eq),
-                ("customersJoined.lt", customersJoined_lt),
-                ("customersJoined.ge", customersJoined_ge),
-                ("customersJoined.le", customersJoined_le),
-                ("includeArchive.eq", includeArchive_eq),
-                ("status.eq", status_eq),
-                ("status.oneOf", status_oneOf),
-                ("status.noneOf", status_noneOf),
-                ("externalReferenceId.eq", externalReferenceId_eq),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/projects'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('startDate.gt', startDate_gt), ('startDate.eq', startDate_eq), ('startDate.lt', startDate_lt), ('startDate.ge', startDate_ge), ('startDate.le', startDate_le), ('dueDate.gt', dueDate_gt), ('dueDate.eq', dueDate_eq), ('dueDate.lt', dueDate_lt), ('dueDate.ge', dueDate_ge), ('dueDate.le', dueDate_le), ('startDateActual.gt', startDateActual_gt), ('startDateActual.eq', startDateActual_eq), ('startDateActual.lt', startDateActual_lt), ('startDateActual.ge', startDateActual_ge), ('startDateActual.le', startDateActual_le), ('dueDateActual.gt', dueDateActual_gt), ('dueDateActual.eq', dueDateActual_eq), ('dueDateActual.lt', dueDateActual_lt), ('dueDateActual.ge', dueDateActual_ge), ('dueDateActual.le', dueDateActual_le), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le), ('annualizedRecurringRevenue.eq', annualizedRecurringRevenue_eq), ('annualizedRecurringRevenue.gt', annualizedRecurringRevenue_gt), ('annualizedRecurringRevenue.lt', annualizedRecurringRevenue_lt), ('projectFee.eq', projectFee_eq), ('projectFee.gt', projectFee_gt), ('projectFee.lt', projectFee_lt), ('customerId.eq', customerId_eq), ('customerId.oneOf', customerId_oneOf), ('customerId.noneOf', customerId_noneOf), ('teamMemberId.eq', teamMemberId_eq), ('teamMemberId.oneOf', teamMemberId_oneOf), ('teamMemberId.noneOf', teamMemberId_noneOf), ('companyId.eq', companyId_eq), ('companyId.oneOf', companyId_oneOf), ('companyId.noneOf', companyId_noneOf), ('projectName.eq', projectName_eq), ('projectName.cn', projectName_cn), ('projectName.nc', projectName_nc), ('inferredProgress.eq', inferredProgress_eq), ('contractType.eq', contractType_eq), ('contractType.oneOf', contractType_oneOf), ('contractType.noneOf', contractType_noneOf), ('budgetedHours.gt', budgetedHours_gt), ('budgetedHours.eq', budgetedHours_eq), ('budgetedHours.lt', budgetedHours_lt), ('budgetedHours.ge', budgetedHours_ge), ('allocatedHours.le', allocatedHours_le), ('allocatedHours.gt', allocatedHours_gt), ('allocatedHours.eq', allocatedHours_eq), ('allocatedHours.lt', allocatedHours_lt), ('allocatedHours.ge', allocatedHours_ge), ('customersInvited.gt', customersInvited_gt), ('customersInvited.eq', customersInvited_eq), ('customersInvited.lt', customersInvited_lt), ('customersInvited.ge', customersInvited_ge), ('customersInvited.le', customersInvited_le), ('customersJoined.gt', customersJoined_gt), ('customersJoined.eq', customersJoined_eq), ('customersJoined.lt', customersJoined_lt), ('customersJoined.ge', customersJoined_ge), ('customersJoined.le', customersJoined_le), ('includeArchive.eq', includeArchive_eq), ('status.eq', status_eq), ('status.oneOf', status_oneOf), ('status.noneOf', status_noneOf), ('externalReferenceId.eq', externalReferenceId_eq)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2543,33 +1790,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_project(
-        self,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        projectId: int | None = None,
-        projectName: str | None = None,
-        startDate: str | None = None,
-        dueDate: str | None = None,
-        visibility: str | None = None,
-        owner: dict[str, Any] | None = None,
-        teamMembers: dict[str, Any] | None = None,
-        status: dict[str, Any] | None = None,
-        fields: list[dict[str, Any]] | None = None,
-        customer: dict[str, Any] | None = None,
-        partners: list[dict[str, Any]] | None = None,
-        sources: list[dict[str, Any]] | None = None,
-        assignProjectOwner: bool | None = None,
-        placeholders: list[dict[str, Any]] | None = None,
-        annualizedRecurringRevenue: int | None = None,
-        projectFee: int | None = None,
-        autoAllocation: bool | None = None,
-        autoCreateCompany: bool | None = None,
-        budgetedHours: float | None = None,
-        financials: dict[str, Any] | None = None,
-        currency: str | None = None,
-        externalReferenceId: str | None = None,
-    ) -> dict[str, Any]:
+    async def create_project(self, includeFields: list[str] | None=None, includeAllFields: bool | None=None, projectId: int | None=None, projectName: str | None=None, startDate: str | None=None, dueDate: str | None=None, visibility: str | None=None, owner: dict[str, Any] | None=None, teamMembers: dict[str, Any] | None=None, status: dict[str, Any] | None=None, fields: list[dict[str, Any]] | None=None, customer: dict[str, Any] | None=None, partners: list[dict[str, Any]] | None=None, sources: list[dict[str, Any]] | None=None, assignProjectOwner: bool | None=None, placeholders: list[dict[str, Any]] | None=None, annualizedRecurringRevenue: int | None=None, projectFee: int | None=None, autoAllocation: bool | None=None, autoCreateCompany: bool | None=None, budgetedHours: float | None=None, financials: dict[str, Any] | None=None, currency: str | None=None, externalReferenceId: str | None=None) -> dict[str, Any]:
         """
         Create a project
 
@@ -2611,34 +1832,11 @@ class RocketlaneApp(APIApplication):
             Projects
         """
         request_body_data = None
-        request_body_data = {
-            "projectId": projectId,
-            "projectName": projectName,
-            "startDate": startDate,
-            "dueDate": dueDate,
-            "visibility": visibility,
-            "owner": owner,
-            "teamMembers": teamMembers,
-            "status": status,
-            "fields": fields,
-            "customer": customer,
-            "partners": partners,
-            "sources": sources,
-            "assignProjectOwner": assignProjectOwner,
-            "placeholders": placeholders,
-            "annualizedRecurringRevenue": annualizedRecurringRevenue,
-            "projectFee": projectFee,
-            "autoAllocation": autoAllocation,
-            "autoCreateCompany": autoCreateCompany,
-            "budgetedHours": budgetedHours,
-            "financials": financials,
-            "currency": currency,
-            "externalReferenceId": externalReferenceId,
-        }
+        request_body_data = {'projectId': projectId, 'projectName': projectName, 'startDate': startDate, 'dueDate': dueDate, 'visibility': visibility, 'owner': owner, 'teamMembers': teamMembers, 'status': status, 'fields': fields, 'customer': customer, 'partners': partners, 'sources': sources, 'assignProjectOwner': assignProjectOwner, 'placeholders': placeholders, 'annualizedRecurringRevenue': annualizedRecurringRevenue, 'projectFee': projectFee, 'autoAllocation': autoAllocation, 'autoCreateCompany': autoCreateCompany, 'budgetedHours': budgetedHours, 'financials': financials, 'currency': currency, 'externalReferenceId': externalReferenceId}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/projects"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/projects'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2647,50 +1845,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_phases(
-        self,
-        projectId: int,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        startDate_gt: str | None = None,
-        startDate_eq: str | None = None,
-        startDate_lt: str | None = None,
-        startDate_ge: str | None = None,
-        startDate_le: str | None = None,
-        dueDate_gt: str | None = None,
-        dueDate_eq: str | None = None,
-        dueDate_lt: str | None = None,
-        dueDate_ge: str | None = None,
-        dueDate_le: str | None = None,
-        startDateActual_gt: str | None = None,
-        startDateActual_eq: str | None = None,
-        startDateActual_lt: str | None = None,
-        startDateActual_ge: str | None = None,
-        startDateActual_le: str | None = None,
-        dueDateActual_gt: str | None = None,
-        dueDateActual_eq: str | None = None,
-        dueDateActual_lt: str | None = None,
-        dueDateActual_ge: str | None = None,
-        dueDateActual_le: str | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-        phaseName_eq: str | None = None,
-        phaseName_cn: str | None = None,
-        phaseName_nc: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_phases(self, projectId: int, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, startDate_gt: str | None=None, startDate_eq: str | None=None, startDate_lt: str | None=None, startDate_ge: str | None=None, startDate_le: str | None=None, dueDate_gt: str | None=None, dueDate_eq: str | None=None, dueDate_lt: str | None=None, dueDate_ge: str | None=None, dueDate_le: str | None=None, startDateActual_gt: str | None=None, startDateActual_eq: str | None=None, startDateActual_lt: str | None=None, startDateActual_ge: str | None=None, startDateActual_le: str | None=None, dueDateActual_gt: str | None=None, dueDateActual_eq: str | None=None, dueDateActual_lt: str | None=None, dueDateActual_ge: str | None=None, dueDateActual_le: str | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None, phaseName_eq: str | None=None, phaseName_cn: str | None=None, phaseName_nc: str | None=None) -> dict[str, Any]:
         """
         Get all phases
 
@@ -2747,55 +1902,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Phases
         """
-        url = f"{self.base_url}/1.0/phases"
-        query_params = {
-            k: v
-            for k, v in [
-                ("projectId", projectId),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("startDate.gt", startDate_gt),
-                ("startDate.eq", startDate_eq),
-                ("startDate.lt", startDate_lt),
-                ("startDate.ge", startDate_ge),
-                ("startDate.le", startDate_le),
-                ("dueDate.gt", dueDate_gt),
-                ("dueDate.eq", dueDate_eq),
-                ("dueDate.lt", dueDate_lt),
-                ("dueDate.ge", dueDate_ge),
-                ("dueDate.le", dueDate_le),
-                ("startDateActual.gt", startDateActual_gt),
-                ("startDateActual.eq", startDateActual_eq),
-                ("startDateActual.lt", startDateActual_lt),
-                ("startDateActual.ge", startDateActual_ge),
-                ("startDateActual.le", startDateActual_le),
-                ("dueDateActual.gt", dueDateActual_gt),
-                ("dueDateActual.eq", dueDateActual_eq),
-                ("dueDateActual.lt", dueDateActual_lt),
-                ("dueDateActual.ge", dueDateActual_ge),
-                ("dueDateActual.le", dueDateActual_le),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-                ("phaseName.eq", phaseName_eq),
-                ("phaseName.cn", phaseName_cn),
-                ("phaseName.nc", phaseName_nc),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/phases'
+        query_params = {k: v for k, v in [('projectId', projectId), ('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('startDate.gt', startDate_gt), ('startDate.eq', startDate_eq), ('startDate.lt', startDate_lt), ('startDate.ge', startDate_ge), ('startDate.le', startDate_le), ('dueDate.gt', dueDate_gt), ('dueDate.eq', dueDate_eq), ('dueDate.lt', dueDate_lt), ('dueDate.ge', dueDate_ge), ('dueDate.le', dueDate_le), ('startDateActual.gt', startDateActual_gt), ('startDateActual.eq', startDateActual_eq), ('startDateActual.lt', startDateActual_lt), ('startDateActual.ge', startDateActual_ge), ('startDateActual.le', startDateActual_le), ('dueDateActual.gt', dueDateActual_gt), ('dueDateActual.eq', dueDateActual_eq), ('dueDateActual.lt', dueDateActual_lt), ('dueDateActual.ge', dueDateActual_ge), ('dueDateActual.le', dueDateActual_le), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le), ('phaseName.eq', phaseName_eq), ('phaseName.cn', phaseName_cn), ('phaseName.nc', phaseName_nc)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2804,18 +1913,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_phase(
-        self,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        phaseId: int | None = None,
-        phaseName: str | None = None,
-        project: dict[str, Any] | None = None,
-        startDate: str | None = None,
-        dueDate: str | None = None,
-        status: dict[str, Any] | None = None,
-        private: bool | None = None,
-    ) -> dict[str, Any]:
+    async def create_phase(self, includeFields: list[str] | None=None, includeAllFields: bool | None=None, phaseId: int | None=None, phaseName: str | None=None, project: dict[str, Any] | None=None, startDate: str | None=None, dueDate: str | None=None, status: dict[str, Any] | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Create a phase
 
@@ -2841,19 +1939,11 @@ class RocketlaneApp(APIApplication):
             Phases
         """
         request_body_data = None
-        request_body_data = {
-            "phaseId": phaseId,
-            "phaseName": phaseName,
-            "project": project,
-            "startDate": startDate,
-            "dueDate": dueDate,
-            "status": status,
-            "private": private,
-        }
+        request_body_data = {'phaseId': phaseId, 'phaseName': phaseName, 'project': project, 'startDate': startDate, 'dueDate': dueDate, 'status': status, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/phases"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/phases'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2862,9 +1952,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def update_field_option(
-        self, fieldId: str, optionValue: int | None = None, optionColor: str | None = None, optionLabel: str | None = None
-    ) -> dict[str, Any]:
+    async def update_field_option(self, fieldId: str, optionValue: int | None=None, optionColor: str | None=None, optionLabel: str | None=None) -> dict[str, Any]:
         """
         Update field Option
 
@@ -2887,11 +1975,11 @@ class RocketlaneApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"optionValue": optionValue, "optionColor": optionColor, "optionLabel": optionLabel}
+        request_body_data = {'optionValue': optionValue, 'optionColor': optionColor, 'optionLabel': optionLabel}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/fields/{fieldId}/update-option"
+        url = f'{self.base_url}/1.0/fields/{fieldId}/update-option'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2900,7 +1988,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def add_field_option(self, fieldId: str, optionColor: str | None = None, optionLabel: str | None = None) -> dict[str, Any]:
+    async def add_field_option(self, fieldId: str, optionColor: str | None=None, optionLabel: str | None=None) -> dict[str, Any]:
         """
         Add field Option
 
@@ -2922,11 +2010,11 @@ class RocketlaneApp(APIApplication):
         if fieldId is None:
             raise ValueError("Missing required parameter 'fieldId'.")
         request_body_data = None
-        request_body_data = {"optionColor": optionColor, "optionLabel": optionLabel}
+        request_body_data = {'optionColor': optionColor, 'optionLabel': optionLabel}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/fields/{fieldId}/add-option"
+        url = f'{self.base_url}/1.0/fields/{fieldId}/add-option'
         query_params = {}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -2935,30 +2023,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_fields(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-        objectType_eq: str | None = None,
-        fieldType_eq: str | None = None,
-        enabled_eq: bool | None = None,
-        private_eq: bool | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_fields(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None, objectType_eq: str | None=None, fieldType_eq: str | None=None, enabled_eq: bool | None=None, private_eq: bool | None=None) -> dict[str, Any]:
         """
         Get all fields
 
@@ -2995,35 +2060,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Fields
         """
-        url = f"{self.base_url}/1.0/fields"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-                ("objectType.eq", objectType_eq),
-                ("fieldType.eq", fieldType_eq),
-                ("enabled.eq", enabled_eq),
-                ("private.eq", private_eq),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/fields'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le), ('objectType.eq', objectType_eq), ('fieldType.eq', fieldType_eq), ('enabled.eq', enabled_eq), ('private.eq', private_eq)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3032,20 +2071,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def create_field(
-        self,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        fieldId: int | None = None,
-        fieldLabel: str | None = None,
-        fieldDescription: str | None = None,
-        fieldType: str | None = None,
-        objectType: str | None = None,
-        fieldOptions: list[dict[str, Any]] | None = None,
-        ratingScale: str | None = None,
-        enabled: bool | None = None,
-        private: bool | None = None,
-    ) -> dict[str, Any]:
+    async def create_field(self, includeFields: list[str] | None=None, includeAllFields: bool | None=None, fieldId: int | None=None, fieldLabel: str | None=None, fieldDescription: str | None=None, fieldType: str | None=None, objectType: str | None=None, fieldOptions: list[dict[str, Any]] | None=None, ratingScale: str | None=None, enabled: bool | None=None, private: bool | None=None) -> dict[str, Any]:
         """
         Create a Field
 
@@ -3073,21 +2099,11 @@ class RocketlaneApp(APIApplication):
             Fields, important
         """
         request_body_data = None
-        request_body_data = {
-            "fieldId": fieldId,
-            "fieldLabel": fieldLabel,
-            "fieldDescription": fieldDescription,
-            "fieldType": fieldType,
-            "objectType": objectType,
-            "fieldOptions": fieldOptions,
-            "ratingScale": ratingScale,
-            "enabled": enabled,
-            "private": private,
-        }
+        request_body_data = {'fieldId': fieldId, 'fieldLabel': fieldLabel, 'fieldDescription': fieldDescription, 'fieldType': fieldType, 'objectType': objectType, 'fieldOptions': fieldOptions, 'ratingScale': ratingScale, 'enabled': enabled, 'private': private}
         request_body_data = {k: v for k, v in request_body_data.items() if v is not None}
-        url = f"{self.base_url}/1.0/fields"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._post(url, data=request_body_data, params=query_params, content_type="application/json")
+        url = f'{self.base_url}/1.0/fields'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._apost(url, data=request_body_data, params=query_params, content_type='application/json')
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3096,7 +2112,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_user(self, userId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None) -> dict[str, Any]:
+    async def get_user(self, userId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get user by Id
 
@@ -3117,9 +2133,9 @@ class RocketlaneApp(APIApplication):
         """
         if userId is None:
             raise ValueError("Missing required parameter 'userId'.")
-        url = f"{self.base_url}/1.0/users/{userId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/users/{userId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3128,51 +2144,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_users(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        firstName_eq: str | None = None,
-        firstName_cn: str | None = None,
-        firstName_nc: str | None = None,
-        lastName_eq: str | None = None,
-        lastName_cn: str | None = None,
-        lastName_nc: str | None = None,
-        email_eq: str | None = None,
-        email_cn: str | None = None,
-        email_nc: str | None = None,
-        status_eq: list[str] | None = None,
-        status_oneOf: list[str] | None = None,
-        status_noneOf: list[str] | None = None,
-        type_eq: list[str] | None = None,
-        type_oneOf: list[str] | None = None,
-        roleId_eq: str | None = None,
-        roleId_oneOf: str | None = None,
-        roleId_noneOf: str | None = None,
-        permissionId_eq: str | None = None,
-        permissionId_oneOf: str | None = None,
-        permissionId_noneOf: str | None = None,
-        capacityInMinutes_eq: float | None = None,
-        capacityInMinutes_gt: float | None = None,
-        capacityInMinutes_ge: float | None = None,
-        capacityInMinutes_lt: float | None = None,
-        capacityInMinutes_le: float | None = None,
-        createdAt_gt: int | None = None,
-        createdAt_eq: int | None = None,
-        createdAt_lt: int | None = None,
-        createdAt_ge: int | None = None,
-        createdAt_le: int | None = None,
-        updatedAt_gt: int | None = None,
-        updatedAt_eq: int | None = None,
-        updatedAt_lt: int | None = None,
-        updatedAt_ge: int | None = None,
-        updatedAt_le: int | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_users(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, firstName_eq: str | None=None, firstName_cn: str | None=None, firstName_nc: str | None=None, lastName_eq: str | None=None, lastName_cn: str | None=None, lastName_nc: str | None=None, email_eq: str | None=None, email_cn: str | None=None, email_nc: str | None=None, status_eq: list[str] | None=None, status_oneOf: list[str] | None=None, status_noneOf: list[str] | None=None, type_eq: list[str] | None=None, type_oneOf: list[str] | None=None, roleId_eq: str | None=None, roleId_oneOf: str | None=None, roleId_noneOf: str | None=None, permissionId_eq: str | None=None, permissionId_oneOf: str | None=None, permissionId_noneOf: str | None=None, capacityInMinutes_eq: float | None=None, capacityInMinutes_gt: float | None=None, capacityInMinutes_ge: float | None=None, capacityInMinutes_lt: float | None=None, capacityInMinutes_le: float | None=None, createdAt_gt: int | None=None, createdAt_eq: int | None=None, createdAt_lt: int | None=None, createdAt_ge: int | None=None, createdAt_le: int | None=None, updatedAt_gt: int | None=None, updatedAt_eq: int | None=None, updatedAt_lt: int | None=None, updatedAt_ge: int | None=None, updatedAt_le: int | None=None) -> dict[str, Any]:
         """
         Get all users
 
@@ -3230,56 +2202,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Users
         """
-        url = f"{self.base_url}/1.0/users"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("firstName.eq", firstName_eq),
-                ("firstName.cn", firstName_cn),
-                ("firstName.nc", firstName_nc),
-                ("lastName.eq", lastName_eq),
-                ("lastName.cn", lastName_cn),
-                ("lastName.nc", lastName_nc),
-                ("email.eq", email_eq),
-                ("email.cn", email_cn),
-                ("email.nc", email_nc),
-                ("status.eq", status_eq),
-                ("status.oneOf", status_oneOf),
-                ("status.noneOf", status_noneOf),
-                ("type.eq", type_eq),
-                ("type.oneOf", type_oneOf),
-                ("roleId.eq", roleId_eq),
-                ("roleId.oneOf", roleId_oneOf),
-                ("roleId.noneOf", roleId_noneOf),
-                ("permissionId.eq", permissionId_eq),
-                ("permissionId.oneOf", permissionId_oneOf),
-                ("permissionId.noneOf", permissionId_noneOf),
-                ("capacityInMinutes.eq", capacityInMinutes_eq),
-                ("capacityInMinutes.gt", capacityInMinutes_gt),
-                ("capacityInMinutes.ge", capacityInMinutes_ge),
-                ("capacityInMinutes.lt", capacityInMinutes_lt),
-                ("capacityInMinutes.le", capacityInMinutes_le),
-                ("createdAt.gt", createdAt_gt),
-                ("createdAt.eq", createdAt_eq),
-                ("createdAt.lt", createdAt_lt),
-                ("createdAt.ge", createdAt_ge),
-                ("createdAt.le", createdAt_le),
-                ("updatedAt.gt", updatedAt_gt),
-                ("updatedAt.eq", updatedAt_eq),
-                ("updatedAt.lt", updatedAt_lt),
-                ("updatedAt.ge", updatedAt_ge),
-                ("updatedAt.le", updatedAt_le),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/users'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('firstName.eq', firstName_eq), ('firstName.cn', firstName_cn), ('firstName.nc', firstName_nc), ('lastName.eq', lastName_eq), ('lastName.cn', lastName_cn), ('lastName.nc', lastName_nc), ('email.eq', email_eq), ('email.cn', email_cn), ('email.nc', email_nc), ('status.eq', status_eq), ('status.oneOf', status_oneOf), ('status.noneOf', status_noneOf), ('type.eq', type_eq), ('type.oneOf', type_oneOf), ('roleId.eq', roleId_eq), ('roleId.oneOf', roleId_oneOf), ('roleId.noneOf', roleId_noneOf), ('permissionId.eq', permissionId_eq), ('permissionId.oneOf', permissionId_oneOf), ('permissionId.noneOf', permissionId_noneOf), ('capacityInMinutes.eq', capacityInMinutes_eq), ('capacityInMinutes.gt', capacityInMinutes_gt), ('capacityInMinutes.ge', capacityInMinutes_ge), ('capacityInMinutes.lt', capacityInMinutes_lt), ('capacityInMinutes.le', capacityInMinutes_le), ('createdAt.gt', createdAt_gt), ('createdAt.eq', createdAt_eq), ('createdAt.lt', createdAt_lt), ('createdAt.ge', createdAt_ge), ('createdAt.le', createdAt_le), ('updatedAt.gt', updatedAt_gt), ('updatedAt.eq', updatedAt_eq), ('updatedAt.lt', updatedAt_lt), ('updatedAt.ge', updatedAt_ge), ('updatedAt.le', updatedAt_le)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3288,9 +2213,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_timeoff(
-        self, timeOffId: str, includeFields: list[str] | None = None, includeAllFields: bool | None = None
-    ) -> dict[str, Any]:
+    async def get_timeoff(self, timeOffId: str, includeFields: list[str] | None=None, includeAllFields: bool | None=None) -> dict[str, Any]:
         """
         Get time-off by Id
 
@@ -3311,9 +2234,9 @@ class RocketlaneApp(APIApplication):
         """
         if timeOffId is None:
             raise ValueError("Missing required parameter 'timeOffId'.")
-        url = f"{self.base_url}/1.0/time-offs/{timeOffId}"
-        query_params = {k: v for k, v in [("includeFields", includeFields), ("includeAllFields", includeAllFields)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/time-offs/{timeOffId}'
+        query_params = {k: v for k, v in [('includeFields', includeFields), ('includeAllFields', includeAllFields)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3341,9 +2264,9 @@ class RocketlaneApp(APIApplication):
         """
         if timeOffId is None:
             raise ValueError("Missing required parameter 'timeOffId'.")
-        url = f"{self.base_url}/1.0/time-offs/{timeOffId}"
+        url = f'{self.base_url}/1.0/time-offs/{timeOffId}'
         query_params = {}
-        response = self._delete(url, params=query_params)
+        response = await self._adelete(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3352,31 +2275,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def search_time_entries(
-        self,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: str | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        date_gt: str | None = None,
-        date_eq: str | None = None,
-        date_lt: str | None = None,
-        date_ge: str | None = None,
-        date_le: str | None = None,
-        project_eq: float | None = None,
-        task_eq: float | None = None,
-        projectPhase_eq: float | None = None,
-        category_eq: float | None = None,
-        user_eq: float | None = None,
-        sourceType_eq: str | None = None,
-        activityName_eq: str | None = None,
-        activityName_cn: str | None = None,
-        activityName_nc: str | None = None,
-        approvalStatus_eq: str | None = None,
-    ) -> dict[str, Any]:
+    async def search_time_entries(self, pageSize: float | None=None, pageToken: str | None=None, includeFields: str | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, date_gt: str | None=None, date_eq: str | None=None, date_lt: str | None=None, date_ge: str | None=None, date_le: str | None=None, project_eq: float | None=None, task_eq: float | None=None, projectPhase_eq: float | None=None, category_eq: float | None=None, user_eq: float | None=None, sourceType_eq: str | None=None, activityName_eq: str | None=None, activityName_cn: str | None=None, activityName_nc: str | None=None, approvalStatus_eq: str | None=None) -> dict[str, Any]:
         """
         Search time entries
 
@@ -3414,36 +2313,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Time Tracking
         """
-        url = f"{self.base_url}/1.0/time-entries/search"
-        query_params = {
-            k: v
-            for k, v in [
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("date.gt", date_gt),
-                ("date.eq", date_eq),
-                ("date.lt", date_lt),
-                ("date.ge", date_ge),
-                ("date.le", date_le),
-                ("project.eq", project_eq),
-                ("task.eq", task_eq),
-                ("projectPhase.eq", projectPhase_eq),
-                ("category.eq", category_eq),
-                ("user.eq", user_eq),
-                ("sourceType.eq", sourceType_eq),
-                ("activityName.eq", activityName_eq),
-                ("activityName.cn", activityName_cn),
-                ("activityName.nc", activityName_nc),
-                ("approvalStatus.eq", approvalStatus_eq),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/time-entries/search'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('date.gt', date_gt), ('date.eq', date_eq), ('date.lt', date_lt), ('date.ge', date_ge), ('date.le', date_le), ('project.eq', project_eq), ('task.eq', task_eq), ('projectPhase.eq', projectPhase_eq), ('category.eq', category_eq), ('user.eq', user_eq), ('sourceType.eq', sourceType_eq), ('activityName.eq', activityName_eq), ('activityName.cn', activityName_cn), ('activityName.nc', activityName_nc), ('approvalStatus.eq', approvalStatus_eq)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3452,7 +2324,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_time_entry_categories(self, pageSize: float | None = None, pageToken: str | None = None) -> dict[str, Any]:
+    async def get_time_entry_categories(self, pageSize: float | None=None, pageToken: str | None=None) -> dict[str, Any]:
         """
         Get time entry categories
 
@@ -3470,9 +2342,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Time Tracking
         """
-        url = f"{self.base_url}/1.0/time-entries/categories"
-        query_params = {k: v for k, v in [("pageSize", pageSize), ("pageToken", pageToken)] if v is not None}
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/time-entries/categories'
+        query_params = {k: v for k, v in [('pageSize', pageSize), ('pageToken', pageToken)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3481,27 +2353,7 @@ class RocketlaneApp(APIApplication):
         except ValueError:
             return None
 
-    async def get_all_resource_allocations(
-        self,
-        startDate: str,
-        endDate: str,
-        pageSize: float | None = None,
-        pageToken: str | None = None,
-        includeFields: list[str] | None = None,
-        includeAllFields: bool | None = None,
-        sortBy: str | None = None,
-        sortOrder: str | None = None,
-        match: str | None = None,
-        memberId_eq: str | None = None,
-        memberId_oneOf: str | None = None,
-        memberId_noneOf: str | None = None,
-        projectId_eq: str | None = None,
-        projectId_oneOf: str | None = None,
-        projectId_noneOf: str | None = None,
-        placeholderId_eq: str | None = None,
-        placeholderId_oneOf: str | None = None,
-        placeholderId_noneOf: str | None = None,
-    ) -> dict[str, Any]:
+    async def get_all_resource_allocations(self, startDate: str, endDate: str, pageSize: float | None=None, pageToken: str | None=None, includeFields: list[str] | None=None, includeAllFields: bool | None=None, sortBy: str | None=None, sortOrder: str | None=None, match: str | None=None, memberId_eq: str | None=None, memberId_oneOf: str | None=None, memberId_noneOf: str | None=None, projectId_eq: str | None=None, projectId_oneOf: str | None=None, projectId_noneOf: str | None=None, placeholderId_eq: str | None=None, placeholderId_oneOf: str | None=None, placeholderId_noneOf: str | None=None) -> dict[str, Any]:
         """
         Get all Resource allocations
 
@@ -3535,32 +2387,9 @@ class RocketlaneApp(APIApplication):
         Tags:
             Resource Allocations
         """
-        url = f"{self.base_url}/1.0/resource-allocations"
-        query_params = {
-            k: v
-            for k, v in [
-                ("startDate", startDate),
-                ("endDate", endDate),
-                ("pageSize", pageSize),
-                ("pageToken", pageToken),
-                ("includeFields", includeFields),
-                ("includeAllFields", includeAllFields),
-                ("sortBy", sortBy),
-                ("sortOrder", sortOrder),
-                ("match", match),
-                ("memberId.eq", memberId_eq),
-                ("memberId.oneOf", memberId_oneOf),
-                ("memberId.noneOf", memberId_noneOf),
-                ("projectId.eq", projectId_eq),
-                ("projectId.oneOf", projectId_oneOf),
-                ("projectId.noneOf", projectId_noneOf),
-                ("placeholderId.eq", placeholderId_eq),
-                ("placeholderId.oneOf", placeholderId_oneOf),
-                ("placeholderId.noneOf", placeholderId_noneOf),
-            ]
-            if v is not None
-        }
-        response = self._get(url, params=query_params)
+        url = f'{self.base_url}/1.0/resource-allocations'
+        query_params = {k: v for k, v in [('startDate', startDate), ('endDate', endDate), ('pageSize', pageSize), ('pageToken', pageToken), ('includeFields', includeFields), ('includeAllFields', includeAllFields), ('sortBy', sortBy), ('sortOrder', sortOrder), ('match', match), ('memberId.eq', memberId_eq), ('memberId.oneOf', memberId_oneOf), ('memberId.noneOf', memberId_noneOf), ('projectId.eq', projectId_eq), ('projectId.oneOf', projectId_oneOf), ('projectId.noneOf', projectId_noneOf), ('placeholderId.eq', placeholderId_eq), ('placeholderId.oneOf', placeholderId_oneOf), ('placeholderId.noneOf', placeholderId_noneOf)] if v is not None}
+        response = await self._aget(url, params=query_params)
         response.raise_for_status()
         if response.status_code == 204 or not response.content or (not response.text.strip()):
             return None
@@ -3570,64 +2399,4 @@ class RocketlaneApp(APIApplication):
             return None
 
     def list_tools(self):
-        return [
-            self.get_time_entry,
-            self.update_time_entry,
-            self.delete_time_entry,
-            self.get_task,
-            self.update_task,
-            self.delete_task,
-            self.get_space,
-            self.update_space,
-            self.delete_space,
-            self.get_space_document,
-            self.update_space_document,
-            self.delete_space_document,
-            self.get_project,
-            self.update_project,
-            self.delete_project,
-            self.get_phase,
-            self.update_phase,
-            self.delete_phase,
-            self.get_field,
-            self.update_field,
-            self.delete_field,
-            self.get_all_timeoffs,
-            self.create_timeoff,
-            self.get_all_time_entries,
-            self.create_time_entry,
-            self.remove_followers_from_task,
-            self.remove_dependencies_from_task,
-            self.remove_assignees_from_task,
-            self.move_task_to_given_phase,
-            self.add_followers_to_task,
-            self.add_dependencies_to_task,
-            self.add_assignee_to_task,
-            self.get_all_tasks,
-            self.create_task,
-            self.get_all_spaces,
-            self.create_space,
-            self.get_all_space_documents,
-            self.create_space_document,
-            self.unassign_placeholders,
-            self.remove_members,
-            self.import_template,
-            self.assign_placeholders,
-            self.archive_project,
-            self.add_members,
-            self.get_all_projects,
-            self.create_project,
-            self.get_all_phases,
-            self.create_phase,
-            self.update_field_option,
-            self.add_field_option,
-            self.get_all_fields,
-            self.create_field,
-            self.get_user,
-            self.get_all_users,
-            self.get_timeoff,
-            self.delete_timeoff,
-            self.search_time_entries,
-            self.get_time_entry_categories,
-            self.get_all_resource_allocations,
-        ]
+        return [self.get_time_entry, self.update_time_entry, self.delete_time_entry, self.get_task, self.update_task, self.delete_task, self.get_space, self.update_space, self.delete_space, self.get_space_document, self.update_space_document, self.delete_space_document, self.get_project, self.update_project, self.delete_project, self.get_phase, self.update_phase, self.delete_phase, self.get_field, self.update_field, self.delete_field, self.get_all_timeoffs, self.create_timeoff, self.get_all_time_entries, self.create_time_entry, self.remove_followers_from_task, self.remove_dependencies_from_task, self.remove_assignees_from_task, self.move_task_to_given_phase, self.add_followers_to_task, self.add_dependencies_to_task, self.add_assignee_to_task, self.get_all_tasks, self.create_task, self.get_all_spaces, self.create_space, self.get_all_space_documents, self.create_space_document, self.unassign_placeholders, self.remove_members, self.import_template, self.assign_placeholders, self.archive_project, self.add_members, self.get_all_projects, self.create_project, self.get_all_phases, self.create_phase, self.update_field_option, self.add_field_option, self.get_all_fields, self.create_field, self.get_user, self.get_all_users, self.get_timeoff, self.delete_timeoff, self.search_time_entries, self.get_time_entry_categories, self.get_all_resource_allocations]
